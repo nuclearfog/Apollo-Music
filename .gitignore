@@ -1,0 +1,7 @@
+/app/build/intermediates/
+/.gradle/
+/.idea/
+/gradle/wrapper/gradle-wrapper.jar
+/app/build/
+/app/release/
+/ApolloCM1.zip

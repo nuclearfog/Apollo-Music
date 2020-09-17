@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.andrew.apollo"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 17
         versionName '1.7'

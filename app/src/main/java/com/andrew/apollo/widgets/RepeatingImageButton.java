@@ -32,7 +32,6 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
  * as the button is pressed, otherwise functions like a typecal
  * {@link ImageButton}
  */
-@SuppressLint("AppCompatCustomView")
 public class RepeatingImageButton extends ImageButton implements OnClickListener {
 
     /**
@@ -71,12 +70,12 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public RepeatingImageButton(final Context context, final AttributeSet attrs) {
+    public RepeatingImageButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
         mResources = new ThemeUtils(context);
         // Theme the selector
-        setBackgroundDrawable(new HoloSelector(context));
+        setBackground(new HoloSelector(context));
         setFocusable(true);
         setLongClickable(true);
         setOnClickListener(this);
@@ -87,14 +86,14 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      * {@inheritDoc}
      */
     @Override
-    public void onClick(final View view) {
+    public void onClick(View view) {
         switch (view.getId()) {
             case R.id.action_button_previous:
                 MusicUtils.previous(getContext());
                 break;
+
             case R.id.action_button_next:
                 MusicUtils.next();
-            default:
                 break;
         }
     }
@@ -105,7 +104,7 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      *
      * @param l The listener that will be called
      */
-    public void setRepeatListener(final RepeatListener l) {
+    public void setRepeatListener(RepeatListener l) {
         mListener = l;
     }
 
@@ -128,7 +127,7 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      */
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    public boolean onTouchEvent(final MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             /* Remove the repeater, but call the hook one more time */
             removeCallbacks(mRepeater);
@@ -144,7 +143,7 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      * {@inheritDoc}
      */
     @Override
-    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
@@ -162,7 +161,7 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      * {@inheritDoc}
      */
     @Override
-    public boolean onKeyUp(final int keyCode, final KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
@@ -180,8 +179,8 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
      * @param shouldRepeat If True the repeat count stops at -1, false if to add
      *                     incrementally add the repeat count
      */
-    private void doRepeat(final boolean shouldRepeat) {
-        final long now = SystemClock.elapsedRealtime();
+    private void doRepeat(boolean shouldRepeat) {
+        long now = SystemClock.elapsedRealtime();
         if (mListener != null) {
             mListener.onRepeat(this, now - mStartTime, shouldRepeat ? -1 : mRepeatCount++);
         }
@@ -195,10 +194,9 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
             case R.id.action_button_next:
                 setImageDrawable(mResources.getDrawable(NEXT));
                 break;
+
             case R.id.action_button_previous:
                 setImageDrawable(mResources.getDrawable(PREVIOUS));
-                break;
-            default:
                 break;
         }
     }
@@ -212,5 +210,4 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
          */
         void onRepeat(View v, long duration, int repeatcount);
     }
-
 }

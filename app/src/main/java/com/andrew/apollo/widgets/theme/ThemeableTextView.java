@@ -37,7 +37,7 @@ public class ThemeableTextView extends TextView {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public ThemeableTextView(final Context context, final AttributeSet attrs) {
+    public ThemeableTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
         final ThemeUtils resources = new ThemeUtils(context);

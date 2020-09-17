@@ -436,7 +436,6 @@ public class MusicPlaybackService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra(CMDNAME);
-
             if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
                 int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
                 mAppWidgetSmall.performUpdate(MusicPlaybackService.this, small);
@@ -699,9 +698,7 @@ public class MusicPlaybackService extends Service {
     }
 
     private void releaseServiceUiAndStop() {
-        if (isPlaying()
-                || mPausedByTransientLossOfFocus
-                || mPlayerHandler.hasMessages(TRACK_ENDED)) {
+        if (isPlaying() || mPausedByTransientLossOfFocus || mPlayerHandler.hasMessages(TRACK_ENDED)) {
             return;
         }
 
@@ -756,8 +753,7 @@ public class MusicPlaybackService extends Service {
      */
     private void updateNotification() {
         if (!mAnyActivityInForeground && isPlaying()) {
-            mNotificationHelper.buildNotification(getAlbumName(), getArtistName(),
-                    getTrackName(), getAlbumId(), getAlbumArt(), isPlaying());
+            mNotificationHelper.buildNotification();
         } else if (mAnyActivityInForeground) {
             mNotificationHelper.killNotification();
         }
@@ -1645,7 +1641,7 @@ public class MusicPlaybackService extends Service {
      */
     public long getAlbumId() {
         synchronized (this) {
-            if (mCursor == null) {
+            if (mCursor == null || !mCursor.moveToFirst()) {
                 return -1;
             }
             return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
@@ -2445,8 +2441,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void openFile(String path) {
-            if (mService.get() != null && path != null)
-                mService.get().openFile(path);
+            MusicPlaybackService service = mService.get();
+            if (service != null && path != null)
+                service.openFile(path);
         }
 
         /**
@@ -2454,8 +2451,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void open(long[] list, int position) {
-            if (mService.get() != null && list != null)
-                mService.get().open(list, position);
+            MusicPlaybackService service = mService.get();
+            if (service != null && list != null)
+                service.open(list, position);
         }
 
         /**
@@ -2463,8 +2461,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void stop() {
-            if (mService.get() != null)
-                mService.get().stop();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.stop();
         }
 
         /**
@@ -2472,8 +2471,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void pause() {
-            if (mService.get() != null)
-                mService.get().pause();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.pause();
         }
 
         /**
@@ -2481,8 +2481,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void play() {
-            if (mService.get() != null)
-                mService.get().play();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.play();
         }
 
         /**
@@ -2490,8 +2491,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void prev() {
-            if (mService.get() != null)
-                mService.get().prev();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.prev();
         }
 
         /**
@@ -2499,8 +2501,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void next() {
-            if (mService.get() != null)
-                mService.get().gotoNext(true);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.gotoNext(true);
         }
 
         /**
@@ -2508,8 +2511,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void enqueue(long[] list, int action) {
-            if (mService.get() != null && list != null)
-                mService.get().enqueue(list, action);
+            MusicPlaybackService service = mService.get();
+            if (service != null && list != null)
+                service.enqueue(list, action);
         }
 
         /**
@@ -2517,8 +2521,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void moveQueueItem(int from, int to) {
-            if (mService.get() != null)
-                mService.get().moveQueueItem(from, to);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.moveQueueItem(from, to);
         }
 
         /**
@@ -2526,8 +2531,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void toggleFavorite() {
-            if (mService.get() != null)
-                mService.get().toggleFavorite();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.toggleFavorite();
         }
 
         /**
@@ -2535,8 +2541,10 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void refresh() {
-            if (mService.get() != null)
-                mService.get().refresh();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                if (mService.get() != null)
+                    service.refresh();
         }
 
         /**
@@ -2544,8 +2552,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public boolean isFavorite() {
-            if (mService.get() != null)
-                return mService.get().isFavorite();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.isFavorite();
             return false;
         }
 
@@ -2554,8 +2563,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public boolean isPlaying() {
-            if (mService.get() != null)
-                return mService.get().isPlaying();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.isPlaying();
             return false;
         }
 
@@ -2564,8 +2574,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long[] getQueue() {
-            if (mService.get() != null)
-                return mService.get().getQueue();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getQueue();
             return new long[]{};
         }
 
@@ -2574,8 +2585,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long duration() {
-            if (mService.get() != null)
-                return mService.get().duration();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.duration();
             return 0;
         }
 
@@ -2584,8 +2596,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long position() {
-            if (mService.get() != null)
-                return mService.get().position();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.position();
             return -1;
         }
 
@@ -2594,8 +2607,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long seek(long position) {
-            if (mService.get() != null)
-                return mService.get().seek(position);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.seek(position);
             return 0;
         }
 
@@ -2604,8 +2618,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long getAudioId() {
-            if (mService.get() != null)
-                return mService.get().getAudioId();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getAudioId();
             return 0;
         }
 
@@ -2614,8 +2629,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long getArtistId() {
-            if (mService.get() != null)
-                return mService.get().getArtistId();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getArtistId();
             return 0;
         }
 
@@ -2624,8 +2640,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public long getAlbumId() {
-            if (mService.get() != null)
-                return mService.get().getAlbumId();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getAlbumId();
             return 0;
         }
 
@@ -2634,8 +2651,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public String getArtistName() {
-            if (mService.get() != null)
-                return mService.get().getArtistName();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getArtistName();
             return "";
         }
 
@@ -2644,8 +2662,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public String getTrackName() {
-            if (mService.get() != null)
-                return mService.get().getTrackName();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getTrackName();
             return "";
         }
 
@@ -2654,8 +2673,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public String getAlbumName() {
-            if (mService.get() != null)
-                return mService.get().getAlbumName();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getAlbumName();
             return "";
         }
 
@@ -2664,8 +2684,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public String getPath() {
-            if (mService.get() != null)
-                return mService.get().getPath();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getPath();
             return "";
         }
 
@@ -2674,8 +2695,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int getQueuePosition() {
-            if (mService.get() != null)
-                return mService.get().getQueuePosition();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getQueuePosition();
             return -1;
         }
 
@@ -2684,8 +2706,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void setQueuePosition(int index) {
-            if (mService.get() != null)
-                mService.get().setQueuePosition(index);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.setQueuePosition(index);
         }
 
         /**
@@ -2693,8 +2716,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int getShuffleMode() {
-            if (mService.get() != null)
-                return mService.get().getShuffleMode();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getShuffleMode();
             return SHUFFLE_NONE;
         }
 
@@ -2703,8 +2727,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void setShuffleMode(int shufflemode) {
-            if (mService.get() != null)
-                mService.get().setShuffleMode(shufflemode);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.setShuffleMode(shufflemode);
         }
 
         /**
@@ -2712,8 +2737,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int getRepeatMode() {
-            if (mService.get() != null)
-                return mService.get().getRepeatMode();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getRepeatMode();
             return REPEAT_NONE;
         }
 
@@ -2722,8 +2748,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public void setRepeatMode(int repeatmode) {
-            if (mService.get() != null)
-                mService.get().setRepeatMode(repeatmode);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.setRepeatMode(repeatmode);
         }
 
         /**
@@ -2731,8 +2758,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int removeTracks(int first, int last) {
-            if (mService.get() != null)
-                return mService.get().removeTracks(first, last);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.removeTracks(first, last);
             return 0;
         }
 
@@ -2741,8 +2769,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int removeTrack(long id) {
-            if (mService.get() != null)
-                return mService.get().removeTrack(id);
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.removeTrack(id);
             return 0;
         }
 
@@ -2751,8 +2780,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int getMediaMountedCount() {
-            if (mService.get() != null)
-                return mService.get().getMediaMountedCount();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getMediaMountedCount();
             return 0;
         }
 
@@ -2761,8 +2791,9 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public int getAudioSessionId() {
-            if (mService.get() != null)
-                return mService.get().getAudioSessionId();
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                return service.getAudioSessionId();
             return 0;
         }
     }

@@ -53,13 +53,9 @@ public class HoloSelector extends StateListDrawable {
         ThemeUtils resources = new ThemeUtils(context);
         int themeColor = resources.getColor(RESOURCE_NAME);
         // Focused
-        addState(new int[]{
-                FOCUSED
-        }, makeColorDrawable(themeColor));
+        addState(new int[]{FOCUSED}, makeColorDrawable(themeColor));
         // Pressed
-        addState(new int[]{
-                PRESSED
-        }, makeColorDrawable(themeColor));
+        addState(new int[]{PRESSED}, makeColorDrawable(themeColor));
         // Default
         addState(new int[]{}, makeColorDrawable(Color.TRANSPARENT));
         setExitFadeDuration(400);

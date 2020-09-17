@@ -49,6 +49,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
+import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.IApolloService;
@@ -139,6 +140,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         super.onCreate(savedInstanceState);
         // Set the layout
         setContentView(R.layout.activity_player_base);
+        // set toolbar
+        Toolbar toolbar = findViewById(R.id.player_toolbar);
+        setSupportActionBar(toolbar);
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
         // Set the overflow style
@@ -272,7 +276,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Theme the search icon
         mResources.setSearchIcon(menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -293,7 +297,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
                 return false;
             }
         });
-
         // Favorite action
         getMenuInflater().inflate(R.menu.favorite, menu);
         // Shuffle all

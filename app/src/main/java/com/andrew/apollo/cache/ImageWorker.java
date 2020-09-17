@@ -297,7 +297,7 @@ public abstract class ImageWorker {
          */
         //@SuppressWarnings("deprecation")
         public BitmapWorkerTask(ImageView imageView, ImageType imageType) {
-            imageView.setBackgroundDrawable(mDefaultArtwork);
+            imageView.setBackground(mDefaultArtwork);
             mImageReference = new WeakReference<>(imageView);
             mImageType = imageType;
         }
@@ -321,18 +321,16 @@ public abstract class ImageWorker {
                 }
 
                 // Define the album id now
-                long mAlbumId = /*Long.valueOf(params[3]);*/Long.parseLong(params[3]);//TODO test
+                long mAlbumId = Long.parseLong(params[3]);
 
                 // Second, if we're fetching artwork, check the device for the image
                 if (bitmap == null && mImageType.equals(ImageType.ALBUM) && mAlbumId >= 0
-                        && mKey != null && !isCancelled() && getAttachedImageView() != null
-                        && mImageCache != null) {
+                        && mKey != null && !isCancelled() && getAttachedImageView() != null && mImageCache != null) {
                     bitmap = mImageCache.getCachedArtwork(mContext, mKey, mAlbumId);
                 }
 
                 // Third, by now we need to download the image
-                if (bitmap == null && ApolloUtils.isOnline(mContext) && !isCancelled()
-                        && getAttachedImageView() != null) {
+                if (bitmap == null && ApolloUtils.isOnline(mContext) && !isCancelled() && getAttachedImageView() != null) {
                     // Now define what the artist name, album name, and url are.
                     String mArtistName = params[1];
                     String mAlbumName = params[2];

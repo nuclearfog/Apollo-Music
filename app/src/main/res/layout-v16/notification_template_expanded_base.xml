@@ -114,17 +114,17 @@
         <TextView
             android:id="@+id/notification_expanded_base_line_one"
             style="@style/NotificationText"
-            android:textAppearance="@android:style/TextAppearance.StatusBar.EventContent.Title" />
+            android:textAppearance="@style/notification_textAppearance" />
 
         <TextView
             android:id="@+id/notification_expanded_base_line_two"
             style="@style/NotificationText"
-            android:textAppearance="@android:style/TextAppearance.StatusBar.EventContent" />
+            android:textAppearance="@style/notification_textAppearance" />
 
         <TextView
             android:id="@+id/notification_expanded_base_line_three"
             style="@style/NotificationText"
-            android:textAppearance="@android:style/TextAppearance.StatusBar.EventContent" />
+            android:textAppearance="@style/notification_textAppearance" />
     </LinearLayout>
 
 </RelativeLayout>

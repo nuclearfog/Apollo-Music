@@ -114,6 +114,9 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         super.onCreate(savedInstanceState);
         // Set the layout
         setContentView(R.layout.grid_base);
+        // add toolbar
+        Toolbar toolbar = findViewById(R.id.grid_toolbar);
+        setSupportActionBar(toolbar);
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
         // Set the overflow style
@@ -125,8 +128,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         // Bind Apollo's service
         mToken = MusicUtils.bindToService(this, this);
         // Theme the action bar
-        Toolbar toolbar = findViewById(R.id.grid_toolbar);
-        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             mResources.themeActionBar(actionBar, getString(R.string.app_name));

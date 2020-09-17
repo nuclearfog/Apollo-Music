@@ -52,8 +52,8 @@ public class ApolloApplication extends Application {
 
     private void enableStrictMode() {
         if (DEBUG) {
-            final StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
-            final StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
+            StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
+            StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
             threadPolicyBuilder.penaltyFlashScreen();
             StrictMode.setThreadPolicy(threadPolicyBuilder.build());
             StrictMode.setVmPolicy(vmPolicyBuilder.build());

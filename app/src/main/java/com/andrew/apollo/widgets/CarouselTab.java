@@ -48,7 +48,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public CarouselTab(final Context context, final AttributeSet attrs) {
+    public CarouselTab(Context context, AttributeSet attrs) {
         super(context, attrs);
         mFetcher = ApolloUtils.getImageFetcher((AppCompatActivity) context);
     }
@@ -72,7 +72,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * {@inheritDoc}
      */
     @Override
-    public void setSelected(final boolean selected) {
+    public void setSelected(boolean selected) {
         super.setSelected(selected);
         if (selected) {
             mColorstrip.setVisibility(View.VISIBLE);
@@ -87,7 +87,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use.
      * @param artist  The name of the artist in the profile the user is viewing.
      */
-    public void setArtistPhoto(final AppCompatActivity context, final String artist) {
+    public void setArtistPhoto(AppCompatActivity context, String artist) {
         if (!TextUtils.isEmpty(artist)) {
             mFetcher.loadArtistImage(artist, mPhoto);
         } else {
@@ -137,7 +137,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use.
      * @param album   The name of the album in the profile the user is viewing.
      */
-    public void setAlbumPhoto(final AppCompatActivity context, final String album, final String artist) {
+    public void setAlbumPhoto(AppCompatActivity context, String album, String artist) {
         if (!TextUtils.isEmpty(album)) {
             mAlbumArt.setVisibility(View.VISIBLE);
             mFetcher.loadAlbumImage(artist, album,
@@ -154,7 +154,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param album   The name of the album in the profile the user is viewing.
      * @param artist  The name of the album artist in the profile the user is viewing
      */
-    public void fetchAlbumPhoto(final AppCompatActivity context, final String album, final String artist) {
+    public void fetchAlbumPhoto(Context context, String album, String artist) {
         if (!TextUtils.isEmpty(album)) {
             mFetcher.removeFromCache(ImageFetcher.generateAlbumCacheKey(album, artist));
             mFetcher.loadAlbumImage(artist, album, -1, mAlbumArt);
@@ -169,7 +169,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use.
      * @param artist  The name of the artist in the profile the user is viewing.
      */
-    public void setArtistAlbumPhoto(final AppCompatActivity context, final String artist) {
+    public void setArtistAlbumPhoto(final Context context, final String artist) {
         final String lastAlbum = MusicUtils.getLastAlbumForArtist(context, artist);
         if (!TextUtils.isEmpty(lastAlbum)) {
             // Set the last album the artist played
@@ -250,5 +250,4 @@ public class CarouselTab extends FrameLayoutWithOverlay {
     public ImageView getAlbumArt() {
         return mAlbumArt;
     }
-
 }

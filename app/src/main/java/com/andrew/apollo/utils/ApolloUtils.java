@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -60,16 +59,6 @@ public final class ApolloUtils {
 
     /* This class is never initiated */
     public ApolloUtils() {
-    }
-
-    /**
-     * Used to determine if the device is running Jelly Bean or greater
-     *
-     * @return True if the device is running Jelly Bean or greater, false
-     * otherwise
-     */
-    public static boolean hasJellyBean() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
 
     /**
@@ -235,17 +224,12 @@ public final class ApolloUtils {
      * @param view     The {@link View} used.
      * @param runnable The {@link Runnable} used after the next layout run
      */
-    @SuppressLint("NewApi")
     public static void doAfterLayout(final View view, final Runnable runnable) {
         final OnGlobalLayoutListener listener = new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 /* Layout pass done, unregister for further events */
-                if (hasJellyBean()) {
-                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                } else {
-                    view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                }
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 runnable.run();
             }
         };

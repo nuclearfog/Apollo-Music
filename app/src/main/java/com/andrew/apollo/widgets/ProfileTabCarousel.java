@@ -88,14 +88,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     /**
      * First tab click listener
      */
-    private final TabClickListener mTabOneTouchInterceptListener = new TabClickListener(
-            TAB_INDEX_FIRST);
+    private final TabClickListener mTabOneTouchInterceptListener = new TabClickListener(TAB_INDEX_FIRST);
 
     /**
      * Second tab click listener
      */
-    private final TabClickListener mTabTwoTouchInterceptListener = new TabClickListener(
-            TAB_INDEX_SECOND);
+    private final TabClickListener mTabTwoTouchInterceptListener = new TabClickListener(TAB_INDEX_SECOND);
 
     /**
      * The last scrolled position
@@ -500,5 +498,4 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
             mListener.onTabSelected(mTab);
         }
     }
-
 }

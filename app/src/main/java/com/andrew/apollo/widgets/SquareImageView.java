@@ -27,7 +27,7 @@ public class SquareImageView extends LayoutSuppressingImageView {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public SquareImageView(final Context context, final AttributeSet attrs) {
+    public SquareImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
     }
@@ -36,10 +36,9 @@ public class SquareImageView extends LayoutSuppressingImageView {
      * {@inheritDoc}
      */
     @Override
-    public void onMeasure(final int widthSpec, final int heightSpec) {
+    public void onMeasure(int widthSpec, int heightSpec) {
         super.onMeasure(widthSpec, heightSpec);
         final int mSize = Math.min(getMeasuredWidth(), getMeasuredHeight());
         setMeasuredDimension(mSize, mSize);
     }
-
 }

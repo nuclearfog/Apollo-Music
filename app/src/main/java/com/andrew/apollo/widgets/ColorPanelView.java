@@ -46,15 +46,15 @@ public class ColorPanelView extends View {
 
     private AlphaPatternDrawable mAlphaPattern;
 
-    public ColorPanelView(final Context context) {
+    public ColorPanelView(Context context) {
         this(context, null);
     }
 
-    public ColorPanelView(final Context context, final AttributeSet attrs) {
+    public ColorPanelView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public ColorPanelView(final Context context, final AttributeSet attrs, final int defStyle) {
+    public ColorPanelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -69,8 +69,8 @@ public class ColorPanelView extends View {
      * {@inheritDoc}
      */
     @Override
-    protected void onDraw(final Canvas canvas) {
-        final RectF rect = mColorRect;
+    protected void onDraw(Canvas canvas) {
+        RectF rect = mColorRect;
 
         int mBorderColor = 0xff6E6E6E;
         mBorderPaint.setColor(mBorderColor);
@@ -88,9 +88,9 @@ public class ColorPanelView extends View {
      * {@inheritDoc}
      */
     @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        final int width = MeasureSpec.getSize(widthMeasureSpec);
-        final int height = MeasureSpec.getSize(heightMeasureSpec);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
         setMeasuredDimension(width, height);
     }
 
@@ -98,7 +98,7 @@ public class ColorPanelView extends View {
      * {@inheritDoc}
      */
     @Override
-    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         mDrawingRect = new RectF();
         mDrawingRect.left = getPaddingLeft();
@@ -110,19 +110,16 @@ public class ColorPanelView extends View {
     }
 
     private void setUpColorRect() {
-        final RectF dRect = mDrawingRect;
+        RectF dRect = mDrawingRect;
 
-        final float left = dRect.left + BORDER_WIDTH_PX;
-        final float top = dRect.top + BORDER_WIDTH_PX;
-        final float bottom = dRect.bottom - BORDER_WIDTH_PX;
-        final float right = dRect.right - BORDER_WIDTH_PX;
+        float left = dRect.left + BORDER_WIDTH_PX;
+        float top = dRect.top + BORDER_WIDTH_PX;
+        float bottom = dRect.bottom - BORDER_WIDTH_PX;
+        float right = dRect.right - BORDER_WIDTH_PX;
 
         mColorRect = new RectF(left, top, right, bottom);
-
         mAlphaPattern = new AlphaPatternDrawable((int) (5 * mDensity));
-
-        mAlphaPattern.setBounds(Math.round(mColorRect.left), Math.round(mColorRect.top),
-                Math.round(mColorRect.right), Math.round(mColorRect.bottom));
+        mAlphaPattern.setBounds(Math.round(mColorRect.left), Math.round(mColorRect.top), Math.round(mColorRect.right), Math.round(mColorRect.bottom));
     }
 
     /**
@@ -135,7 +132,7 @@ public class ColorPanelView extends View {
     /**
      * Set the color that should be shown by this view.
      */
-    public void setColor(final int color) {
+    public void setColor(int color) {
         mColor = color;
         invalidate();
     }

@@ -90,11 +90,10 @@ public final class MusicUtils {
         if (realActivity == null) {
             realActivity = (Activity) context;
         }
-        final ContextWrapper contextWrapper = new ContextWrapper(realActivity);
+        ContextWrapper contextWrapper = new ContextWrapper(realActivity);
         contextWrapper.startService(new Intent(contextWrapper, MusicPlaybackService.class));
-        final ServiceBinder binder = new ServiceBinder(callback);
-        if (contextWrapper.bindService(
-                new Intent().setClass(contextWrapper, MusicPlaybackService.class), binder, 0)) {
+        ServiceBinder binder = new ServiceBinder(callback);
+        if (contextWrapper.bindService(new Intent().setClass(contextWrapper, MusicPlaybackService.class), binder, 0)) {
             mConnectionMap.put(contextWrapper, binder);
             return new ServiceToken(contextWrapper);
         }
@@ -108,8 +107,8 @@ public final class MusicUtils {
         if (token == null) {
             return;
         }
-        final ContextWrapper mContextWrapper = token.mWrappedContext;
-        final ServiceBinder mBinder = mConnectionMap.remove(mContextWrapper);
+        ContextWrapper mContextWrapper = token.mWrappedContext;
+        ServiceBinder mBinder = mConnectionMap.remove(mContextWrapper);
         if (mBinder == null) {
             return;
         }
@@ -148,8 +147,7 @@ public final class MusicUtils {
         mins = secs / 60;
         secs -= mins * 60;
 
-        final String durationFormat = context.getResources().getString(
-                hours == 0 ? R.string.durationformatshort : R.string.durationformatlong);
+        String durationFormat = context.getResources().getString(hours == 0 ? R.string.durationformatshort : R.string.durationformatlong);
         return String.format(durationFormat, hours, mins, secs);
     }
 
@@ -161,7 +159,7 @@ public final class MusicUtils {
             if (mService != null) {
                 mService.next();
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -181,7 +179,7 @@ public final class MusicUtils {
      * previously listened track.
      */
     public static void previous(Context context) {
-        final Intent previous = new Intent(context, MusicPlaybackService.class);
+        Intent previous = new Intent(context, MusicPlaybackService.class);
         previous.setAction(MusicPlaybackService.PREVIOUS_ACTION);
         context.startService(previous);
     }
@@ -198,7 +196,7 @@ public final class MusicUtils {
                     mService.play();
                 }
             }
-        } catch (final Exception err) {
+        } catch (Exception err) {
             err.printStackTrace();
         }
     }
@@ -224,7 +222,7 @@ public final class MusicUtils {
                         break;
                 }
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -250,7 +248,7 @@ public final class MusicUtils {
                         break;
                 }
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -262,7 +260,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.isPlaying();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -276,7 +274,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getShuffleMode();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -290,7 +288,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getRepeatMode();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -304,7 +302,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getTrackName();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -318,7 +316,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getArtistName();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -332,7 +330,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getAlbumName();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -346,7 +344,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getAlbumId();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -360,7 +358,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getAudioId();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -374,7 +372,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getArtistId();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -388,7 +386,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.getAudioSessionId();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -403,7 +401,7 @@ public final class MusicUtils {
             if (mService != null) {
                 return mService.getQueue();
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
         return sEmptyList;
@@ -418,7 +416,7 @@ public final class MusicUtils {
             if (mService != null) {
                 return mService.removeTrack(id);
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
         return 0;
@@ -432,7 +430,7 @@ public final class MusicUtils {
             if (mService != null) {
                 return mService.getQueuePosition();
             }
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
         return 0;
@@ -441,11 +439,11 @@ public final class MusicUtils {
     /**
      * @param position The position to move the queue to
      */
-    public static void setQueuePosition(final int position) {
+    public static void setQueuePosition(int position) {
         if (mService != null) {
             try {
                 mService.setQueuePosition(position);
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -459,13 +457,13 @@ public final class MusicUtils {
         if (cursor == null) {
             return sEmptyList;
         }
-        final int len = cursor.getCount();
-        final long[] list = new long[len];
+        int len = cursor.getCount();
+        long[] list = new long[len];
         cursor.moveToFirst();
         int columnIndex;
         try {
             columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID);
-        } catch (final IllegalArgumentException notaplaylist) {
+        } catch (IllegalArgumentException notaplaylist) {
             columnIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
         }
         for (int i = 0; i < len; i++) {
@@ -482,16 +480,14 @@ public final class MusicUtils {
      * @return The song list for an artist.
      */
     public static long[] getSongListForArtist(Context context, long id) {
-        final String[] projection = new String[]{
-                BaseColumns._ID
+        String[] projection = new String[]{BaseColumns._ID
         };
-        final String selection = AudioColumns.ARTIST_ID + "=" + id + " AND "
-                + AudioColumns.IS_MUSIC + "=1";
+        String selection = AudioColumns.ARTIST_ID + "=" + id + " AND " + AudioColumns.IS_MUSIC + "=1";
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,
                 AudioColumns.ALBUM_KEY + "," + AudioColumns.TRACK);
         if (cursor != null) {
-            final long[] mList = getSongListForCursor(cursor);
+            long[] mList = getSongListForCursor(cursor);
             cursor.close();
             return mList;
         }
@@ -504,16 +500,13 @@ public final class MusicUtils {
      * @return The song list for an album.
      */
     public static long[] getSongListForAlbum(Context context, long id) {
-        final String[] projection = new String[]{
-                BaseColumns._ID
-        };
-        final String selection = AudioColumns.ALBUM_ID + "=" + id + " AND " + AudioColumns.IS_MUSIC
-                + "=1";
+        String[] projection = new String[]{BaseColumns._ID};
+        String selection = AudioColumns.ALBUM_ID + "=" + id + " AND " + AudioColumns.IS_MUSIC + "=1";
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,
                 AudioColumns.TRACK + ", " + MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
         if (cursor != null) {
-            final long[] mList = getSongListForCursor(cursor);
+            long[] mList = getSongListForCursor(cursor);
             cursor.close();
             return mList;
         }
@@ -528,7 +521,7 @@ public final class MusicUtils {
      * @param position Specify where to start.
      */
     public static void playArtist(Context context, long artistId, int position) {
-        final long[] artistList = getSongListForArtist(context, artistId);
+        long[] artistList = getSongListForArtist(context, artistId);
         if (artistList != null) {
             playAll(artistList, position, false);
         }
@@ -540,16 +533,12 @@ public final class MusicUtils {
      * @return The song list for an genre.
      */
     public static long[] getSongListForGenre(Context context, long id) {
-        final String[] projection = new String[]{
-                BaseColumns._ID
-        };
-        final Uri uri = MediaStore.Audio.Genres.Members.getContentUri("external", id);
-        String selection = AudioColumns.IS_MUSIC + "=1" +
-                " AND " + MediaColumns.TITLE + "!=''";
-        Cursor cursor = context.getContentResolver().query(uri, projection, selection,
-                null, null);
+        String[] projection = new String[]{BaseColumns._ID};
+        Uri uri = MediaStore.Audio.Genres.Members.getContentUri("external", id);
+        String selection = AudioColumns.IS_MUSIC + "=1" + " AND " + MediaColumns.TITLE + "!=''";
+        Cursor cursor = context.getContentResolver().query(uri, projection, selection, null, null);
         if (cursor != null) {
-            final long[] mList = getSongListForCursor(cursor);
+            long[] mList = getSongListForCursor(cursor);
             cursor.close();
             return mList;
         }
@@ -578,7 +567,7 @@ public final class MusicUtils {
             mService.stop();
             mService.openFile(filename);
             mService.play();
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -598,10 +587,10 @@ public final class MusicUtils {
             } else {
                 mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
             }
-            final long currentId = mService.getAudioId();
-            final int currentQueuePosition = getQueuePosition();
+            long currentId = mService.getAudioId();
+            int currentQueuePosition = getQueuePosition();
             if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
-                final long[] playlist = getQueue();
+                long[] playlist = getQueue();
                 if (Arrays.equals(list, playlist)) {
                     mService.play();
                     return;
@@ -612,7 +601,7 @@ public final class MusicUtils {
             }
             mService.open(list, forceShuffle ? 0 : position);
             mService.play();
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -626,7 +615,7 @@ public final class MusicUtils {
         }
         try {
             mService.enqueue(list, MusicPlaybackService.NEXT);
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -636,17 +625,17 @@ public final class MusicUtils {
      */
     public static void shuffleAll(Context context) {
         Cursor cursor = SongLoader.makeSongCursor(context);
-        final long[] mTrackList = getSongListForCursor(cursor);
-        final int position = 0;
+        long[] mTrackList = getSongListForCursor(cursor);
+        int position = 0;
         if (mTrackList.length == 0 || mService == null) {
             return;
         }
         try {
             mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-            final long mCurrentId = mService.getAudioId();
-            final int mCurrentQueuePosition = getQueuePosition();
+            long mCurrentId = mService.getAudioId();
+            int mCurrentQueuePosition = getQueuePosition();
             if (mCurrentQueuePosition == position && mCurrentId == mTrackList[position]) {
-                final long[] mPlaylist = getQueue();
+                long[] mPlaylist = getQueue();
                 if (Arrays.equals(mTrackList, mPlaylist)) {
                     mService.play();
                     return;
@@ -655,7 +644,7 @@ public final class MusicUtils {
             mService.open(mTrackList, 0);
             mService.play();
             cursor.close();
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -669,11 +658,8 @@ public final class MusicUtils {
      */
     public static long getIdForPlaylist(Context context, String name) {
         Cursor cursor = context.getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, new String[]{
-                        BaseColumns._ID
-                }, PlaylistsColumns.NAME + "=?", new String[]{
-                        name
-                }, PlaylistsColumns.NAME);
+                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, new String[]{BaseColumns._ID},
+                PlaylistsColumns.NAME + "=?", new String[]{name}, PlaylistsColumns.NAME);
         int id = -1;
         if (cursor != null) {
             cursor.moveToFirst();
@@ -733,11 +719,9 @@ public final class MusicUtils {
      */
     public static long getIdForAlbum(Context context, String albumName, String artistName) {
         Cursor cursor = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, new String[]{
-                        BaseColumns._ID
-                }, AlbumColumns.ALBUM + "=? AND " + AlbumColumns.ARTIST + "=?", new String[]{
-                        albumName, artistName
-                }, AlbumColumns.ALBUM);
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, new String[]{BaseColumns._ID},
+                AlbumColumns.ALBUM + "=? AND " + AlbumColumns.ARTIST + "=?", new String[]{
+                        albumName, artistName}, AlbumColumns.ALBUM);
         int id = -1;
         if (cursor != null) {
             cursor.moveToFirst();
@@ -757,7 +741,7 @@ public final class MusicUtils {
      * @param position Specify where to start.
      */
     public static void playAlbum(Context context, long albumId, int position) {
-        final long[] albumList = getSongListForAlbum(context, albumId);
+        long[] albumList = getSongListForAlbum(context, albumId);
         if (albumList != null) {
             playAll(albumList, position, false);
         }
@@ -768,7 +752,6 @@ public final class MusicUtils {
         if (offset + len > ids.length) {
             len = ids.length - offset;
         }
-
         if (mContentValuesCache == null || mContentValuesCache.length != len) {
             mContentValuesCache = new ContentValues[len];
         }
@@ -788,23 +771,19 @@ public final class MusicUtils {
      */
     public static long createPlaylist(Context context, String name) {
         if (name != null && name.length() > 0) {
-            final ContentResolver resolver = context.getContentResolver();
-            final String[] projection = new String[]{
-                    PlaylistsColumns.NAME
-            };
-            final String selection = PlaylistsColumns.NAME + " = '" + name + "'";
-            Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                    projection, selection, null, null);
+            ContentResolver resolver = context.getContentResolver();
+            String[] projection = new String[]{PlaylistsColumns.NAME};
+            String selection = PlaylistsColumns.NAME + " = '" + name + "'";
+            Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, projection, selection, null, null);
             if (cursor != null && cursor.getCount() <= 0) {
-                final ContentValues values = new ContentValues(1);
+                ContentValues values = new ContentValues(1);
                 values.put(PlaylistsColumns.NAME, name);
-                final Uri uri = resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
+                Uri uri = resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
                 cursor.close();
                 if (uri != null && uri.getLastPathSegment() != null) {
                     return Long.parseLong(uri.getLastPathSegment());
                 }
             }
-
             return -1;
         }
         return -1;
@@ -815,7 +794,7 @@ public final class MusicUtils {
      * @param playlistId The playlist ID.
      */
     public static void clearPlaylist(Context context, int playlistId) {
-        final Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
         context.getContentResolver().delete(uri, null, null);
     }
 
@@ -825,22 +804,20 @@ public final class MusicUtils {
      * @param playlistid The id of the playlist being added to.
      */
     public static void addToPlaylist(Context context, long[] ids, long playlistid) {
-        final int size = ids.length;
-        final ContentResolver resolver = context.getContentResolver();
-        final String[] projection = new String[]{
-                "count(*)"
-        };
-        final Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+        int size = ids.length;
+        ContentResolver resolver = context.getContentResolver();
+        String[] projection = new String[]{"count(*)"};
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
         Cursor cursor = resolver.query(uri, projection, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            final int base = cursor.getInt(0);
+            int base = cursor.getInt(0);
             cursor.close();
             int numinserted = 0;
             for (int offSet = 0; offSet < size; offSet += 1000) {
                 makeInsertItems(ids, offSet, 1000, base);
                 numinserted += resolver.bulkInsert(uri, mContentValuesCache);
             }
-            final String message = context.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+            String message = context.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
             AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
         }
     }
@@ -853,12 +830,12 @@ public final class MusicUtils {
      * @param playlistId The id of the playlist being removed from.
      */
     public static void removeFromPlaylist(Context context, long id, long playlistId) {
-        final Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
-        final ContentResolver resolver = context.getContentResolver();
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+        ContentResolver resolver = context.getContentResolver();
         resolver.delete(uri, Playlists.Members.AUDIO_ID + " = ? ", new String[]{
                 Long.toString(id)
         });
-        final String message = context.getResources().getQuantityString(
+        String message = context.getResources().getQuantityString(
                 R.plurals.NNNtracksfromplaylist, 1, 1);
         AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
     }
@@ -873,9 +850,9 @@ public final class MusicUtils {
         }
         try {
             mService.enqueue(list, MusicPlaybackService.LAST);
-            final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
+            String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
             AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -885,10 +862,10 @@ public final class MusicUtils {
      * @param id      The song ID.
      */
     public static void setRingtone(Context context, long id) {
-        final ContentResolver resolver = context.getContentResolver();
-        final Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        ContentResolver resolver = context.getContentResolver();
+        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         try {
-            final ContentValues values = new ContentValues(2);
+            ContentValues values = new ContentValues(2);
             values.put(AudioColumns.IS_RINGTONE, "1");
             values.put(AudioColumns.IS_ALARM, "1");
             resolver.update(uri, values, null, null);
@@ -896,13 +873,13 @@ public final class MusicUtils {
             err.printStackTrace();
             return;
         }
-        final String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, MediaColumns.TITLE};
-        final String selection = BaseColumns._ID + "=" + id;
+        String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, MediaColumns.TITLE};
+        String selection = BaseColumns._ID + "=" + id;
         Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, null);
         if (cursor != null && cursor.getCount() == 1) {
             cursor.moveToFirst();
             Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-            final String message = context.getString(R.string.set_as_ringtone,
+            String message = context.getString(R.string.set_as_ringtone,
                     cursor.getString(2));
             AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
         }
@@ -945,9 +922,8 @@ public final class MusicUtils {
             return null;
         }
         Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, id);
-        Cursor cursor = context.getContentResolver().query(uri, new String[]{
-                AlbumColumns.FIRST_YEAR
-        }, null, null, null);
+        Cursor cursor = context.getContentResolver().query(uri, new String[]{AlbumColumns.FIRST_YEAR},
+                null, null, null);
         String releaseDate = null;
         if (cursor != null) {
             cursor.moveToFirst();
@@ -1006,15 +982,12 @@ public final class MusicUtils {
      * @return The track list for a playlist
      */
     public static long[] getSongListForPlaylist(Context context, long playlistId) {
-        final String[] projection = new String[]{
-                MediaStore.Audio.Playlists.Members.AUDIO_ID
-        };
+        String[] projection = new String[]{MediaStore.Audio.Playlists.Members.AUDIO_ID};
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId),
                 projection, null, null, MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
-
         if (cursor != null) {
-            final long[] list = getSongListForCursor(cursor);
+            long[] list = getSongListForCursor(cursor);
             cursor.close();
             return list;
         }
@@ -1028,7 +1001,7 @@ public final class MusicUtils {
      * @param playlistId The playlist Id.
      */
     public static void playPlaylist(Context context, long playlistId) {
-        final long[] playlistList = getSongListForPlaylist(context, playlistId);
+        long[] playlistList = getSongListForPlaylist(context, playlistId);
         if (playlistList != null) {
             playAll(playlistList, -1, false);
         }
@@ -1043,13 +1016,13 @@ public final class MusicUtils {
         if (cursor == null) {
             return sEmptyList;
         }
-        final int len = cursor.getCount();
-        final long[] list = new long[len];
+        int len = cursor.getCount();
+        long[] list = new long[len];
         cursor.moveToFirst();
         int colidx = -1;
         try {
             colidx = cursor.getColumnIndexOrThrow(FavoriteColumns.ID);
-        } catch (final Exception err) {
+        } catch (Exception err) {
             err.printStackTrace();
         }
         for (int i = 0; i < len; i++) {
@@ -1067,7 +1040,7 @@ public final class MusicUtils {
     public static long[] getSongListForFavorites(Context context) {
         Cursor cursor = FavoritesLoader.makeFavoritesCursor(context);
         if (cursor != null) {
-            final long[] list = getSongListForFavoritesCursor(cursor);
+            long[] list = getSongListForFavoritesCursor(cursor);
             cursor.close();
             return list;
         }
@@ -1088,10 +1061,10 @@ public final class MusicUtils {
      * @return The song list for the last added playlist
      */
     public static long[] getSongListForLastAdded(Context context) {
-        final Cursor cursor = LastAddedLoader.makeLastAddedCursor(context);
+        Cursor cursor = LastAddedLoader.makeLastAddedCursor(context);
         if (cursor != null) {
-            final int count = cursor.getCount();
-            final long[] list = new long[count];
+            int count = cursor.getCount();
+            long[] list = new long[count];
             for (int i = 0; i < count; i++) {
                 cursor.moveToNext();
                 list[i] = cursor.getLong(0);
@@ -1123,14 +1096,13 @@ public final class MusicUtils {
     public static void makePlaylistMenu(Context context, int groupId, SubMenu subMenu, boolean showFavorites) {
         subMenu.clear();
         if (showFavorites) {
-            subMenu.add(groupId, FragmentMenuItems.ADD_TO_FAVORITES, Menu.NONE,
-                    R.string.add_to_favorites);
+            subMenu.add(groupId, FragmentMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
         }
         subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
         Cursor cursor = PlaylistLoader.makePlaylistCursor(context);
         if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                final Intent intent = new Intent();
+                Intent intent = new Intent();
                 String name = cursor.getString(1);
                 if (name != null) {
                     intent.putExtra("playlist", getIdForPlaylist(context, name));
@@ -1178,7 +1150,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 mService.seek(position);
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -1191,7 +1163,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.position();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -1205,7 +1177,7 @@ public final class MusicUtils {
         if (mService != null) {
             try {
                 return mService.duration();
-            } catch (final RemoteException err) {
+            } catch (RemoteException err) {
                 err.printStackTrace();
             }
         }
@@ -1218,7 +1190,7 @@ public final class MusicUtils {
     public static void clearQueue() {
         try {
             mService.removeTracks(0, Integer.MAX_VALUE);
-        } catch (final RemoteException err) {
+        } catch (RemoteException err) {
             err.printStackTrace();
         }
     }
@@ -1238,7 +1210,7 @@ public final class MusicUtils {
         }
 
         if (old == 0 || sForegroundActivities == 0) {
-            final Intent intent = new Intent(context, MusicPlaybackService.class);
+            Intent intent = new Intent(context, MusicPlaybackService.class);
             intent.setAction(MusicPlaybackService.FOREGROUND_STATE_CHANGED);
             intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, sForegroundActivities != 0);
             context.startService(intent);
@@ -1252,10 +1224,8 @@ public final class MusicUtils {
      * @param list    The item(s) to delete.
      */
     public static void deleteTracks(Context context, long[] list) {
-        final String[] projection = new String[]{
-                BaseColumns._ID, MediaColumns.DATA, AudioColumns.ALBUM_ID
-        };
-        final StringBuilder selection = new StringBuilder();
+        String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, AudioColumns.ALBUM_ID};
+        StringBuilder selection = new StringBuilder();
         selection.append(BaseColumns._ID + " IN (");
         for (int i = 0; i < list.length; i++) {
             selection.append(list[i]);
@@ -1264,16 +1234,15 @@ public final class MusicUtils {
             }
         }
         selection.append(")");
-        final Cursor c = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection.toString(),
-                null, null);
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection.toString(), null, null);
         if (c != null) {
             // Step 1: Remove selected tracks from the current playlist, as well
             // as from the album art cache
             c.moveToFirst();
             while (!c.isAfterLast()) {
                 // Remove from current playlist
-                final long id = c.getLong(0);
+                long id = c.getLong(0);
                 removeTrack(id);
                 // Remove from the favorites playlist
                 FavoritesStore.getInstance(context).removeItem(id);
@@ -1289,8 +1258,8 @@ public final class MusicUtils {
             // Step 3: Remove files from card
             c.moveToFirst();
             while (!c.isAfterLast()) {
-                final String name = c.getString(1);
-                final File f = new File(name);
+                String name = c.getString(1);
+                File f = new File(name);
                 try { // File.delete can throw a security exception
                     if (!f.delete()) {
                         // I'm not sure if we'd ever get here (deletion would
@@ -1298,14 +1267,14 @@ public final class MusicUtils {
                         Log.e("MusicUtils", "Failed to delete file " + name);
                     }
                     c.moveToNext();
-                } catch (final SecurityException ex) {
+                } catch (SecurityException ex) {
                     c.moveToNext();
                 }
             }
             c.close();
         }
 
-        final String message = makeLabel(context, R.plurals.NNNtracksdeleted, list.length);
+        String message = makeLabel(context, R.plurals.NNNtracksdeleted, list.length);
 
         AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
         // We deleted a number of tracks, which could affect any number of
@@ -1320,7 +1289,7 @@ public final class MusicUtils {
         if (adapter.getViewTypeCount() > 1 && position == 0) {
             return;
         }
-        final long[] list = MusicUtils.getSongListForAdapter(adapter);
+        long[] list = MusicUtils.getSongListForAdapter(adapter);
         int pos = adapter.getViewTypeCount() > 1 ? position - 1 : position;
         if (list.length == 0) {
             pos = 0;

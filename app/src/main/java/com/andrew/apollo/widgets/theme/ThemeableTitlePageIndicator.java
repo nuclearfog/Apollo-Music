@@ -50,12 +50,12 @@ public class ThemeableTitlePageIndicator extends TitlePageIndicator {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public ThemeableTitlePageIndicator(final Context context, final AttributeSet attrs) {
+    public ThemeableTitlePageIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
         final ThemeUtils resources = new ThemeUtils(context);
         // Theme the background
-        setBackgroundDrawable(resources.getDrawable(BACKGROUND));
+        setBackground(resources.getDrawable(BACKGROUND));
         // Theme the selected text color
         setSelectedColor(resources.getColor(SELECTED_TEXT));
         // Theme the unselected text color

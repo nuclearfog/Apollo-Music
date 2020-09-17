@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.widgets;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -36,7 +35,6 @@ import static android.graphics.PorterDuff.Mode.MULTIPLY;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("AppCompatCustomView")
 public class RepeatButton extends ImageButton implements OnClickListener, OnLongClickListener {
 
     /**
@@ -73,7 +71,7 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
         // Initialze the theme resources
         mResources = new ThemeUtils(context);
         // Set the selector
-        setBackgroundDrawable(new HoloSelector(context));
+        setBackground(new HoloSelector(context));
         // Control playback (cycle repeat modes)
         setOnClickListener(this);
         // Show the cheat sheet

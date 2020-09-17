@@ -46,6 +46,8 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="notification_textAppearance" parent="@style/TextAppearance.Compat.Notification" />
+
     <!-- Notification bar event text -->
     <style name="NotificationText">
         <item name="android:layout_width">match_parent</item>

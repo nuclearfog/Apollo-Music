@@ -21,8 +21,7 @@ import com.andrew.apollo.MusicPlaybackService;
 
 public abstract class AppWidgetBase extends AppWidgetProvider {
 
-    protected PendingIntent buildPendingIntent(Context context, final String action,
-                                               final ComponentName serviceName) {
+    protected PendingIntent buildPendingIntent(Context context, String action, ComponentName serviceName) {
         Intent intent = new Intent(action);
         intent.setComponent(serviceName);
         intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, false);

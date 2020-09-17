@@ -142,10 +142,6 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         mTabCarousel.getPhoto().setOnClickListener(this);
         // Set up the action bar
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(mArtistName);
-        }
         /* Set up the artist profile */
         if (isArtist()) {
             // Add the carousel images
@@ -153,6 +149,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             // Artist profile fragments
             mPagerAdapter.add(ArtistSongFragment.class, mArguments);
             mPagerAdapter.add(ArtistAlbumFragment.class, mArguments);
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setTitle(mArtistName);
+            }
         } else if (isAlbum()) {
             // Add the carousel images
             mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
@@ -201,8 +201,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 actionBar.setTitle(mProfileName);
             }
         } else if (isFolder()) {
-            mTabCarousel.setPlaylistOrGenreProfileHeader(this, this.mProfileName);
-            mPagerAdapter.add(FolderSongFragment.class, this.mArguments);
+            mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
+            mPagerAdapter.add(FolderSongFragment.class, mArguments);
             if (actionBar != null) {
                 actionBar.setTitle(this.mProfileName);
             }

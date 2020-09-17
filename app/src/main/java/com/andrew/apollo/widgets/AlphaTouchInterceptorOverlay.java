@@ -40,7 +40,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
     /**
      * @param context The {@link Context} to use.
      */
-    public AlphaTouchInterceptorOverlay(final Context context) {
+    public AlphaTouchInterceptorOverlay(Context context) {
         super(context);
 
         mInterceptorLayer = new View(context);
@@ -53,7 +53,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
     /**
      * Sets an alpha value on the view.
      */
-    public static void setAlphaOnViewBackground(final View view, final float alpha) {
+    public static void setAlphaOnViewBackground(View view, float alpha) {
         if (view != null) {
             view.setBackgroundColor((int) (clamp(alpha, 0.0f, 1.0f) * 255) << 24);
         }
@@ -63,7 +63,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
      * If the input value lies outside of the specified range, return the nearer
      * bound. Otherwise, return the input value, unchanged.
      */
-    public static float clamp(final float input, final float lowerBound, final float upperBound) {
+    public static float clamp(float input, float lowerBound, float upperBound) {
         if (input < lowerBound) {
             return lowerBound;
         } else if (input > upperBound) {
@@ -77,7 +77,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
      * it will use itself. Only necessary to set this if some child views need
      * to appear above the alpha-layer but below the touch-interceptor.
      */
-    public void setAlphaLayer(final View alphaLayer) {
+    public void setAlphaLayer(View alphaLayer) {
         if (mAlphaLayer == alphaLayer) {
             return;
         }
@@ -94,7 +94,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
     /**
      * Sets the alpha value on the alpha layer.
      */
-    public void setAlphaLayerValue(final float alpha) {
+    public void setAlphaLayerValue(float alpha) {
         mAlpha = alpha;
         if (mAlphaLayer != null) {
             setAlphaOnViewBackground(mAlphaLayer, mAlpha);
@@ -104,15 +104,14 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
     /**
      * Delegate to interceptor-layer.
      */
-    public void setOverlayOnClickListener(final OnClickListener listener) {
+    public void setOverlayOnClickListener(OnClickListener listener) {
         mInterceptorLayer.setOnClickListener(listener);
     }
 
     /**
      * Delegate to interceptor-layer.
      */
-    public void setOverlayClickable(final boolean clickable) {
+    public void setOverlayClickable(boolean clickable) {
         mInterceptorLayer.setClickable(clickable);
     }
-
 }

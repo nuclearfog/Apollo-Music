@@ -14,62 +14,48 @@ package com.andrew.apollo.ui.activities;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceClickListener;
+import androidx.preference.PreferenceFragmentCompat;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
-import com.andrew.apollo.ui.fragments.ThemeFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.widgets.ColorSchemeDialog;
 
 /**
  * Settings.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatActivity {
 
-    /**
-     * Image cache
-     */
-    private ImageCache mImageCache;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.settings_layout);
+        Toolbar toolbar = findViewById(R.id.settings_toolbar);
+        toolbar.setBackgroundResource(android.R.color.black);
+        setSupportActionBar(toolbar);
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        // Initialze the image cache
-        mImageCache = ImageCache.getInstance(this);
         // UP
-        if (getActionBar() != null)
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        // Add the preferences
-        addPreferencesFromResource(R.xml.settings);
-        // Interface settings
-        initInterface();
-        // Removes the cache entries
-        deleteCache();
-        // About
-        showOpenSourceLicenses();
-        // Update the version number
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            findPreference("version").setSummary(packageInfo.versionName);
-        } catch (NameNotFoundException e) {
-            findPreference("version").setSummary("?");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();
         }
     }
 
@@ -104,82 +90,74 @@ public class SettingsActivity extends PreferenceActivity {
         MusicUtils.notifyForegroundStateChanged(this, false);
     }
 
-    /**
-     * Initializes the preferences under the "Interface" category
-     */
-    private void initInterface() {
-        // Color scheme picker
-        updateColorScheme();
-        // Open the theme chooser
-        openThemeChooser();
-    }
 
-    /**
-     * Shows the {@link ColorSchemeDialog} and then saves the changes.
-     */
-    private void updateColorScheme() {
-        Preference colorScheme = findPreference("color_scheme");
-        colorScheme.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                ApolloUtils.showColorPicker(SettingsActivity.this);
-                return true;
+    public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
+
+        /**
+         * Image cache
+         */
+        private ImageCache mImageCache;
+
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            addPreferencesFromResource(R.xml.settings);
+
+            // Initialze the image cache
+            mImageCache = ImageCache.getInstance(requireContext());
+
+            Preference mOpenSourceLicenses = findPreference("open_source");
+            Preference deleteCache = findPreference("delete_cache");
+            Preference themeChooser = findPreference("theme_chooser");
+            Preference colorScheme = findPreference("color_scheme");
+            Preference version = findPreference("version");
+
+            if (version != null)
+                version.setSummary(BuildConfig.VERSION_NAME);
+            if (mOpenSourceLicenses != null)
+                mOpenSourceLicenses.setOnPreferenceClickListener(this);
+            if (deleteCache != null)
+                deleteCache.setOnPreferenceClickListener(this);
+            if (themeChooser != null)
+                themeChooser.setOnPreferenceClickListener(this);
+            if (colorScheme != null)
+                colorScheme.setOnPreferenceClickListener(this);
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            switch (preference.getKey()) {
+
+                case "open_source":
+                    ApolloUtils.createOpenSourceDialog(requireContext()).show();
+                    return true;
+
+                case "delete_cache":
+                    new AlertDialog.Builder(requireContext()).setMessage(R.string.delete_warning)
+                            .setPositiveButton(android.R.string.ok, new OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    mImageCache.clearCaches();
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, new OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    dialog.dismiss();
+                                }
+                            }).create().show();
+                    return true;
+
+                case "theme_chooser":
+                    Intent themeChooserIntent = new Intent(requireContext(), ThemesAppCompat.class);
+                    startActivity(themeChooserIntent);
+                    return true;
+
+                case "color_scheme":
+                    ApolloUtils.showColorPicker(requireContext());
+                    return true;
             }
-        });
-    }
-
-    /**
-     * Opens the {@link ThemeFragment}.
-     */
-    private void openThemeChooser() {
-        final Preference themeChooser = findPreference("theme_chooser");
-        themeChooser.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                Intent themeChooserIntent = new Intent(SettingsActivity.this, ThemesAppCompat.class);
-                startActivity(themeChooserIntent);
-                return true;
-            }
-        });
-    }
-
-    /**
-     * Removes all of the cache entries.
-     */
-    private void deleteCache() {
-        Preference deleteCache = findPreference("delete_cache");
-        deleteCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                new AlertDialog.Builder(SettingsActivity.this).setMessage(R.string.delete_warning)
-                        .setPositiveButton(android.R.string.ok, new OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, final int which) {
-                                mImageCache.clearCaches();
-                            }
-                        }).setNegativeButton(R.string.cancel, new OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        dialog.dismiss();
-                    }
-                }).create().show();
-                return true;
-            }
-        });
-    }
-
-    /**
-     * Show the open source licenses
-     */
-    private void showOpenSourceLicenses() {
-        Preference mOpenSourceLicenses = findPreference("open_source");
-        mOpenSourceLicenses.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                ApolloUtils.createOpenSourceDialog(SettingsActivity.this).show();
-                return true;
-            }
-        });
+            return false;
+        }
     }
 }

@@ -16,7 +16,7 @@ package com.andrew.apollo;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public final class Config {
+public final class Config { // todo remove constants
 
     /**
      * My personal Last.fm API key, please use your own.

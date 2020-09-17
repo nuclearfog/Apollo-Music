@@ -30,7 +30,7 @@ public class FrameLayoutWithOverlay extends FrameLayout {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public FrameLayoutWithOverlay(final Context context, final AttributeSet attrs) {
+    public FrameLayoutWithOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         /* Programmatically create touch-interceptor View. */
@@ -44,7 +44,7 @@ public class FrameLayoutWithOverlay extends FrameLayout {
      * always on top.
      */
     @Override
-    public void addView(final View child, final int index, final ViewGroup.LayoutParams params) {
+    public void addView(View child, int index, ViewGroup.LayoutParams params) {
         super.addView(child, index, params);
         mOverlay.bringToFront();
     }
@@ -54,28 +54,28 @@ public class FrameLayoutWithOverlay extends FrameLayout {
      * none is set, the overlay will use its own alpha layer. Only necessary to
      * set this if some child views need to appear above the alpha-layer.
      */
-    protected void setAlphaLayer(final View layer) {
+    protected void setAlphaLayer(View layer) {
         mOverlay.setAlphaLayer(layer);
     }
 
     /**
      * Delegate to overlay: set the alpha value on the alpha layer.
      */
-    public void setAlphaLayerValue(final float alpha) {
+    public void setAlphaLayerValue(float alpha) {
         mOverlay.setAlphaLayerValue(alpha);
     }
 
     /**
      * Delegate to overlay.
      */
-    public void setOverlayOnClickListener(final OnClickListener listener) {
+    public void setOverlayOnClickListener(OnClickListener listener) {
         mOverlay.setOverlayOnClickListener(listener);
     }
 
     /**
      * Delegate to overlay.
      */
-    public void setOverlayClickable(final boolean clickable) {
+    public void setOverlayClickable(boolean clickable) {
         mOverlay.setOverlayClickable(clickable);
     }
 }

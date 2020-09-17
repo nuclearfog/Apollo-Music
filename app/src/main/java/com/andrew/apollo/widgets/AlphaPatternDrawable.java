@@ -73,7 +73,6 @@ public class AlphaPatternDrawable extends Drawable {
      */
     @Override
     public void setAlpha(final int alpha) {
-        throw new UnsupportedOperationException("Alpha is not supported by this drawable.");
     }
 
     /**
@@ -81,7 +80,6 @@ public class AlphaPatternDrawable extends Drawable {
      */
     @Override
     public void setColorFilter(final ColorFilter cf) {
-        throw new UnsupportedOperationException("ColorFilter is not supported by this drawable.");
     }
 
     /**
@@ -91,8 +89,8 @@ public class AlphaPatternDrawable extends Drawable {
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
 
-        final int mHeight = bounds.height();
-        final int mWidth = bounds.width();
+        int mHeight = bounds.height();
+        int mWidth = bounds.width();
 
         numRectanglesHorizontal = mWidth / mRectangleSize;
         numRectanglesVertical = mHeight / mRectangleSize;
@@ -110,11 +108,10 @@ public class AlphaPatternDrawable extends Drawable {
         if (getBounds().width() <= 0 || getBounds().height() <= 0) {
             return;
         }
-
         mBitmap = Bitmap.createBitmap(getBounds().width(), getBounds().height(), Config.ARGB_8888);
-        final Canvas mCanvas = new Canvas(mBitmap);
+        Canvas mCanvas = new Canvas(mBitmap);
 
-        final Rect mRect = new Rect();
+        Rect mRect = new Rect();
         boolean mVerticalStartWhite = true;
         for (int i = 0; i <= numRectanglesVertical; i++) {
             boolean mIsWhite = mVerticalStartWhite;
@@ -123,9 +120,7 @@ public class AlphaPatternDrawable extends Drawable {
                 mRect.left = j * mRectangleSize;
                 mRect.bottom = mRect.top + mRectangleSize;
                 mRect.right = mRect.left + mRectangleSize;
-
                 mCanvas.drawRect(mRect, mIsWhite ? mPaintWhite : mPaintGray);
-
                 mIsWhite = !mIsWhite;
             }
             mVerticalStartWhite = !mVerticalStartWhite;

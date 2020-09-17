@@ -61,12 +61,12 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public ShuffleButton(final Context context, final AttributeSet attrs) {
+    public ShuffleButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
         mResources = new ThemeUtils(context);
         // Theme the selector
-        setBackgroundDrawable(new HoloSelector(context));
+        setBackground(new HoloSelector(context));
         // Control playback (cycle shuffle)
         setOnClickListener(this);
         // Show the cheat sheet
@@ -77,7 +77,7 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
      * {@inheritDoc}
      */
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         MusicUtils.cycleShuffle();
         updateShuffleState();
     }
@@ -86,7 +86,7 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
      * {@inheritDoc}
      */
     @Override
-    public boolean onLongClick(final View view) {
+    public boolean onLongClick(View view) {
         if (TextUtils.isEmpty(view.getContentDescription())) {
             return false;
         } else {

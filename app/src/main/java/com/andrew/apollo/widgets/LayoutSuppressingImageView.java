@@ -28,7 +28,7 @@ public class LayoutSuppressingImageView extends ImageView {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view
      */
-    public LayoutSuppressingImageView(final Context context, final AttributeSet attrs) {
+    public LayoutSuppressingImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

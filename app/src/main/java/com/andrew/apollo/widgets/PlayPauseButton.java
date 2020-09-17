@@ -53,12 +53,12 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public PlayPauseButton(final Context context, final AttributeSet attrs) {
+    public PlayPauseButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
         mResources = new ThemeUtils(context);
         // Theme the selector
-        setBackgroundDrawable(new HoloSelector(context));
+        setBackground(new HoloSelector(context));
         // Control playback (play/pause)
         setOnClickListener(this);
         // Show the cheat sheet
@@ -69,7 +69,7 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
      * {@inheritDoc}
      */
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         MusicUtils.playOrPause();
         updateState();
     }
@@ -78,7 +78,7 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
      * {@inheritDoc}
      */
     @Override
-    public boolean onLongClick(final View view) {
+    public boolean onLongClick(View view) {
         if (TextUtils.isEmpty(view.getContentDescription())) {
             return false;
         } else {
@@ -99,5 +99,4 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
             setImageDrawable(mResources.getDrawable(PLAY));
         }
     }
-
 }

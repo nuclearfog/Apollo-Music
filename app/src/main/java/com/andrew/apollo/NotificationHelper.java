@@ -23,7 +23,6 @@ import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 
-import com.andrew.apollo.utils.ApolloUtils;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -78,32 +77,27 @@ public class NotificationHelper {
     /**
      * Call this to build the {@link Notification}.
      */
-    public void buildNotification(String albumName, String artistName, String trackName, Long albumId, Bitmap albumArt, boolean isPlaying) {
-
+    public void buildNotification() {
         // Default notfication layout
         mNotificationTemplate = new RemoteViews(mService.getPackageName(), R.layout.notification_template_base);
-
         // Set up the content view
-        initCollapsedLayout(trackName, artistName, albumArt);
-
+        initCollapsedLayout(mService.getTrackName(), mService.getArtistName(), mService.getAlbumArt());
         // Notification Builder
-        mNotification = new NotificationCompat.Builder(mService, Long.toString(albumId))
+        mNotification = new NotificationCompat.Builder(mService, Long.toString(mService.getAlbumId()))
                 .setSmallIcon(R.drawable.stat_notify_music)
                 .setContentIntent(getPendingIntent())
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setContent(mNotificationTemplate)
                 .build();
         // Control playback from the notification
-        initPlaybackActions(isPlaying);
-        if (ApolloUtils.hasJellyBean()) {
-            // Expanded notifiction style
-            mExpandedView = new RemoteViews(mService.getPackageName(), R.layout.notification_template_expanded_base);
-            mNotification.bigContentView = mExpandedView;
-            // Control playback from the notification
-            initExpandedPlaybackActions(isPlaying);
-            // Set up the expanded content view
-            initExpandedLayout(trackName, albumName, artistName, albumArt);
-        }
+        initPlaybackActions(mService.isPlaying());
+        // Expanded notifiction style
+        mExpandedView = new RemoteViews(mService.getPackageName(), R.layout.notification_template_expanded_base);
+        mNotification.bigContentView = mExpandedView;
+        // Control playback from the notification
+        initExpandedPlaybackActions(mService.isPlaying());
+        // Set up the expanded content view
+        initExpandedLayout(mService.getTrackName(), mService.getAlbumName(), mService.getArtistName(), mService.getAlbumArt());
         mService.startForeground(APOLLO_MUSIC_SERVICE, mNotification);
     }
 
@@ -128,8 +122,7 @@ public class NotificationHelper {
             mNotificationTemplate.setImageViewResource(R.id.notification_base_play,
                     isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
         }
-
-        if (ApolloUtils.hasJellyBean() && mExpandedView != null) {
+        if (mExpandedView != null) {
             mExpandedView.setImageViewResource(R.id.notification_expanded_base_play,
                     isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
         }
@@ -150,24 +143,15 @@ public class NotificationHelper {
      */
     private void initExpandedPlaybackActions(boolean isPlaying) {
         // Play and pause
-        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play,
-                retreivePlaybackActions(1));
-
+        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, retreivePlaybackActions(1));
         // Skip tracks
-        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next,
-                retreivePlaybackActions(2));
-
+        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, retreivePlaybackActions(2));
         // Previous tracks
-        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous,
-                retreivePlaybackActions(3));
-
+        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, retreivePlaybackActions(3));
         // Stop and collapse the notification
-        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse,
-                retreivePlaybackActions(4));
-
+        mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, retreivePlaybackActions(4));
         // Update the play button image
-        mExpandedView.setImageViewResource(R.id.notification_expanded_base_play,
-                isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
+        mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
     }
 
     /**
@@ -176,16 +160,12 @@ public class NotificationHelper {
     private void initPlaybackActions(boolean isPlaying) {
         // Play and pause
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_play, retreivePlaybackActions(1));
-
         // Skip tracks
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_next, retreivePlaybackActions(2));
-
         // Previous tracks
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_previous, retreivePlaybackActions(3));
-
         // Stop and collapse the notification
         mNotificationTemplate.setOnClickPendingIntent(R.id.notification_base_collapse, retreivePlaybackActions(4));
-
         // Update the play button image
         mNotificationTemplate.setImageViewResource(R.id.notification_base_play, isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
     }

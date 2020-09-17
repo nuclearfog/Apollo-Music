@@ -168,21 +168,18 @@ public class ColorPickerView extends View {
     private float calculateRequiredOffset() {
         float offset = Math.max(PALETTE_CIRCLE_TRACKER_RADIUS, RECTANGLE_TRACKER_OFFSET);
         offset = Math.max(offset, BORDER_WIDTH_PX * mDensity);
-
         return offset * 1.5f;
     }
 
     private int[] buildHueColorArray() {
 
         int[] hue = new int[361];
-
         int count = 0;
         for (int i = hue.length - 1; i >= 0; i--, count++) {
             hue[count] = Color.HSVToColor(new float[]{
                     i, 1f, 1f
             });
         }
-
         return hue;
     }
 
@@ -192,11 +189,9 @@ public class ColorPickerView extends View {
         if (mDrawingRect.width() <= 0 || mDrawingRect.height() <= 0) {
             return;
         }
-
         drawSatValPanel(canvas);
         drawHuePanel(canvas);
         drawAlphaPanel(canvas);
-
     }
 
     private void drawSatValPanel(Canvas canvas) {
@@ -205,13 +200,10 @@ public class ColorPickerView extends View {
 
         mBorderPaint.setColor(mBorderColor);
         canvas.drawRect(mDrawingRect.left, mDrawingRect.top, rect.right + BORDER_WIDTH_PX, rect.bottom + BORDER_WIDTH_PX, mBorderPaint);
-
         if (mValShader == null) {
             mValShader = new LinearGradient(rect.left, rect.top, rect.left, rect.bottom, 0xffffffff, 0xff000000, TileMode.CLAMP);
         }
-
         int rgb = Color.HSVToColor(new float[]{mHue, 1f, 1f});
-
         Shader mSatShader = new LinearGradient(rect.left, rect.top, rect.right, rect.top, 0xffffffff, rgb, TileMode.CLAMP);
         ComposeShader mShader = new ComposeShader(mValShader, mSatShader, PorterDuff.Mode.MULTIPLY);
         mSatValPaint.setShader(mShader);
@@ -221,8 +213,7 @@ public class ColorPickerView extends View {
         Point p = satValToPoint(mSat, mVal);
 
         mSatValTrackerPaint.setColor(0xff000000);
-        canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS - 1f * mDensity,
-                mSatValTrackerPaint);
+        canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS - 1f * mDensity, mSatValTrackerPaint);
 
         mSatValTrackerPaint.setColor(0xffdddddd);
         canvas.drawCircle(p.x, p.y, PALETTE_CIRCLE_TRACKER_RADIUS, mSatValTrackerPaint);

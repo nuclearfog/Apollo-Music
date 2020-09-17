@@ -17,6 +17,7 @@ import android.graphics.PixelFormat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -34,63 +35,13 @@ import java.util.Locale;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ColorSchemeDialog extends AlertDialog implements ColorPickerView.OnColorChangedListener {
+public class ColorSchemeDialog extends AlertDialog implements OnColorChangedListener, OnClickListener {
 
     private final int mCurrentColor;
 
     private final OnColorChangedListener mListener = this;
 
     private ColorPickerView mColorPicker;
-    /**
-     * Sets up the preset buttons
-     */
-    private final View.OnClickListener mPresetListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.color_scheme_dialog_preset_one:
-                    mColorPicker.setColor(getColor(R.color.holo_green));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_two:
-                    mColorPicker.setColor(getColor(R.color.holo_green_light));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_three:
-                    mColorPicker.setColor(getColor(R.color.holo_orange_dark));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_four:
-                    mColorPicker.setColor(getColor(R.color.holo_orange_light));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_five:
-                    mColorPicker.setColor(getColor(R.color.holo_purple));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_six:
-                    mColorPicker.setColor(getColor(R.color.holo_red_light));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_seven:
-                    mColorPicker.setColor(getColor(R.color.white));
-                    break;
-
-                case R.id.color_scheme_dialog_preset_eight:
-                    mColorPicker.setColor(getColor(R.color.black));
-                    break;
-
-                case R.id.color_scheme_dialog_old_color:
-                    mColorPicker.setColor(mCurrentColor);
-                    break;
-
-                default:
-                    break;
-            }
-            mListener.onColorChanged(getColor());
-        }
-    };
     private Button mNewColor;
     private View mRootView;
     private EditText mHexValue;
@@ -127,11 +78,55 @@ public class ColorSchemeDialog extends AlertDialog implements ColorPickerView.On
         mNewColor.setBackgroundColor(color);
     }
 
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.color_scheme_dialog_preset_one:
+                mColorPicker.setColor(getColor(R.color.holo_green));
+                break;
+
+            case R.id.color_scheme_dialog_preset_two:
+                mColorPicker.setColor(getColor(R.color.holo_green_light));
+                break;
+
+            case R.id.color_scheme_dialog_preset_three:
+                mColorPicker.setColor(getColor(R.color.holo_orange_dark));
+                break;
+
+            case R.id.color_scheme_dialog_preset_four:
+                mColorPicker.setColor(getColor(R.color.holo_orange_light));
+                break;
+
+            case R.id.color_scheme_dialog_preset_five:
+                mColorPicker.setColor(getColor(R.color.holo_purple));
+                break;
+
+            case R.id.color_scheme_dialog_preset_six:
+                mColorPicker.setColor(getColor(R.color.holo_red_light));
+                break;
+
+            case R.id.color_scheme_dialog_preset_seven:
+                mColorPicker.setColor(getColor(R.color.white));
+                break;
+
+            case R.id.color_scheme_dialog_preset_eight:
+                mColorPicker.setColor(getColor(R.color.black));
+                break;
+
+            case R.id.color_scheme_dialog_old_color:
+                mColorPicker.setColor(mCurrentColor);
+                break;
+        }
+        mListener.onColorChanged(getColor());
+    }
+
+
     private String padLeft(String string) {
         if (string.length() >= 8) {
             return string;
         }
-        final StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         for (int i = string.length(); i < 8; i++) {
             result.append((char) 0);
         }
@@ -149,7 +144,7 @@ public class ColorSchemeDialog extends AlertDialog implements ColorPickerView.On
 
         mColorPicker = mRootView.findViewById(R.id.color_picker_view);
         Button mOldColor = mRootView.findViewById(R.id.color_scheme_dialog_old_color);
-        mOldColor.setOnClickListener(mPresetListener);
+        mOldColor.setOnClickListener(this);
         mNewColor = mRootView.findViewById(R.id.color_scheme_dialog_new_color);
         setUpPresets(R.id.color_scheme_dialog_preset_one);
         setUpPresets(R.id.color_scheme_dialog_preset_two);
@@ -211,9 +206,9 @@ public class ColorSchemeDialog extends AlertDialog implements ColorPickerView.On
      * @param which The Id of the preset color
      */
     private void setUpPresets(int which) {
-        final Button preset = mRootView.findViewById(which);
+        Button preset = mRootView.findViewById(which);
         if (preset != null) {
-            preset.setOnClickListener(mPresetListener);
+            preset.setOnClickListener(this);
         }
     }
 }

@@ -34,10 +34,10 @@ public class Colorstrip extends View {
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public Colorstrip(final Context context, final AttributeSet attrs) {
+    public Colorstrip(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
-        final ThemeUtils resources = new ThemeUtils(context);
+        ThemeUtils resources = new ThemeUtils(context);
         // Theme the colorstrip
         setBackgroundColor(resources.getColor(COLORSTRIP));
     }

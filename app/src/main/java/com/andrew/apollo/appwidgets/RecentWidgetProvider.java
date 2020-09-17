@@ -25,6 +25,7 @@ import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.widget.RemoteViews;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
@@ -42,7 +43,7 @@ import com.andrew.apollo.utils.MusicUtils;
 @TargetApi(11)
 public class RecentWidgetProvider extends AppWidgetBase {
 
-    private static final String PACKAGE_NAME = "com.andrew.apollo";
+    private static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 
     public static final String SET_ACTION = "set_action";
 

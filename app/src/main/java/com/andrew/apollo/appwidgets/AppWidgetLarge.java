@@ -24,7 +24,6 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.activities.AudioPlayerActivity;
 import com.andrew.apollo.ui.activities.HomeActivity;
-import com.andrew.apollo.utils.ApolloUtils;
 
 /**
  * 4x2 App-Widget
@@ -120,24 +119,14 @@ public class AppWidgetLarge extends AppWidgetBase {
         // Set correct drawable for pause state
         boolean isPlaying = service.isPlaying();
         if (isPlaying) {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play,
-                    R.drawable.btn_playback_pause);
-            if (ApolloUtils.hasJellyBean()) {
-                appWidgetView.setContentDescription(R.id.app_widget_large_play,
-                        service.getString(R.string.accessibility_pause));
-            }
+            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_pause);
+            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_pause));
         } else {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play,
-                    R.drawable.btn_playback_play);
-            if (ApolloUtils.hasJellyBean()) {
-                appWidgetView.setContentDescription(R.id.app_widget_large_play,
-                        service.getString(R.string.accessibility_play));
-            }
+            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_play);
+            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_play));
         }
-
         // Link actions buttons to intents
         linkButtons(service, appWidgetView, isPlaying);
-
         // Update the app-widget
         pushUpdate(service, appWidgetIds, appWidgetView);
     }

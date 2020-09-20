@@ -52,6 +52,7 @@
     <style name="NotificationText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:ellipsize">end</item>
         <item name="android:fadingEdge">horizontal</item>
         <item name="android:singleLine">true</item>
@@ -64,7 +65,7 @@
         <item name="android:gravity">center|right</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:padding">@dimen/notification_action_padding</item>
-        <item name="background">?attr/selectableItemBackground</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="NotificationAction.Previous" parent="@style/NotificationAction">

@@ -25,6 +25,7 @@
         android:id="@+id/notification_expanded_base_image"
         android:layout_width="@dimen/notification_expanded_height"
         android:layout_height="@dimen/notification_expanded_height"
+        android:paddingLeft="@dimen/notification_expanded_button_padding"
         android:paddingRight="@dimen/notification_expanded_button_padding"
         android:src="@drawable/default_artwork" />
 
@@ -74,6 +75,12 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:src="@color/transparent_white" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -91,6 +98,7 @@
 
             <ImageButton
                 android:id="@+id/notification_expanded_base_play"
+                style="@style/NotificationAction.Next"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/notification_expanded_button_height"
                 android:layout_weight="1"

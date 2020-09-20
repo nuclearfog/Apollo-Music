@@ -700,7 +700,7 @@ public class MusicPlaybackService extends Service {
             return;
         }
 
-        mNotificationHelper.killNotification();
+        stopForeground(true);
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
 
         if (!mServiceInUse) {
@@ -753,7 +753,7 @@ public class MusicPlaybackService extends Service {
         if (!mAnyActivityInForeground && isPlaying()) {
             mNotificationHelper.buildNotification();
         } else if (mAnyActivityInForeground) {
-            mNotificationHelper.killNotification();
+            stopForeground(true);
         }
     }
 

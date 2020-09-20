@@ -24,10 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.ui.MusicHolder;
-import com.andrew.apollo.ui.MusicHolder.DataHolder;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -81,8 +80,8 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
      * @param context  The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
-    public AlbumAdapter(FragmentActivity context, final int layoutId) {
-        super(context, 0);
+    public AlbumAdapter(FragmentActivity context, int layoutId) {
+        super(context, layoutId);
         // Get the layout Id
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
@@ -108,27 +107,26 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         }
 
         // Retrieve the data holder
-        final DataHolder dataHolder = mData[position];
+        DataHolder dataHolder = mData[position];
 
         // Set each album name (line one)
-        holder.mLineOne.get().setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the artist name (line two)
-        holder.mLineTwo.get().setText(dataHolder.mLineTwo);
+        holder.mLineTwo.setText(dataHolder.mLineTwo);
         // Asynchronously load the album images into the adapter
-        mImageFetcher.loadAlbumImage(dataHolder.mLineTwo, dataHolder.mLineOne, dataHolder.mItemId,
-                holder.mImage.get());
+        mImageFetcher.loadAlbumImage(dataHolder.mLineTwo, dataHolder.mLineOne, dataHolder.mItemId, holder.mImage);
         // List view only items
         if (mLoadExtraData) {
             // Make sure the background layer gets set
-            holder.mOverlay.get().setBackgroundColor(mOverlay);
+            holder.mOverlay.setBackgroundColor(mOverlay);
             // Set the number of songs (line three)
-            holder.mLineThree.get().setText(dataHolder.mLineThree);
+            holder.mLineThree.setText(dataHolder.mLineThree);
             // Asynchronously load the artist image on the background view
-            mImageFetcher.loadArtistImage(dataHolder.mLineTwo, holder.mBackground.get());
+            mImageFetcher.loadArtistImage(dataHolder.mLineTwo, holder.mBackground);
         }
         if (mTouchPlay) {
             // Play the album when the artwork is touched
-            playAlbum(holder.mImage.get(), position);
+            playAlbum(holder.mImage, position);
         }
         return convertView;
     }
@@ -169,8 +167,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
                 // Album artist names (line two)
                 mData[i].mLineTwo = album.mArtistName;
                 // Number of songs for each album (line three)
-                mData[i].mLineThree = MusicUtils.makeLabel(getContext(),
-                        R.plurals.Nsongs, album.mSongNumber);
+                mData[i].mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.mSongNumber);
             }
         }
     }
@@ -178,17 +175,17 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     /**
      * Starts playing an album if the user touches the artwork in the list.
      *
-     * @param album    The {@link ImageView} holding the album
-     * @param position The position of the album to play.
+     * @param albumCover The {@link ImageView} holding the album
+     * @param position   The position of the album to play.
      */
-    private void playAlbum(final ImageView album, final int position) {
-        album.setOnClickListener(new OnClickListener() {
+    private void playAlbum(ImageView albumCover, final int position) {
+        albumCover.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(View v) {
                 Album album = getItem(position);
                 if (album != null) {
-                    final long id = album.mAlbumId;
-                    final long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
+                    long id = album.mAlbumId;
+                    long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
                     MusicUtils.playAll(list, 0, false);
                 }
             }
@@ -206,7 +203,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     /**
      * @param pause True to temporarily pause the disk cache, false otherwise.
      */
-    public void setPauseDiskCache(final boolean pause) {
+    public void setPauseDiskCache(boolean pause) {
         if (mImageFetcher != null) {
             mImageFetcher.setPauseDiskCache(pause);
         }
@@ -223,7 +220,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
      * @param extra True to load line three and the background image, false
      *              otherwise.
      */
-    public void setLoadExtraData(final boolean extra) {
+    public void setLoadExtraData(boolean extra) {
         mLoadExtraData = extra;
         setTouchPlay(true);
     }
@@ -232,7 +229,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
      * @param play True to play the album when the artwork is touched, false
      *             otherwise.
      */
-    public void setTouchPlay(final boolean play) {
+    public void setTouchPlay(boolean play) {
         mTouchPlay = play;
     }
 }

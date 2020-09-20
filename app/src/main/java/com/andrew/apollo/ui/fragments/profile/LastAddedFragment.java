@@ -69,11 +69,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     private static final int LOADER = 0;
 
     /**
-     * Fragment UI
-     */
-    private ViewGroup mRootView;
-
-    /**
      * The adapter for the list
      */
     private ProfileSongAdapter mAdapter;
@@ -123,7 +118,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
         mAdapter = new ProfileSongAdapter(
@@ -137,10 +132,9 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        ViewGroup mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = mRootView.findViewById(R.id.list_base);
         // Set the data behind the list
@@ -164,7 +158,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Enable the options menu
         setHasOptionsMenu(true);
@@ -179,7 +173,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         // Get the position of the selected item
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
@@ -189,85 +183,74 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
             mAlbumName = mSong.mAlbumName;
             mArtistName = mSong.mArtistName;
         }
-
         // Play the song
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE,
-                getString(R.string.context_menu_play_selection));
-
+        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Play next
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE,
-                getString(R.string.context_menu_play_next));
-
+        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
         // Add the song to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE,
-                getString(R.string.add_to_queue));
-
+        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
-        final SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST,
-                Menu.NONE, R.string.add_to_playlist);
+        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
         MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
-
         // View more content by the song artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE,
-                getString(R.string.context_menu_more_by_artist));
-
+        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Make the song a ringtone
-        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE,
-                getString(R.string.context_menu_use_as_ringtone));
-
+        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
         // Delete the song
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE,
-                getString(R.string.context_menu_delete));
+        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
     @Override
-    public boolean onContextItemSelected(final android.view.MenuItem item) {
+    public boolean onContextItemSelected(android.view.MenuItem item) {
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
                     return true;
+
                 case FragmentMenuItems.PLAY_NEXT:
                     MusicUtils.playNext(new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     MusicUtils.addToQueue(getActivity(), new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_FAVORITES:
                     FavoritesStore.getInstance(getActivity()).addSongId(
                             mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
+
                 case FragmentMenuItems.NEW_PLAYLIST:
                     CreateNewPlaylist.getInstance(new long[]{
                             mSelectedId
                     }).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    final long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{
-                            mSelectedId
-                    }, mPlaylistId);
+                    long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+                    MusicUtils.addToPlaylist(requireContext(), new long[]{mSelectedId}, mPlaylistId);
                     return true;
+
                 case FragmentMenuItems.MORE_BY_ARTIST:
                     NavUtils.openArtistProfile(getActivity(), mArtistName);
                     return true;
+
                 case FragmentMenuItems.USE_AS_RINGTONE:
                     MusicUtils.setRingtone(requireContext(), mSelectedId);
                     return true;
+
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{
-                            mSelectedId
-                    }, null).show(getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null)
+                            .show(getParentFragmentManager(), "DeleteDialog");
                     SystemClock.sleep(10);
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
-                default:
-                    break;
             }
         }
         return super.onContextItemSelected(item);
@@ -277,7 +260,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MusicUtils.playAllFromUserItemClick(mAdapter, position);
     }
 
@@ -298,18 +281,17 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            final TextView empty = mRootView.findViewById(R.id.empty);
+            TextView empty = new TextView(requireContext());
             empty.setText(getString(R.string.empty_last_added));
             mListView.setEmptyView(empty);
             return;
         }
-
         // Start fresh
         mAdapter.unload();
         // Return the correct count
         mAdapter.setCount(data);
         // Add the data to the adpater
-        for (final Song song : data) {
+        for (Song song : data) {
             mAdapter.add(song);
         }
     }
@@ -322,5 +304,4 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         // Clear the data in the adapter
         mAdapter.unload();
     }
-
 }

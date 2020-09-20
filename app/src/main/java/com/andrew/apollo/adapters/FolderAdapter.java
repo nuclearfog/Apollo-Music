@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.ui.MusicHolder;
 
 import java.io.File;
 
@@ -48,16 +47,17 @@ public class FolderAdapter extends ArrayAdapter<File> {
         if (paramView == null) {
             paramView = LayoutInflater.from(getContext()).inflate(mLayoutId, paramViewGroup, false);
             holder = new MusicHolder(paramView);
-            holder.mImage.get().setVisibility(GONE);
-            holder.mLineTwo.get().setVisibility(GONE);
-            holder.mLineThree.get().setVisibility(GONE);
-            holder.mLineOne.get().setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
+            holder.mImage.setVisibility(GONE);
+            holder.mLineTwo.setVisibility(GONE);
+            holder.mLineThree.setVisibility(GONE);
+            holder.mBackground.setVisibility(GONE);
+            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
             paramView.setTag(holder);
         } else {
             holder = (MusicHolder) paramView.getTag();
         }
         MusicHolder.DataHolder dataHolder1 = this.mData[paramInt];
-        holder.mLineOne.get().setText(dataHolder1.mLineOne);
+        holder.mLineOne.setText(dataHolder1.mLineOne);
         return paramView;
     }
 

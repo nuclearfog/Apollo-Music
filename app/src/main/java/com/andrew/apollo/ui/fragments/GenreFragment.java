@@ -207,7 +207,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            TextView empty = mRootView.findViewById(R.id.empty);
+            TextView empty = new TextView(requireContext());
             empty.setText(R.string.empty_music);
             mListView.setEmptyView(empty);
             return;

@@ -38,7 +38,6 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CursorAdapter;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
@@ -47,15 +46,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.format.PrefixHighlighter;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.MusicHolder;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
@@ -114,9 +112,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         super.onCreate(savedInstanceState);
         // Set the layout
         setContentView(R.layout.grid_base);
-        // add toolbar
-        Toolbar toolbar = findViewById(R.id.grid_toolbar);
-        setSupportActionBar(toolbar);
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
         // Set the overflow style
@@ -134,8 +129,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         // Give the background a little UI
-        FrameLayout background = findViewById(R.id.grid_base_container);
-        background.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
+        View background = findViewById(R.id.grid_base_container);
+        background.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
         // Get the query
         String query = getIntent().getStringExtra(SearchManager.QUERY);
         mFilterString = !TextUtils.isEmpty(query) ? query : null;
@@ -261,7 +256,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data == null || data.isClosed() || data.getCount() <= 0) {
             // Set the empty text
-            TextView empty = findViewById(R.id.empty);
+            TextView empty = new TextView(this);
             empty.setText(getString(R.string.empty_search));
             mGridView.setEmptyView(empty);
             return;
@@ -447,51 +442,51 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
             // Get the MIME type
             String mimetype = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE));
             if (mimetype.equals("artist")) {
-                holder.mImage.get().setScaleType(ScaleType.CENTER_CROP);
+                holder.mImage.setScaleType(ScaleType.CENTER_CROP);
                 // Get the artist name
                 String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-                holder.mLineOne.get().setText(artist);
+                holder.mLineOne.setText(artist);
                 // Get the album count
                 int albumCount = cursor.getInt(cursor.getColumnIndexOrThrow("data1"));
-                holder.mLineTwo.get().setText(MusicUtils.makeLabel(context, R.plurals.Nalbums, albumCount));
+                holder.mLineTwo.setText(MusicUtils.makeLabel(context, R.plurals.Nalbums, albumCount));
                 // Get the song count
                 int songCount = cursor.getInt(cursor.getColumnIndexOrThrow("data2"));
-                holder.mLineThree.get().setText(MusicUtils.makeLabel(context, R.plurals.Nsongs, songCount));
+                holder.mLineThree.setText(MusicUtils.makeLabel(context, R.plurals.Nsongs, songCount));
                 // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mImage.get());
+                mImageFetcher.loadArtistImage(artist, holder.mImage);
                 // Highlght the query
-                mHighlighter.setText(holder.mLineOne.get(), artist, mPrefix);
+                mHighlighter.setText(holder.mLineOne, artist, mPrefix);
             } else if (mimetype.equals("album")) {
-                holder.mImage.get().setScaleType(ScaleType.FIT_XY);
+                holder.mImage.setScaleType(ScaleType.FIT_XY);
                 // Get the Id of the album
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
                 // Get the album name
                 String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));
-                holder.mLineOne.get().setText(album);
+                holder.mLineOne.setText(album);
                 // Get the artist name
                 String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST));
-                holder.mLineTwo.get().setText(artist);
+                holder.mLineTwo.setText(artist);
                 // Asynchronously load the album images into the adapter
-                mImageFetcher.loadAlbumImage(artist, album, id, holder.mImage.get());
+                mImageFetcher.loadAlbumImage(artist, album, id, holder.mImage);
                 // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mBackground.get());
+                mImageFetcher.loadArtistImage(artist, holder.mBackground);
                 // Highlght the query
-                mHighlighter.setText(holder.mLineOne.get(), album, mPrefix);
+                mHighlighter.setText(holder.mLineOne, album, mPrefix);
             } else if (mimetype.startsWith("audio/") || mimetype.equals("application/ogg") || mimetype.equals("application/x-ogg")) {
-                holder.mImage.get().setScaleType(ScaleType.FIT_XY);
-                holder.mImage.get().setImageResource(R.drawable.header_temp);
+                holder.mImage.setScaleType(ScaleType.FIT_XY);
+                holder.mImage.setImageResource(R.drawable.header_temp);
                 // Get the track name
                 String track = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-                holder.mLineOne.get().setText(track);
+                holder.mLineOne.setText(track);
                 // Get the album name
                 String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-                holder.mLineTwo.get().setText(album);
+                holder.mLineTwo.setText(album);
                 String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mBackground.get());
-                holder.mLineThree.get().setText(artist);
+                mImageFetcher.loadArtistImage(artist, holder.mBackground);
+                holder.mLineThree.setText(artist);
                 // Highlght the query
-                mHighlighter.setText(holder.mLineOne.get(), track, mPrefix);
+                mHighlighter.setText(holder.mLineOne, track, mPrefix);
             }
         }
 

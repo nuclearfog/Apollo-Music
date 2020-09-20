@@ -297,7 +297,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            final TextView empty = mRootView.findViewById(R.id.empty);
+            TextView empty = new TextView(requireContext());
             empty.setText(R.string.empty_recent);
             if (isSimpleLayout()) {
                 mListView.setEmptyView(empty);
@@ -309,7 +309,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         // Start fresh
         mAdapter.unload();
         // Add the data to the adpater
-        for (final Album album : data) {
+        for (Album album : data) {
             mAdapter.add(album);
         }
         // Build the cache

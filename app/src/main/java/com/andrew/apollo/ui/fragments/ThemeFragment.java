@@ -37,8 +37,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.MusicHolder;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.devspark.appmsg.AppMsg;
 
@@ -249,9 +249,9 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
             // Retrieve the data holder
             DataHolder dataHolder = mData[position];
             // Set the theme preview
-            holder.mImage.get().setImageDrawable(dataHolder.mPreview);
+            holder.mImage.setImageDrawable(dataHolder.mPreview);
             // Set the theme name
-            holder.mLineOne.get().setText(dataHolder.mName);
+            holder.mLineOne.setText(dataHolder.mName);
             return convertView;
         }
 

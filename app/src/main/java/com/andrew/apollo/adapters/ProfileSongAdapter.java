@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.ui.MusicHolder;
 import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
 import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
 import com.andrew.apollo.ui.fragments.profile.FavoriteFragment;
@@ -140,7 +139,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
             convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
-            holder.mLineThree.get().setVisibility(View.GONE);
+            holder.mLineThree.setVisibility(View.GONE);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
@@ -150,32 +149,32 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         Song song = getItem(position - 1);
         if (song != null) {
             // Set each track name (line one)
-            holder.mLineOne.get().setText(song.mSongName);
+            holder.mLineOne.setText(song.mSongName);
             // Set the line two
             String SEPARATOR_STRING = " - ";
             switch (mDisplaySetting) {
                 // show duration if on album fragment
                 case DISPLAY_ALBUM_SETTING:
-                    holder.mLineOneRight.get().setVisibility(View.GONE);
-                    holder.mLineTwo.get().setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
+                    holder.mLineOneRight.setVisibility(View.GONE);
+                    holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
                     break;
 
                 case DISPLAY_PLAYLIST_SETTING:
                     if (song.mDuration == -1) {
-                        holder.mLineOneRight.get().setVisibility(View.GONE);
+                        holder.mLineOneRight.setVisibility(View.GONE);
                     } else {
-                        holder.mLineOneRight.get().setVisibility(View.VISIBLE);
-                        holder.mLineOneRight.get().setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
+                        holder.mLineOneRight.setVisibility(View.VISIBLE);
+                        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
                     }
                     String sb = song.mArtistName + SEPARATOR_STRING + song.mAlbumName;
-                    holder.mLineTwo.get().setText(sb);
+                    holder.mLineTwo.setText(sb);
                     break;
 
                 case DISPLAY_DEFAULT_SETTING:
                 default:
-                    holder.mLineOneRight.get().setVisibility(View.VISIBLE);
-                    holder.mLineOneRight.get().setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
-                    holder.mLineTwo.get().setText(song.mAlbumName);
+                    holder.mLineOneRight.setVisibility(View.VISIBLE);
+                    holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
+                    holder.mLineTwo.setText(song.mAlbumName);
                     break;
             }
         }
@@ -242,5 +241,4 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     public void unload() {
         clear();
     }
-
 }

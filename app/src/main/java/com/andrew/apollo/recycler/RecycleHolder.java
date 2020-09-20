@@ -14,7 +14,7 @@ package com.andrew.apollo.recycler;
 import android.view.View;
 import android.widget.AbsListView.RecyclerListener;
 
-import com.andrew.apollo.ui.MusicHolder;
+import com.andrew.apollo.adapters.MusicHolder;
 
 /**
  * A @ {@link RecyclerListener} for {@link MusicHolder}'s views.
@@ -35,30 +35,30 @@ public class RecycleHolder implements RecyclerListener {
         }
 
         // Release mBackground's reference
-        if (holder.mBackground.get() != null) {
-            holder.mBackground.get().setImageDrawable(null);
-            holder.mBackground.get().setImageBitmap(null);
+        if (holder.mBackground != null) {
+            holder.mBackground.setImageDrawable(null);
+            holder.mBackground.setImageBitmap(null);
         }
 
         // Release mImage's reference
-        if (holder.mImage.get() != null) {
-            holder.mImage.get().setImageDrawable(null);
-            holder.mImage.get().setImageBitmap(null);
+        if (holder.mImage != null) {
+            holder.mImage.setImageDrawable(null);
+            holder.mImage.setImageBitmap(null);
         }
 
         // Release mLineOne's reference
-        if (holder.mLineOne.get() != null) {
-            holder.mLineOne.get().setText(null);
+        if (holder.mLineOne != null) {
+            holder.mLineOne.setText(null);
         }
 
         // Release mLineTwo's reference
-        if (holder.mLineTwo.get() != null) {
-            holder.mLineTwo.get().setText(null);
+        if (holder.mLineTwo != null) {
+            holder.mLineTwo.setText(null);
         }
 
         // Release mLineThree's reference
-        if (holder.mLineThree.get() != null) {
-            holder.mLineThree.get().setText(null);
+        if (holder.mLineThree != null) {
+            holder.mLineThree.setText(null);
         }
     }
 }

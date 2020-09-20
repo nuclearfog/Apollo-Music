@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.ui;
+package com.andrew.apollo.adapters;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -17,8 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andrew.apollo.R;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Used to efficiently cache and recyle the {@link View}s used in the artist,
@@ -32,45 +30,45 @@ public class MusicHolder {
      * This is the overlay ontop of the background artist, playlist, or genre
      * image
      */
-    public WeakReference<RelativeLayout> mOverlay;
+    public final RelativeLayout mOverlay;
 
     /**
      * This is the background artist, playlist, or genre image
      */
-    public WeakReference<ImageView> mBackground;
+    public final ImageView mBackground;
 
     /**
      * This is the artist or album image
      */
-    public WeakReference<ImageView> mImage;
+    public final ImageView mImage;
 
     /**
      * This is the first line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public WeakReference<TextView> mLineOne;
+    public final TextView mLineOne;
 
     /**
      * This is displayed on the right side of the first line in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public WeakReference<TextView> mLineOneRight;
+    public final TextView mLineOneRight;
 
     /**
      * This is the second line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public WeakReference<TextView> mLineTwo;
+    public final TextView mLineTwo;
 
     /**
      * This is the third line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public WeakReference<TextView> mLineThree;
+    public final TextView mLineThree;
 
     /**
      * Constructor of <code>ViewHolder</code>
@@ -78,25 +76,25 @@ public class MusicHolder {
     public MusicHolder(final View view) {
         super();
         // Initialize mOverlay
-        mOverlay = new WeakReference<>((RelativeLayout) view.findViewById(R.id.image_background));
+        mOverlay = view.findViewById(R.id.image_background);
 
         // Initialize mBackground
-        mBackground = new WeakReference<>((ImageView) view.findViewById(R.id.list_item_background));
+        mBackground = view.findViewById(R.id.list_item_background);
 
         // Initialize mImage
-        mImage = new WeakReference<>((ImageView) view.findViewById(R.id.image));
+        mImage = view.findViewById(R.id.image);
 
         // Initialize mLineOne
-        mLineOne = new WeakReference<>((TextView) view.findViewById(R.id.line_one));
+        mLineOne = view.findViewById(R.id.line_one);
 
         // Initialize mLineOneRight
-        mLineOneRight = new WeakReference<>((TextView) view.findViewById(R.id.line_one_right));
+        mLineOneRight = view.findViewById(R.id.line_one_right);
 
         // Initialize mLineTwo
-        mLineTwo = new WeakReference<>((TextView) view.findViewById(R.id.line_two));
+        mLineTwo = view.findViewById(R.id.line_two);
 
         // Initialize mLineThree
-        mLineThree = new WeakReference<>((TextView) view.findViewById(R.id.line_three));
+        mLineThree = view.findViewById(R.id.line_three);
     }
 
     /**

@@ -21,9 +21,8 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Playlist;
-import com.andrew.apollo.ui.MusicHolder;
-import com.andrew.apollo.ui.MusicHolder.DataHolder;
 import com.andrew.apollo.ui.fragments.PlaylistFragment;
 
 /**
@@ -73,11 +72,10 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
             convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the second and third lines of text
-            holder.mLineTwo.get().setVisibility(View.GONE);
-            holder.mLineThree.get().setVisibility(View.GONE);
+            holder.mLineTwo.setVisibility(View.GONE);
+            holder.mLineThree.setVisibility(View.GONE);
             // Make line one slightly larger
-            holder.mLineOne.get().setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getContext().getResources().getDimension(R.dimen.text_size_large));
+            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
@@ -87,7 +85,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         final DataHolder dataHolder = mData[position];
 
         // Set each playlist name (line one)
-        holder.mLineOne.get().setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(dataHolder.mLineOne);
         return convertView;
     }
 
@@ -136,5 +134,4 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         clear();
         mData = null;
     }
-
 }

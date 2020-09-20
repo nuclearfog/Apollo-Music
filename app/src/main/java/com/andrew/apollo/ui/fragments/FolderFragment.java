@@ -41,8 +41,6 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     private long[] mSongList;
 
-    private View mRootView;
-
     private ListView mListView;
 
     @Override
@@ -102,7 +100,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-        mRootView = paramLayoutInflater.inflate(R.layout.list_base, paramViewGroup, false);
+        View mRootView = paramLayoutInflater.inflate(R.layout.list_base, paramViewGroup, false);
         mListView = mRootView.findViewById(R.id.list_base);
         mListView.setAdapter(mAdapter);
         mListView.setRecyclerListener(new RecycleHolder());
@@ -129,7 +127,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> paramLoader, List<File> paramList) {
         if (paramList.isEmpty()) {
-            TextView textView = mRootView.findViewById(R.id.empty);
+            TextView textView = new TextView(requireContext());
             textView.setText(R.string.empty_music);
             mListView.setEmptyView(textView);
             return;

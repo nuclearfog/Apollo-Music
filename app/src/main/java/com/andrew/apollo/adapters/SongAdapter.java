@@ -19,9 +19,8 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
+import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.ui.MusicHolder;
-import com.andrew.apollo.ui.MusicHolder.DataHolder;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
@@ -74,7 +73,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
             convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
-            holder.mLineThree.get().setVisibility(View.GONE);
+            holder.mLineThree.setVisibility(View.GONE);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
@@ -84,11 +83,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
         final DataHolder dataHolder = mData[position];
 
         // Set each song name (line one)
-        holder.mLineOne.get().setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the song duration (line one, right)
-        holder.mLineOneRight.get().setText(dataHolder.mLineOneRight);
+        holder.mLineOneRight.setText(dataHolder.mLineOneRight);
         // Set the album name (line two)
-        holder.mLineTwo.get().setText(dataHolder.mLineTwo);
+        holder.mLineTwo.setText(dataHolder.mLineTwo);
         return convertView;
     }
 
@@ -141,5 +140,4 @@ public class SongAdapter extends ArrayAdapter<Song> {
         clear();
         mData = null;
     }
-
 }

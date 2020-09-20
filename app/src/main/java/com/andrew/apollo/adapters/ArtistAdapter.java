@@ -23,10 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.model.Artist;
-import com.andrew.apollo.ui.MusicHolder;
-import com.andrew.apollo.ui.MusicHolder.DataHolder;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -101,20 +100,20 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         final DataHolder dataHolder = mData[position];
 
         // Set each artist name (line one)
-        holder.mLineOne.get().setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the number of albums (line two)
-        holder.mLineTwo.get().setText(dataHolder.mLineTwo);
+        holder.mLineTwo.setText(dataHolder.mLineTwo);
         // Asynchronously load the artist image into the adapter
-        mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mImage.get());
+        mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mImage);
         if (mLoadExtraData) {
             // Make sure the background layer gets set
-            holder.mOverlay.get().setBackgroundColor(mOverlay);
+            holder.mOverlay.setBackgroundColor(mOverlay);
             // Set the number of songs (line three)
-            holder.mLineThree.get().setText(dataHolder.mLineThree);
+            holder.mLineThree.setText(dataHolder.mLineThree);
             // Set the background image
-            mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mBackground.get());
+            mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mBackground);
             // Play the artist when the artwork is touched
-            playArtist(holder.mImage.get(), position);
+            playArtist(holder.mImage, position);
         }
         return convertView;
     }

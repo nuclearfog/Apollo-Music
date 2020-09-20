@@ -287,7 +287,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            TextView empty = mRootView.findViewById(R.id.empty);
+            TextView empty = new TextView(requireContext());
             empty.setText(R.string.empty_music);
             if (isSimpleLayout()) {
                 mListView.setEmptyView(empty);

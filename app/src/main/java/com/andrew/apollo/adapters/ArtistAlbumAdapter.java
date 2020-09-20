@@ -26,7 +26,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.ui.MusicHolder;
 import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.Lists;
@@ -112,7 +111,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
             convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Remove the background layer
-            holder.mOverlay.get().setBackgroundColor(0);
+            holder.mOverlay.setBackgroundColor(0);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
@@ -124,17 +123,16 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         if (album != null) {
             final String albumName = album.mAlbumName;
             // Set each album name (line one)
-            holder.mLineOne.get().setText(albumName);
+            holder.mLineOne.setText(albumName);
             // Set the number of songs (line two)
-            holder.mLineTwo.get().setText(MusicUtils.makeLabel(getContext(),
-                    R.plurals.Nsongs, album.mSongNumber));
+            holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.mSongNumber));
             // Set the album year (line three)
-            holder.mLineThree.get().setText(album.mYear);
+            holder.mLineThree.setText(album.mYear);
             // Asynchronously load the album images into the adapter
             mImageFetcher.loadAlbumImage(album.mArtistName, albumName, album.mAlbumId,
-                    holder.mImage.get());
+                    holder.mImage);
             // Play the album when the artwork is touched
-            playAlbum(holder.mImage.get(), position);
+            playAlbum(holder.mImage, position);
         }
         return convertView;
     }

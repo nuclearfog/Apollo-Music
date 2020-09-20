@@ -69,11 +69,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     private static final int LOADER = 0;
 
     /**
-     * Fragment UI
-     */
-    private ViewGroup mRootView;
-
-    /**
      * The adapter for the list
      */
     private ProfileSongAdapter mAdapter;
@@ -123,7 +118,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
         mAdapter = new ProfileSongAdapter(
@@ -139,7 +134,10 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+        /**
+         * Fragment UI
+         */
+        ViewGroup mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = mRootView.findViewById(R.id.list_base);
         // Set the data behind the list
@@ -175,11 +173,10 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      * {@inheritDoc}
      */
     @Override
-    public void onCreateContextMenu(@NonNull final ContextMenu menu, @NonNull final View v,
-                                    final ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         // Get the position of the selected item
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
@@ -198,7 +195,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 
         // Add the song to a playlist
-        final SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
         MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
 
         // View more content by the song artist
@@ -215,53 +212,58 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public boolean onContextItemSelected(final android.view.MenuItem item) {
+    public boolean onContextItemSelected(android.view.MenuItem item) {
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
                     return true;
+
                 case FragmentMenuItems.PLAY_NEXT:
                     MusicUtils.playNext(new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     MusicUtils.addToQueue(getActivity(), new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.NEW_PLAYLIST:
                     CreateNewPlaylist.getInstance(new long[]{
                             mSelectedId
                     }).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    final long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+                    long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
                     MusicUtils.addToPlaylist(requireContext(), new long[]{
                             mSelectedId
                     }, mPlaylistId);
                     return true;
+
                 case FragmentMenuItems.MORE_BY_ARTIST:
                     NavUtils.openArtistProfile(getActivity(), mArtistName);
                     return true;
+
                 case FragmentMenuItems.USE_AS_RINGTONE:
                     MusicUtils.setRingtone(requireContext(), mSelectedId);
                     return true;
+
                 case FragmentMenuItems.REMOVE_FROM_FAVORITES:
                     FavoritesStore.getInstance(getActivity()).removeItem(mSelectedId);
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
+
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{
-                            mSelectedId
-                    }, null).show(getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null)
+                            .show(getParentFragmentManager(), "DeleteDialog");
                     SystemClock.sleep(10);
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
-                default:
-                    break;
             }
         }
         return super.onContextItemSelected(item);
@@ -271,8 +273,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent, final View view, final int position,
-                            final long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MusicUtils.playAllFromUserItemClick(mAdapter, position);
     }
 
@@ -281,7 +282,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      */
     @NonNull
     @Override
-    public Loader<List<Song>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
         return new FavoritesLoader(getActivity());
     }
 
@@ -289,11 +290,11 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull final Loader<List<Song>> loader, final List<Song> data) {
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            final TextView empty = mRootView.findViewById(R.id.empty);
+            TextView empty = new TextView(requireContext());
             empty.setText(getString(R.string.empty_favorite));
             mListView.setEmptyView(empty);
             return;
@@ -304,7 +305,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         // Return the correct count
         mAdapter.setCount(data);
         // Add the data to the adpater
-        for (final Song song : data) {
+        for (Song song : data) {
             mAdapter.add(song);
         }
     }
@@ -313,9 +314,8 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
      * {@inheritDoc}
      */
     @Override
-    public void onLoaderReset(@NonNull final Loader<List<Song>> loader) {
+    public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
         mAdapter.unload();
     }
-
 }

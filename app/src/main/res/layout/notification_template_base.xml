@@ -16,7 +16,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/action_bar"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -36,7 +36,8 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:paddingLeft="@dimen/notification_info_container_padding_left"
-        android:paddingBottom="@dimen/notification_info_container_padding_bottom">
+        android:paddingBottom="@dimen/notification_info_container_padding_bottom"
+        android:paddingStart="@dimen/notification_info_container_padding_left">
 
         <TextView
             android:id="@+id/notification_base_line_one"

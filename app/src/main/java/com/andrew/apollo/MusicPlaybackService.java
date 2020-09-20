@@ -11,7 +11,6 @@
 
 package com.andrew.apollo;
 
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -71,7 +70,6 @@ import java.util.TreeSet;
  * A backbround {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
-@SuppressLint("NewApi")
 public class MusicPlaybackService extends Service {
 
     /**
@@ -1252,7 +1250,7 @@ public class MusicPlaybackService extends Service {
             saveQueue(false);
         }
         if (what.equals(PLAYSTATE_CHANGED)) {
-            mNotificationHelper.updatePlayState(isPlaying());
+            mNotificationHelper.updatePlayState(isPlaying()); // TODO test
         }
 
         // Update the app-widgets
@@ -2217,7 +2215,7 @@ public class MusicPlaybackService extends Service {
          */
         public MultiPlayer(MusicPlaybackService service) {
             mService = new WeakReference<>(service);
-            mCurrentMediaPlayer.setWakeMode(service, PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK);
+            //mCurrentMediaPlayer.setWakeMode(service, PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK);// todo replace it
             mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
         }
 

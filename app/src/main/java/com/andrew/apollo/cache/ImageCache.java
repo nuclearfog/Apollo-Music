@@ -522,14 +522,14 @@ public final class ImageCache {
                 artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
             }
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (OutOfMemoryError e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             evictAll();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return artwork;
     }

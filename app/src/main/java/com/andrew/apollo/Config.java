@@ -16,12 +16,12 @@ package com.andrew.apollo;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public final class Config { // todo remove constants
+public final class Config {
 
     /**
      * My personal Last.fm API key, please use your own.
      */
-    public static final String LASTFM_API_KEY = "0b45ec07b9349b0127399e877793bebc";
+    public static final String LASTFM_API_KEY = BuildConfig.LAST_FM_KEY;
     /**
      * Used to distinguish album art from artist images
      */

@@ -18,6 +18,9 @@ android {
     }
 
     buildTypes {
+        all {
+            buildConfigField 'String', 'LAST_FM_KEY', LASTFM_KEY
+        }
         release {
             minifyEnabled true
         }

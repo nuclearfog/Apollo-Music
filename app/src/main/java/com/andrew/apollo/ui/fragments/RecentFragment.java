@@ -111,6 +111,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     private Album mAlbum;
 
+    private PreferenceUtils pref;
+
     /**
      * True if the list should execute {@code #restartLoader()}.
      */
@@ -134,6 +136,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceUtils.getInstance(getActivity());
         int layout;
         if (isSimpleLayout()) {
             layout = R.layout.list_item_normal;
@@ -299,21 +302,22 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             // Set the empty text
             TextView empty = new TextView(requireContext());
             empty.setText(R.string.empty_recent);
+            empty.setTextColor(pref.getDefaultThemeColor(requireContext()));
             if (isSimpleLayout()) {
                 mListView.setEmptyView(empty);
             } else {
                 mGridView.setEmptyView(empty);
             }
-            return;
+        } else {
+            // Start fresh
+            mAdapter.unload();
+            // Add the data to the adpater
+            for (Album album : data) {
+                mAdapter.add(album);
+            }
+            // Build the cache
+            mAdapter.buildCache();
         }
-        // Start fresh
-        mAdapter.unload();
-        // Add the data to the adpater
-        for (Album album : data) {
-            mAdapter.add(album);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**
@@ -410,10 +414,10 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     }
 
     private boolean isSimpleLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isSimpleLayout(RECENT_LAYOUT);
+        return pref.isSimpleLayout(RECENT_LAYOUT);
     }
 
     private boolean isDetailedLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isDetailedLayout(RECENT_LAYOUT);
+        return pref.isDetailedLayout(RECENT_LAYOUT);
     }
 }

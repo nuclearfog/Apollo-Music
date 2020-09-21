@@ -127,9 +127,9 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
             } catch (NameNotFoundException ignored) {
             }
             // Theme preview
-            final int previewId = mThemeResources.getIdentifier("theme_preview", "drawable", mThemePackageName);
+            int previewId = mThemeResources.getIdentifier("theme_preview", "drawable", mThemePackageName);
             if (previewId != 0) {
-                mThemePreview[i + 1] = ResourcesCompat.getDrawable(getResources(), previewId, null);
+                mThemePreview[i + 1] = ResourcesCompat.getDrawable(mThemeResources, previewId, null);
             }
         }
         // Initialize the Adapter

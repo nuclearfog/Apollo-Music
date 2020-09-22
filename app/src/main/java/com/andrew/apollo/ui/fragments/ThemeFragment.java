@@ -77,15 +77,13 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // init views
         View rootView = inflater.inflate(R.layout.grid_base, container, false);
-        // Initialize the grid
         mGridView = rootView.findViewById(R.id.grid_base);
+
         // Release any reference to the recycled Views
         mGridView.setRecyclerListener(new RecycleHolder());
-        // Set the new theme
         mGridView.setOnItemClickListener(this);
-        // Listen for ContextMenus to be created
         mGridView.setOnCreateContextMenuListener(this);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Limit the columns to one in portrait mode

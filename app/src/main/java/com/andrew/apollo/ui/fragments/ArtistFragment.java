@@ -27,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -80,10 +79,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     private static final int LOADER = 0;
 
-    /**
-     * Fragment UI
-     */
-    private View mRootView;
 
     /**
      * The adapter for the grid
@@ -93,12 +88,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * The grid view
      */
-    private GridView mGridView;
+    private AbsListView mList;
 
-    /**
-     * The list view
-     */
-    private ListView mListView;
+    private TextView emptyHolder;
 
     /**
      * Artist song list
@@ -156,14 +148,22 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // initialize views
+        View mRootView;
         if (isSimpleLayout()) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
-            initListView();
+            emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
+            mList = mRootView.findViewById(R.id.list_base);
         } else {
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
-            initGridView();
+            emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
+            mList = mRootView.findViewById(R.id.grid_base);
+            initGrid();
         }
+        // setup list view
+        mList.setAdapter(mAdapter);
+        mList.setEmptyView(emptyHolder);
+        initAbsListView();
         return mRootView;
     }
 
@@ -288,22 +288,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
-            // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(R.string.empty_music);
-            if (isSimpleLayout()) {
-                mListView.setEmptyView(empty);
-            } else {
-                mGridView.setEmptyView(empty);
-            }
-            return;
+            emptyHolder.setVisibility(View.VISIBLE);
+        } else {
+            // Add the data to the adpater
+            for (Artist artist : data)
+                mAdapter.add(artist);
+            // Build the cache
+            mAdapter.buildCache();
+            emptyHolder.setVisibility(View.INVISIBLE);
         }
-        // Add the data to the adpater
-        for (Artist artist : data) {
-            mAdapter.add(artist);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**
@@ -322,11 +315,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void scrollToCurrentArtist() {
         int currentArtistPosition = getItemPositionByArtist();
         if (currentArtistPosition != 0) {
-            if (isSimpleLayout()) {
-                mListView.setSelection(currentArtistPosition);
-            } else {
-                mGridView.setSelection(currentArtistPosition);
-            }
+            mList.setSelection(currentArtistPosition);
         }
     }
 
@@ -386,58 +375,40 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 
     /**
      * Sets up various helpers for both the list and grid
-     *
-     * @param list The list or grid
      */
-    private void initAbsListView(AbsListView list) {
+    private void initAbsListView() {
         // Release any references to the recycled Views
-        list.setRecyclerListener(new RecycleHolder());
+        mList.setRecyclerListener(new RecycleHolder());
         // Listen for ContextMenus to be created
-        list.setOnCreateContextMenuListener(this);
+        mList.setOnCreateContextMenuListener(this);
         // Show the albums and songs from the selected artist
-        list.setOnItemClickListener(this);
+        mList.setOnItemClickListener(this);
         // To help make scrolling smooth
-        list.setOnScrollListener(this);
+        mList.setOnScrollListener(this);
     }
 
-    /**
-     * Sets up the list view
-     */
-    private void initListView() {
-        // Initialize the grid
-        mListView = mRootView.findViewById(R.id.list_base);
-        // Set the data behind the list
-        mListView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mListView);
-    }
 
-    /**
-     * Sets up the grid view
-     */
-    private void initGridView() {
-        // Initialize the grid
-        mGridView = mRootView.findViewById(R.id.grid_base);
-        // Set the data behind the grid
-        mGridView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mGridView);
+    private void initGrid() {
+        if (!(mList instanceof GridView))
+            return;
+        GridView grid = (GridView) mList;
         if (ApolloUtils.isLandscape(requireContext())) {
             if (isDetailedLayout()) {
                 mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(TWO);
+                grid.setNumColumns(TWO);
             } else {
-                mGridView.setNumColumns(FOUR);
+                grid.setNumColumns(FOUR);
             }
         } else {
             if (isDetailedLayout()) {
                 mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(ONE);
+                grid.setNumColumns(ONE);
             } else {
-                mGridView.setNumColumns(TWO);
+                grid.setNumColumns(TWO);
             }
         }
     }
+
 
     private boolean isSimpleLayout() {
         return PreferenceUtils.getInstance(getActivity()).isSimpleLayout(ARTIST_LAYOUT);

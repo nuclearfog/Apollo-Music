@@ -98,6 +98,11 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     private boolean mShouldRefresh = false;
 
     /**
+     * empty list info
+     */
+    private TextView emptyText;
+
+    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public SongFragment() {
@@ -130,17 +135,14 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        ViewGroup mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
-        // Initialize the list
+        // init views
+        View mRootView = inflater.inflate(R.layout.list_base, container, false);
+        emptyText = mRootView.findViewById(R.id.list_base_empty_info);
+        // setup the list view
         mListView = mRootView.findViewById(R.id.list_base);
-        // Set the data behind the list
         mListView.setAdapter(mAdapter);
-        // Release any references to the recycled Views
         mListView.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
         mListView.setOnCreateContextMenuListener(this);
-        // Play the selected song
         mListView.setOnItemClickListener(this);
         return mRootView;
     }
@@ -268,17 +270,16 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(getString(R.string.empty_music));
-            mListView.setEmptyView(empty);
-            return;
+            mListView.setEmptyView(emptyText);
+            emptyText.setVisibility(View.VISIBLE);
+        } else {
+            // Add the data to the adpater
+            for (Song song : data)
+                mAdapter.add(song);
+            // Build the cache
+            mAdapter.buildCache();
+            emptyText.setVisibility(View.INVISIBLE);
         }
-        // Add the data to the adpater
-        for (Song song : data) {
-            mAdapter.add(song);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**

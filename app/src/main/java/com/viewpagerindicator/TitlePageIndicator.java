@@ -165,17 +165,6 @@ public class TitlePageIndicator extends View implements PageIndicator {
         mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
     }
 
-    public void setFooterColor(int footerColor) {
-        mPaintFooterLine.setColor(footerColor);
-        mPaintFooterIndicator.setColor(footerColor);
-        invalidate();
-    }
-
-    public void setSelectedColor(int selectedColor) {
-        mColorSelected = selectedColor;
-        invalidate();
-    }
-
     public int getTextColor() {
         return mColorText;
     }

@@ -79,6 +79,11 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     private ListView mListView;
 
     /**
+     * empty list info
+     */
+    private TextView emptyText;
+
+    /**
      * Represents a song
      */
     private Song mSong;
@@ -134,7 +139,9 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        ViewGroup mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+        View mRootView = inflater.inflate(R.layout.list_base, container, false);
+        // init empty list info
+        emptyText = mRootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
         mListView = mRootView.findViewById(R.id.list_base);
         // Set the data behind the list
@@ -291,19 +298,17 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(getString(R.string.empty_favorite));
-            mListView.setEmptyView(empty);
-            return;
-        }
-
-        // Start fresh
-        mAdapter.unload();
-        // Return the correct count
-        mAdapter.setCount(data);
-        // Add the data to the adpater
-        for (Song song : data) {
-            mAdapter.add(song);
+            mListView.setEmptyView(emptyText);
+            emptyText.setVisibility(View.VISIBLE);
+        } else {
+            // Start fresh
+            mAdapter.unload();
+            // Return the correct count
+            mAdapter.setCount(data);
+            // Add the data to the adpater
+            for (Song song : data)
+                mAdapter.add(song);
+            emptyText.setVisibility(View.INVISIBLE);
         }
     }
 

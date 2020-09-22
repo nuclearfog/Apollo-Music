@@ -67,9 +67,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     private GenreAdapter mAdapter;
 
     /**
-     * The list view
+     * Placeholder for an empty list
      */
-    private ListView mListView;
+    private TextView emptyHolder;
 
     /**
      * Genre song list
@@ -102,17 +102,15 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // Init views
         View mRootView = inflater.inflate(R.layout.list_base, container, false);
-        // Initialize the list
-        mListView = mRootView.findViewById(R.id.list_base);
-        // Set the data behind the list
+        ListView mListView = mRootView.findViewById(R.id.list_base);
+        emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
+        //set listview
+        mListView.setEmptyView(emptyHolder);
         mListView.setAdapter(mAdapter);
-        // Release any references to the recycled Views
         mListView.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
         mListView.setOnCreateContextMenuListener(this);
-        // Show the albums and songs from the selected genre
         mListView.setOnItemClickListener(this);
         return mRootView;
     }
@@ -203,18 +201,15 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
-            // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(R.string.empty_music);
-            mListView.setEmptyView(empty);
-            return;
+            emptyHolder.setVisibility(View.VISIBLE);
+        } else {
+            // Add the data to the adpater
+            for (Genre genre : data)
+                mAdapter.add(genre);
+            // Build the cache
+            mAdapter.buildCache();
+            emptyHolder.setVisibility(View.INVISIBLE);
         }
-        // Add the data to the adpater
-        for (Genre genre : data) {
-            mAdapter.add(genre);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**

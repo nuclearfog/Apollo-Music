@@ -27,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,24 +81,19 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     private static final int LOADER = 0;
 
     /**
-     * Fragment UI
-     */
-    private View mRootView;
-
-    /**
      * The adapter for the grid
      */
     private AlbumAdapter mAdapter;
 
     /**
-     * The grid view
+     * The Listview
      */
-    private GridView mGridView;
+    private AbsListView mList;
 
     /**
-     * The list view
+     * Empty list placeholder
      */
-    private ListView mListView;
+    private TextView emptyInfo;
 
     /**
      * Album song list
@@ -111,6 +105,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     private Album mAlbum;
 
+    /**
+     * app global prefs
+     */
     private PreferenceUtils pref;
 
     /**
@@ -153,14 +150,22 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // init views
+        View mRootView;
         if (isSimpleLayout()) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
-            initListView();
+            emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
+            mList = mRootView.findViewById(R.id.list_base);
+            mAdapter.setTouchPlay(true);
         } else {
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
-            initGridView();
+            emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
+            mList = mRootView.findViewById(R.id.grid_base);
+            initGrid();
         }
+        // Set the data behind the list
+        mList.setAdapter(mAdapter);
+        initAbsListView();
         return mRootView;
     }
 
@@ -300,23 +305,17 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(R.string.empty_recent);
-            empty.setTextColor(pref.getDefaultThemeColor(requireContext()));
-            if (isSimpleLayout()) {
-                mListView.setEmptyView(empty);
-            } else {
-                mGridView.setEmptyView(empty);
-            }
+            mList.setEmptyView(emptyInfo);
+            emptyInfo.setVisibility(View.VISIBLE);
         } else {
             // Start fresh
             mAdapter.unload();
             // Add the data to the adpater
-            for (Album album : data) {
+            for (Album album : data)
                 mAdapter.add(album);
-            }
             // Build the cache
             mAdapter.buildCache();
+            emptyInfo.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -359,43 +358,22 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 
     /**
      * Sets up various helpers for both the list and grid
-     *
-     * @param list The list or grid
      */
-    private void initAbsListView(AbsListView list) {
+    private void initAbsListView() {
         // Release any references to the recycled Views
-        list.setRecyclerListener(new RecycleHolder());
+        mList.setRecyclerListener(new RecycleHolder());
         // Listen for ContextMenus to be created
-        list.setOnCreateContextMenuListener(this);
+        mList.setOnCreateContextMenuListener(this);
         // Show the albums and songs from the selected artist
-        list.setOnItemClickListener(this);
+        mList.setOnItemClickListener(this);
         // To help make scrolling smooth
-        list.setOnScrollListener(this);
+        mList.setOnScrollListener(this);
     }
 
-    /**
-     * Sets up the list view
-     */
-    private void initListView() {
-        // Initialize the grid
-        mListView = mRootView.findViewById(R.id.list_base);
-        // Set the data behind the list
-        mListView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mListView);
-        mAdapter.setTouchPlay(true);
-    }
-
-    /**
-     * Sets up the grid view
-     */
-    private void initGridView() {
-        // Initialize the grid
-        mGridView = mRootView.findViewById(R.id.grid_base);
-        // Set the data behind the grid
-        mGridView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mGridView);
+    private void initGrid() {
+        if (!(mList instanceof GridView))
+            return;
+        GridView mGridView = (GridView) mList;
         if (ApolloUtils.isLandscape(requireContext())) {
             if (isDetailedLayout()) {
                 mAdapter.setLoadExtraData(true);

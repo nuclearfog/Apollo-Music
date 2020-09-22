@@ -117,17 +117,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // init views
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        // Initialize the list
         ListView mListView = rootView.findViewById(R.id.list_base);
-        // Set the data behind the grid
+        // setup list view
         mListView.setAdapter(mAdapter);
-        // Release any references to the recycled Views
         mListView.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
         mListView.setOnCreateContextMenuListener(this);
-        // Play the selected song
         mListView.setOnItemClickListener(this);
         return rootView;
     }
@@ -254,17 +250,16 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, List<Playlist> data) {
         // Check for any errors
-        if (data.isEmpty()) {
-            return;
+        if (!data.isEmpty()) {
+            // Start fresh
+            mAdapter.unload();
+            // Add the data to the adpater
+            for (Playlist playlist : data) {
+                mAdapter.add(playlist);
+            }
+            // Build the cache
+            mAdapter.buildCache();
         }
-        // Start fresh
-        mAdapter.unload();
-        // Add the data to the adpater
-        for (Playlist playlist : data) {
-            mAdapter.add(playlist);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**

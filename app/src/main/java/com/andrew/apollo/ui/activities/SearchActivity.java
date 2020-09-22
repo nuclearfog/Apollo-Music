@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -92,6 +91,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
      */
     private GridView mGridView;
 
+    private TextView emptyText;
+
     /**
      * List view adapter
      */
@@ -126,7 +127,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         // Theme the action bar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            Drawable actionBarBackground = ResourcesCompat.getDrawable(getResources(), R.drawable.action_bar, null);
             mResources.themeActionBar(actionBar, R.string.app_name);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -144,6 +144,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         mAdapter.setPrefix(mFilterString);
         // Initialze the list
         mGridView = findViewById(R.id.grid_base);
+        // Empty list info
+        emptyText = findViewById(R.id.grid_base_empty_info);
         // Bind the data
         mGridView.setAdapter(mAdapter);
         // Recycle the data
@@ -256,15 +258,14 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data == null || data.isClosed() || data.getCount() <= 0) {
-            // Set the empty text
-            TextView empty = new TextView(this);
-            empty.setText(getString(R.string.empty_search));
-            mGridView.setEmptyView(empty);
-            return;
+            mGridView.setEmptyView(emptyText);
+            emptyText.setVisibility(View.VISIBLE);
+        } else {
+            // Swap the new cursor in. (The framework will take care of closing the
+            // old cursor once we return.)
+            mAdapter.swapCursor(data);
+            emptyText.setVisibility(View.INVISIBLE);
         }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.swapCursor(data);
     }
 
     /**

@@ -41,7 +41,22 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     private long[] mSongList;
 
-    private ListView mListView;
+    private TextView emptyholder;
+
+    @Override
+    public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
+        // Init views
+        View mRootView = paramLayoutInflater.inflate(R.layout.list_base, paramViewGroup, false);
+        ListView mListView = mRootView.findViewById(R.id.list_base);
+        emptyholder = mRootView.findViewById(R.id.list_base_empty_info);
+        // set listview
+        mListView.setAdapter(mAdapter);
+        mListView.setEmptyView(emptyholder);
+        mListView.setRecyclerListener(new RecycleHolder());
+        mListView.setOnCreateContextMenuListener(this);
+        mListView.setOnItemClickListener(this);
+        return mRootView;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle paramBundle) {
@@ -99,18 +114,6 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
-        View mRootView = paramLayoutInflater.inflate(R.layout.list_base, paramViewGroup, false);
-        mListView = mRootView.findViewById(R.id.list_base);
-        mListView.setAdapter(mAdapter);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
-        return mRootView;
-    }
-
-
-    @Override
     public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
         mFolder = mAdapter.getItem(paramInt);
         Bundle bundle = new Bundle();
@@ -126,16 +129,16 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> paramLoader, List<File> paramList) {
+        // Clear list
         mAdapter.unload();
         if (paramList.isEmpty()) {
-            TextView textView = new TextView(requireContext());
-            textView.setText(R.string.empty_music);
-            mListView.setEmptyView(textView);
-            return;
+            emptyholder.setVisibility(View.VISIBLE);
+        } else {
+            emptyholder.setVisibility(View.INVISIBLE);
+            for (File file : paramList)
+                mAdapter.add(file);
+            mAdapter.buildCache();
         }
-        for (File file : paramList)
-            mAdapter.add(file);
-        mAdapter.buildCache();
     }
 
 

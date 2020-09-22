@@ -27,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,24 +81,19 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     private static final int LOADER = 0;
 
     /**
-     * Fragment UI
-     */
-    private View mRootView;
-
-    /**
      * The adapter for the grid
      */
     private AlbumAdapter mAdapter;
 
     /**
-     * The grid view
+     * list
      */
-    private GridView mGridView;
+    private AbsListView mList;
 
     /**
-     * The list view
+     * Information if a list is empty
      */
-    private ListView mListView;
+    private TextView emptyInfo;
 
     /**
      * Album song list
@@ -150,14 +144,24 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
+        // initialize views
+        View mRootView;
         if (isSimpleLayout()) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
-            initListView();
+            mList = mRootView.findViewById(R.id.list_base);
+            emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
+            mAdapter.setTouchPlay(true);
         } else {
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
-            initGridView();
+            mList = mRootView.findViewById(R.id.grid_base);
+            emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
+            setGridRowCount();
         }
+        // set adapter and empty view for the list
+        mList.setAdapter(mAdapter);
+        mList.setEmptyView(emptyInfo);
+        // Set up the helpers
+        initAbsListView();
         return mRootView;
     }
 
@@ -293,22 +297,15 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
-            // Set the empty text
-            TextView empty = new TextView(requireContext());
-            empty.setText(R.string.empty_music);
-            if (isSimpleLayout()) {
-                mListView.setEmptyView(empty);
-            } else {
-                mGridView.setEmptyView(empty);
-            }
-            return;
+            emptyInfo.setVisibility(View.VISIBLE);
+        } else {
+            // Add the data to the adpater
+            for (Album album : data)
+                mAdapter.add(album);
+            // Build the cache
+            mAdapter.buildCache();
+            emptyInfo.setVisibility(View.INVISIBLE);
         }
-        // Add the data to the adpater
-        for (Album album : data) {
-            mAdapter.add(album);
-        }
-        // Build the cache
-        mAdapter.buildCache();
     }
 
     /**
@@ -327,11 +324,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     public void scrollToCurrentAlbum() {
         int currentAlbumPosition = getItemPositionByAlbum();
         if (currentAlbumPosition != 0) {
-            if (isSimpleLayout()) {
-                mListView.setSelection(currentAlbumPosition);
-            } else {
-                mGridView.setSelection(currentAlbumPosition);
-            }
+            mList.setSelection(currentAlbumPosition);
         }
     }
 
@@ -389,56 +382,35 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
     /**
      * Sets up various helpers for both the list and grid
-     *
-     * @param list The list or grid
      */
-    private void initAbsListView(AbsListView list) {
+    private void initAbsListView() {
         // Release any references to the recycled Views
-        list.setRecyclerListener(new RecycleHolder());
+        mList.setRecyclerListener(new RecycleHolder());
         // Listen for ContextMenus to be created
-        list.setOnCreateContextMenuListener(this);
+        mList.setOnCreateContextMenuListener(this);
         // Show the albums and songs from the selected artist
-        list.setOnItemClickListener(this);
+        mList.setOnItemClickListener(this);
         // To help make scrolling smooth
-        list.setOnScrollListener(this);
+        mList.setOnScrollListener(this);
     }
 
-    /**
-     * Sets up the list view
-     */
-    private void initListView() {
-        // Initialize the grid
-        mListView = mRootView.findViewById(R.id.list_base);
-        // Set the data behind the list
-        mListView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mListView);
-        mAdapter.setTouchPlay(true);
-    }
-
-    /**
-     * Sets up the grid view
-     */
-    private void initGridView() {
-        // Initialize the grid
-        mGridView = mRootView.findViewById(R.id.grid_base);
-        // Set the data behind the grid
-        mGridView.setAdapter(mAdapter);
-        // Set up the helpers
-        initAbsListView(mGridView);
+    private void setGridRowCount() {
+        if (!(mList instanceof GridView))
+            return;
+        GridView grid = (GridView) mList;
         if (ApolloUtils.isLandscape(requireContext())) {
             if (isDetailedLayout()) {
                 mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(TWO);
+                grid.setNumColumns(TWO);
             } else {
-                mGridView.setNumColumns(FOUR);
+                grid.setNumColumns(FOUR);
             }
         } else {
             if (isDetailedLayout()) {
                 mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(ONE);
+                grid.setNumColumns(ONE);
             } else {
-                mGridView.setNumColumns(TWO);
+                grid.setNumColumns(TWO);
             }
         }
     }

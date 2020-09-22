@@ -18,12 +18,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,6 +36,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
@@ -51,11 +52,6 @@ import com.devspark.appmsg.AppMsg;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class ApolloUtils {
-
-    /**
-     * The threshold used calculate if a color is light or dark
-     */
-    private static final int BRIGHTNESS_THRESHOLD = 130;
 
     /* This class is never initiated */
     public ApolloUtils() {
@@ -209,16 +205,6 @@ public final class ApolloUtils {
     }
 
     /**
-     * Calculate whether a color is light or dark, based on a commonly known
-     * brightness formula.
-     * <p>
-     * {@literal http://en.wikipedia.org/wiki/HSV_color_space%23Lightness}
-     */
-    public static boolean isColorDark(final int color) {
-        return (30 * Color.red(color) + 59 * Color.green(color) + 11 * Color.blue(color)) / 100 <= BRIGHTNESS_THRESHOLD;
-    }
-
-    /**
      * Runs a piece of code after the next layout run
      *
      * @param view     The {@link View} used.
@@ -314,6 +300,14 @@ public final class ApolloUtils {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         PreferenceUtils.getInstance(context).setDefaultThemeColor(colorPickerView.getColor());
+                        Intent newActivity = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
+                        context.startActivity(newActivity); // TODO find a better solution to apply color
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.exit(0);
+                            }
+                        }, 500);
                     }
                 });
         colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE,

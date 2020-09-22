@@ -20,7 +20,6 @@
     <dimen name="text_size_small">14.0sp</dimen>
     <dimen name="text_size_medium">16.0sp</dimen>
     <dimen name="text_size_large">18.0sp</dimen>
-    <dimen name="text_size_x_large">24.0sp</dimen>
     <dimen name="text_size_dayum">36.0sp</dimen>
 
     <!-- List and grid view padding -->
@@ -42,11 +41,8 @@
 
     <!-- Bottom Action Bar -->
     <dimen name="bottom_action_bar_height">48.0dip</dimen>
-    <dimen name="bottom_action_bar_item_width">56.0dip</dimen>
     <dimen name="bottom_action_bar_item_padding_left">12.0dip</dimen>
     <dimen name="bottom_action_bar_item_padding_right">12.0dip</dimen>
-    <dimen name="bottom_action_bar_album_art_width">30.0dip</dimen>
-    <dimen name="bottom_action_bar_album_art_height">30.0dip</dimen>
     <dimen name="bottom_action_bar_info_padding_left">5.0dip</dimen>
     <dimen name="bottom_action_bar_button_container_width">165.0dip</dimen>
 
@@ -64,8 +60,6 @@
     <dimen name="notification_expanded_buttons_divider_padding">12.0dip</dimen>
     <dimen name="notification_expanded_button_height">48.0dip</dimen>
     <dimen name="notification_expanded_button_padding">10.0dip</dimen>
-    <dimen name="notification_expanded_content_padding_top">8.0dip</dimen>
-    <dimen name="notification_expanded_collapse_padding">8.0dip</dimen>
 
     <!-- Height of the shadow asset under the photo -->
     <dimen name="profile_photo_shadow_height">10.0dip</dimen>
@@ -101,8 +95,6 @@
     <dimen name="app_widget_small_button_height">48.0dip</dimen>
     <dimen name="app_widget_recents_action_bar_height">48.0dip</dimen>
     <dimen name="app_widget_recents_action_bar_item_padding">8.0dip</dimen>
-    <dimen name="app_widget_tiny_height">70.0dip</dimen>
-    <dimen name="app_widget_tiny_width">70.0dip</dimen>
     <dimen name="app_widget_padding">0.0dip</dimen>
     <dimen name="app_widget_bottom_margin">4.0dip</dimen>
 

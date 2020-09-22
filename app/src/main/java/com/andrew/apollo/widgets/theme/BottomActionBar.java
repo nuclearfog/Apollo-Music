@@ -17,23 +17,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.ThemeUtils;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class BottomActionBar extends RelativeLayout {
 
-    /**
-     * Resource name used to theme the bottom action bar
-     */
-    private static final String BOTTOM_ACTION_BAR = "bottom_action_bar";
-
     public BottomActionBar(Context context) {
         super(context);
-        ThemeUtils resources = new ThemeUtils(context);
-        // Theme the bottom action bar
-        setBackground(resources.getDrawable(BOTTOM_ACTION_BAR));
+        setBackgroundResource(R.drawable.bottom_action_bar);
     }
 
     /**
@@ -42,10 +34,7 @@ public class BottomActionBar extends RelativeLayout {
      */
     public BottomActionBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        ThemeUtils resources = new ThemeUtils(context);
-        // Theme the bottom action bar
-        setBackground(resources.getDrawable(BOTTOM_ACTION_BAR));
+        setBackgroundResource(R.drawable.bottom_action_bar);
     }
 
     /**

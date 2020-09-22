@@ -55,7 +55,6 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
-import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.andrew.apollo.utils.PreferenceUtils.RECENT_LAYOUT;
 
 /**

@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -50,6 +51,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.IApolloService;
@@ -163,7 +165,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Theme the action bar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            mResources.themeActionBar(actionBar, getString(R.string.app_name));
+            mResources.themeActionBar(actionBar, R.string.app_name);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         // Cache all the items
@@ -256,14 +258,16 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem favorite = menu.findItem(R.id.menu_favorite);
+        MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
+        // Add fav icon
+        mResources.setFavoriteIcon(favorite);
         // Hide the EQ option if it can't be opened
         Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
         if (getPackageManager().resolveActivity(intent, 0) == null) {
-            MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
             effects.setVisible(false);
         }
-        mResources.setFavoriteIcon(menu);
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -273,10 +277,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     public boolean onCreateOptionsMenu(Menu menu) {
         // Search view
         getMenuInflater().inflate(R.menu.search, menu);
-        // Theme the search icon
-        mResources.setSearchIcon(menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        // Theme the search icon
+        MenuItem searchAction = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchAction.getActionView();
+
+        Drawable icon = ContextCompat.getDrawable(this, R.drawable.ic_action_search);
+        mResources.setMenuItemColor(searchAction, icon);
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
@@ -490,7 +497,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // ViewPager container
         mPageContainer = findViewById(R.id.audio_player_pager_container);
         // Theme the pager container background
-        mPageContainer.setBackground(mResources.getDrawable("audio_player_pager_container"));
+        mPageContainer.setBackgroundResource(R.drawable.audio_player_pager_container);//mResources.getDrawable("audio_player_pager_container"));
         // Now playing header
         mAudioPlayerHeader = findViewById(R.id.audio_player_header);
         // Opens the currently playing album profile
@@ -536,7 +543,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Used to show and hide the queue fragment
         mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
         // Theme the queue switch icon
-        mQueueSwitch.setImageDrawable(mResources.getDrawable("btn_switch_queue"));
+        mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);//mResources.getDrawable("btn_switch_queue"));
         // Progress
         mProgress = findViewById(android.R.id.progress);
         // Set the repeat listner for the previous button

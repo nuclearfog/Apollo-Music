@@ -134,9 +134,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        /**
-         * Fragment UI
-         */
         ViewGroup mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = mRootView.findViewById(R.id.list_base);

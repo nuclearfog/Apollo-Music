@@ -50,13 +50,13 @@
             <com.andrew.apollo.widgets.theme.ThemeableTextView
                 android:id="@+id/bottom_action_bar_line_one"
                 style="@style/BottomActionBarLineOne"
-                app:themeResource="bab_line_one" />
+                app:themeResource="@color/bab_line_one" />
 
             <com.andrew.apollo.widgets.theme.ThemeableTextView
                 android:id="@+id/bottom_action_bar_line_two"
                 style="@style/BottomActionBarLineTwo"
                 android:layout_below="@+id/bottom_action_bar_line_one"
-                app:themeResource="bab_line_two" />
+                app:themeResource="@color/bab_line_two" />
         </RelativeLayout>
 
         <HorizontalScrollView

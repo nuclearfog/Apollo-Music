@@ -29,7 +29,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -325,7 +324,7 @@ public final class DiskLruCache implements Closeable {
     }
 
     private static String inputStreamToString(InputStream in) throws IOException {
-        return readFully(new InputStreamReader(in, StandardCharsets.UTF_8));
+        return readFully(new InputStreamReader(in, UTF_8));
     }
 
     private void readJournal() throws IOException {
@@ -771,7 +770,7 @@ public final class DiskLruCache implements Closeable {
         public void set(int index, String value) throws IOException {
             Writer writer = null;
             try {
-                writer = new OutputStreamWriter(newOutputStream(index), StandardCharsets.UTF_8);
+                writer = new OutputStreamWriter(newOutputStream(index), UTF_8);
                 writer.write(value);
             } finally {
                 closeQuietly(writer);

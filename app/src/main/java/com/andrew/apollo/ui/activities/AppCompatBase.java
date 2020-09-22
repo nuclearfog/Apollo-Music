@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -35,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
@@ -130,8 +132,9 @@ public abstract class AppCompatBase extends AppCompatActivity
         Toolbar toolbar = new Toolbar(this);
         root.addView(toolbar, 0);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null)
-            mResources.themeActionBar(getSupportActionBar(), getString(R.string.app_name));
+        if (getSupportActionBar() != null) {
+            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+        }
         setContentView(root);
         // Initialze the bottom action bar
         initBottomActionBar();
@@ -168,8 +171,11 @@ public abstract class AppCompatBase extends AppCompatActivity
         getMenuInflater().inflate(R.menu.search, menu);
         // Settings
         getMenuInflater().inflate(R.menu.activity_base, menu);
-        // Theme the search icon
-        mResources.setSearchIcon(menu);
+
+        MenuItem searchAction = menu.findItem(R.id.menu_search);
+        Drawable icon = ContextCompat.getDrawable(this, R.drawable.ic_action_search);
+        mResources.setMenuItemColor(searchAction, icon);
+
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);

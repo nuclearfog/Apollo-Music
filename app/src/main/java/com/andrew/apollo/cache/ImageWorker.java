@@ -22,9 +22,10 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.ThemeUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.RejectedExecutionException;
@@ -77,12 +78,13 @@ public abstract class ImageWorker {
      *
      * @param context The {@link Context} to use
      */
+    @SuppressWarnings("ConstantConditions")
     protected ImageWorker(Context context) {
         mContext = context.getApplicationContext();
         mResources = mContext.getResources();
         // Create the default artwork
-        ThemeUtils theme = new ThemeUtils(context);
-        mDefault = ((BitmapDrawable) theme.getDrawable("default_artwork")).getBitmap();
+        Drawable bitmap = ResourcesCompat.getDrawable(context.getResources(), R.drawable.default_artwork, null);
+        mDefault = ((BitmapDrawable)bitmap).getBitmap();
         mDefaultArtwork = new BitmapDrawable(mResources, mDefault);
         // No filter and no dither makes things much quicker
         mDefaultArtwork.setFilterBitmap(false);

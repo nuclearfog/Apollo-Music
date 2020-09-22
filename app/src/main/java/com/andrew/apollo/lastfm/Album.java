@@ -37,9 +37,9 @@ public class Album extends MusicEntry {
 
     private String artist;
 
-    private Album(String name, String url, String artist) {
-        super(name, url);
-        this.artist = artist;
+    private Album() {
+        super("", "");
+        this.artist = "";
     }
 
     /**
@@ -85,7 +85,7 @@ public class Album extends MusicEntry {
             if (element == null) {
                 return null;
             }
-            Album album = new Album(null, null, null);
+            Album album = new Album();
             MusicEntry.loadStandardInfo(album, element);
             if (element.hasChild("artist")) {
                 album.artist = element.getChild("artist").getChildText("name");

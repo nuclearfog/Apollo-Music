@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -125,7 +126,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         // Theme the action bar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            mResources.themeActionBar(actionBar, getString(R.string.app_name));
+            Drawable actionBarBackground = ResourcesCompat.getDrawable(getResources(), R.drawable.action_bar, null);
+            mResources.themeActionBar(actionBar, R.string.app_name);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         // Give the background a little UI
@@ -179,13 +181,12 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
     public boolean onCreateOptionsMenu(Menu menu) {
         // Search view
         getMenuInflater().inflate(R.menu.search, menu);
-        // Theme the search icon
-        mResources.setSearchIcon(menu);
-
         // Filter the list the user is looking it via SearchView
-        mSearchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) searchItem.getActionView();
         mSearchView.setOnQueryTextListener(this);
-
+        // Theme the search icon
+        mResources.setSearchIcon(searchItem);
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());

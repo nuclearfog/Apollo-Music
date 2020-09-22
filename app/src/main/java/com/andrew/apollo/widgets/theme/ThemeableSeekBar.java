@@ -11,33 +11,27 @@
 
 package com.andrew.apollo.widgets.theme;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.SeekBar;
 
-import com.andrew.apollo.utils.ThemeUtils;
+import androidx.core.content.ContextCompat;
+
+import com.andrew.apollo.R;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("AppCompatCustomView")
 public class ThemeableSeekBar extends SeekBar {
-
-    /**
-     * Used to set the progess bar
-     */
-    public static final String PROGESS = "audio_player_seekbar";
-
     /**
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public ThemeableSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        ThemeUtils resources = new ThemeUtils(context);
         // Theme the seek bar
-        setProgressDrawable(resources.getDrawable(PROGESS));
+        Drawable progressDrawable = ContextCompat.getDrawable(context, R.drawable.audio_player_seekbar);
+        setProgressDrawable(progressDrawable);
     }
 }

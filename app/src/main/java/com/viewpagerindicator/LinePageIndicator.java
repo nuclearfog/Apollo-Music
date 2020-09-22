@@ -93,7 +93,7 @@ public class LinePageIndicator extends View implements PageIndicator {
 
         Drawable background = a.getDrawable(R.styleable.LinePageIndicator_android_background);
         if (background != null) {
-            setBackgroundDrawable(background);
+            setBackground(background);
         }
 
         a.recycle();

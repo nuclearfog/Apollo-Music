@@ -30,7 +30,6 @@
         android:src="@drawable/default_artwork" />
 
     <LinearLayout
-        android:id="@+id/notification_expanded_buttons"
         android:layout_width="match_parent"
         android:layout_height="@dimen/notification_expanded_height"
         android:orientation="vertical">

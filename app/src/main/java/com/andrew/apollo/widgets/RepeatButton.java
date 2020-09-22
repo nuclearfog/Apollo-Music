@@ -21,11 +21,12 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 
+import androidx.core.content.ContextCompat;
+
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
 
 import static android.graphics.PorterDuff.Mode.MULTIPLY;
@@ -38,26 +39,6 @@ import static android.graphics.PorterDuff.Mode.MULTIPLY;
 public class RepeatButton extends ImageButton implements OnClickListener, OnLongClickListener {
 
     /**
-     * Repeat one theme resource
-     */
-    private static final String REPEAT_ALL = "btn_playback_repeat_all";
-
-    /**
-     * Repeat one theme resource
-     */
-    private static final String REPEAT_CURRENT = "btn_playback_repeat_one";
-
-    /**
-     * Repeat one theme resource
-     */
-    private static final String REPEAT_NONE = "btn_playback_repeat";
-
-    /**
-     * The resources to use.
-     */
-    private final ThemeUtils mResources;
-
-    /**
      * Highlight color
      */
     private int color = -1;
@@ -68,8 +49,6 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
      */
     public RepeatButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        mResources = new ThemeUtils(context);
         // Set the selector
         setBackground(new HoloSelector(context));
         // Control playback (cycle repeat modes)
@@ -112,26 +91,27 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
     /**
      * Sets the correct drawable for the repeat state.
      */
+    @SuppressWarnings("ConstantConditions")
     public void updateRepeatState() {
         String info;
         Drawable button;
         switch (MusicUtils.getRepeatMode()) {
             case MusicPlaybackService.REPEAT_ALL:
                 info = getResources().getString(R.string.accessibility_repeat_all);
-                button = mResources.getDrawable(REPEAT_ALL);
+                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_all);
                 button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             case MusicPlaybackService.REPEAT_CURRENT:
                 info = getResources().getString(R.string.accessibility_repeat_one);
-                button = mResources.getDrawable(REPEAT_CURRENT);
+                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_one);
                 button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:
             case MusicPlaybackService.REPEAT_NONE:
                 info = getResources().getString(R.string.accessibility_repeat);
-                button = mResources.getDrawable(REPEAT_NONE);
+                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat);
                 break;
         }
         setContentDescription(info);

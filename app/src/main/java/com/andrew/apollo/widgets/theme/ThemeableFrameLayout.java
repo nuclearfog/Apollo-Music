@@ -15,7 +15,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.andrew.apollo.utils.ThemeUtils;
+import com.andrew.apollo.R;
 
 /**
  * This is a custom {@link FrameLayout} that is used as the main conent when
@@ -27,19 +27,12 @@ import com.andrew.apollo.utils.ThemeUtils;
 public class ThemeableFrameLayout extends FrameLayout {
 
     /**
-     * Used to set the background
-     */
-    public static final String BACKGROUND = "pager_background";
-
-    /**
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public ThemeableFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        ThemeUtils resources = new ThemeUtils(context);
         // Theme the layout
-        setBackground(resources.getDrawable(BACKGROUND));
+        setBackgroundResource(R.drawable.pager_background);
     }
 }

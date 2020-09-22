@@ -84,7 +84,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Initialize the alert dialog
-        mPlaylistDialog = new AlertDialog.Builder(getActivity()).create();
+        mPlaylistDialog = new AlertDialog.Builder(requireContext()).create();
         // Initialize the edit text
         mPlaylist = new EditText(getActivity());
         // To show the "done" button on the soft keyboard

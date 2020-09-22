@@ -13,15 +13,12 @@ package com.andrew.apollo.widgets.theme;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.ThemeUtils;
-
 
 /**
  * A custom {@link AppCompatTextView} that is made themeable for developers. It allows a
@@ -39,18 +36,11 @@ public class ThemeableTextView extends TextView {
      */
     public ThemeableTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        final ThemeUtils resources = new ThemeUtils(context);
         // Retrieve styles attributes
-        final TypedArray typedArray = context.obtainStyledAttributes(attrs,
-                R.styleable.ThemeableTextView, 0, 0);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThemeableTextView, 0, 0);
         // Get the theme resource name
-        final String resourceName = typedArray
-                .getString(R.styleable.ThemeableTextView_themeResource);
-        // Theme the text color
-        if (!TextUtils.isEmpty(resourceName)) {
-            setTextColor(resources.getColor(resourceName));
-        }
+        int color = typedArray.getColor(R.styleable.ThemeableTextView_themeResource, 0xffffffff);
+        setTextColor(color);
         // Recyle the attrs
         typedArray.recycle();
     }

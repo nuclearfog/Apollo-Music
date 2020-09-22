@@ -49,7 +49,7 @@
             android:singleLine="true"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
-            app:themeResource="line_one" />
+            app:themeResource="@color/line_one" />
 
         <com.andrew.apollo.widgets.theme.ThemeableTextView
             android:id="@+id/line_two"
@@ -59,7 +59,7 @@
             android:layout_marginTop="@dimen/list_item_line_two_margin_top"
             android:singleLine="true"
             android:textSize="@dimen/text_size_small"
-            app:themeResource="line_two" />
+            app:themeResource="@color/line_two" />
     </RelativeLayout>
 
 </RelativeLayout>

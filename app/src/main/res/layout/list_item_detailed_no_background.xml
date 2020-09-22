@@ -52,7 +52,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
-            app:themeResource="line_one" />
+            app:themeResource="@color/line_one" />
 
         <com.andrew.apollo.widgets.theme.ThemeableTextView
             android:id="@+id/line_two"
@@ -63,7 +63,7 @@
             android:maxLines="2"
             android:textColor="@color/transparent_white"
             android:textSize="@dimen/text_size_small"
-            app:themeResource="line_two" />
+            app:themeResource="@color/line_two" />
 
         <com.andrew.apollo.widgets.theme.ThemeableTextView
             android:id="@+id/line_three"
@@ -73,7 +73,7 @@
             android:singleLine="true"
             android:textColor="@color/transparent_white"
             android:textSize="@dimen/text_size_small"
-            app:themeResource="line_three" />
+            app:themeResource="@color/line_three" />
     </RelativeLayout>
 
 </RelativeLayout>

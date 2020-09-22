@@ -65,7 +65,7 @@
                         android:singleLine="true"
                         android:textSize="@dimen/text_size_medium"
                         android:textStyle="bold"
-                        app:themeResource="audio_player_line_one" />
+                        app:themeResource="@color/audio_player_line_one" />
 
                     <com.andrew.apollo.widgets.theme.ThemeableTextView
                         android:id="@+id/audio_player_artist_name"
@@ -74,7 +74,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:textSize="@dimen/text_size_medium"
-                        app:themeResource="audio_player_line_two" />
+                        app:themeResource="@color/audio_player_line_one" />
                 </LinearLayout>
 
                 <FrameLayout
@@ -176,7 +176,7 @@
                 android:layout_alignParentLeft="true"
                 android:gravity="center"
                 android:textSize="@dimen/text_size_micro"
-                app:themeResource="audio_player_current_time"
+                app:themeResource="@color/audio_player_current_time"
                 android:layout_alignParentStart="true" />
 
             <com.andrew.apollo.widgets.theme.ThemeableTextView
@@ -188,7 +188,7 @@
                 android:layout_alignParentRight="true"
                 android:gravity="center"
                 android:textSize="@dimen/text_size_micro"
-                app:themeResource="audio_player_total_time"
+                app:themeResource="@color/audio_player_total_time"
                 android:layout_alignParentEnd="true" />
 
             <com.andrew.apollo.widgets.theme.ThemeableSeekBar

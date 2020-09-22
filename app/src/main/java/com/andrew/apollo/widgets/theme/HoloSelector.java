@@ -11,15 +11,12 @@
 
 package com.andrew.apollo.widgets.theme;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
 
-import com.andrew.apollo.utils.ThemeUtils;
-
-import java.lang.ref.WeakReference;
+import com.andrew.apollo.utils.PreferenceUtils;
 
 /**
  * A themeable {@link StateListDrawable}.
@@ -29,43 +26,18 @@ import java.lang.ref.WeakReference;
 public class HoloSelector extends StateListDrawable {
 
     /**
-     * Used to theme the touched and focused colors
-     */
-    private static final String RESOURCE_NAME = "holo_selector";
-
-    /**
-     * Focused state
-     */
-    private static final int FOCUSED = android.R.attr.state_focused;
-
-    /**
-     * Pressed state
-     */
-    private static final int PRESSED = android.R.attr.state_pressed;
-
-    /**
      * Constructor for <code>HoloSelector</code>
      *
      * @param context The {@link Context} to use.
      */
-    @SuppressLint("NewApi")
     public HoloSelector(Context context) {
-        ThemeUtils resources = new ThemeUtils(context);
-        int themeColor = resources.getColor(RESOURCE_NAME);
+        int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
         // Focused
-        addState(new int[]{FOCUSED}, makeColorDrawable(themeColor));
+        addState(new int[]{android.R.attr.state_focused}, new ColorDrawable(holoColor));
         // Pressed
-        addState(new int[]{PRESSED}, makeColorDrawable(themeColor));
+        addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(holoColor));
         // Default
-        addState(new int[]{}, makeColorDrawable(Color.TRANSPARENT));
+        addState(new int[]{}, new ColorDrawable(Color.TRANSPARENT));
         setExitFadeDuration(400);
-    }
-
-    /**
-     * @param color The color to use.
-     * @return A new {@link ColorDrawable}.
-     */
-    private static ColorDrawable makeColorDrawable(int color) {
-        return new WeakReference<>(new ColorDrawable(color)).get();
     }
 }

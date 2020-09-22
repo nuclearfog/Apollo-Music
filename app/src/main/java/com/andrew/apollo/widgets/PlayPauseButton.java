@@ -23,7 +23,6 @@ import android.widget.ImageButton;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
 
 /**
@@ -35,28 +34,11 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
 public class PlayPauseButton extends ImageButton implements OnClickListener, OnLongClickListener {
 
     /**
-     * Play button theme resource
-     */
-    private static final String PLAY = "btn_playback_play";
-
-    /**
-     * Pause button theme resource
-     */
-    private static final String PAUSE = "btn_playback_pause";
-
-    /**
-     * The resources to use.
-     */
-    private final ThemeUtils mResources;
-
-    /**
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public PlayPauseButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        mResources = new ThemeUtils(context);
         // Theme the selector
         setBackground(new HoloSelector(context));
         // Control playback (play/pause)
@@ -93,10 +75,10 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
     public void updateState() {
         if (MusicUtils.isPlaying()) {
             setContentDescription(getResources().getString(R.string.accessibility_pause));
-            setImageDrawable(mResources.getDrawable(PAUSE));
+            setImageResource(R.drawable.btn_playback_pause);
         } else {
             setContentDescription(getResources().getString(R.string.accessibility_play));
-            setImageDrawable(mResources.getDrawable(PLAY));
+            setImageResource(R.drawable.btn_playback_play);
         }
     }
 }

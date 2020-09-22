@@ -70,10 +70,6 @@ public abstract class MusicEntry extends ImageHolder {
         return name;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     @NonNull
     @Override
     public String toString() {

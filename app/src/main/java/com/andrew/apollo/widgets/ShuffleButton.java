@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.widgets;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -22,11 +21,12 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 
+import androidx.core.content.ContextCompat;
+
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
 
 import static android.graphics.PorterDuff.Mode.MULTIPLY;
@@ -34,23 +34,7 @@ import static android.graphics.PorterDuff.Mode.MULTIPLY;
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("AppCompatCustomView")
 public class ShuffleButton extends ImageButton implements OnClickListener, OnLongClickListener {
-
-    /**
-     * Shuffle theme resource
-     */
-    private static final String SHUFFLE = "btn_playback_shuffle";
-
-    /**
-     * Shuffle all theme resource
-     */
-    private static final String SHUFFLE_ALL = "btn_playback_shuffle_all";
-
-    /**
-     * The resources to use.
-     */
-    private final ThemeUtils mResources;
 
     /**
      * highlight color
@@ -63,8 +47,6 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
      */
     public ShuffleButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Initialze the theme resources
-        mResources = new ThemeUtils(context);
         // Theme the selector
         setBackground(new HoloSelector(context));
         // Control playback (cycle shuffle)
@@ -107,6 +89,7 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
     /**
      * Sets the correct drawable for the shuffle state.
      */
+    @SuppressWarnings("ConstantConditions")
     public void updateShuffleState() {
         String info;
         Drawable button;
@@ -114,14 +97,14 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
             case MusicPlaybackService.SHUFFLE_NORMAL:
             case MusicPlaybackService.SHUFFLE_AUTO:
                 info = getResources().getString(R.string.accessibility_shuffle_all);
-                button = mResources.getDrawable(SHUFFLE_ALL);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
                 button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:
             case MusicPlaybackService.SHUFFLE_NONE:
                 info = getResources().getString(R.string.accessibility_shuffle);
-                button = mResources.getDrawable(SHUFFLE);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
                 break;
         }
         setContentDescription(info);

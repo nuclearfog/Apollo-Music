@@ -26,15 +26,6 @@
     </style>
 
     <!-- Main AppCompat light -->
-    <style name="Apollo.Theme.Light" parent="Theme.AppCompat.Light.NoActionBar">
-
-        <item name="colorPrimaryDark">#ff0a0a0a</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorAccent">@android:color/white</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="android:windowContentOverlay">@null</item>
-    </style>
 
     <!-- Shortcut Activity theme -->
     <style name="Theme.Transparent" parent="Theme.AppCompat.NoActionBar">

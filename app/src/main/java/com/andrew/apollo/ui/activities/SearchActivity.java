@@ -13,7 +13,6 @@ package com.andrew.apollo.ui.activities;
 
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -28,11 +27,9 @@ import android.os.IBinder;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -42,9 +39,7 @@ import android.widget.GridView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -69,7 +64,7 @@ import static com.andrew.apollo.utils.MusicUtils.mService;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,
+public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cursor>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection {
     /**
      * Grid view column count. ONE - list, TWO - normal grid
@@ -98,24 +93,20 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
      */
     private SearchAdapter mAdapter;
 
-    // Used the filter the user's music
-    private SearchView mSearchView;
-
-    /**
-     * Theme resources
-     */
-    private ThemeUtils mResources;
-
     /**
      * {@inheritDoc}
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set the layout
-        setContentView(R.layout.grid_base);
+
+        // init view
+        mGridView = findViewById(R.id.grid_search);
+        emptyText = findViewById(R.id.grid_search_empty_info);
+        View background = findViewById(R.id.grid_search_container);
+
         // Initialze the theme resources
-        mResources = new ThemeUtils(this);
+        ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style
         mResources.setOverflowStyle(this);
         // Fade it in
@@ -124,14 +115,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         // Bind Apollo's service
         mToken = MusicUtils.bindToService(this, this);
-        // Theme the action bar
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            mResources.themeActionBar(actionBar, R.string.app_name);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        // Give the background a little UI
-        View background = findViewById(R.id.grid_base_container);
         background.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
         // Get the query
         String query = getIntent().getStringExtra(SearchManager.QUERY);
@@ -142,10 +125,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         mAdapter = new SearchAdapter(this);
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
-        // Initialze the list
-        mGridView = findViewById(R.id.grid_base);
-        // Empty list info
-        emptyText = findViewById(R.id.grid_base_empty_info);
         // Bind the data
         mGridView.setAdapter(mAdapter);
         // Recycle the data
@@ -174,26 +153,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
         getLoaderManager().restartLoader(0, null, this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Search view
-        getMenuInflater().inflate(R.menu.search, menu);
-        // Filter the list the user is looking it via SearchView
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView) searchItem.getActionView();
-        mSearchView.setOnQueryTextListener(this);
-        // Theme the search icon
-        mResources.setSearchIcon(searchItem);
-        // Add voice search
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-        mSearchView.setSearchableInfo(searchableInfo);
-        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -268,6 +227,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
         }
     }
 
+    @Override
+    public View getContentView() {
+        return View.inflate(this, R.layout.list_search, null);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -292,29 +256,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderCallbacks
             mAdapter.setPauseDiskCache(false);
             mAdapter.notifyDataSetChanged();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        if (TextUtils.isEmpty(query)) {
-            return false;
-        }
-        // When the search is "committed" by the user, then hide the keyboard so
-        // the user can
-        // more easily browse the list of results.
-        if (mSearchView != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0);
-            }
-            mSearchView.clearFocus();
-        }
-        // Action bar subtitle
-        mResources.setSubtitle("\"" + mFilterString + "\"");
-        return true;
     }
 
     /**

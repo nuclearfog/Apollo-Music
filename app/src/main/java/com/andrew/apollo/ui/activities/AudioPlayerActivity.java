@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
@@ -51,7 +50,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.IApolloService;
@@ -277,20 +275,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     public boolean onCreateOptionsMenu(Menu menu) {
         // Search view
         getMenuInflater().inflate(R.menu.search, menu);
-
         // Theme the search icon
         MenuItem searchAction = menu.findItem(R.id.menu_search);
         SearchView searchView = (SearchView) searchAction.getActionView();
-
-        Drawable icon = ContextCompat.getDrawable(this, R.drawable.ic_action_search);
-        mResources.setMenuItemColor(searchAction, icon);
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
         searchView.setSearchableInfo(searchableInfo);
         // Perform the search
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
-
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Open the search activity

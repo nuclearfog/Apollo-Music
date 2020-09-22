@@ -51,6 +51,7 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.SortOrder;
+import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
@@ -234,9 +235,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Theme the add to home screen icon
-        super.getThemeUtils().setAddToHomeScreenIcon(menu);
-        // Set the shuffle all title to "play all" if a playlist.
         MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
+
+        ThemeUtils themeUtils = new ThemeUtils(this);
+        themeUtils.setAddToHomeScreenIcon(menu);
+
         String title;
         if (isFavorites() || isLastAdded() || isPlaylist()) {
             title = getString(R.string.menu_play_all);
@@ -244,6 +247,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             title = getString(R.string.menu_shuffle);
         }
         shuffle.setTitle(title);
+
         return super.onPrepareOptionsMenu(menu);
     }
 

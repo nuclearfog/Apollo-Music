@@ -16,12 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -159,68 +154,20 @@ public class ThemeUtils {
     }
 
     /**
-     * This is used to set the color of a {@link MenuItem}. For instance, when
-     * the current song is a favorite, the favorite icon will use the current
-     * theme color.
-     *
-     * @param menuItem The {@link MenuItem} to set.
-     * @param maskDrawable The drawable theme resource key.
-     */
-    public void setMenuItemColor(MenuItem menuItem, Drawable maskDrawable) {
-        if (maskDrawable instanceof BitmapDrawable) {
-            Bitmap maskBitmap = ((BitmapDrawable) maskDrawable).getBitmap();
-            int width = maskBitmap.getWidth();
-            int height = maskBitmap.getHeight();
-
-            Bitmap outBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(outBitmap);
-            canvas.drawBitmap(maskBitmap, 0, 0, null);
-
-            Paint maskedPaint = new Paint();
-            maskedPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
-
-            canvas.drawRect(0, 0, width, height, maskedPaint);
-
-            BitmapDrawable outDrawable = new BitmapDrawable(mResources, outBitmap);
-            menuItem.setIcon(outDrawable);
-        }
-    }
-
-    /**
      * Sets the {@link MenuItem} icon for the favorites action.
      *
      * @param favorite The favorites action.
      */
     public void setFavoriteIcon(MenuItem favorite) {
-        Drawable favIcon;
-        if (MusicUtils.isFavorite()) {
-            favIcon = ResourcesCompat.getDrawable(mResources, R.color.favorite_selected, null);
-        } else {
-            favIcon = ResourcesCompat.getDrawable(mResources, R.color.favorite_normal, null);
+        Drawable favIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_favorite, null);
+        if (favIcon != null) {
+            if (MusicUtils.isFavorite()) {
+                favIcon.mutate().setColorFilter(mResources.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
+            }
+            favorite.setIcon(favIcon);
         }
-        favorite.setIcon(favIcon);
     }
 
-    /**
-     * Sets the {@link MenuItem} icon for the search action.
-     *
-     * @param search The Menu used to find the "menu_search" action.
-     */
-    public void setSearchIcon(MenuItem search) {
-        Drawable searchIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_search, null);
-        setMenuItemColor(search, searchIcon);
-    }
-
-    /**
-     * Sets the {@link MenuItem} icon for the shop action.
-     *
-     * @param search The Menu used to find the "menu_shop" action.
-     */
-    public void setShopIcon(Menu search) {
-        MenuItem shopAction = search.findItem(R.id.menu_shop);
-        Drawable shopIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_shop, null);
-        setMenuItemColor(shopAction, shopIcon);
-    }
 
     /**
      * Sets the {@link MenuItem} icon for the add to Home screen action.
@@ -230,7 +177,7 @@ public class ThemeUtils {
     public void setAddToHomeScreenIcon(Menu search) {
         MenuItem pinnAction = search.findItem(R.id.menu_add_to_homescreen);
         Drawable pinIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_pinn_to_home, null);
-        setMenuItemColor(pinnAction, pinIcon);
+        pinnAction.setIcon(pinIcon);
     }
 
     /**

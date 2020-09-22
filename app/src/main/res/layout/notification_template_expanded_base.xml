@@ -68,8 +68,8 @@
             <ImageButton
                 android:id="@+id/notification_expanded_base_collapse"
                 style="@style/NotificationAction.Collapse"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/notification_close_button_size"
+                android:layout_height="@dimen/notification_close_button_size"
                 android:layout_gravity="end" />
 
         </LinearLayout>

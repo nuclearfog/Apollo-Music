@@ -111,5 +111,6 @@
     <dimen name="color_scheme_dialog_row_padding">8.0dip</dimen>
 
     <dimen name="toolbar_height">45dp</dimen>
+    <dimen name="notification_close_button_size">40dp</dimen>
 
 </resources>

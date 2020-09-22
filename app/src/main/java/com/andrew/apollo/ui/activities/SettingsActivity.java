@@ -16,10 +16,13 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
@@ -29,6 +32,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.ThemeUtils;
 
 /**
  * Settings.
@@ -46,13 +50,18 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_layout);
         Toolbar toolbar = findViewById(R.id.settings_toolbar);
-        toolbar.setBackgroundResource(android.R.color.black);
+        View root = findViewById(R.id.settings_root);
+
+        root.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
         setSupportActionBar(toolbar);
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         // UP
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar bar = getSupportActionBar();
+        if (bar != null) {
+            bar.setDisplayHomeAsUpEnabled(true);
+            ThemeUtils mResources = new ThemeUtils(this);
+            mResources.themeActionBar(bar, R.string.menu_settings);
         }
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();

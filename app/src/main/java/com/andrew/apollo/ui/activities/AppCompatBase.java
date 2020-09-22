@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -36,7 +35,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
@@ -72,10 +70,7 @@ public abstract class AppCompatBase extends AppCompatActivity
      * Playstate and meta change listener
      */
     private final ArrayList<MusicStateListener> mMusicStateListener = Lists.newArrayList();
-    /**
-     * Theme resources
-     */
-    private ThemeUtils mResources;
+
     /**
      * The service token
      */
@@ -116,7 +111,7 @@ public abstract class AppCompatBase extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialze the theme resources
-        mResources = new ThemeUtils(this);
+        ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style
         mResources.setOverflowStyle(this);
         // Fade it in
@@ -171,11 +166,6 @@ public abstract class AppCompatBase extends AppCompatActivity
         getMenuInflater().inflate(R.menu.search, menu);
         // Settings
         getMenuInflater().inflate(R.menu.activity_base, menu);
-
-        MenuItem searchAction = menu.findItem(R.id.menu_search);
-        Drawable icon = ContextCompat.getDrawable(this, R.drawable.ic_action_search);
-        mResources.setMenuItemColor(searchAction, icon);
-
         SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         // Add voice search
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -297,11 +287,6 @@ public abstract class AppCompatBase extends AppCompatActivity
     public boolean onQueryTextChange(String newText) {
         // Nothing to do
         return false;
-    }
-
-
-    protected ThemeUtils getThemeUtils() {
-        return mResources;
     }
 
     /**

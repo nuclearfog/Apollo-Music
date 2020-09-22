@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.ui.fragments.phone;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +21,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -149,7 +147,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem favorite = menu.findItem(R.id.menu_favorite);
-        Drawable icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_action_favorite);
         mResources.setFavoriteIcon(favorite);
     }
 

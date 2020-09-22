@@ -53,6 +53,7 @@
             </RelativeLayout>
 
             <include layout="@layout/bottom_action_bar" />
+
         </LinearLayout>
 
     </com.andrew.apollo.widgets.theme.ThemeableFrameLayout>

@@ -19,6 +19,7 @@ import android.view.View;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.fragments.ThemeFragment;
+import com.andrew.apollo.utils.ThemeUtils;
 
 /**
  * A class the displays the {@link ThemeFragment}.
@@ -49,15 +50,6 @@ public class ThemesAppCompat extends AppCompatBase {
      * {@inheritDoc}
      */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.getThemeUtils().setShopIcon(menu);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.theme_shop, menu);
         return super.onCreateOptionsMenu(menu);
@@ -74,7 +66,8 @@ public class ThemesAppCompat extends AppCompatBase {
                 return true;
 
             case R.id.menu_shop:
-                getThemeUtils().shopFor(this);
+                ThemeUtils utils = new ThemeUtils(this);
+                utils.shopFor(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);

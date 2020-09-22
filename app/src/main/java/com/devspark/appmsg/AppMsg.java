@@ -17,6 +17,7 @@
 package com.devspark.appmsg;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
@@ -60,7 +61,7 @@ public class AppMsg {
     public static final Style STYLE_CONFIRM = new Style(LENGTH_SHORT, R.color.confirm);
 
 
-    private final Activity mContext;
+    private final Activity activity;
     private int mDuration = LENGTH_SHORT;
     private View mView;
     private LayoutParams mLayoutParams;
@@ -69,24 +70,24 @@ public class AppMsg {
      * Construct an empty AppMsg object. You must call {@link #setView} before
      * you can call {@link #show}.
      *
-     * @param context The context to use. Usually your
-     *                {@link AppCompatActivity} object.
+     * @param activity The context to use. Usually your
+     *                 {@link AppCompatActivity} object.
      */
-    public AppMsg(Activity context) {
-        mContext = context;
+    public AppMsg(Activity activity) {
+        this.activity = activity;
     }
 
     /**
      * Make a {@link AppMsg} that just contains a text view.
      *
-     * @param context The context to use. Usually your
-     *                {@link AppCompatActivity} object.
-     * @param text    The text to show. Can be formatted text.
+     * @param activity The context to use. Usually your
+     *                 {@link AppCompatActivity} object.
+     * @param text     The text to show. Can be formatted text.
      */
-    public static AppMsg makeText(Activity context, CharSequence text, Style style) {
-        AppMsg result = new AppMsg(context);
+    public static AppMsg makeText(Activity activity, CharSequence text, Style style) {
+        AppMsg result = new AppMsg(activity);
 
-        View v = View.inflate(context, R.layout.app_msg, null);
+        View v = View.inflate(activity, R.layout.app_msg, null);
         v.setBackgroundResource(style.background);
 
         TextView tv = v.findViewById(android.R.id.message);
@@ -122,11 +123,13 @@ public class AppMsg {
         MsgManager.getInstance().clearMsg(this);
     }
 
-    /**
-     * Return the activity.
-     */
-    public Activity getActivity() {
-        return mContext;
+
+    public void addContentView(View v, LayoutParams params) {
+        activity.addContentView(v, params);
+    }
+
+    public Context getContext() {
+        return activity.getApplicationContext();
     }
 
     /**
@@ -172,7 +175,7 @@ public class AppMsg {
      * @param resId The new text for the AppMsg.
      */
     public void setText(int resId) {
-        setText(mContext.getText(resId));
+        setText(activity.getText(resId));
     }
 
     /**

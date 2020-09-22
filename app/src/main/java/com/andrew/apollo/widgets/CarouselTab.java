@@ -137,11 +137,10 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use.
      * @param album   The name of the album in the profile the user is viewing.
      */
-    public void setAlbumPhoto(AppCompatActivity context, String album, String artist) {
+    public void setAlbumPhoto(Context context, String album, String artist) {
         if (!TextUtils.isEmpty(album)) {
             mAlbumArt.setVisibility(View.VISIBLE);
-            mFetcher.loadAlbumImage(artist, album,
-                    MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt);
+            mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt);
         } else {
             setDefault(context);
         }
@@ -173,14 +172,12 @@ public class CarouselTab extends FrameLayoutWithOverlay {
         final String lastAlbum = MusicUtils.getLastAlbumForArtist(context, artist);
         if (!TextUtils.isEmpty(lastAlbum)) {
             // Set the last album the artist played
-            mFetcher.loadAlbumImage(artist, lastAlbum,
-                    MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);
+            mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);
             // Play the album
             mPhoto.setOnClickListener(new OnClickListener() {
-
                 @Override
-                public void onClick(final View v) {
-                    final long[] albumList = MusicUtils.getSongListForAlbum(getContext(),
+                public void onClick(View v) {
+                    long[] albumList = MusicUtils.getSongListForAlbum(getContext(),
                             MusicUtils.getIdForAlbum(context, lastAlbum, artist));
                     MusicUtils.playAll(albumList, 0, false);
                 }

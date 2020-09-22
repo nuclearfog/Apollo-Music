@@ -53,7 +53,7 @@ public class ThemeableTitlePageIndicator extends TitlePageIndicator {
     public ThemeableTitlePageIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Initialze the theme resources
-        final ThemeUtils resources = new ThemeUtils(context);
+        ThemeUtils resources = new ThemeUtils(context);
         // Theme the background
         setBackground(resources.getDrawable(BACKGROUND));
         // Theme the selected text color

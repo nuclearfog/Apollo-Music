@@ -799,13 +799,13 @@ public final class MusicUtils {
     }
 
     /**
-     * @param context    The {@link Context} to use.
+     * @param activity   The {@link Context} to use.
      * @param ids        The id of the song(s) to add.
      * @param playlistid The id of the playlist being added to.
      */
-    public static void addToPlaylist(Context context, long[] ids, long playlistid) {
+    public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
-        ContentResolver resolver = context.getContentResolver();
+        ContentResolver resolver = activity.getContentResolver();
         String[] projection = new String[]{"count(*)"};
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
         Cursor cursor = resolver.query(uri, projection, null, null, null);
@@ -817,8 +817,8 @@ public final class MusicUtils {
                 makeInsertItems(ids, offSet, 1000, base);
                 numinserted += resolver.bulkInsert(uri, mContentValuesCache);
             }
-            String message = context.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
-            AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
+            String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+            AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
         }
     }
 

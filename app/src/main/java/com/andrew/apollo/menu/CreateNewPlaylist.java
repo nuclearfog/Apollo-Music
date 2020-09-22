@@ -80,11 +80,11 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
             final int playlistId = (int) MusicUtils.getIdForPlaylist(requireContext(), playlistName);
             if (playlistId >= 0) {
                 MusicUtils.clearPlaylist(requireContext(), playlistId);
-                MusicUtils.addToPlaylist(requireContext(), mPlaylistList, playlistId);
+                MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, playlistId);
             } else {
                 final long newId = MusicUtils.createPlaylist(getActivity(),
                         Capitalize.capitalize(playlistName));
-                MusicUtils.addToPlaylist(requireContext(), mPlaylistList, newId);
+                MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, newId);
             }
             closeKeyboard();
             if (getDialog() != null) {

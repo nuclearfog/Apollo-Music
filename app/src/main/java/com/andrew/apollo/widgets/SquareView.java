@@ -37,9 +37,9 @@ public class SquareView extends ViewGroup {
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final View mChildren = getChildAt(0);
+        View mChildren = getChildAt(0);
         mChildren.measure(widthMeasureSpec, widthMeasureSpec);
-        final int size = resolveSize(mChildren.getMeasuredWidth(), widthMeasureSpec);
+        int size = resolveSize(mChildren.getMeasuredWidth(), widthMeasureSpec);
         mChildren.measure(size, size);
         setMeasuredDimension(size, size);
     }

@@ -197,7 +197,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
             mScrollScaleFactor = (float) screenWidth / mAllowedHorizontalScrollLength;
         }
 
-        final int tabHeight = Math.round(screenWidth * tabHeightScreenWidthFraction) + mTabShadowHeight;
+        int tabHeight = Math.round(screenWidth * tabHeightScreenWidthFraction) + mTabShadowHeight;
         if (getChildCount() > 0) {
             View child = getChildAt(0);
 
@@ -382,17 +382,19 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
      * Updates the tab selection.
      */
     public void setCurrentTab(int position) {
-        final CarouselTab selected, deselected;
+        CarouselTab selected, deselected;
 
         switch (position) {
             case TAB_INDEX_FIRST:
                 selected = mFirstTab;
                 deselected = mSecondTab;
                 break;
+
             case TAB_INDEX_SECOND:
                 selected = mSecondTab;
                 deselected = mFirstTab;
                 break;
+
             default:
                 throw new IllegalStateException("Invalid tab position " + position);
         }
@@ -494,7 +496,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
         }
 
         @Override
-        public void onClick(final View v) {
+        public void onClick(View v) {
             mListener.onTabSelected(mTab);
         }
     }

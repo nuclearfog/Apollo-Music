@@ -243,8 +243,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    final long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{mSelectedId}, mPlaylistId);
+                    long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, mPlaylistId);
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
@@ -356,8 +356,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * header in the {@link TitlePageIndicator}.
      */
     public void scrollToCurrentSong() {
-        final int currentSongPosition = getItemPositionBySong();
-
+        int currentSongPosition = getItemPositionBySong();
         if (currentSongPosition != 0) {
             mListView.setSelection(currentSongPosition);
         }

@@ -84,7 +84,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * Fragment UI
      */
-    private ViewGroup mRootView;
+    private View mRootView;
 
     /**
      * The adapter for the grid
@@ -152,10 +152,10 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
         if (isSimpleLayout()) {
-            mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+            mRootView = inflater.inflate(R.layout.list_base, container, false);
             initListView();
         } else {
-            mRootView = (ViewGroup) inflater.inflate(R.layout.grid_base, container, false);
+            mRootView = inflater.inflate(R.layout.grid_base, container, false);
             initGridView();
         }
         return mRootView;
@@ -236,7 +236,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long id = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), mAlbumList, id);
+                    MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -289,6 +289,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
+        // Start fresh
+        mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
@@ -301,8 +303,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             }
             return;
         }
-        // Start fresh
-        mAdapter.unload();
         // Add the data to the adpater
         for (Album album : data) {
             mAdapter.add(album);

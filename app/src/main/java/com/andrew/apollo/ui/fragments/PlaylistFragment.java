@@ -193,15 +193,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                     } else if (info.position == 1) {
                         list = MusicUtils.getSongListForLastAdded(getActivity());
                     } else {
-                        list = MusicUtils.getSongListForPlaylist(requireContext(),
-                                mPlaylist.mPlaylistId);
+                        list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.mPlaylistId);
                     }
                     MusicUtils.addToQueue(getActivity(), list);
                     return true;
 
                 case FragmentMenuItems.RENAME_PLAYLIST:
-                    RenamePlaylist.getInstance(mPlaylist.mPlaylistId).show(
-                            getParentFragmentManager(), "RenameDialog");
+                    RenamePlaylist.getInstance(mPlaylist.mPlaylistId).show(getParentFragmentManager(), "RenameDialog");
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -305,16 +303,14 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                 .setTitle(getString(R.string.delete_dialog_title, mPlaylist.mPlaylistName))
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        final Uri mUri = ContentUris.withAppendedId(
-                                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                                mPlaylist.mPlaylistId);
+                    public void onClick(DialogInterface dialog, int which) {
+                        Uri mUri = ContentUris.withAppendedId(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mPlaylist.mPlaylistId);
                         requireActivity().getContentResolver().delete(mUri, null, null);
                         MusicUtils.refresh();
                     }
                 }).setNegativeButton(R.string.cancel, new OnClickListener() {
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 }).setMessage(R.string.cannot_be_undone).create();

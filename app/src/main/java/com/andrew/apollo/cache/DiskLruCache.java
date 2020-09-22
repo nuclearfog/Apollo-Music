@@ -254,8 +254,6 @@ public final class DiskLruCache implements Closeable {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
             } catch (Exception e) {
                 e.printStackTrace();
             }

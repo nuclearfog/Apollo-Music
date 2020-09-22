@@ -55,6 +55,7 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
+import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.andrew.apollo.utils.PreferenceUtils.RECENT_LAYOUT;
 
 /**
@@ -238,7 +239,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long id = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), mAlbumList, id);
+                    MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_RECENT:

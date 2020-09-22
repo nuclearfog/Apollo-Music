@@ -164,7 +164,8 @@ public class ColorSchemeDialog extends AlertDialog implements OnColorChangedList
                             + mHexValue.getText().toString().toUpperCase(Locale.getDefault())));
                     mNewColor.setBackgroundColor(Color.parseColor("#"
                             + mHexValue.getText().toString().toUpperCase(Locale.getDefault())));
-                } catch (final Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

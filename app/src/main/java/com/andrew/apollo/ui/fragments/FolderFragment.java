@@ -67,7 +67,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
             MusicUtils.addToQueue(requireContext(), mSongList);
             return true;
         }
-        return false; // todo test
+        return false;
     }
 
 
@@ -126,13 +126,13 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> paramLoader, List<File> paramList) {
+        mAdapter.unload();
         if (paramList.isEmpty()) {
             TextView textView = new TextView(requireContext());
             textView.setText(R.string.empty_music);
             mListView.setEmptyView(textView);
             return;
         }
-        mAdapter.unload();
         for (File file : paramList)
             mAdapter.add(file);
         mAdapter.buildCache();

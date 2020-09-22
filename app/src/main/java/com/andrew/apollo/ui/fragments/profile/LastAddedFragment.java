@@ -233,7 +233,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{mSelectedId}, mPlaylistId);
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, mPlaylistId);
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:

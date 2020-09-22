@@ -259,7 +259,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                     return true;
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     final long playlistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{
                             mSelectedId
                     }, playlistId);
                     return true;

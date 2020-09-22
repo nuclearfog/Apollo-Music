@@ -233,7 +233,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long id = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), mArtistList, id);
+                    MusicUtils.addToPlaylist(requireActivity(), mArtistList, id);
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -284,6 +284,8 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Artist>> loader, List<Artist> data) {
+        // Start fresh
+        mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
@@ -296,8 +298,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             }
             return;
         }
-        // Start fresh
-        mAdapter.unload();
         // Add the data to the adpater
         for (Artist artist : data) {
             mAdapter.add(artist);

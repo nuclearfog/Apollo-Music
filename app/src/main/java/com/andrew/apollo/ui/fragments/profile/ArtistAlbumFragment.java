@@ -246,7 +246,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                     return true;
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     final long id = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), mAlbumList, id);
+                    MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
                     return true;
                 case FragmentMenuItems.DELETE:
                     DeleteDialog.newInstance(mAlbum.mAlbumName, mAlbumList, null).show(

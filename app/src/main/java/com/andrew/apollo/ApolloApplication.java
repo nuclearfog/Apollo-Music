@@ -27,7 +27,6 @@ import java.util.logging.Logger;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ApolloApplication extends Application {
-    private static final boolean DEBUG = false;
 
     /**
      * {@inheritDoc}
@@ -51,7 +50,7 @@ public class ApolloApplication extends Application {
     }
 
     private void enableStrictMode() {
-        if (DEBUG) {
+        if (BuildConfig.DEBUG) {
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
             StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
             threadPolicyBuilder.penaltyFlashScreen();

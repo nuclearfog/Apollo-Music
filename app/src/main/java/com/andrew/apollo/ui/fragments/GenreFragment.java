@@ -62,11 +62,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     private static final int LOADER = 0;
 
     /**
-     * Fragment UI
-     */
-    private View mRootView;
-
-    /**
      * The adapter for the list
      */
     private GenreAdapter mAdapter;
@@ -108,7 +103,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        mRootView = inflater.inflate(R.layout.list_base, container, false);
+        View mRootView = inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = mRootView.findViewById(R.id.list_base);
         // Set the data behind the list
@@ -204,6 +199,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Genre>> loader, List<Genre> data) {
+        // Start fresh
+        mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
@@ -212,8 +209,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
             mListView.setEmptyView(empty);
             return;
         }
-        // Start fresh
-        mAdapter.unload();
         // Add the data to the adpater
         for (Genre genre : data) {
             mAdapter.add(genre);

@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.MusicHolder;
 import com.andrew.apollo.recycler.RecycleHolder;
@@ -102,7 +103,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Intent apolloThemeIntent = new Intent("com.andrew.apollo.THEMES");
+        Intent apolloThemeIntent = new Intent(BuildConfig.APPLICATION_ID + ".THEMES");
         apolloThemeIntent.addCategory("android.intent.category.DEFAULT");
 
         PackageManager mPackageManager = requireActivity().getPackageManager();
@@ -113,7 +114,6 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 
         // Default items
         mEntries[0] = getString(R.string.app_name);
-        // mValues[0] = ThemeUtils.APOLLO_PACKAGE;
         mThemePreview[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.theme_preview, null);
 
         for (int i = 0; i < mThemes.size(); i++) {
@@ -145,7 +145,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         if (info.position > 0) {
             // Open to the theme's Play Store page
             menu.add(Menu.NONE, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
@@ -158,7 +158,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         if (item.getItemId() == OPEN_IN_PLAY_STORE) {
             ThemeUtils.openAppPage(requireContext(), mValues[info.position]);
             return true;
@@ -287,6 +287,5 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
                 mData[i].mPreview = mThemePreview[i];
             }
         }
-
     }
 }

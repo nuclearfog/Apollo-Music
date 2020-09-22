@@ -100,7 +100,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
                 case 7:
                     l = paramMenuItem.getIntent().getLongExtra("playlist", 0L);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{mSelectedId}, l);
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, l);
                     return true;
                 case 8:
                     NavUtils.openArtistProfile(requireActivity(), mArtistName);

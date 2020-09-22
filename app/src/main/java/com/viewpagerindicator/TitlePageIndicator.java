@@ -207,37 +207,32 @@ public class TitlePageIndicator extends View implements PageIndicator {
         if (mViewPager == null) {
             return;
         }
-
         int count;
         if (mViewPager.getAdapter() != null) {
             count = mViewPager.getAdapter().getCount();
         } else {
             return;
         }
-
         // mCurrentPage is -1 on first start and after orientation changed. If so, retrieve the correct index from viewpager.
         if (mCurrentPage == -1 && mViewPager != null) {
             mCurrentPage = mViewPager.getCurrentItem();
         }
-
         //Calculate views bounds
         ArrayList<Rect> bounds = calculateAllBounds(mPaintText);
-        final int boundsSize = bounds.size();
-
+        int boundsSize = bounds.size();
         //Make sure we're on a page that still exists
         if (mCurrentPage >= boundsSize) {
             setCurrentItem(boundsSize - 1);
             return;
         }
-
-        final int countMinusOne = count - 1;
-        final float halfWidth = getWidth() / 2f;
-        final int left = getLeft();
-        final float leftClip = left + mClipPadding;
-        final int width = getWidth();
+        int countMinusOne = count - 1;
+        float halfWidth = getWidth() / 2f;
+        int left = getLeft();
+        float leftClip = left + mClipPadding;
+        int width = getWidth();
         int height = getHeight();
-        final int right = left + width;
-        final float rightClip = right - mClipPadding;
+        int right = left + width;
+        float rightClip = right - mClipPadding;
 
         int page = mCurrentPage;
         float offsetPercent;
@@ -247,9 +242,9 @@ public class TitlePageIndicator extends View implements PageIndicator {
             page += 1;
             offsetPercent = 1 - mPageOffset;
         }
-        final boolean currentSelected = (offsetPercent <= SELECTION_FADE_PERCENTAGE);
-        final boolean currentBold = (offsetPercent <= BOLD_FADE_PERCENTAGE);
-        final float selectedPercent = (SELECTION_FADE_PERCENTAGE - offsetPercent) / SELECTION_FADE_PERCENTAGE;
+        boolean currentSelected = (offsetPercent <= SELECTION_FADE_PERCENTAGE);
+        boolean currentBold = (offsetPercent <= BOLD_FADE_PERCENTAGE);
+        float selectedPercent = (SELECTION_FADE_PERCENTAGE - offsetPercent) / SELECTION_FADE_PERCENTAGE;
 
         //Verify if the current view must be clipped to the screen
         Rect curPageBound = bounds.get(mCurrentPage);

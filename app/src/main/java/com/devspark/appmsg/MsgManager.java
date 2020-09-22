@@ -59,11 +59,10 @@ class MsgManager extends Handler {
     void add(AppMsg appMsg) {
         msgQueue.add(appMsg);
         if (inAnimation == null) {
-            inAnimation = AnimationUtils.loadAnimation(appMsg.getActivity(),
-                    android.R.anim.fade_in);
+            inAnimation = AnimationUtils.loadAnimation(appMsg.getContext(), android.R.anim.fade_in);
         }
         if (outAnimation == null) {
-            outAnimation = AnimationUtils.loadAnimation(appMsg.getActivity(),
+            outAnimation = AnimationUtils.loadAnimation(appMsg.getContext(),
                     android.R.anim.fade_out);
         }
         displayMsg();
@@ -87,7 +86,7 @@ class MsgManager extends Handler {
         final AppMsg appMsg = msgQueue.peek();
         if (appMsg != null) {
             // If the activity is null we throw away the AppMsg.
-            if (appMsg.getActivity() == null) {
+            if (appMsg.getContext() == null) {
                 msgQueue.poll();
             }
             final Message msg;
@@ -124,9 +123,7 @@ class MsgManager extends Handler {
 
     private void addMsgToView(AppMsg appMsg) {
         if (appMsg.getView().getParent() == null) {
-            appMsg.getActivity().addContentView(
-                    appMsg.getView(),
-                    appMsg.getLayoutParams());
+            appMsg.addContentView(appMsg.getView(), appMsg.getLayoutParams());
         }
         appMsg.getView().startAnimation(inAnimation);
         final Message msg = obtainMessage(MESSAGE_REMOVE);

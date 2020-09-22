@@ -37,7 +37,7 @@ public class Album extends MusicEntry {
 
     private String artist;
 
-    private Album(final String name, final String url, final String artist) {
+    private Album(String name, String url, String artist) {
         super(name, url);
         this.artist = artist;
     }

@@ -13,7 +13,6 @@ package com.andrew.apollo.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -199,45 +198,44 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
                     return true;
+
                 case FragmentMenuItems.PLAY_NEXT:
                     MusicUtils.playNext(new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     MusicUtils.addToQueue(getActivity(), new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).addSongId(
-                            mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(getActivity()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
+
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(new long[]{
-                            mSelectedId
-                    }).show(getParentFragmentManager(), "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(new long[]{mSelectedId}).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{
-                            mSelectedId
-                    }, mPlaylistId);
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, mPlaylistId);
                     return true;
+
                 case FragmentMenuItems.MORE_BY_ARTIST:
                     NavUtils.openArtistProfile(getActivity(), mArtistName);
                     return true;
+
                 case FragmentMenuItems.USE_AS_RINGTONE:
                     MusicUtils.setRingtone(requireContext(), mSelectedId);
                     return true;
+
                 case FragmentMenuItems.DELETE:
                     mShouldRefresh = true;
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{
-                            mSelectedId
-                    }, null).show(getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
                     return true;
-                default:
-                    break;
             }
         }
         return super.onContextItemSelected(item);
@@ -265,6 +263,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
+        // Start fresh
+        mAdapter.unload();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
@@ -273,9 +273,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
             mListView.setEmptyView(empty);
             return;
         }
-
-        // Start fresh
-        mAdapter.unload();
         // Add the data to the adpater
         for (Song song : data) {
             mAdapter.add(song);
@@ -327,8 +324,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      * Restarts the loader.
      */
     public void refresh() {
-        // Wait a moment for the preference to change.
-        SystemClock.sleep(10);
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
     }
 

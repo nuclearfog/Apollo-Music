@@ -239,7 +239,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireContext(), new long[]{
+                    MusicUtils.addToPlaylist(requireActivity(), new long[]{
                             mSelectedId
                     }, mPlaylistId);
                     return true;

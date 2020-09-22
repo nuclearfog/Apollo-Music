@@ -91,7 +91,7 @@ public class DeleteDialog extends DialogFragment {
         // Initialize the image cache
         mFetcher = ApolloUtils.getImageFetcher(getActivity());
         // Build the dialog
-        return new AlertDialog.Builder(getActivity()).setTitle(dialogTitle)
+        return new AlertDialog.Builder(requireContext()).setTitle(dialogTitle)
                 .setMessage(R.string.cannot_be_undone)
                 .setPositiveButton(delete, new OnClickListener() {
 

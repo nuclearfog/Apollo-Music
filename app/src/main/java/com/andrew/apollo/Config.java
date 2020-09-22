@@ -19,7 +19,7 @@ package com.andrew.apollo;
 public final class Config {
 
     /**
-     * My personal Last.fm API key, please use your own.
+     * LAST FM Key used to download track informations
      */
     public static final String LASTFM_API_KEY = BuildConfig.LAST_FM_KEY;
     /**

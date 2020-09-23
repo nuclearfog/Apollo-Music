@@ -83,31 +83,40 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             switch (paramMenuItem.getItemId()) {
                 default:
                     return super.onContextItemSelected(paramMenuItem);
+
                 case 1:
                     MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
                     return true;
+
                 case 16:
                     MusicUtils.playNext(new long[]{mSelectedId});
                     return true;
+
                 case 2:
                     MusicUtils.addToQueue(requireContext(), new long[]{this.mSelectedId});
                     return true;
+
                 case 4:
                     FavoritesStore.getInstance(requireContext()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
+
                 case 5:
                     CreateNewPlaylist.getInstance(new long[]{this.mSelectedId}).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case 7:
                     l = paramMenuItem.getIntent().getLongExtra("playlist", 0L);
                     MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, l);
                     return true;
+
                 case 8:
                     NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
+
                 case 12:
                     MusicUtils.setRingtone(requireContext(), mSelectedId);
                     return true;
+
                 case 9:
                     break;
             }
@@ -135,14 +144,14 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             mAlbumName = mSong.mAlbumName;
             mArtistName = mSong.mArtistName;
         }
-        paramContextMenu.add(14, 1, 0, getString(R.string.context_menu_play_selection));
-        paramContextMenu.add(14, 16, 0, getString(R.string.context_menu_play_next));
-        paramContextMenu.add(14, 2, 0, getString(R.string.add_to_queue));
+        paramContextMenu.add(14, 1, 0, R.string.context_menu_play_selection);
+        paramContextMenu.add(14, 16, 0, R.string.context_menu_play_next);
+        paramContextMenu.add(14, 2, 0, R.string.add_to_queue);
         SubMenu subMenu = paramContextMenu.addSubMenu(14, 3, 0, R.string.add_to_playlist);
         MusicUtils.makePlaylistMenu(requireActivity(), 14, subMenu, true);
-        paramContextMenu.add(14, 8, 0, getString(R.string.context_menu_more_by_artist));
-        paramContextMenu.add(14, 12, 0, getString(R.string.context_menu_use_as_ringtone));
-        paramContextMenu.add(14, 9, 0, getString(R.string.context_menu_delete));
+        paramContextMenu.add(14, 8, 0, R.string.context_menu_more_by_artist);
+        paramContextMenu.add(14, 12, 0, R.string.context_menu_use_as_ringtone);
+        paramContextMenu.add(14, 9, 0, R.string.context_menu_delete);
     }
 
     @NonNull

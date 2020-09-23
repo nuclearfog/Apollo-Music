@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -166,18 +165,6 @@ public class ThemeUtils {
             }
             favorite.setIcon(favIcon);
         }
-    }
-
-
-    /**
-     * Sets the {@link MenuItem} icon for the add to Home screen action.
-     *
-     * @param search The Menu used to find the "add_to_homescreen" item.
-     */
-    public void setAddToHomeScreenIcon(Menu search) {
-        MenuItem pinnAction = search.findItem(R.id.menu_add_to_homescreen);
-        Drawable pinIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_pinn_to_home, null);
-        pinnAction.setIcon(pinIcon);
     }
 
     /**

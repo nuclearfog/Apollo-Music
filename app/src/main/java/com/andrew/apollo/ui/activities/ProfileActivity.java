@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -29,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
@@ -51,7 +53,6 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.SortOrder;
-import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
@@ -236,9 +237,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Theme the add to home screen icon
         MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
+        MenuItem pinnAction = menu.findItem(R.id.menu_add_to_homescreen);
 
-        ThemeUtils themeUtils = new ThemeUtils(this);
-        themeUtils.setAddToHomeScreenIcon(menu);
+        Drawable pinIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_pinn_to_home, null);
+        pinnAction.setIcon(pinIcon);
 
         String title;
         if (isFavorites() || isLastAdded() || isPlaylist()) {

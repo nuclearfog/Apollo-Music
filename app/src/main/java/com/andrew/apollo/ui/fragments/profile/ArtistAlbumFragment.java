@@ -14,7 +14,6 @@ package com.andrew.apollo.ui.fragments.profile;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -127,7 +126,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
         mAdapter = new ArtistAlbumAdapter(getActivity(), R.layout.list_item_detailed_no_background);
@@ -164,12 +163,12 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        final Bundle arguments = getArguments();
+        Bundle arguments = getArguments();
         if (arguments != null) {
             LoaderManager.getInstance(this).initLoader(LOADER, arguments, this);
         }
@@ -188,7 +187,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putAll(getArguments() != null ? getArguments() : new Bundle());
     }
@@ -197,64 +196,54 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onCreateContextMenu(@NonNull final ContextMenu menu, @NonNull final View v,
-                                    final ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-
         // Get the position of the selected item
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         // Create a new album
         mAlbum = mAdapter.getItem(info.position - 1);
         // Create a list of the album's songs
         mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.mAlbumId);
-
         // Play the album
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE,
-                getString(R.string.context_menu_play_selection));
-
+        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Add the album to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE,
-                getString(R.string.add_to_queue));
-
+        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the album to a playlist
-        final SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST,
-                Menu.NONE, R.string.add_to_playlist);
+        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
         MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
-
         // Delete the album
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE,
-                getString(R.string.context_menu_delete));
+        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(final MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(mAlbumList, 0, false);
                     return true;
+
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     MusicUtils.addToQueue(getActivity(), mAlbumList);
                     return true;
+
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(),
-                            "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    final long id = item.getIntent().getLongExtra("playlist", 0);
+                    long id = item.getIntent().getLongExtra("playlist", 0);
                     MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
                     return true;
+
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mAlbum.mAlbumName, mAlbumList, null).show(
-                            getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mAlbum.mAlbumName, mAlbumList, null).show(getParentFragmentManager(), "DeleteDialog");
                     refresh();
                     return true;
-                default:
-                    break;
             }
         }
         return super.onContextItemSelected(item);
@@ -264,8 +253,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick(final AdapterView<?> parent, final View view, final int position,
-                            final long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
             return;
         }
@@ -280,7 +268,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @NonNull
     @Override
-    public Loader<List<Album>> onCreateLoader(final int id, final Bundle args) {
+    public Loader<List<Album>> onCreateLoader(int id, Bundle args) {
         return new ArtistAlbumLoader(getActivity(), args.getLong(Config.ID));
     }
 
@@ -288,18 +276,17 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull final Loader<List<Album>> loader, final List<Album> data) {
+    public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
         // Check for any errors
         if (data.isEmpty()) {
             return;
         }
-
         // Start fresh
         mAdapter.unload();
         // Return the correct count
         mAdapter.setCount(data);
         // Add the data to the adpater
-        for (final Album album : data) {
+        for (Album album : data) {
             mAdapter.add(album);
         }
     }
@@ -308,7 +295,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onLoaderReset(@NonNull final Loader<List<Album>> loader) {
+    public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
         // Clear the data in the adapter
         mAdapter.unload();
     }
@@ -321,8 +308,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mListView.setSelection(0);
-        // Wait a moment for the preference to change.
-        SystemClock.sleep(10);
         mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }

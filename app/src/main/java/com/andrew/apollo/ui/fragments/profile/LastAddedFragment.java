@@ -14,7 +14,6 @@ package com.andrew.apollo.ui.fragments.profile;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -253,7 +252,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
                 case FragmentMenuItems.DELETE:
                     DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null)
                             .show(getParentFragmentManager(), "DeleteDialog");
-                    SystemClock.sleep(10);
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;

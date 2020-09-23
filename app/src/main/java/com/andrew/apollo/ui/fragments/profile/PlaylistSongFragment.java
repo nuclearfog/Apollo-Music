@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -116,7 +115,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
         mAdapter = new ProfileSongAdapter(
@@ -162,12 +161,12 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(final Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        final Bundle arguments = getArguments();
+        Bundle arguments = getArguments();
         if (arguments != null) {
             mPlaylistId = arguments.getLong(Config.ID);
             LoaderManager.getInstance(this).initLoader(LOADER, arguments, this);
@@ -190,7 +189,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         // Get the position of the selected item
-        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
@@ -201,37 +200,22 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             mArtistName = mSong.mArtistName;
         }
         // Play the song
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE,
-                getString(R.string.context_menu_play_selection));
-
+        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Play next
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE,
-                getString(R.string.context_menu_play_next));
-
+        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
         // Add the song to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE,
-                getString(R.string.add_to_queue));
-
+        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
-        final SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST,
-                Menu.NONE, R.string.add_to_playlist);
+        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
         MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, true);
-
         // View more content by the song artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE,
-                getString(R.string.context_menu_more_by_artist));
-
+        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Make the song a ringtone
-        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE,
-                getString(R.string.context_menu_use_as_ringtone));
-
+        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
         // Remove the song from playlist
-        menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_PLAYLIST, Menu.NONE,
-                getString(R.string.context_menu_remove_from_playlist));
-
+        menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_PLAYLIST, Menu.NONE, R.string.context_menu_remove_from_playlist);
         // Delete the song
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE,
-                getString(R.string.context_menu_delete));
+        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
     @Override
@@ -241,48 +225,54 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
                     return true;
+
                 case FragmentMenuItems.PLAY_NEXT:
                     MusicUtils.playNext(new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     MusicUtils.addToQueue(getActivity(), new long[]{
                             mSelectedId
                     });
                     return true;
+
                 case FragmentMenuItems.ADD_TO_FAVORITES:
                     FavoritesStore.getInstance(getActivity()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
+
                 case FragmentMenuItems.NEW_PLAYLIST:
                     CreateNewPlaylist.getInstance(new long[]{mSelectedId}).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
+
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    final long playlistId = item.getIntent().getLongExtra("playlist", 0);
+                    long playlistId = item.getIntent().getLongExtra("playlist", 0);
                     MusicUtils.addToPlaylist(requireActivity(), new long[]{
                             mSelectedId
                     }, playlistId);
                     return true;
+
                 case FragmentMenuItems.MORE_BY_ARTIST:
                     NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
+
                 case FragmentMenuItems.USE_AS_RINGTONE:
                     MusicUtils.setRingtone(requireContext(), mSelectedId);
                     return true;
+
                 case FragmentMenuItems.DELETE:
                     DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
-                    SystemClock.sleep(10);
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
+
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:
                     mAdapter.remove(mSong);
                     mAdapter.notifyDataSetChanged();
                     MusicUtils.removeFromPlaylist(requireContext(), mSong.mSongId, mPlaylistId);
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
-                default:
-                    break;
             }
         }
         return super.onContextItemSelected(item);
@@ -314,13 +304,12 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         if (data.isEmpty()) {
             return;
         }
-
         // Start fresh
         mAdapter.unload();
         // Return the correct count
         mAdapter.setCount(data);
         // Add the data to the adpater
-        for (final Song song : data) {
+        for (Song song : data) {
             mAdapter.add(song);
         }
     }
@@ -338,7 +327,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      * {@inheritDoc}
      */
     @Override
-    public float getSpeed(final float w, final long t) {
+    public float getSpeed(float w, long t) {
         if (w > 0.8f) {
             return mAdapter.getCount() / 0.001f;
         } else {
@@ -354,7 +343,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         mSong = mAdapter.getItem(which - 1);
         mAdapter.remove(mSong);
         mAdapter.notifyDataSetChanged();
-        final Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistId);
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistId);
         requireActivity().getContentResolver().delete(uri,
                 MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + mSong.mSongId,
                 null);
@@ -369,8 +358,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             mAdapter.notifyDataSetChanged();
             return;
         }
-        final int realFrom = from - 1;
-        final int realTo = to - 1;
+        int realFrom = from - 1;
+        int realTo = to - 1;
         mSong = mAdapter.getItem(realFrom);
         mAdapter.remove(mSong);
         mAdapter.insert(mSong, realTo);

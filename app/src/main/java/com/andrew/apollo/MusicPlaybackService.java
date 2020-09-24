@@ -1777,7 +1777,9 @@ public class MusicPlaybackService extends Service {
                 }
             }
             if (newlist) {
-                addToPlayList(list, 0);
+                mPlayList.clear();
+                for (long track : list)
+                    mPlayList.add(track);
                 notifyChange(QUEUE_CHANGED);
             }
             if (position >= 0) {
@@ -1804,37 +1806,27 @@ public class MusicPlaybackService extends Service {
      * Resumes or starts playback.
      */
     public void play() {
-        int status = mAudioManager.requestAudioFocus(mAudioFocusListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-
-        if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            return;
-        }
-
-        mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
-                MediaButtonIntentReceiver.class.getName()));
-
-        if (mPlayer.isInitialized()) {
-            setNextTrack();
-
-            long duration = mPlayer.duration();
-            if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
-                gotoNext(true);
+        int status = mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if (status == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioManager.registerMediaButtonEventReceiver(new ComponentName(this, MediaButtonIntentReceiver.class));
+            if (mPlayer.isInitialized()) {
+                setNextTrack();
+                long duration = mPlayer.duration();
+                if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
+                    gotoNext(true);
+                }
+                mPlayer.start();
+                mPlayerHandler.removeMessages(FADEDOWN);
+                mPlayerHandler.sendEmptyMessage(FADEUP);
+                if (!mIsSupposedToBePlaying) {
+                    mIsSupposedToBePlaying = true;
+                    notifyChange(PLAYSTATE_CHANGED);
+                }
+                cancelShutdown();
+                updateNotification();
+            } else if (mPlayList.isEmpty()) {
+                setShuffleMode(SHUFFLE_AUTO);
             }
-
-            mPlayer.start();
-            mPlayerHandler.removeMessages(FADEDOWN);
-            mPlayerHandler.sendEmptyMessage(FADEUP);
-
-            if (!mIsSupposedToBePlaying) {
-                mIsSupposedToBePlaying = true;
-                notifyChange(PLAYSTATE_CHANGED);
-            }
-
-            cancelShutdown();
-            updateNotification();
-        } else if (mPlayList.isEmpty()) {
-            setShuffleMode(SHUFFLE_AUTO);
         }
     }
 

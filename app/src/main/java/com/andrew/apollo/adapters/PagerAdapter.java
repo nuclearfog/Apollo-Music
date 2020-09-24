@@ -51,8 +51,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     /**
      * Constructor of <code>PagerAdapter<code>
      *
-     * @param fragmentActivity The {@link AppCompatActivity} of the
-     *                         {@link androidx.fragment.app.Fragment}.
+     * @param fragmentActivity The {@link AppCompatActivity} of the {@link androidx.fragment.app.Fragment}.
      */
     public PagerAdapter(FragmentActivity fragmentActivity) {
         super(fragmentActivity.getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
@@ -143,8 +142,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
      */
     @Override
     public CharSequence getPageTitle(int position) {
-        return mFragmentActivity.getResources().getStringArray(R.array.page_titles)[position]
-                .toUpperCase(Locale.getDefault());
+        return mFragmentActivity.getResources().getStringArray(R.array.page_titles)[position].toUpperCase(Locale.getDefault());
     }
 
     /**

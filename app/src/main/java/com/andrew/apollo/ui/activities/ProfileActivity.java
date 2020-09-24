@@ -421,11 +421,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (mViewPager.isFakeDragging()) {
-            return;
+        if (!mViewPager.isFakeDragging()) {
+            int scrollToX = (int) ((position + positionOffset) * mTabCarousel.getAllowedHorizontalScrollLength());
+            mTabCarousel.scrollTo(scrollToX, 0);
         }
-        int scrollToX = (int) ((position + positionOffset) * mTabCarousel.getAllowedHorizontalScrollLength());
-        mTabCarousel.scrollTo(scrollToX, 0);
     }
 
     /**

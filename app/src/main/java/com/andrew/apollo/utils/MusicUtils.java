@@ -1218,6 +1218,21 @@ public final class MusicUtils {
     }
 
     /**
+     * get the file path of the audio playback
+     *
+     * @return path to the music file
+     */
+    public static String getPlaybackFilePath() {
+        try {
+            if (mService != null)
+                return mService.getPath();
+        } catch (RemoteException err) {
+            err.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Perminately deletes item(s) from the user's device
      *
      * @param context The {@link Context} to use.

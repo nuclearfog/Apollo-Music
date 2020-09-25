@@ -835,17 +835,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * /** Used to shared what the user is currently listening to
      */
     private void shareCurrentTrack() {
-        if (MusicUtils.getTrackName() == null || MusicUtils.getArtistName() == null) {
-            return;
+        String path = MusicUtils.getPlaybackFilePath();
+        if (path != null) {
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.setType("text/*");
+            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
         }
-        Intent shareIntent = new Intent();
-        String shareMessage = getString(R.string.now_listening_to,
-                MusicUtils.getTrackName(), MusicUtils.getArtistName());
-
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
     }
 
     /**

@@ -38,7 +38,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AlbumColumns;
@@ -212,11 +211,6 @@ public class MusicPlaybackService extends Service {
     private static final int TRACK_WENT_TO_NEXT = 2;
 
     /**
-     * Indicates when the release the wake lock
-     */
-    private static final int RELEASE_WAKELOCK = 3;
-
-    /**
      * Indicates the player died
      */
     private static final int SERVER_DIED = 4;
@@ -315,11 +309,6 @@ public class MusicPlaybackService extends Service {
      * The path of the current file to play
      */
     private String mFileToPlay;
-
-    /**
-     * Keeps the service running when the screen is off
-     */
-    private WakeLock mWakeLock;
 
     /**
      * Alarm intent for removing the notification when nothing is playing
@@ -526,11 +515,9 @@ public class MusicPlaybackService extends Service {
         // Initialize the handler
         mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
 
-        // Initialize the audio manager and register any headset controls for
-        // playback
+        // Initialize the audio manager and register any headset controls for playback
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mMediaButtonReceiverComponent = new ComponentName(getPackageName(),
-                MediaButtonIntentReceiver.class.getName());
+        mMediaButtonReceiverComponent = new ComponentName(this, MediaButtonIntentReceiver.class);
         mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
 
         // Use the remote control APIs to set the playback state
@@ -559,11 +546,6 @@ public class MusicPlaybackService extends Service {
         // Attach the broadcast listener
         registerReceiver(mIntentReceiver, filter);
 
-        // Initialize the wake lock
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        mWakeLock.setReferenceCounted(false);
-
         // Initialize the delayed shutdown intent
         Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
         shutdownIntent.setAction(SHUTDOWN);
@@ -586,8 +568,7 @@ public class MusicPlaybackService extends Service {
     private void setUpRemoteControlClient() {
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setComponent(mMediaButtonReceiverComponent);
-        mRemoteControlClient = new RemoteControlClient(
-                PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteControlClient = new RemoteControlClient(PendingIntent.getBroadcast(this, 0, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT));
         mAudioManager.registerRemoteControlClient(mRemoteControlClient);
 
         // Flags for the media transport control that this client supports.
@@ -616,7 +597,6 @@ public class MusicPlaybackService extends Service {
                         }
                     });
         }
-
         mRemoteControlClient.setTransportControlFlags(flags);
     }
 
@@ -640,7 +620,6 @@ public class MusicPlaybackService extends Service {
 
         // Release the player
         mPlayer.release();
-        mPlayer = null;
 
         // Remove the audio focus listener and lock screen controls
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
@@ -658,9 +637,6 @@ public class MusicPlaybackService extends Service {
             unregisterReceiver(mUnmountReceiver);
             mUnmountReceiver = null;
         }
-
-        // Release the wake lock
-        mWakeLock.release();
     }
 
     /**
@@ -1250,9 +1226,8 @@ public class MusicPlaybackService extends Service {
             saveQueue(false);
         }
         if (what.equals(PLAYSTATE_CHANGED)) {
-            mNotificationHelper.updatePlayState(isPlaying()); // TODO test
+            mNotificationHelper.updatePlayState(isPlaying());
         }
-
         // Update the app-widgets
         mAppWidgetSmall.notifyChange(this, what);
         mAppWidgetLarge.notifyChange(this, what);
@@ -2106,10 +2081,6 @@ public class MusicPlaybackService extends Service {
                     }
                     break;
 
-                case RELEASE_WAKELOCK:
-                    service.mWakeLock.release();
-                    break;
-
                 case FOCUSCHANGE:
                     switch (msg.arg1) {
                         case AudioManager.AUDIOFOCUS_LOSS:
@@ -2207,7 +2178,6 @@ public class MusicPlaybackService extends Service {
          */
         public MultiPlayer(MusicPlaybackService service) {
             mService = new WeakReference<>(service);
-            //mCurrentMediaPlayer.setWakeMode(service, PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK);// todo replace it
             mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
         }
 
@@ -2230,30 +2200,34 @@ public class MusicPlaybackService extends Service {
          * ready to play, false otherwise
          */
         private boolean setDataSourceImpl(MediaPlayer player, String path) {
-            try {
-                player.reset();
-                player.setOnPreparedListener(null);
-                if (path.startsWith("content://") && mService.get() != null) {
-                    player.setDataSource(mService.get(), Uri.parse(path));
-                } else {
-                    player.setDataSource(path);
+            MusicPlaybackService musicService = mService.get();
+            if (musicService != null) {
+                try {
+                    player.reset();
+                    player.setOnPreparedListener(null);
+                    if (path.startsWith("content://")) {
+                        player.setDataSource(musicService, Uri.parse(path));
+                    } else {
+                        player.setDataSource(path);
+                    }
+                    player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    player.prepare();
+                } catch (IOException err) {
+                    err.printStackTrace();
+                    return false;
+                } catch (IllegalArgumentException err) {
+                    err.printStackTrace();
+                    return false;
                 }
-                player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                player.prepare();
-            } catch (IOException err) {
-                err.printStackTrace();
-                return false;
-            } catch (IllegalArgumentException err) {
-                err.printStackTrace();
-                return false;
+                player.setOnCompletionListener(this);
+                player.setOnErrorListener(this);
+                Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+                intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, musicService.getPackageName());
+                musicService.sendBroadcast(intent);
+                return true;
             }
-            player.setOnCompletionListener(this);
-            player.setOnErrorListener(this);
-            Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-            intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-            intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, mService.get().getPackageName());
-            mService.get().sendBroadcast(intent);
-            return true;
+            return false;
         }
 
         /**
@@ -2278,15 +2252,19 @@ public class MusicPlaybackService extends Service {
             if (path == null) {
                 return;
             }
-            mNextMediaPlayer = new MediaPlayer();
-            mNextMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK);
-            mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-            if (setDataSourceImpl(mNextMediaPlayer, path)) {
-                mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
-            } else {
-                if (mNextMediaPlayer != null) {
-                    mNextMediaPlayer.release();
-                    mNextMediaPlayer = null;
+            MusicPlaybackService musicService = mService.get();
+            if (musicService != null) {
+                mNextMediaPlayer = new MediaPlayer();
+                mNextMediaPlayer.setScreenOnWhilePlaying(true);
+                mNextMediaPlayer.setWakeMode(musicService, PowerManager.PARTIAL_WAKE_LOCK);
+                mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
+                if (setDataSourceImpl(mNextMediaPlayer, path)) {
+                    mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
+                } else {
+                    if (mNextMediaPlayer != null) {
+                        mNextMediaPlayer.release();
+                        mNextMediaPlayer = null;
+                    }
                 }
             }
         }
@@ -2389,11 +2367,12 @@ public class MusicPlaybackService extends Service {
          */
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
-            if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+            MusicPlaybackService musicService = mService.get();
+            if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED && musicService != null) {
                 mIsInitialized = false;
                 mCurrentMediaPlayer.release();
                 mCurrentMediaPlayer = new MediaPlayer();
-                mCurrentMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK);
+                mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
                 mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED), 2000);
                 return true;
             }
@@ -2411,9 +2390,7 @@ public class MusicPlaybackService extends Service {
                 mNextMediaPlayer = null;
                 mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
             } else {
-                mService.get().mWakeLock.acquire(30000);
                 mHandler.sendEmptyMessage(TRACK_ENDED);
-                mHandler.sendEmptyMessage(RELEASE_WAKELOCK);
             }
         }
     }

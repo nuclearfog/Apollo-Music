@@ -520,6 +520,7 @@ public final class ImageCache {
             if (fileDescr != null) {
                 FileDescriptor fileDescriptor = fileDescr.getFileDescriptor();
                 artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                fileDescr.close();
             }
         } catch (IllegalStateException e) {
             //e.printStackTrace();

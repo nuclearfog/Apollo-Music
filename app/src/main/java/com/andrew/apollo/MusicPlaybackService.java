@@ -1741,6 +1741,8 @@ public class MusicPlaybackService extends Service {
                 mShuffleMode = SHUFFLE_NORMAL;
             }
             long oldId = getAudioId();
+            mPlayPos = position >= 0 ? position : mShuffler.nextInt(mPlayList.size());
+
             boolean newlist = true;
             if (mPlayList.size() == list.length) {
                 newlist = false;
@@ -1756,11 +1758,6 @@ public class MusicPlaybackService extends Service {
                 for (long track : list)
                     mPlayList.add(track);
                 notifyChange(QUEUE_CHANGED);
-            }
-            if (position >= 0) {
-                mPlayPos = position;
-            } else {
-                mPlayPos = mShuffler.nextInt(mPlayList.size());
             }
             mHistory.clear();
             openCurrentAndNext();

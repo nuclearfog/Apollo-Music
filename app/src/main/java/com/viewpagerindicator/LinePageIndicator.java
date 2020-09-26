@@ -74,7 +74,7 @@ public class LinePageIndicator extends View implements PageIndicator {
         final Resources res = getResources();
 
         //Load defaults from resources
-        int defaultSelectedColor = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
+        int defaultSelectedColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
         int defaultUnselectedColor = res.getColor(R.color.default_line_indicator_unselected_color);
         float defaultLineWidth = res.getDimension(R.dimen.default_line_indicator_line_width);
         float defaultGapWidth = res.getDimension(R.dimen.default_line_indicator_gap_width);

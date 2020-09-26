@@ -93,13 +93,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // The View for the fragment's UI
         View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
-
         // Initialize the adapter
         mPagerAdapter = new PagerAdapter(requireActivity());
         for (MusicFragments mFragment : MusicFragments.values()) {
             mPagerAdapter.add(mFragment.getFragmentClass(), null);
         }
-
         // Initialize the ViewPager
         mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
         // Attach the adapter
@@ -108,7 +106,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount() - 1);
         // Start on the last page the user was on
         mViewPager.setCurrentItem(mPreferences.getStartPage());
-
         // Initialize the TPI
         TitlePageIndicator pageIndicator = rootView.findViewById(R.id.fragment_home_phone_pager_titles);
         // Attach the ViewPager

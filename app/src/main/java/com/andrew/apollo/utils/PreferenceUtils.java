@@ -87,6 +87,8 @@ public final class PreferenceUtils {
 
     private final SharedPreferences mPreferences;
 
+    private int themeColor;
+
     /**
      * Constructor for <code>PreferenceUtils</code>
      *
@@ -94,6 +96,7 @@ public final class PreferenceUtils {
      */
     public PreferenceUtils(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
     }
 
     /**
@@ -134,6 +137,7 @@ public final class PreferenceUtils {
      * @param value The new theme color to use.
      */
     public void setDefaultThemeColor(int value) {
+        themeColor = value;
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt(DEFAULT_THEME_COLOR, value);
         editor.apply();
@@ -142,11 +146,10 @@ public final class PreferenceUtils {
     /**
      * Returns the current theme color.
      *
-     * @param context The {@link Context} to use.
      * @return The default theme color.
      */
-    public final int getDefaultThemeColor(Context context) {
-        return mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
+    public final int getDefaultThemeColor() {
+        return themeColor;
     }
 
     /**

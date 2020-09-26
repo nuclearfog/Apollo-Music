@@ -114,7 +114,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
 
         //Load defaults from resources
         Resources res = getResources();
-        int defaultFooterColor = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
+        int defaultFooterColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
         float defaultFooterLineHeight = res.getDimension(R.dimen.default_title_indicator_footer_line_height);
         int defaultFooterIndicatorStyle = res.getInteger(R.integer.default_title_indicator_footer_indicator_style);
         float defaultFooterIndicatorHeight = res.getDimension(R.dimen.default_title_indicator_footer_indicator_height);

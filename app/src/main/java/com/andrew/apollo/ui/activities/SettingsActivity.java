@@ -163,7 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
 
                 case "color_scheme":
-                    ApolloUtils.showColorPicker(requireContext());
+                    ApolloUtils.showColorPicker(requireActivity());
                     return true;
             }
             return false;

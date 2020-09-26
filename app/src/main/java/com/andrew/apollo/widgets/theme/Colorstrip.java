@@ -32,7 +32,7 @@ public class Colorstrip extends View {
     public Colorstrip(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Theme the colorstrip
-        int color = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
+        int color = PreferenceUtils.getInstance(context).getDefaultThemeColor();
         setBackgroundColor(color);
     }
 }

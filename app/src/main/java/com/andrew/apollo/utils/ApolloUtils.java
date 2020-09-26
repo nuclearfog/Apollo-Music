@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -23,7 +24,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,11 +36,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
-import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
+import com.andrew.apollo.ui.activities.HomeActivity;
 import com.andrew.apollo.ui.activities.ShortcutActivity;
 import com.andrew.apollo.widgets.ColorPickerView;
 import com.andrew.apollo.widgets.ColorSchemeDialog;
@@ -74,8 +74,8 @@ public final class ApolloUtils {
      * @param context The {@link Context} to use.
      * @return True if the device is in landscape mode, false otherwise.
      */
-    public static boolean isLandscape(final Context context) {
-        final int orientation = context.getResources().getConfiguration().orientation;
+    public static boolean isLandscape(Context context) {
+        int orientation = context.getResources().getConfiguration().orientation;
         return orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
@@ -90,7 +90,7 @@ public final class ApolloUtils {
      */
     //@SuppressLint("NewApi")
     @SafeVarargs
-    public static <T> void execute(final boolean forceSerial, final AsyncTask<T, ?, ?> task, final T... args) {
+    public static <T> void execute(boolean forceSerial, AsyncTask<T, ?, ?> task, T... args) {
         if (forceSerial) {
             task.execute(args);
         } else {
@@ -108,7 +108,7 @@ public final class ApolloUtils {
      * settings, the mobile data and other network connections aren't
      * returned at all
      */
-    public static boolean isOnline(final Context context) {
+    public static boolean isOnline(Context context) {
         /*
          * This sort of handles a sudden configuration change, but I think it
          * should be dealt with in a more professional way.
@@ -118,36 +118,28 @@ public final class ApolloUtils {
         }
 
         boolean state = false;
-        final boolean onlyOnWifi = PreferenceUtils.getInstance(context).onlyOnWifi();
-
+        boolean onlyOnWifi = PreferenceUtils.getInstance(context).onlyOnWifi();
         /* Monitor network connections */
-        final ConnectivityManager connectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         /* Wi-Fi connection */
-        final NetworkInfo wifiNetwork = connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo wifiNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiNetwork != null) {
             state = wifiNetwork.isConnectedOrConnecting();
         }
-
         /* Mobile data connection */
-        final NetworkInfo mbobileNetwork = connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo mbobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if (mbobileNetwork != null) {
             if (!onlyOnWifi) {
                 state = mbobileNetwork.isConnectedOrConnecting();
             }
         }
-
         /* Other networks */
-        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         if (activeNetwork != null) {
             if (!onlyOnWifi) {
                 state = activeNetwork.isConnectedOrConnecting();
             }
         }
-
         return state;
     }
 
@@ -157,24 +149,21 @@ public final class ApolloUtils {
      *
      * @param view The {@link View} to copy the content description from.
      */
-    public static void showCheatSheet(final View view) {
-
-        final int[] screenPos = new int[2]; // origin is device display
-        final Rect displayFrame = new Rect(); // includes decorations (e.g.
+    public static void showCheatSheet(View view) {
+        int[] screenPos = new int[2]; // origin is device display
+        Rect displayFrame = new Rect(); // includes decorations (e.g.
         // status bar)
         view.getLocationOnScreen(screenPos);
         view.getWindowVisibleDisplayFrame(displayFrame);
 
-        final Context context = view.getContext();
-        final int viewWidth = view.getWidth();
-        final int viewHeight = view.getHeight();
-        final int viewCenterX = screenPos[0] + viewWidth / 2;
-        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        final int estimatedToastHeight = (int) (48 * context.getResources().getDisplayMetrics().density);
-
-        final Toast cheatSheet = Toast.makeText(context, view.getContentDescription(),
-                Toast.LENGTH_SHORT);
-        final boolean showBelow = screenPos[1] < estimatedToastHeight;
+        Context context = view.getContext();
+        int viewWidth = view.getWidth();
+        int viewHeight = view.getHeight();
+        int viewCenterX = screenPos[0] + viewWidth / 2;
+        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        int estimatedToastHeight = (int) (48 * context.getResources().getDisplayMetrics().density);
+        Toast cheatSheet = Toast.makeText(context, view.getContentDescription(), Toast.LENGTH_SHORT);
+        boolean showBelow = screenPos[1] < estimatedToastHeight;
         if (showBelow) {
             // Show below
             // Offsets are after decorations (e.g. status bar) are factored in
@@ -194,8 +183,8 @@ public final class ApolloUtils {
      * @return An {@link AlertDialog} used to show the open source licenses used
      * in Apollo.
      */
-    public static AlertDialog createOpenSourceDialog(final Context context) {
-        final WebView webView = new WebView(context);
+    public static AlertDialog createOpenSourceDialog(Context context) {
+        WebView webView = new WebView(context);
         webView.loadUrl("file:///android_asset/licenses.html");
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.settings_open_source_licenses)
@@ -211,7 +200,7 @@ public final class ApolloUtils {
      * @param runnable The {@link Runnable} used after the next layout run
      */
     public static void doAfterLayout(final View view, final Runnable runnable) {
-        final OnGlobalLayoutListener listener = new OnGlobalLayoutListener() {
+        OnGlobalLayoutListener listener = new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 /* Layout pass done, unregister for further events */
@@ -243,45 +232,37 @@ public final class ApolloUtils {
      * @param mimeType    The MIME type of the shortcut
      * @param context     The {@link Context} to use to
      */
-    public static void createShortcutIntent(final String displayName, final String artistName,
-                                            final Long id, final String mimeType, final AppCompatActivity context) {
+    public static void createShortcutIntent(String displayName, String artistName, Long id, String mimeType, AppCompatActivity context) {
         try {
-            final ImageFetcher fetcher = getImageFetcher(context);
+            ImageFetcher fetcher = getImageFetcher(context);
             Bitmap bitmap;
             if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
-                bitmap = fetcher.getCachedBitmap(
-                        ImageFetcher.generateAlbumCacheKey(displayName, artistName));
+                bitmap = fetcher.getCachedBitmap(ImageFetcher.generateAlbumCacheKey(displayName, artistName));
             } else {
                 bitmap = fetcher.getCachedBitmap(displayName);
             }
             if (bitmap == null) {
-                bitmap = BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.default_artwork);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_artwork);
             }
-
             // Intent used when the icon is touched
-            final Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
+            Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
             shortcutIntent.setAction(Intent.ACTION_VIEW);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             shortcutIntent.putExtra(Config.ID, id);
             shortcutIntent.putExtra(Config.NAME, displayName);
             shortcutIntent.putExtra(Config.MIME_TYPE, mimeType);
-
             // Intent that actually sets the shortcut
-            final Intent intent = new Intent();
+            Intent intent = new Intent();
             intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapUtils.resizeAndCropCenter(bitmap, 96));
             intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
             intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
             intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
             context.sendBroadcast(intent);
-            AppMsg.makeText(context,
-                    context.getString(R.string.pinned_to_home_screen, displayName),
-                    AppMsg.STYLE_CONFIRM).show();
-        } catch (final Exception e) {
+            AppMsg.makeText(context, context.getString(R.string.pinned_to_home_screen, displayName), AppMsg.STYLE_CONFIRM).show();
+        } catch (Exception e) {
             Log.e("ApolloUtils", "createShortcutIntent", e);
-            AppMsg.makeText(
-                    context,
+            AppMsg.makeText(context,
                     context.getString(R.string.could_not_be_pinned_to_home_screen, displayName),
                     AppMsg.STYLE_ALERT).show();
         }
@@ -290,28 +271,23 @@ public final class ApolloUtils {
     /**
      * Shows the {@link ColorPickerView}
      *
-     * @param context The {@link Context} to use.
+     * @param activity The {@link Context} to use.
      */
-    public static void showColorPicker(final Context context) {
-        final ColorSchemeDialog colorPickerView = new ColorSchemeDialog(context);
+    public static void showColorPicker(final Activity activity) {
+        final ColorSchemeDialog colorPickerView = new ColorSchemeDialog(activity);
         colorPickerView.setButton(AlertDialog.BUTTON_POSITIVE,
-                context.getString(android.R.string.ok), new OnClickListener() {
-
+                activity.getString(android.R.string.ok), new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        PreferenceUtils.getInstance(context).setDefaultThemeColor(colorPickerView.getColor());
-                        Intent newActivity = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
-                        context.startActivity(newActivity); // TODO find a better solution to apply color
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                System.exit(0);
-                            }
-                        }, 500);
+                        // RESTART main activity
+                        PreferenceUtils.getInstance(activity).setDefaultThemeColor(colorPickerView.getColor());
+                        Intent newActivity = new Intent(activity, HomeActivity.class);
+                        newActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        activity.startActivity(newActivity);
+                        activity.finish();
                     }
                 });
-        colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE,
-                context.getString(R.string.cancel), (OnClickListener) null);
+        colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (OnClickListener) null);
         colorPickerView.show();
     }
 

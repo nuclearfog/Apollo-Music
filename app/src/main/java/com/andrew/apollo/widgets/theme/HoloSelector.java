@@ -31,7 +31,7 @@ public class HoloSelector extends StateListDrawable {
      * @param context The {@link Context} to use.
      */
     public HoloSelector(Context context) {
-        int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
+        int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
         // Focused
         addState(new int[]{android.R.attr.state_focused}, new ColorDrawable(holoColor));
         // Pressed

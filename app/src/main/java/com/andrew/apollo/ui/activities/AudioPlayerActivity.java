@@ -147,7 +147,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mResources = new ThemeUtils(this);
         // Set the overflow style
         mResources.setOverflowStyle(this);
-        themeColor = PreferenceUtils.getInstance(this).getDefaultThemeColor(this);
+        themeColor = PreferenceUtils.getInstance(this).getDefaultThemeColor();
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         // Control the media volume

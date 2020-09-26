@@ -71,23 +71,19 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
         // Create the Cursor
         Cursor mCursor = makeGenreCursor(getContext());
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the genre id
-                long id = mCursor.getLong(0);
-
-                // Copy the genre name
-                String name = mCursor.getString(1);
-
-                // Create a new genre
-                Genre genre = new Genre(id, name);
-
-                // Add everything up
-                mGenreList.add(genre);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the genre id
+                    long id = mCursor.getLong(0);
+                    // Copy the genre name
+                    String name = mCursor.getString(1);
+                    // Create a new genre
+                    Genre genre = new Genre(id, name);
+                    // Add everything up
+                    mGenreList.add(genre);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mGenreList;

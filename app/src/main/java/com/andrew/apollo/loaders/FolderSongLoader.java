@@ -32,16 +32,18 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     public List<Song> loadInBackground() {
         Cursor cursor = makeFileSongCursor(getContext(), this.mFolder);
-        if (cursor != null && cursor.moveToFirst())
-            do {
-                long id = cursor.getLong(0);
-                String str1 = cursor.getString(1);
-                String str2 = cursor.getString(2);
-                Song song = new Song(id, str1, cursor.getString(3), str2, (int) cursor.getLong(4) / 1000);
-                this.mSongList.add(song);
-            } while (cursor.moveToNext());
-        if (cursor != null)
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = cursor.getLong(0);
+                    String str1 = cursor.getString(1);
+                    String str2 = cursor.getString(2);
+                    Song song = new Song(id, str1, cursor.getString(3), str2, (int) cursor.getLong(4) / 1000);
+                    this.mSongList.add(song);
+                } while (cursor.moveToNext());
+            }
             cursor.close();
+        }
         return this.mSongList;
     }
 }

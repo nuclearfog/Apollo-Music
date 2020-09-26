@@ -88,35 +88,27 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Create the Cursor
         Cursor mCursor = makePlaylistSongCursor(getContext(), mPlaylistID);
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the song Id
-                long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID));
-
-                // Copy the song name
-                String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
-
-                // Copy the artist name
-                String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
-
-                // Copy the album name
-                String album = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
-
-                // Copy the duration
-                long duration = mCursor.getLong(mCursor.getColumnIndexOrThrow("duration" /*AudioColumns.DURATION*/));
-
-                // Convert the duration into seconds
-                int durationInSecs = (int) duration / 1000;
-
-                // Create a new song
-                Song song = new Song(id, songName, artist, album, durationInSecs);
-
-                // Add everything up
-                mSongList.add(song);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the song Id
+                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID));
+                    // Copy the song name
+                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+                    // Copy the artist name
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+                    // Copy the album name
+                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+                    // Copy the duration
+                    long duration = mCursor.getLong(mCursor.getColumnIndexOrThrow("duration"));
+                    // Convert the duration into seconds
+                    int durationInSecs = (int) duration / 1000;
+                    // Create a new song
+                    Song song = new Song(id, songName, artist, album, durationInSecs);
+                    // Add everything up
+                    mSongList.add(song);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mSongList;

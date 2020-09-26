@@ -67,34 +67,23 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Create the Cursor
         Cursor mCursor = makeFavoritesCursor(getContext());
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-
-                // Copy the song Id
-                long id = mCursor.getLong(mCursor
-                        .getColumnIndexOrThrow(FavoriteColumns.ID));
-
-                // Copy the song name
-                String songName = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(FavoriteColumns.SONGNAME));
-
-                // Copy the artist name
-                String artist = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(FavoriteColumns.ARTISTNAME));
-
-                // Copy the album name
-                String album = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(FavoriteColumns.ALBUMNAME));
-
-                // Create a new song
-                Song song = new Song(id, songName, artist, album, -1);
-
-                // Add everything up
-                mSongList.add(song);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the song Id
+                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(FavoriteColumns.ID));
+                    // Copy the song name
+                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.SONGNAME));
+                    // Copy the artist name
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.ARTISTNAME));
+                    // Copy the album name
+                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.ALBUMNAME));
+                    // Create a new song
+                    Song song = new Song(id, songName, artist, album, -1);
+                    // Add everything up
+                    mSongList.add(song);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mSongList;

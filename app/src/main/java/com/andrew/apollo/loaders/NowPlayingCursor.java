@@ -73,13 +73,11 @@ public class NowPlayingCursor extends AbstractCursor {
         if (oldPosition == newPosition) {
             return true;
         }
-
         if (mNowPlaying == null || mCursorIndexes == null || newPosition >= mNowPlaying.length) {
             return false;
         }
-
-        final long id = mNowPlaying[newPosition];
-        final int cursorIndex = Arrays.binarySearch(mCursorIndexes, id);
+        long id = mNowPlaying[newPosition];
+        int cursorIndex = Arrays.binarySearch(mCursorIndexes, id);
         mQueueCursor.moveToPosition(cursorIndex);
         mCurPos = newPosition;
         return true;
@@ -92,7 +90,7 @@ public class NowPlayingCursor extends AbstractCursor {
     public String getString(int column) {
         try {
             return mQueueCursor.getString(column);
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             onChange(true);
             return "";
         }
@@ -113,7 +111,7 @@ public class NowPlayingCursor extends AbstractCursor {
     public int getInt(int column) {
         try {
             return mQueueCursor.getInt(column);
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             onChange(true);
             return 0;
         }
@@ -126,7 +124,7 @@ public class NowPlayingCursor extends AbstractCursor {
     public long getLong(int column) {
         try {
             return mQueueCursor.getLong(column);
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             onChange(true);
             return 0;
         }
@@ -214,8 +212,7 @@ public class NowPlayingCursor extends AbstractCursor {
         if (mSize == 0) {
             return;
         }
-
-        final StringBuilder selection = new StringBuilder();
+        StringBuilder selection = new StringBuilder();
         selection.append(MediaStore.Audio.Media._ID + " IN (");
         for (int i = 0; i < mSize; i++) {
             selection.append(mNowPlaying[i]);
@@ -224,16 +221,12 @@ public class NowPlayingCursor extends AbstractCursor {
             }
         }
         selection.append(")");
-
         mQueueCursor = mContext.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection.toString(),
-                null, MediaStore.Audio.Media._ID);
-
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection.toString(), null, MediaStore.Audio.Media._ID);
         if (mQueueCursor == null) {
             mSize = 0;
             return;
         }
-
         int playlistSize = mQueueCursor.getCount();
         mCursorIndexes = new long[playlistSize];
         mQueueCursor.moveToFirst();
@@ -244,7 +237,6 @@ public class NowPlayingCursor extends AbstractCursor {
         }
         mQueueCursor.moveToFirst();
         mCurPos = -1;
-
         int removed = 0;
         for (int i = mNowPlaying.length - 1; i >= 0; i--) {
             long trackId = mNowPlaying[i];

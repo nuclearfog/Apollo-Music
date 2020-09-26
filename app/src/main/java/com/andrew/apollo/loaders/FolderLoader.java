@@ -33,12 +33,17 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     public List<File> loadInBackground() {
         HashSet<File> hashSet = new HashSet<>();
         Cursor cursor = makeSongCursor(getContext());
-        if (cursor != null && cursor.moveToFirst())
-            do {
-                hashSet.add((new File(cursor.getString(0))).getAbsoluteFile().getParentFile());
-            } while (cursor.moveToNext());
-        if (cursor != null)
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    String pathName = cursor.getString(0);
+                    File folder = new File(pathName).getAbsoluteFile().getParentFile();
+                    hashSet.add(folder);
+                } while (cursor.moveToNext());
+            }
             cursor.close();
+        }
         mFolders.clear();
         mFolders.addAll(hashSet);
         Collections.sort(mFolders, new Comparator<File>() {

@@ -70,32 +70,25 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
         // Create the Cursor
         Cursor mCursor = makeRecentCursor(getContext());
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the album id
-                long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
-
-                // Copy the album name
-                String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
-
-                // Copy the artist name
-                String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
-
-                // Copy the number of songs
-                int songCount = mCursor.getInt(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMSONGCOUNT));
-
-                // Copy the release year
-                String year = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMYEAR));
-
-                // Create a new album
-                Album album = new Album(id, albumName, artist, songCount, year);
-
-                // Add everything up
-                mAlbumsList.add(album);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the album id
+                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
+                    // Copy the album name
+                    String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
+                    // Copy the artist name
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
+                    // Copy the number of songs
+                    int songCount = mCursor.getInt(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMSONGCOUNT));
+                    // Copy the release year
+                    String year = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMYEAR));
+                    // Create a new album
+                    Album album = new Album(id, albumName, artist, songCount, year);
+                    // Add everything up
+                    mAlbumsList.add(album);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mAlbumsList;

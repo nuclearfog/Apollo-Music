@@ -76,8 +76,7 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         /* 4 */
                         //AudioColumns.DURATION
                         "duration"
-                }, selection, null,
-                PreferenceUtils.getInstance(context).getAlbumSongSortOrder());
+                }, selection, null, PreferenceUtils.getInstance(context).getAlbumSongSortOrder());
     }
 
     /**
@@ -88,35 +87,27 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Create the Cursor
         Cursor mCursor = makeAlbumSongCursor(getContext(), mAlbumID);
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the song Id
-                long id = mCursor.getLong(0);
-
-                // Copy the song name
-                String songName = mCursor.getString(1);
-
-                // Copy the artist name
-                String artist = mCursor.getString(2);
-
-                // Copy the album name
-                String album = mCursor.getString(3);
-
-                // Copy the duration
-                long duration = mCursor.getLong(4);
-
-                // Make the duration label
-                int seconds = (int) (duration / 1000);
-
-                // Create a new song
-                Song song = new Song(id, songName, artist, album, seconds);
-
-                // Add everything up
-                mSongList.add(song);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the song Id
+                    long id = mCursor.getLong(0);
+                    // Copy the song name
+                    String songName = mCursor.getString(1);
+                    // Copy the artist name
+                    String artist = mCursor.getString(2);
+                    // Copy the album name
+                    String album = mCursor.getString(3);
+                    // Copy the duration
+                    long duration = mCursor.getLong(4);
+                    // Make the duration label
+                    int seconds = (int) (duration / 1000);
+                    // Create a new song
+                    Song song = new Song(id, songName, artist, album, seconds);
+                    // Add everything up
+                    mSongList.add(song);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mSongList;

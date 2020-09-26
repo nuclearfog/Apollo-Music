@@ -74,23 +74,19 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         // Create the Cursor
         Cursor mCursor = makePlaylistCursor(getContext());
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the playlist id
-                long id = mCursor.getLong(0);
-
-                // Copy the playlist name
-                String name = mCursor.getString(1);
-
-                // Create a new playlist
-                Playlist playlist = new Playlist(id, name);
-
-                // Add everything up
-                mPlaylistList.add(playlist);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the playlist id
+                    long id = mCursor.getLong(0);
+                    // Copy the playlist name
+                    String name = mCursor.getString(1);
+                    // Create a new playlist
+                    Playlist playlist = new Playlist(id, name);
+                    // Add everything up
+                    mPlaylistList.add(playlist);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mPlaylistList;
@@ -99,11 +95,9 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     /* Adds the favorites and last added playlists */
     private void makeDefaultPlaylists() {
         Resources resources = getContext().getResources();
-
         /* Favorites list */
         Playlist favorites = new Playlist(-1, resources.getString(R.string.playlist_favorites));
         mPlaylistList.add(favorites);
-
         /* Last added list */
         Playlist lastAdded = new Playlist(-2, resources.getString(R.string.playlist_last_added));
         mPlaylistList.add(lastAdded);

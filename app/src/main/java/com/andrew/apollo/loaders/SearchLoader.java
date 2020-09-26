@@ -73,52 +73,36 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
     @Override
     public List<Song> loadInBackground() {
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the song Id
-                long id = -1;
-
-                // Copy the song name
-                final String songName = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-
-                // Check for a song Id
-                if (!TextUtils.isEmpty(songName)) {
-                    id = mCursor.getLong(mCursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
-                }
-
-                // Copy the album name
-                final String album = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));
-
-                // Check for a album Id
-                if (id < 0 && !TextUtils.isEmpty(album)) {
-                    id = mCursor.getLong(mCursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
-                }
-
-                // Copy the artist name
-                final String artist = mCursor.getString(mCursor
-                        .getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-
-                // Check for a artist Id
-                if (id < 0 && !TextUtils.isEmpty(artist)) {
-                    id = mCursor.getLong(mCursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
-                }
-
-                // Create a new song
-                final Song song = new Song(id, songName, artist, album, -1);
-
-                // Add everything up
-                mSongList.add(song);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the song Id
+                    long id = -1;
+                    // Copy the song name
+                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                    // Check for a song Id
+                    if (!TextUtils.isEmpty(songName)) {
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                    }
+                    // Copy the album name
+                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));
+                    // Check for a album Id
+                    if (id < 0 && !TextUtils.isEmpty(album)) {
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
+                    }
+                    // Copy the artist name
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
+                    // check for a artist Id
+                    if (id < 0 && !TextUtils.isEmpty(artist)) {
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
+                    }
+                    // Create a new song
+                    Song song = new Song(id, songName, artist, album, -1);
+                    // Add everything up
+                    mSongList.add(song);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
-            mCursor = null;
         }
         return mSongList;
     }

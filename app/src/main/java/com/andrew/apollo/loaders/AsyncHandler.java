@@ -39,5 +39,4 @@ public final class AsyncHandler {
     public static void post(Runnable r) {
         sHandler.post(r);
     }
-
 }

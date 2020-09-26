@@ -76,32 +76,25 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
         // Create the Cursor
         Cursor mCursor = makeAlbumCursor(getContext());
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
-            do {
-                // Copy the album id
-                long id = mCursor.getLong(0);
-
-                // Copy the album name
-                String albumName = mCursor.getString(1);
-
-                // Copy the artist name
-                String artist = mCursor.getString(2);
-
-                // Copy the number of songs
-                int songCount = mCursor.getInt(3);
-
-                // Copy the release year
-                String year = mCursor.getString(4);
-
-                // Create a new album
-                Album album = new Album(id, albumName, artist, songCount, year);
-
-                // Add everything up
-                mAlbumsList.add(album);
-            } while (mCursor.moveToNext());
-        }
-        // Close the cursor
         if (mCursor != null) {
+            if (mCursor.moveToFirst()) {
+                do {
+                    // Copy the album id
+                    long id = mCursor.getLong(0);
+                    // Copy the album name
+                    String albumName = mCursor.getString(1);
+                    // Copy the artist name
+                    String artist = mCursor.getString(2);
+                    // Copy the number of songs
+                    int songCount = mCursor.getInt(3);
+                    // Copy the release year
+                    String year = mCursor.getString(4);
+                    // Create a new album
+                    Album album = new Album(id, albumName, artist, songCount, year);
+                    // Add everything up
+                    mAlbumsList.add(album);
+                } while (mCursor.moveToNext());
+            }
             mCursor.close();
         }
         return mAlbumsList;

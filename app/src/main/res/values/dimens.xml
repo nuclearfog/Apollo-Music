@@ -111,5 +111,6 @@
 
     <dimen name="toolbar_height">45dp</dimen>
     <dimen name="notification_close_button_size">40dp</dimen>
+    <dimen name="audioplayer_seekbar_height">20dp</dimen>
 
 </resources>

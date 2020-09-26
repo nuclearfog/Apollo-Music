@@ -293,8 +293,8 @@ public class TitlePageIndicator extends View implements PageIndicator {
             Rect bound = bounds.get(i);
             //Only if one side is visible
             if ((bound.left > left && bound.left < right) || (bound.right > left && bound.right < right)) {
-                final boolean currentPage = (i == page);
-                final CharSequence pageTitle = getTitle(i);
+                boolean currentPage = (i == page);
+                CharSequence pageTitle = getTitle(i);
 
                 //Only set bold if we are within bounds
                 mPaintText.setFakeBoldText(currentPage && currentBold && mBoldText);
@@ -358,11 +358,10 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 if (!currentSelected || page >= boundsSize) {
                     break;
                 }
-
                 Rect underlineBounds = bounds.get(page);
-                final float rightPlusPadding = underlineBounds.right + mFooterIndicatorUnderlinePadding;
-                final float leftMinusPadding = underlineBounds.left - mFooterIndicatorUnderlinePadding;
-                final float heightMinusLineMinusIndicator = heightMinusLine - footerIndicatorLineHeight;
+                float rightPlusPadding = underlineBounds.right + mFooterIndicatorUnderlinePadding;
+                float leftMinusPadding = underlineBounds.left - mFooterIndicatorUnderlinePadding;
+                float heightMinusLineMinusIndicator = heightMinusLine - footerIndicatorLineHeight;
 
                 mPath.reset();
                 mPath.moveTo(leftMinusPadding, heightMinusLine);
@@ -387,7 +386,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
             return false;
         }
 
-        final int action = ev.getAction() & ACTION_MASK;
+        int action = ev.getAction() & ACTION_MASK;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mActivePointerId = ev.getPointerId(0);
@@ -395,9 +394,9 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 break;
 
             case MotionEvent.ACTION_MOVE: {
-                final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
-                final float x = ev.getX(activePointerIndex);
-                final float deltaX = x - mLastMotionX;
+                int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+                float x = ev.getX(activePointerIndex);
+                float deltaX = x - mLastMotionX;
 
                 if (!mIsDragging) {
                     if (Math.abs(deltaX) > mTouchSlop) {
@@ -418,13 +417,13 @@ public class TitlePageIndicator extends View implements PageIndicator {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (!mIsDragging) {
-                    final int count = mViewPager.getAdapter().getCount();
-                    final int width = getWidth();
-                    final float halfWidth = width / 2f;
-                    final float sixthWidth = width / 6f;
-                    final float leftThird = halfWidth - sixthWidth;
-                    final float rightThird = halfWidth + sixthWidth;
-                    final float eventX = ev.getX();
+                    int count = mViewPager.getAdapter().getCount();
+                    int width = getWidth();
+                    float halfWidth = width / 2f;
+                    float sixthWidth = width / 6f;
+                    float leftThird = halfWidth - sixthWidth;
+                    float rightThird = halfWidth + sixthWidth;
+                    float eventX = ev.getX();
 
                     if (eventX < leftThird) {
                         if (mCurrentPage > 0) {
@@ -454,17 +453,17 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 break;
 
             case ACTION_POINTER_DOWN: {
-                final int index = ev.getActionIndex();
+                int index = ev.getActionIndex();
                 mLastMotionX = ev.getX(index);
                 mActivePointerId = ev.getPointerId(index);
                 break;
             }
 
             case ACTION_POINTER_UP:
-                final int pointerIndex = ev.getActionIndex();
-                final int pointerId = ev.getPointerId(pointerIndex);
+                int pointerIndex = ev.getActionIndex();
+                int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {
-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    int newPointerIndex = pointerIndex == 0 ? 1 : 0;
                     mActivePointerId = ev.getPointerId(newPointerIndex);
                 }
                 mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
@@ -503,9 +502,9 @@ public class TitlePageIndicator extends View implements PageIndicator {
         ArrayList<Rect> list = new ArrayList<>();
         //For each views (If no values then add a fake one)
         if (mViewPager.getAdapter() != null) {
-            final int count = mViewPager.getAdapter().getCount();
-            final int width = getWidth();
-            final int halfWidth = width / 2;
+            int count = mViewPager.getAdapter().getCount();
+            int width = getWidth();
+            int halfWidth = width / 2;
             for (int i = 0; i < count; i++) {
                 Rect bounds = calcBounds(i, paint);
                 int w = bounds.right - bounds.left;
@@ -595,11 +594,10 @@ public class TitlePageIndicator extends View implements PageIndicator {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //Measure our width in whatever mode specified
-        final int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
         //Determine our height
         float height;
-        final int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
         if (heightSpecMode == MeasureSpec.EXACTLY) {
             //We were told how big to be
             height = MeasureSpec.getSize(heightMeasureSpec);
@@ -612,8 +610,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 height += mFooterIndicatorHeight;
             }
         }
-        final int measuredHeight = (int) height;
-
+        int measuredHeight = (int) height;
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 

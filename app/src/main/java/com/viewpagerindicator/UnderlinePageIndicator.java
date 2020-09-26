@@ -42,20 +42,17 @@ import static android.view.MotionEvent.ACTION_POINTER_UP;
  * than the unselected page lines.
  */
 public class UnderlinePageIndicator extends View implements PageIndicator {
+
     private static final int INVALID_POINTER = -1;
     private static final int FADE_FRAME_MS = 30;
-
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private boolean mFades;
-    private int mFadeDelay;
-    private int mFadeBy;
     private final Runnable mFadeRunnable = new Runnable() {
         @Override
         public void run() {
             if (!mFades) return;
 
-            final int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
+            int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
             mPaint.setAlpha(alpha);
             invalidate();
             if (alpha > 0) {
@@ -63,6 +60,10 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
             }
         }
     };
+    private boolean mFades;
+    private int mFadeDelay;
+    private int mFadeBy;
+
     private ViewPager mViewPager;
     private int mScrollState;
     private int mCurrentPage;
@@ -146,22 +147,20 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
         if (mViewPager == null || mViewPager.getAdapter() == null) {
             return;
         }
-        final int count = mViewPager.getAdapter().getCount();
+        int count = mViewPager.getAdapter().getCount();
         if (count == 0) {
             return;
         }
-
         if (mCurrentPage >= count) {
             setCurrentItem(count - 1);
             return;
         }
-
-        final int paddingLeft = getPaddingLeft();
-        final float pageWidth = (getWidth() - paddingLeft - getPaddingRight()) / (1f * count);
-        final float left = paddingLeft + pageWidth * (mCurrentPage + mPositionOffset);
-        final float right = left + pageWidth;
-        final float top = getPaddingTop();
-        final float bottom = getHeight() - getPaddingBottom();
+        int paddingLeft = getPaddingLeft();
+        float pageWidth = (getWidth() - paddingLeft - getPaddingRight()) / (1f * count);
+        float left = paddingLeft + pageWidth * (mCurrentPage + mPositionOffset);
+        float right = left + pageWidth;
+        float top = getPaddingTop();
+        float bottom = getHeight() - getPaddingBottom();
         canvas.drawRect(left, top, right, bottom, mPaint);
     }
 
@@ -174,7 +173,7 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
             return false;
         }
 
-        final int action = ev.getAction() & MotionEvent.ACTION_MASK;
+        int action = ev.getAction() & MotionEvent.ACTION_MASK;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mActivePointerId = ev.getPointerId(0);
@@ -182,9 +181,9 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
                 break;
 
             case MotionEvent.ACTION_MOVE: {
-                final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
-                final float x = ev.getX(activePointerIndex);
-                final float deltaX = x - mLastMotionX;
+                int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+                float x = ev.getX(activePointerIndex);
+                float deltaX = x - mLastMotionX;
 
                 if (!mIsDragging) {
                     if (Math.abs(deltaX) > mTouchSlop) {
@@ -205,10 +204,10 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (!mIsDragging) {
-                    final int count = mViewPager.getAdapter().getCount();
-                    final int width = getWidth();
-                    final float halfWidth = width / 2f;
-                    final float sixthWidth = width / 6f;
+                    int count = mViewPager.getAdapter().getCount();
+                    int width = getWidth();
+                    float halfWidth = width / 2f;
+                    float sixthWidth = width / 6f;
 
                     if ((mCurrentPage > 0) && (ev.getX() < halfWidth - sixthWidth)) {
                         if (action != MotionEvent.ACTION_CANCEL) {
@@ -229,17 +228,17 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
                 break;
 
             case ACTION_POINTER_DOWN: {
-                final int index = ev.getActionIndex();
+                int index = ev.getActionIndex();
                 mLastMotionX = ev.getX(index);
                 mActivePointerId = ev.getPointerId(index);
                 break;
             }
 
             case ACTION_POINTER_UP:
-                final int pointerIndex = ev.getActionIndex();
-                final int pointerId = ev.getPointerId(pointerIndex);
+                int pointerIndex = ev.getActionIndex();
+                int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {
-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    int newPointerIndex = pointerIndex == 0 ? 1 : 0;
                     mActivePointerId = ev.getPointerId(newPointerIndex);
                 }
                 mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
@@ -339,7 +338,7 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
 
     static class SavedState extends BaseSavedState {
         @SuppressWarnings("UnusedDeclaration")
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+        public static Creator<SavedState> CREATOR = new Creator<SavedState>() {
             @Override
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);

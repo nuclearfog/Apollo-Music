@@ -297,7 +297,6 @@ public abstract class ImageWorker {
          * @param imageView The {@link ImageView} to use.
          * @param imageType The type of image URL to fetch for.
          */
-        //@SuppressWarnings("deprecation")
         public BitmapWorkerTask(ImageView imageView, ImageType imageType) {
             imageView.setBackground(mDefaultArtwork);
             mImageReference = new WeakReference<>(imageView);
@@ -317,8 +316,7 @@ public abstract class ImageWorker {
                 Bitmap bitmap = null;
 
                 // First, check the disk cache for the image
-                if (mKey != null && mImageCache != null && !isCancelled()
-                        && getAttachedImageView() != null) {
+                if (mKey != null && mImageCache != null && !isCancelled() && getAttachedImageView() != null) {
                     bitmap = mImageCache.getCachedBitmap(mKey);
                 }
 

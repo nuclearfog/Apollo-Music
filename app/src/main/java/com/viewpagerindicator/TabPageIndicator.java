@@ -69,11 +69,11 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        final boolean lockedExpanded = widthMode == MeasureSpec.EXACTLY;
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        boolean lockedExpanded = widthMode == MeasureSpec.EXACTLY;
         setFillViewport(lockedExpanded);
 
-        final int childCount = mTabLayout.getChildCount();
+        int childCount = mTabLayout.getChildCount();
         if (childCount > 1 && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
             if (childCount > 2) {
                 mMaxTabWidth = (int) (MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
@@ -84,9 +84,9 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
             mMaxTabWidth = -1;
         }
 
-        final int oldWidth = getMeasuredWidth();
+        int oldWidth = getMeasuredWidth();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        final int newWidth = getMeasuredWidth();
+        int newWidth = getMeasuredWidth();
 
         if (lockedExpanded && oldWidth != newWidth) {
             // Recenter the tab display if we're at a new (scrollable) size.
@@ -95,14 +95,14 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     }
 
 
-    private void animateToTab(final int position) {
+    private void animateToTab(int position) {
         final View tabView = mTabLayout.getChildAt(position);
         if (mTabSelector != null) {
             removeCallbacks(mTabSelector);
         }
         mTabSelector = new Runnable() {
             public void run() {
-                final int scrollPos = tabView.getLeft() - (getWidth() - tabView.getWidth()) / 2;
+                int scrollPos = tabView.getLeft() - (getWidth() - tabView.getWidth()) / 2;
                 smoothScrollTo(scrollPos, 0);
                 mTabSelector = null;
             }
@@ -131,12 +131,11 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
 
     private void addTab(int index, CharSequence text, int iconResId) {
-        final TabView tabView = new TabView(getContext());
+        TabView tabView = new TabView(getContext());
         tabView.mIndex = index;
         tabView.setFocusable(true);
         tabView.setOnClickListener(mTabClickListener);
         tabView.setText(text);
-
         if (iconResId != 0) {
             tabView.setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
         }
@@ -169,7 +168,7 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         if (mViewPager != null) {
             mViewPager.removeOnPageChangeListener(this);
         }
-        final PagerAdapter adapter = view.getAdapter();
+        PagerAdapter adapter = view.getAdapter();
         if (adapter == null) {
             throw new IllegalStateException("ViewPager does not have adapter instance.");
         }
@@ -187,7 +186,7 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
             iconAdapter = (IconPagerAdapter) adapter;
         }
         if (adapter != null) {
-            final int count = adapter.getCount();
+            int count = adapter.getCount();
             for (int i = 0; i < count; i++) {
                 CharSequence title = adapter.getPageTitle(i);
                 if (title == null) {
@@ -218,8 +217,8 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
         int tabCount = mTabLayout.getChildCount();
         for (int i = 0; i < tabCount; i++) {
-            final View child = mTabLayout.getChildAt(i);
-            final boolean isSelected = (i == item);
+            View child = mTabLayout.getChildAt(i);
+            boolean isSelected = (i == item);
             child.setSelected(isSelected);
             if (isSelected) {
                 animateToTab(item);

@@ -278,7 +278,7 @@ public abstract class AppCompatBase extends AppCompatActivity
     @Override
     public boolean onQueryTextSubmit(String query) {
         // Open the search activity
-        NavUtils.openSearch(AppCompatBase.this, query);
+        NavUtils.openSearch(this, query);
         return true;
     }
 

@@ -529,8 +529,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             } else {
                 profileType = ProfileType.OTHER;
             }
-            PhotoSelectionDialog.newInstance(isArtist() ? mArtistName : mProfileName,
-                    profileType).show(getSupportFragmentManager(), "PhotoSelectionDialog");
+            String name = isArtist() ? mArtistName : mProfileName;
+            PhotoSelectionDialog.newInstance(name, profileType).show(getSupportFragmentManager(), "PhotoSelectionDialog");
+        } else {
+            super.onClick(v);
         }
     }
 

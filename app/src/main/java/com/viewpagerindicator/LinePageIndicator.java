@@ -71,8 +71,7 @@ public class LinePageIndicator extends View implements PageIndicator {
         super(context, attrs, defStyle);
         if (isInEditMode()) return;
 
-        final Resources res = getResources();
-
+        Resources res = getResources();
         //Load defaults from resources
         int defaultSelectedColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
         int defaultUnselectedColor = res.getColor(R.color.default_line_indicator_unselected_color);
@@ -127,11 +126,11 @@ public class LinePageIndicator extends View implements PageIndicator {
             return;
         }
 
-        final float lineWidthAndGap = mLineWidth + mGapWidth;
-        final float indicatorWidth = (count * lineWidthAndGap) - mGapWidth;
-        final float paddingTop = getPaddingTop();
-        final float paddingLeft = getPaddingLeft();
-        final float paddingRight = getPaddingRight();
+        float lineWidthAndGap = mLineWidth + mGapWidth;
+        float indicatorWidth = (count * lineWidthAndGap) - mGapWidth;
+        float paddingTop = getPaddingTop();
+        float paddingLeft = getPaddingLeft();
+        float paddingRight = getPaddingRight();
 
         float verticalOffset = paddingTop + ((getHeight() - paddingTop - getPaddingBottom()) / 2.0f);
         float horizontalOffset = paddingLeft;
@@ -156,7 +155,7 @@ public class LinePageIndicator extends View implements PageIndicator {
             return false;
         }
 
-        final int action = ev.getAction() & ACTION_MASK;
+        int action = ev.getAction() & ACTION_MASK;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mActivePointerId = ev.getPointerId(0);
@@ -164,9 +163,9 @@ public class LinePageIndicator extends View implements PageIndicator {
                 break;
 
             case MotionEvent.ACTION_MOVE: {
-                final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
-                final float x = ev.getX(activePointerIndex);
-                final float deltaX = x - mLastMotionX;
+                int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+                float x = ev.getX(activePointerIndex);
+                float deltaX = x - mLastMotionX;
 
                 if (!mIsDragging) {
                     if (Math.abs(deltaX) > mTouchSlop) {
@@ -187,10 +186,10 @@ public class LinePageIndicator extends View implements PageIndicator {
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (!mIsDragging) {
-                    final int count = mViewPager.getAdapter().getCount();
-                    final int width = getWidth();
-                    final float halfWidth = width / 2f;
-                    final float sixthWidth = width / 6f;
+                    int count = mViewPager.getAdapter().getCount();
+                    int width = getWidth();
+                    float halfWidth = width / 2f;
+                    float sixthWidth = width / 6f;
 
                     if ((mCurrentPage > 0) && (ev.getX() < halfWidth - sixthWidth)) {
                         if (action != MotionEvent.ACTION_CANCEL) {
@@ -211,17 +210,17 @@ public class LinePageIndicator extends View implements PageIndicator {
                 break;
 
             case ACTION_POINTER_DOWN: {
-                final int index = ev.getActionIndex();
+                int index = ev.getActionIndex();
                 mLastMotionX = ev.getX(index);
                 mActivePointerId = ev.getPointerId(index);
                 break;
             }
 
             case ACTION_POINTER_UP:
-                final int pointerIndex = ev.getActionIndex();
-                final int pointerId = ev.getPointerId(pointerIndex);
+                int pointerIndex = ev.getActionIndex();
+                int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {
-                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    int newPointerIndex = pointerIndex == 0 ? 1 : 0;
                     mActivePointerId = ev.getPointerId(newPointerIndex);
                 }
                 mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
@@ -302,7 +301,7 @@ public class LinePageIndicator extends View implements PageIndicator {
             //Calculate the width according the views count
             result = 0;
             if (mViewPager.getAdapter() != null) {
-                final int count = mViewPager.getAdapter().getCount();
+                int count = mViewPager.getAdapter().getCount();
                 result = getPaddingLeft() + getPaddingRight() + (count * mLineWidth) + ((count - 1) * mGapWidth);
                 //Respect AT_MOST value if that was what is called for by measureSpec
                 if (specMode == MeasureSpec.AT_MOST) {
@@ -356,7 +355,7 @@ public class LinePageIndicator extends View implements PageIndicator {
 
     static class SavedState extends BaseSavedState {
         @SuppressWarnings("UnusedDeclaration")
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+        public static Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
             @Override
             public SavedState createFromParcel(Parcel in) {
                 return new SavedState(in);

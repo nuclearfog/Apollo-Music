@@ -83,13 +83,13 @@ class MsgManager extends Handler {
             return;
         }
         // First peek whether the AppMsg is being displayed.
-        final AppMsg appMsg = msgQueue.peek();
+        AppMsg appMsg = msgQueue.peek();
         if (appMsg != null) {
             // If the activity is null we throw away the AppMsg.
             if (appMsg.getContext() == null) {
                 msgQueue.poll();
             }
-            final Message msg;
+            Message msg;
             if (!appMsg.isShowing()) {
                 // Display the AppMsg
                 msg = obtainMessage(MESSAGE_ADD_VIEW);
@@ -97,8 +97,7 @@ class MsgManager extends Handler {
                 sendMessage(msg);
             } else {
                 msg = obtainMessage(MESSAGE_DISPLAY);
-                sendMessageDelayed(msg, appMsg.getDuration()
-                        + inAnimation.getDuration() + outAnimation.getDuration());
+                sendMessageDelayed(msg, appMsg.getDuration() + inAnimation.getDuration() + outAnimation.getDuration());
             }
         }
     }
@@ -108,7 +107,7 @@ class MsgManager extends Handler {
      *
      * @param appMsg The {@link AppMsg} added to a {@link ViewGroup} and should be removed.s
      */
-    private void removeMsg(final AppMsg appMsg) {
+    private void removeMsg(AppMsg appMsg) {
         ViewGroup parent = ((ViewGroup) appMsg.getView().getParent());
         if (parent != null) {
             appMsg.getView().startAnimation(outAnimation);
@@ -126,26 +125,29 @@ class MsgManager extends Handler {
             appMsg.addContentView(appMsg.getView(), appMsg.getLayoutParams());
         }
         appMsg.getView().startAnimation(inAnimation);
-        final Message msg = obtainMessage(MESSAGE_REMOVE);
+        Message msg = obtainMessage(MESSAGE_REMOVE);
         msg.obj = appMsg;
         sendMessageDelayed(msg, appMsg.getDuration());
     }
 
     @Override
     public void handleMessage(Message msg) {
-        final AppMsg appMsg;
+        AppMsg appMsg;
         switch (msg.what) {
             case MESSAGE_DISPLAY:
                 displayMsg();
                 break;
+
             case MESSAGE_ADD_VIEW:
                 appMsg = (AppMsg) msg.obj;
                 addMsgToView(appMsg);
                 break;
+
             case MESSAGE_REMOVE:
                 appMsg = (AppMsg) msg.obj;
                 removeMsg(appMsg);
                 break;
+
             default:
                 super.handleMessage(msg);
                 break;

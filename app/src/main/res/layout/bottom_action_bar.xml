@@ -19,7 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_action_bar_height"
     android:layout_gravity="bottom"
-    tools:ignore="ContentDescription">
+    tools:ignore="ContentDescription,RtlHardcoded">
 
     <include
         android:id="@+id/colorstrip"

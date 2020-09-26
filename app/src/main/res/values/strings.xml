@@ -25,7 +25,7 @@
     <string name="page_songs">Songs</string>
     <string name="page_playlists">Playlists</string>
     <string name="page_genres">Genres</string>
-    <string name="page_folders" translatable="false">Folders</string>
+    <string name="page_folders">Folders</string>
 
     <!-- Option menu items -->
     <string name="menu_settings">Settings</string>

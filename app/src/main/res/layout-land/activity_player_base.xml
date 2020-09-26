@@ -43,7 +43,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignRight="@+id/audio_player_album_art"
                 android:contentDescription="@null"
-                app:srcCompat="@drawable/right_shadow"
+                android:src="@drawable/right_shadow"
                 android:layout_alignEnd="@+id/audio_player_album_art" />
         </RelativeLayout>
 
@@ -67,7 +67,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:contentDescription="@null"
-                app:srcCompat="@drawable/right_shadow"
+                android:src="@drawable/right_shadow"
                 tools:ignore="RtlHardcoded" />
         </FrameLayout>
 

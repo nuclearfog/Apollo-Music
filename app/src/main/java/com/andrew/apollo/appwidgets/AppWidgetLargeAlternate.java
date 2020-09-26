@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.appwidgets;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -30,7 +29,6 @@ import com.andrew.apollo.ui.activities.HomeActivity;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("NewApi")
 public class AppWidgetLargeAlternate extends AppWidgetBase {
 
     public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";

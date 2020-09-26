@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.appwidgets;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,7 +32,6 @@ import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@TargetApi(11)
 public class RecentWidgetService extends RemoteViewsService {
 
     /**

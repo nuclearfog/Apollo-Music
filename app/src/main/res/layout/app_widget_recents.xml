@@ -14,11 +14,12 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="0dp"
-    android:background="@color/action_bar_color">
+    android:background="@color/action_bar_color"
+    tools:ignore="RelativeOverlap,ContentDescription">
 
     <RelativeLayout
         android:id="@+id/app_widget_recents_action_bar"
@@ -30,11 +31,11 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/app_name"
             android:padding="@dimen/app_widget_recents_action_bar_item_padding"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_launcher" />
+            android:src="@drawable/ic_launcher" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,10 +54,10 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/app_widget_recents_play"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@null"
             android:scaleType="center"
-            app:srcCompat="@drawable/btn_playback_previous"
+            android:src="@drawable/btn_playback_previous"
             android:layout_toStartOf="@+id/app_widget_recents_play" />
 
         <ImageButton
@@ -65,10 +66,9 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/app_widget_recents_next"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@null"
+            android:background="@android:color/transparent"
             android:scaleType="center"
-            app:srcCompat="@drawable/btn_playback_play"
+            android:src="@drawable/btn_playback_play"
             android:layout_toStartOf="@+id/app_widget_recents_next" />
 
         <ImageButton
@@ -77,10 +77,10 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@null"
             android:scaleType="center"
-            app:srcCompat="@drawable/btn_playback_next"
+            android:src="@drawable/btn_playback_next"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
 

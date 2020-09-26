@@ -11,14 +11,12 @@
 
 package com.andrew.apollo.appwidgets;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -40,7 +38,6 @@ import com.andrew.apollo.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@TargetApi(11)
 public class RecentWidgetProvider extends AppWidgetBase {
 
     private static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
@@ -162,7 +159,6 @@ public class RecentWidgetProvider extends AppWidgetBase {
         super.onReceive(context, intent);
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void compatSetRemoteAdapter(RemoteViews rv, Intent intent) {
         rv.setRemoteAdapter(R.id.app_widget_recents_list, intent);
     }

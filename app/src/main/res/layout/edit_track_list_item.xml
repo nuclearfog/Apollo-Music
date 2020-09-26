@@ -23,7 +23,7 @@
         android:layout_width="@dimen/drag_and_drop_handle"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/playlist_tile_normal" />
+        android:src="@drawable/playlist_tile_normal" />
 
     <FrameLayout
         android:layout_width="match_parent"

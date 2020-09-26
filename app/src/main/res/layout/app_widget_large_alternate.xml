@@ -13,64 +13,70 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/app_widget_large_min_height"
+    android:layout_height="wrap_content"
     android:background="@drawable/appwidget_bg"
-    android:columnCount="2"
-    android:rowCount="3"
-    tools:ignore="ContentDescription">
-
-    <ImageView
-        android:id="@+id/app_widget_large_alternate_image"
-        android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
-        android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
-        android:layout_rowSpan="2"
-        android:background="@drawable/default_artwork"
-        android:scaleType="fitXY" />
+    tools:ignore="ContentDescription,RtlSymmetry">
 
     <LinearLayout
-        android:id="@+id/app_widget_large_alternate_info_container"
-        android:layout_width="0dp"
-        android:layout_gravity="center_vertical|fill_horizontal"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/notification_info_container_padding_left"
-        android:paddingStart="@dimen/notification_info_container_padding_left">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/app_widget_large_alternate_line_one"
-            style="@style/NotificationText"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/app_widget_large_alternate_image"
+            android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
+            android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
+            android:background="@drawable/default_artwork" />
 
-        <TextView
-            android:id="@+id/app_widget_large_alternate_line_two"
-            style="@style/NotificationText"
-            android:textColor="@color/transparent_white"
-            android:textSize="@dimen/text_size_small" />
+        <LinearLayout
+            android:id="@+id/app_widget_large_alternate_info_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/notification_info_container_padding_left"
+            android:paddingLeft="@dimen/notification_info_container_padding_left">
 
-        <TextView
-            android:id="@+id/app_widget_large_alternate_line_three"
-            style="@style/NotificationText"
-            android:textColor="@color/transparent_white"
-            android:textSize="@dimen/text_size_small" />
+            <TextView
+                android:id="@+id/app_widget_large_alternate_line_one"
+                style="@style/NotificationText"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/app_widget_large_alternate_line_two"
+                style="@style/NotificationText"
+                android:textColor="@color/transparent_white"
+                android:textSize="@dimen/text_size_small" />
+
+            <TextView
+                android:id="@+id/app_widget_large_alternate_line_three"
+                style="@style/NotificationText"
+                android:textColor="@color/transparent_white"
+                android:textSize="@dimen/text_size_small" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <ImageView
-        android:layout_width="0dp"
-        android:layout_gravity="fill_horizontal"
-        android:background="?attr/dividerHorizontal" />
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/transparent_white" />
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_columnSpan="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="fill_horizontal"
         android:layout_marginBottom="@dimen/app_widget_bottom_margin"
-        android:divider="?android:listDivider"
         android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -81,54 +87,50 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/accessibility_shuffle"
             android:padding="@dimen/notification_expanded_button_padding"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_playback_shuffle" />
+            android:src="@drawable/btn_playback_shuffle" />
 
         <ImageButton
             android:id="@+id/app_widget_large_alternate_previous"
             android:layout_width="0dp"
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/accessibility_prev"
             android:padding="@dimen/notification_expanded_button_padding"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_playback_previous" />
+            android:src="@drawable/btn_playback_previous" />
 
         <ImageButton
             android:id="@+id/app_widget_large_alternate_play"
             android:layout_width="0dp"
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:padding="@dimen/notification_expanded_button_padding"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_playback_pause" />
+            android:src="@drawable/btn_playback_pause" />
 
         <ImageButton
             android:id="@+id/app_widget_large_alternate_next"
             android:layout_width="0dp"
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/accessibility_next"
             android:padding="@dimen/notification_expanded_button_padding"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_playback_next" />
+            android:src="@drawable/btn_playback_next" />
 
         <ImageButton
             android:id="@+id/app_widget_large_alternate_repeat"
             android:layout_width="0dp"
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/accessibility_repeat"
             android:padding="@dimen/notification_expanded_button_padding"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_playback_repeat" />
+            android:src="@drawable/btn_playback_repeat" />
+
     </LinearLayout>
 
-</GridLayout>
+</LinearLayout>

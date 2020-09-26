@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Tải xuống ảnh bìa còn thiếu</string>
     <string name="settings_open_source_licenses">Giấy phép nguồn mở</string>
     <string name="settings_version_title">Số phiên bản</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> bởi <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Chia sẻ bằng:</string>
     <string name="color_picker_title">Lược đồ màu</string>
     <string name="current_color">Hiện tại</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Nghe nhạc: vừa nghe</string>
     <string name="no_effects_for_you">Không thể mở bộ chỉnh âm.</string>
     <string name="empty_music">Để chép nhạc từ máy tính sang thiết bị, hãy dùng cáp USB.</string>
-    <string name="empty_last_added">Bài hát bạn thêm trong vòng một tháng gần đây sẽ hiện tại đây.</string>
     <string name="empty_search">Không tìm thấy kết quả</string>
-    <string name="empty_favorite">Bài hát bạn đã đánh dấu là Yêu thích sẽ hiện tại đây.</string>
-    <string name="empty_recent">Bài hát bạn đã nghe gần đây sẽ hiện tại đây.</string>
 </resources>

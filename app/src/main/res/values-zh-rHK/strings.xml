@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">下載缺少的演出者影像</string>
     <string name="settings_open_source_licenses">開放原始碼授權</string>
     <string name="settings_version_title">版本號碼</string>
-    <string name="now_listening_to">#正在播放 <xliff:g id="artist">%2$s</xliff:g> - <xliff:g id="title">%1$s</xliff:g> #Apollo</string>
     <string name="share_track_using">曲目分享方式:</string>
     <string name="color_picker_title">配色方案</string>
     <string name="current_color">目前</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: 最近播放</string>
     <string name="no_effects_for_you">無法打開等化器。</string>
     <string name="empty_music">使用 USB 連接綫將音樂從你的電腦複製到你的裝置中。</string>
-    <string name="empty_last_added">你最近一個月新增的歌曲將會在這裏顯示。</string>
     <string name="empty_search">沒有搜尋結果</string>
-    <string name="empty_favorite">你標記為最愛收藏的歌曲將會在這裏顯示。</string>
-    <string name="empty_recent">你已播放的專輯將會顯示在這裏，請嘗試播放一些音樂。</string>
 </resources>

@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Parsisiųsti trūkstamus artistų vaizdus</string>
     <string name="settings_open_source_licenses">Atviro kodo licencijos</string>
     <string name="settings_version_title">Versijos numeris</string>
-    <string name="now_listening_to">#Dabar grojama <xliff:g id="title">%1$s</xliff:g> pagal <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Bendrinti dainą naudojant:</string>
     <string name="color_picker_title">Spalvų schema</string>
     <string name="current_color">Dabartinė</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Neseniai klausyta</string>
     <string name="no_effects_for_you">Nepavyko atidaryti ekvalaizerio.</string>
     <string name="empty_music">Norėdami kopijuoti muziką iš kompiuterio į savo įrenginį, naudokite USB kabelį.</string>
-    <string name="empty_last_added">Dainas, kurias pridėjote per pastarąjį mėnesį bus rodomos čia.</string>
     <string name="empty_search">Nerasta jokių paieškos rezultatų</string>
-    <string name="empty_favorite">Dainas, kurias pažymite kaip mėgstamas bus rodomos čia.</string>
-    <string name="empty_recent">Albumai kuriuos klausėtes bus rodomi čia. Pabandykite paleisti šiek tiek muzikos.</string>
 </resources>

@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Obtener fotos de artistas</string>
     <string name="settings_open_source_licenses">Licencias de software libre</string>
     <string name="settings_version_title">Versión</string>
-    <string name="now_listening_to">#Escuchando <xliff:g id="title">%1$s</xliff:g> de <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Compartir canción usando:</string>
     <string name="color_picker_title">Esquema de color</string>
     <string name="current_color">Actual</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Recientes</string>
     <string name="no_effects_for_you">El ecualizador no se ha podido abrir.</string>
     <string name="empty_music">Para copiar música del ordenador al dispositivo, utiliza un cable USB.</string>
-    <string name="empty_last_added">Las canciones que has añadido en el último mes aparecerán aquí.</string>
     <string name="empty_search">No hay resultados que mostrar</string>
-    <string name="empty_favorite">Las canciones que has marcado como favoritas aparecerán aquí.</string>
-    <string name="empty_recent">Los álbumes que has escuchado aparecerán aquí.</string>
 </resources>

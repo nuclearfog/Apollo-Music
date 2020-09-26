@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Unduh gambar artis yang hilang</string>
     <string name="settings_open_source_licenses">Lisensi sumber terbuka</string>
     <string name="settings_version_title">Nomor versi</string>
-    <string name="now_listening_to">#SekarangMemutar <xliff:g id="title">%1$s</xliff:g> oleh <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Bagikan lagu menggunakan:</string>
     <string name="color_picker_title">Skema warna</string>
     <string name="current_color">Kini</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: terakhir didengar</string>
     <string name="no_effects_for_you">Ekualisir tidak dapat dibuka.</string>
     <string name="empty_music">Untuk menyalin musik dari komputer ke perangkat Anda, gunakan kabel USB.</string>
-    <string name="empty_last_added">Lagu-lagu yang telah Anda tambahkan selama satu bulan terakhir akan ditampilkan di sini.</string>
     <string name="empty_search">Hasil pencarian tidak ditemukan</string>
-    <string name="empty_favorite">Lagu-lagu yang Anda tandai sebagai favorit akan ditampilkan di sini.</string>
-    <string name="empty_recent">Album yang telah anda dengar akan muncul di sini. Cobalah memainkan beberapa musik.</string>
 </resources>

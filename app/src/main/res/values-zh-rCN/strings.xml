@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">下载缺失的艺术家的图像</string>
     <string name="settings_open_source_licenses">开源许可证</string>
     <string name="settings_version_title">版本号</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> - <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">曲目分享方式:</string>
     <string name="color_picker_title">配色方案</string>
     <string name="current_color">当前</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: 最近播放</string>
     <string name="no_effects_for_you">无法打开均衡器.</string>
     <string name="empty_music">请使用 USB 数据线把音乐从您的计算机复制到您的设备中.</string>
-    <string name="empty_last_added">您在这一个月以来添加的歌曲将在这里显示.</string>
     <string name="empty_search">无搜索结果</string>
-    <string name="empty_favorite">您标记为收藏的歌曲将在这里显示.</string>
-    <string name="empty_recent">您曾经听过的专辑将在这里显示. 请尝试播放一些音乐.</string>
 </resources>

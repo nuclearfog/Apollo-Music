@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Sťahovať chýbajúce obrázky interpretov</string>
     <string name="settings_open_source_licenses">Licencie otvoreného zdroja</string>
     <string name="settings_version_title">Číslo verzie</string>
-    <string name="now_listening_to">#Právesaprehráva <xliff:g id="title">%1$s</xliff:g> od <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Zdieľať skladbu pomocou:</string>
     <string name="color_picker_title">Farebná schéma</string>
     <string name="current_color">Aktuálna</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: nedávno počúvané</string>
     <string name="no_effects_for_you">Ekvalizér nemohol byť otvorený</string>
     <string name="empty_music">Na kopírovanie hudby z počítača do zariadenia použite USB kábel.</string>
-    <string name="empty_last_added">Tu budú zobrazené skladby, ktoré ste pridali za posledný mesiac.</string>
     <string name="empty_search">Žiadne výsledky hľadania</string>
-    <string name="empty_favorite">Tu budú zobrazené skladby, ktoré ste označili ako obľúbené.</string>
-    <string name="empty_recent">Tu budú zobrazené albumy, ktoré ste počúvali. Skúste prehrať nejakú hudbu.</string>
 </resources>

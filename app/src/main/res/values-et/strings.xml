@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Lae puuduvad esitaja pildid</string>
     <string name="settings_open_source_licenses">Avatud lähtekoodiga litsentsid</string>
     <string name="settings_version_title">Versiooni number</string>
-    <string name="now_listening_to">#PraeguEsitusel <xliff:g id="artist">%2$s</xliff:g> - <xliff:g id="title">%1$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Jaga lugu, kasutades:</string>
     <string name="color_picker_title">Värvilahendus</string>
     <string name="current_color">Praegune</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: viimati kuulatud</string>
     <string name="no_effects_for_you">Ekvalaiserit ei saanud avada.</string>
     <string name="empty_music">Et kopeerida muusikat arvutist seadmesse, kasuta USB-kaablit.</string>
-    <string name="empty_last_added">Viimase kuu jooksul lisatud laulud kuvatakse siin.</string>
     <string name="empty_search">Otsing ei andnud tulemusi</string>
-    <string name="empty_favorite">Lemmikuteks märgitud laulud kuvatakse siin.</string>
-    <string name="empty_recent">Kuulatud albumid kuvatakse siin. Proovi esitada mõnda lugu.</string>
 </resources>

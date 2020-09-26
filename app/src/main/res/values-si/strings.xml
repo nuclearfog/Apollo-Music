@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">කලාකරුගේ දක්නට නොමැති පින්තූර බාගන්න</string>
     <string name="settings_open_source_licenses">විවෘත මූලාශ්‍ර බලපත්‍ර</string>
     <string name="settings_version_title">අනුවාදයේ අංකය</string>
-    <string name="now_listening_to">#<xliff:g id="artist">%2$s</xliff:g> විසින් <xliff:g id="title">%1$s</xliff:g> දැන් ධාවනයවේ #Apollo</string>
     <string name="share_track_using">ඛණ්ඩ භාවිතය බෙදාගැනීම:</string>
     <string name="color_picker_title">වර්ණ ක්‍රමානුරූපය</string>
     <string name="current_color">පවත්නා වර්ණය</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: මෑතදී ඇසූ</string>
     <string name="no_effects_for_you">සමකරකය විවෘත කල නොහැක.</string>
     <string name="empty_music">ඔබගේ පරිගණකයේ සිට ඔබගේ උපාංගයට සිංදු පිටපත් කිරීමට USB කේබලයක් භාවිතාකරන්න.</string>
-    <string name="empty_last_added">පසුගිය මාසය පුරාවට ඔබ එක් කල සිංදු මෙහි දිස්වනු ඇත.</string>
     <string name="empty_search">සෙවීම් ප්‍රතිඵල කිසිවක් නැත</string>
-    <string name="empty_favorite">ප්‍රියතමයන් ලෙස ඔබ සලකුණු කල සිංදු මෙහි දිස්වනු ඇත.</string>
-    <string name="empty_recent">ඔබ සවන්දී ඇති ඇල්බම මෙහි දිස්වනු ඇත. යම් සංගීතයක් ධාවනය කර අත්හදා බලන්න.</string>
 </resources>

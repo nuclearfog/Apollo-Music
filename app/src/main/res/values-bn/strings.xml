@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">অনুপস্থিত শিল্পীর চিত্রসমূহ ডাউনলোড করুন</string>
     <string name="settings_open_source_licenses">উন্মুক্ত লাইসেন্স</string>
     <string name="settings_version_title">সংস্করণ নাম্বর</string>
-    <string name="now_listening_to">#এখন পরিবেশিত হচ্ছে <xliff:g id="title">%1$s</xliff:g> কর্তৃক <xliff:g id="artist">%2$s</xliff:g> #অ্যাপোলো</string>
     <string name="share_track_using">ট্র্যাক শেয়ার করুন ব্যবহার করেঃ</string>
     <string name="color_picker_title">রঙ-পরিকল্পনা</string>
     <string name="current_color">বর্তমান</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">অ্যাপোলোঃ সম্প্রতি শুনেছেন</string>
     <string name="no_effects_for_you">ইকুয়ালাইজার খোলা যাবে না।</string>
     <string name="empty_music">আপনার কম্পিউটার থেকে আপনার ডিভাইসে সংগীত অনুলিপি করার জন্য, একটি ইউএসবি তার ব্যবহার করুন।</string>
-    <string name="empty_last_added">গত এক মাসের উপর যুক্ত গান গুলি এখানে দেখানো হবে।</string>
     <string name="empty_search">কোনও অনুসন্ধান ফলাফল খুঁজে পাওয়া যায়নি</string>
-    <string name="empty_favorite">আপনার চিহ্নিত প্রিয় গান গুলি এখানে দেখানো হবে।</string>
-    <string name="empty_recent">আপনি যে অ্যালবাম গুলি শুনেছেন ওগুলি এখানে প্রদর্শন করা হবে। কিছু সঙ্গীত বাজানো চেষ্টা করুন।</string>
 </resources>

@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">아티스트 이미지가 없으면 다운로드</string>
     <string name="settings_open_source_licenses">오픈 소스 라이센스</string>
     <string name="settings_version_title">버전</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">이 트랙을 공유:</string>
     <string name="color_picker_title">색 구성</string>
     <string name="current_color">현재</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: 최근 목록</string>
     <string name="no_effects_for_you">이퀄라이저를 열 수 없습니다.</string>
     <string name="empty_music">컴퓨터에서 기기로 음악을 복사하려면 USB 케이블을 연결해 주십시오.</string>
-    <string name="empty_last_added">지난 한 달 동안 추가한 노래들이 여기에 표시됩니다.</string>
     <string name="empty_search">검색 결과 없음</string>
-    <string name="empty_favorite">즐겨찾기에 추가한 노래들이 여기에 표시됩니다.</string>
-    <string name="empty_recent">최근에 재생했던 앨범들이 여기에 표시됩니다. 아무 음악이나 틀어보세요.</string>
 </resources>

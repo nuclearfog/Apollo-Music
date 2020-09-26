@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">دابه‌زاندنی وێنه‌ هونه‌رمه‌نده‌ ونبوه‌کان</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
     <string name="settings_version_title">ژماره‌ی وه‌شان</string>
-    <string name="now_listening_to">ئێشتا <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="artist">%2$s</xliff:g> لێده‌درێت</string>
     <string name="share_track_using">به‌شاریکردنی تراک به‌ به‌کارهێنانی:</string>
     <string name="color_picker_title">نه‌خشه‌ی ڕه‌نگ</string>
     <string name="current_color">هه‌نووکه‌</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">ئه‌پۆڵۆ:تازه‌ترین که‌ گوێلێگیراون</string>
     <string name="no_effects_for_you">یه‌کسانکه‌ری ده‌نگ ناکرێته‌وه‌.</string>
     <string name="empty_music">بۆ له‌به‌رگرتنه‌وه‌ی گۆرانی له‌ کۆمپیوته‌ر بۆ ئامێره‌که‌ت ، کێبڵی USB به‌کاربهێنه‌.</string>
-    <string name="empty_last_added">ئه‌و گۆرانیانه‌ی که‌ زیادکراون له‌ مانگی پێشوو لێره‌ نیشان ئه‌درێن.</string>
     <string name="empty_search">هیچ ئه‌نجامێکی گه‌ڕان نه‌دۆزرایه‌وه‌</string>
-    <string name="empty_favorite">ئه‌و گۆرانیانه‌ی په‌سه‌ندن له‌لات لێره‌ نیشان ده‌درێن.</string>
-    <string name="empty_recent">ئه‌و ئه‌لبومانه‌ی که‌ گوێت لێگرتوون لێره‌ نیشان ئه‌درێن ، گۆرانی لێبده‌.</string>
 </resources>

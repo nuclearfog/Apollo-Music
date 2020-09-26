@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">تحميل صور الفنان مفقود</string>
     <string name="settings_open_source_licenses">تراخيص مفتوحة المصدر</string>
     <string name="settings_version_title">رقم الإصدار</string>
-    <string name="now_listening_to">#تشغيل جديد <xliff:g id="title">%1$s</xliff:g> بي <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">مشاركة المسار ااستخدام:</string>
     <string name="color_picker_title">نظام الألوان</string>
     <string name="current_color">الحالي</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: استمع مؤخرا</string>
     <string name="no_effects_for_you">المساوي لم يستطع الفتح.</string>
     <string name="empty_music">لنسخ ملفات الموسيقى من الكمبيوتر إلى الجهاز الخاص بك، استخدم كبل USB.</string>
-    <string name="empty_last_added">هنا ستظهر الأغاني التي قمت بإضافتها خلال الشهر الماضي.</string>
     <string name="empty_search">لم يتم العثور على نتائج البحث</string>
-    <string name="empty_favorite">الأغاني التي وضعت علامة المفضلة ستظهر هنا.</string>
-    <string name="empty_recent">ألبوم قمت بلإستماع عليه  سوف تظهر هنا. حاول تشغيل بعض الموسيقى.</string>
 </resources>

@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Descarrega les imatges dels artistes que faltin</string>
     <string name="settings_open_source_licenses">Llicencies de codi obert</string>
     <string name="settings_version_title">Número de versió</string>
-    <string name="now_listening_to">#AraReproduint <xliff:g id="title">%1$s</xliff:g> de <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Comparteix la pista utilitzant:</string>
     <string name="color_picker_title">Esquema de color</string>
     <string name="current_color">Actual</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: escoltats recentment</string>
     <string name="no_effects_for_you">L\'equalitzador no s\'ha pogut obrir.</string>
     <string name="empty_music">Per copiar música del teu ordenador al teu dispositiu, utilitza un cable USB.</string>
-    <string name="empty_last_added">Les cançons que has afegit durant el darrer mes es mostraran aquí.</string>
     <string name="empty_search">No s\'han trobat resultats</string>
-    <string name="empty_favorite">Les cançons que marquis com a preferides es mostraran aquí.</string>
-    <string name="empty_recent">Els Àlbums que hagis escoltat es mostraran aquí. Prova de reproduir una mica de música.</string>
 </resources>

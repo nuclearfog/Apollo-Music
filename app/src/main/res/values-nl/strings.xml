@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Artiestenafbeeldingen downloaden</string>
     <string name="settings_open_source_licenses">Open-sourcelicenties</string>
     <string name="settings_version_title">Versienummer</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> door <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Nummer delen via:</string>
     <string name="color_picker_title">Kleurenschema</string>
     <string name="current_color">Huidige</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: recent afgespeeld</string>
     <string name="no_effects_for_you">Kan equalizer niet openen.</string>
     <string name="empty_music">Om muziek van uw computer te kopiëren naar uw apparaat, kunt u een USB-kabel gebruiken.</string>
-    <string name="empty_last_added">Afgespeelde nummers in de afgelopen maand worden hier getoond.</string>
     <string name="empty_search">Geen zoekresultaten gevonden</string>
-    <string name="empty_favorite">Uw favoriete nummers worden hier getoond.</string>
-    <string name="empty_recent">Afgespeelde albums worden hier getoond. Probeer wat muziek af te spelen.</string>
 </resources>

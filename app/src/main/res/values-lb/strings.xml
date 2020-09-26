@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Feelend Interpretebiller lueden</string>
     <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="settings_version_title">Versiounsnummer</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> vum <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Titel deelen iwwer:</string>
     <string name="color_picker_title">Faarfschema</string>
     <string name="current_color">Aktuell</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Viru kuerzem gelauschtert</string>
     <string name="no_effects_for_you">Den Equalizer konnt net opgemaach ginn.</string>
     <string name="empty_music">Benotz en USB-Kabel fir Musek vun dengem Computer op den Apparat z\'iwwerdroen.</string>
-    <string name="empty_last_added">Lidder, déi s du an e leschte Méint gelauschtert hues, ginn hei ugewisen.</string>
     <string name="empty_search">Keng Sichresultater fonnt</string>
-    <string name="empty_favorite">Lidder, déi s du als Favorit markéiert hues, ginn hei ugewisen.</string>
-    <string name="empty_recent">Alben, déi s du gelauschtert hues, ginn hei ugewisen.</string>
 </resources>

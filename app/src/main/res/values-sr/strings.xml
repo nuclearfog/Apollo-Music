@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Преузми слике аутора које недостају</string>
     <string name="settings_open_source_licenses">Open Source лиценце</string>
     <string name="settings_version_title">Број верзије</string>
-    <string name="now_listening_to">#Тренутно се слуша <xliff:g id="title">%1$s</xliff:g> од <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Дели песму путем:</string>
     <string name="color_picker_title">Боје</string>
     <string name="current_color">Тренутна</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: недавно слушане</string>
     <string name="no_effects_for_you">Еквилајзер не може бити отворен.</string>
     <string name="empty_music">Да копираш музику са рачунара на твој уређај, користи USB кабал.</string>
-    <string name="empty_last_added">Песме које си додао током претходног месеца ће бити приказане овде.</string>
     <string name="empty_search">Нема пронађених резултата</string>
-    <string name="empty_favorite">Песме које означиш као омиљене ће бити приказане овде.</string>
-    <string name="empty_recent">Албуми које си слушао ће бити приказани овде. Пробај да пустиш неку музику.</string>
 </resources>

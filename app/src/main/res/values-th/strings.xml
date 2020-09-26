@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">ดาวน์โหลดภาพศิลปินที่หายไป</string>
     <string name="settings_open_source_licenses">ใบอนุญาต Open source</string>
     <string name="settings_version_title">หมายเลขรุ่น</string>
-    <string name="now_listening_to">#กำลังเล่น <xliff:g id="title">%1$s</xliff:g> โดย <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">แบ่งปันแท็กโดย:</string>
     <string name="color_picker_title">เฉดสี</string>
     <string name="current_color">ปัจจุบัน</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: ฟังล่าสุด</string>
     <string name="no_effects_for_you">ไม่สามารถเปิด equalizer ได้</string>
     <string name="empty_music">คัดลอกเพลงจากคอมพิวเตอร์ของคุณสู่อุปกรณ์ผ่านสาย USB</string>
-    <string name="empty_last_added">เพลงที่คุณเพิ่มมาในเดือนที่แล้วจะแสดงที่นี่</string>
     <string name="empty_search">ไม่พบผลการค้นหา</string>
-    <string name="empty_favorite">เพลงที่คุณทำเป็นรายการโปรดจะแสดงที่นี่</string>
-    <string name="empty_recent">อัลบั้มที่คุณฟังจะแสดงที่นี่ ลองเล่นบางเพลงดู</string>
 </resources>

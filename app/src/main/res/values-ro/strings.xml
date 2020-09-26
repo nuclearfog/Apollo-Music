@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Imaginea artistului lipsește din descărcare</string>
     <string name="settings_open_source_licenses">Licențe Open source</string>
     <string name="settings_version_title">Număr versiune</string>
-    <string name="now_listening_to">#AcumAsculți <xliff:g id="title">%1$s</xliff:g> de <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Distribuie melodia folosind:</string>
     <string name="color_picker_title">Schema de culori</string>
     <string name="current_color">Curent</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: ascultate recent</string>
     <string name="no_effects_for_you">Egalizatorul nu a putut fi deschis.</string>
     <string name="empty_music">Pentru a copia muzică de pe computer în dispozitivul dvs, folosiți un cablu USB.</string>
-    <string name="empty_last_added">Melodiile adăugare de dvs în ultima lună vor fi afișate aici.</string>
     <string name="empty_search">Nu am găsit rezultate la căutare</string>
-    <string name="empty_favorite">Melodiile marcate de dvs ca favorite vor fi afișate aici.</string>
-    <string name="empty_recent">Albumele ascultate de dvs vor fi afișate aici. Încearcă să asculți ceva muzică.</string>
 </resources>

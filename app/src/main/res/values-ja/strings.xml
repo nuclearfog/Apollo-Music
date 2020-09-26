@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">持っていないアーティスト画像をダウンロード</string>
     <string name="settings_open_source_licenses">オープンソースライセンス</string>
     <string name="settings_version_title">バージョン番号</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">トラックを共有する方法:</string>
     <string name="color_picker_title">配色</string>
     <string name="current_color">現在の配色</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: 最近聴いた曲</string>
     <string name="no_effects_for_you">イコライザーを開けませんでした。</string>
     <string name="empty_music">パソコンから端末に音楽をコピーするには、USBケーブルを使用してください。</string>
-    <string name="empty_last_added">一ヶ月の間に追加した曲がここに表示されます。</string>
     <string name="empty_search">検索結果は見つかりませんでした</string>
-    <string name="empty_favorite">お気に入りに追加した曲がここに表示されます。</string>
-    <string name="empty_recent">聴いたアルバムがここに表示されます。なにか再生してみましょう。</string>
 </resources>

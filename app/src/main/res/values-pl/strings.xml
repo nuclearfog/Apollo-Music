@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Pobierz brakujące zdjęcia wykonawców</string>
     <string name="settings_open_source_licenses">Licencje open source</string>
     <string name="settings_version_title">Numer wersji</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> wykonawcy <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Udostępnij utwór za pomocą:</string>
     <string name="color_picker_title">Schemat kolorów</string>
     <string name="current_color">Bieżący</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Ostatnio słuchane</string>
     <string name="no_effects_for_you">Equalizer nie może zostać uruchomiony.</string>
     <string name="empty_music">Aby skopiować muzykę z komputera do urządzenia, użyj kabla USB.</string>
-    <string name="empty_last_added">Tutaj pojawią się utwory dodane w przeciągu ostatniego miesiąca.</string>
     <string name="empty_search">Nie znaleziono pasujących wyników</string>
-    <string name="empty_favorite">Tutaj pojawią się utwory oznaczone jako ulubione.</string>
-    <string name="empty_recent">Ostatnio przesłuchane albumy pojawią się tutaj. Zobaczysz je po odtworzeniu kilku utworów.</string>
 </resources>

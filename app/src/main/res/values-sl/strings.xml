@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Prenesi manjkajoče slike izvajalcev</string>
     <string name="settings_open_source_licenses">Odprtokodne licence</string>
     <string name="settings_version_title">Številka različice</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> od <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Deli skladbo z uporabo:</string>
     <string name="color_picker_title">Barvna shema</string>
     <string name="current_color">Trenutna</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: nedavno poslušano</string>
     <string name="no_effects_for_you">Izenačevalnika ni mogoče odpreti.</string>
     <string name="empty_music">Za kopiranje glasbe iz vašega računalnika na vašo napravo uporabite kabel USB.</string>
-    <string name="empty_last_added">Skladbe, ki ste jih dodali v zadnjem mesecu, bodo prikazane tukaj.</string>
     <string name="empty_search">Rezultatov iskanja ni bilo najdenih</string>
-    <string name="empty_favorite">Skladbe, ki jih označite kot priljubljene, bodo prikazane tukaj.</string>
-    <string name="empty_recent">Albume, ki ste jih poslušali, bodo prikazani tukaj. Poskusite predvajati nekaj glasbe.</string>
 </resources>

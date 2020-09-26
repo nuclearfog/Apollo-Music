@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Ladda ned saknade artistbilder</string>
     <string name="settings_open_source_licenses">Licens för öppen källkod</string>
     <string name="settings_version_title">Version</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> av <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Dela låt med:</string>
     <string name="color_picker_title">Färgschema</string>
     <string name="current_color">Nuvarande</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: nyligen lyssnade</string>
     <string name="no_effects_for_you">Equalizern kan inte öppnas.</string>
     <string name="empty_music">Använd en USB-kabel för att kopiera musik från din dator till din enhet.</string>
-    <string name="empty_last_added">Låtar som du har lagt till under den senaste månaden kommer att synas här.</string>
     <string name="empty_search">Inga sökresultat hittades</string>
-    <string name="empty_favorite">Låtar som du markerar som Favoriter kommer att synas här.</string>
-    <string name="empty_recent">Album som du har lyssnat på kommer att synas här. Testa att spela lite musik.</string>
 </resources>

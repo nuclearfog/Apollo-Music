@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Preuzmi slike umjetnika koje nedostaju</string>
     <string name="settings_open_source_licenses">Open source licence</string>
     <string name="settings_version_title">Broj verzije</string>
-    <string name="now_listening_to">#Izvođenje <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Dijeli pjesmu preko:</string>
     <string name="color_picker_title">Šema boja</string>
     <string name="current_color">Trenutna</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: nedavno slušano</string>
     <string name="no_effects_for_you">Ekvalizer se ne može otvoriti.</string>
     <string name="empty_music">Za kopiranje glazbe s računala na uređaj, koristite USB kabel.</string>
-    <string name="empty_last_added">Pjesme koje ste dodali u posljednjih mjesec dana biti će prikazane ovdje.</string>
     <string name="empty_search">Nema rezultata pretraživanja</string>
-    <string name="empty_favorite">Pjesme koje označite kao favorite biti će prikazane ovdje.</string>
-    <string name="empty_recent">Albumi koje ste slušali će se pojaviti ovdje. Pokušajte svirati neku glazbu.</string>
 </resources>

@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Kayıp sanatçı resimlerini indir</string>
     <string name="settings_open_source_licenses">Açık kaynak lisansları</string>
     <string name="settings_version_title">Sürüm numarası</string>
-    <string name="now_listening_to">#ŞimdiÇalınıyor <xliff:g id="title">%1$s</xliff:g>, Sanatçı: <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Parçayı şunu kullanarak paylaş:</string>
     <string name="color_picker_title">Renk planı</string>
     <string name="current_color">Şimdiki</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: en son dinlenilenler</string>
     <string name="no_effects_for_you">Equalizer açılamadı</string>
     <string name="empty_music">Bilgisayarınızdan cihazınıza müzik kopyalamak için bir USB kablosu kullanın.</string>
-    <string name="empty_last_added">Geçen ay boyunca eklediğiniz şarkılar burada gösterilecek.</string>
     <string name="empty_search">Arama sonucu bulunamadı</string>
-    <string name="empty_favorite">Fovori olarak eklediğiniz şarkılar burada gösterilecek.</string>
-    <string name="empty_recent">Dinlediğiniz albümler burada gözükecek. Biraz müzik çalmayı deneyin.</string>
 </resources>

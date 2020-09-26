@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Download missing artist images</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
     <string name="settings_version_title">Version number</string>
-    <string name="now_listening_to">#NowPlaying <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Share track using:</string>
     <string name="color_picker_title">Colour scheme</string>
     <string name="current_color">Current</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Recently listened</string>
     <string name="no_effects_for_you">The equaliser could not be opened.</string>
     <string name="empty_music">To copy music from your computer to your device, use a USB cable.</string>
-    <string name="empty_last_added">Songs you have added over the last month will be shown here.</string>
     <string name="empty_search">No search results found</string>
-    <string name="empty_favorite">Songs you mark as favourites will be shown here.</string>
-    <string name="empty_recent">Albums you have listened to will show up here. Try playing some music.</string>
 </resources>

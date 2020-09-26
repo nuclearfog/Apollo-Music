@@ -112,7 +112,6 @@
     <string name="settings_download_artist_images_title">Laai vermiste kunstenaar foto\'s af</string>
     <string name="settings_open_source_licenses">Oopbronlisensies</string>
     <string name="settings_version_title">Bouweergawe</string>
-    <string name="now_listening_to">#Speel nou <xliff:g id="title">%1$s</xliff:g> deur <xliff:g id="artist">%2$s</xliff:g> #Apollo</string>
     <string name="share_track_using">Deel liedtjie d.m.v.:</string>
     <string name="color_picker_title">Kleur skema</string>
     <string name="current_color">Huidig</string>
@@ -121,8 +120,5 @@
     <string name="app_widget_recent">Apollo: Onlangs geluister</string>
     <string name="no_effects_for_you">Die equalizer kon nie oopgemaak word nie.</string>
     <string name="empty_music">Om musiek van jou rekenaar na jou toestel te kopieer, gebruik \'n USB-kabel.</string>
-    <string name="empty_last_added">Liedjies wat jy die afgelope maand bygevoeg het word hier vertoon.</string>
     <string name="empty_search">Geen resultate gevind nie</string>
-    <string name="empty_favorite">Liedjies wat jy gemerk het as gunstellinge word hier vertoon.</string>
-    <string name="empty_recent">Albums wat jy na geluister het sal hier gelys word. Speel \'n bietjie musiek.</string>
 </resources>

@@ -385,9 +385,9 @@ public class MusicPlaybackService extends Service {
 
     private int mServiceStartId = -1;
 
-    private List<Long> mPlayList = new LinkedList<>();
+    private final List<Long> mPlayList = new LinkedList<>();
 
-    private List<Long> mAutoShuffleList = new LinkedList<>();
+    private final List<Long> mAutoShuffleList = new LinkedList<>();
 
     private MusicPlayerHandler mPlayerHandler;
     private final OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
@@ -958,20 +958,16 @@ public class MusicPlaybackService extends Service {
      * playback
      */
     private void openCurrentAndNext() {
-        openCurrentAndMaybeNext(true);
+        openCurrentTrack();
+        setNextTrack();
     }
 
     /**
-     * Called to open a new file as the current track and prepare the next for
-     * playback
-     *
-     * @param openNext True to prepare the next track for playback, false
-     *                 otherwise.
+     * Called to open a new file as the current track and prepare the next for playback
      */
-    private void openCurrentAndMaybeNext(boolean openNext) {
+    private void openCurrentTrack() {
         synchronized (this) {
             closeCursor();
-
             if (mPlayList.isEmpty()) {
                 return;
             }
@@ -1006,10 +1002,6 @@ public class MusicPlaybackService extends Service {
                     mIsSupposedToBePlaying = false;
                     notifyChange(PLAYSTATE_CHANGED);
                 }
-                return;
-            }
-            if (openNext) {
-                setNextTrack();
             }
         }
     }
@@ -1094,7 +1086,7 @@ public class MusicPlaybackService extends Service {
      */
     private void setNextTrack() {
         mNextPlayPos = getNextPosition(false);
-        if (mNextPlayPos >= 0 && mPlayList != null) {
+        if (mNextPlayPos >= 0) {
             long id = mPlayList.get(mNextPlayPos);
             mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
         } else {
@@ -1301,7 +1293,8 @@ public class MusicPlaybackService extends Service {
     private void reloadQueue() {
         int id = settings.getCardId();
         if (id == mCardId) {
-            mPlayList = settings.getPlaylist();
+            mPlayList.clear();
+            mPlayList.addAll(settings.getPlaylist());
         }
         if (!mPlayList.isEmpty()) {
             int pos = settings.getCursorPosition();
@@ -1835,7 +1828,6 @@ public class MusicPlaybackService extends Service {
                 }
                 return;
             }
-            mPlayPos = pos;
             stop(false);
             mPlayPos = pos;
             openCurrentAndNext();
@@ -1876,7 +1868,7 @@ public class MusicPlaybackService extends Service {
      * the previously listened track if they're shuffling.
      */
     private void openCurrent() {
-        openCurrentAndMaybeNext(false);
+        openCurrentTrack();
     }
 
     /**
@@ -1904,27 +1896,22 @@ public class MusicPlaybackService extends Service {
             if (index2 >= mPlayList.size()) {
                 index2 = mPlayList.size() - 1;
             }
-
-            long data1 = mPlayList.get(index1);
-            long data2 = mPlayList.get(index2);
-
-            mPlayList.set(index1, data2);
-            mPlayList.set(index2, data1);
-
-            if (index1 < index2) {
+            if (index1 != index2) {
+                // swap track
+                long data1 = mPlayList.get(index1);
+                long data2 = mPlayList.get(index2);
+                mPlayList.set(index1, data2);
+                mPlayList.set(index2, data1);
+                // set current play pos
                 if (mPlayPos == index1) {
                     mPlayPos = index2;
                 } else if (mPlayPos >= index1 && mPlayPos <= index2) {
                     mPlayPos--;
-                }
-            } else if (index2 < index1) {
-                if (mPlayPos == index1) {
-                    mPlayPos = index2;
-                } else if (mPlayPos >= index2 && mPlayPos <= index1) {
+                } else if (mPlayPos <= index1 && mPlayPos >= index2) {
                     mPlayPos++;
                 }
+                notifyChange(QUEUE_CHANGED);
             }
-            notifyChange(QUEUE_CHANGED);
         }
     }
 

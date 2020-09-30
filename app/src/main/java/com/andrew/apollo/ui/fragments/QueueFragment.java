@@ -339,10 +339,10 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             mSong = mAdapter.getItem(from);
             mAdapter.remove(mSong);
             mAdapter.insert(mSong, to);
-            mAdapter.notifyDataSetChanged();
-            // Build the cache
-            mAdapter.buildCache();
         }
+        // Build the cache
+        mAdapter.notifyDataSetChanged();
+        mAdapter.buildCache();
     }
 
     /**

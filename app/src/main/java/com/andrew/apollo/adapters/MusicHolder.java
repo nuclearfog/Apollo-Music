@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.andrew.apollo.R;
 
 /**
@@ -142,5 +144,10 @@ public class MusicHolder {
             super();
         }
 
+        @Override
+        @NonNull
+        public String toString() {
+            return mLineOne + " - " + mLineTwo;
+        }
     }
 }

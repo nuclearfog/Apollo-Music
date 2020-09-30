@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Song;
@@ -35,11 +36,6 @@ import com.andrew.apollo.utils.MusicUtils;
 public class SongAdapter extends ArrayAdapter<Song> {
 
     /**
-     * Number of views (TextView)
-     */
-    private static final int VIEW_TYPE_COUNT = 1;
-
-    /**
      * The resource Id of the layout to inflate
      */
     private final int mLayoutId;
@@ -55,7 +51,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * @param context  The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
-    public SongAdapter(final Context context, final int layoutId) {
+    public SongAdapter(Context context, int layoutId) {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
@@ -66,7 +62,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
      */
     @NonNull
     @Override
-    public View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
@@ -78,10 +74,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the data holder
-        final DataHolder dataHolder = mData[position];
-
+        DataHolder dataHolder = mData[position];
         // Set each song name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the song duration (line one, right)
@@ -97,14 +91,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
     @Override
     public boolean hasStableIds() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
     }
 
     /**

@@ -60,6 +60,7 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -266,14 +267,24 @@ public class MusicPlaybackService extends Service {
     };
 
     /**
-     * Keeps a mapping of the track history
-     */
-    private static List<Integer> mHistory = new LinkedList<>();
-
-    /**
      * Used to shuffle the tracks
      */
     private static final Shuffler mShuffler = new Shuffler();
+
+    /**
+     * Keeps a mapping of the track history
+     */
+    private static final List<Integer> mHistory = new LinkedList<>();
+
+    /**
+     * current playlist containing track ID's
+     */
+    private final List<Long> mPlayList = new LinkedList<>();
+
+    /**
+     * current shuffle list contaning track ID's
+     */
+    private final List<Long> mAutoShuffleList = new LinkedList<>();
 
     /**
      * Service stub
@@ -384,10 +395,6 @@ public class MusicPlaybackService extends Service {
     private int mRepeatMode = REPEAT_ALL;
 
     private int mServiceStartId = -1;
-
-    private final List<Long> mPlayList = new LinkedList<>();
-
-    private final List<Long> mAutoShuffleList = new LinkedList<>();
 
     private MusicPlayerHandler mPlayerHandler;
     private final OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
@@ -1179,14 +1186,12 @@ public class MusicPlaybackService extends Service {
      * Notify the change-receivers that something has changed.
      */
     private void notifyChange(String what) {
-
         // Update the lockscreen controls
         updateRemoteControlClient(what);
 
         if (what.equals(POSITION_CHANGED)) {
             return;
         }
-
         Intent intent = new Intent(what);
         intent.putExtra("id", getAudioId());
         intent.putExtra("artist", getArtistName());
@@ -1327,7 +1332,8 @@ public class MusicPlaybackService extends Service {
                 shufmode = SHUFFLE_NONE;
             }
             if (shufmode != SHUFFLE_NONE) {
-                mHistory = settings.getTrackHistory();
+                mHistory.clear();
+                mHistory.addAll(settings.getTrackHistory());
             }
             if (shufmode == SHUFFLE_AUTO) {
                 if (!makeAutoShuffleList()) {
@@ -1885,33 +1891,29 @@ public class MusicPlaybackService extends Service {
     /**
      * Moves an item in the queue from one position to another
      *
-     * @param index1 The position the item is currently at
-     * @param index2 The position the item is being moved to
+     * @param from The position the item is currently at
+     * @param to   The position the item is being moved to
      */
-    public void moveQueueItem(int index1, int index2) {
+    public void moveQueueItem(int from, int to) {
         synchronized (this) {
-            if (index1 >= mPlayList.size()) {
-                index1 = mPlayList.size() - 1;
+            if (from >= mPlayList.size()) {
+                from = mPlayList.size() - 1;
             }
-            if (index2 >= mPlayList.size()) {
-                index2 = mPlayList.size() - 1;
+            if (to >= mPlayList.size()) {
+                to = mPlayList.size() - 1;
             }
-            if (index1 != index2) {
-                // swap track
-                long data1 = mPlayList.get(index1);
-                long data2 = mPlayList.get(index2);
-                mPlayList.set(index1, data2);
-                mPlayList.set(index2, data1);
-                // set current play pos
-                if (mPlayPos == index1) {
-                    mPlayPos = index2;
-                } else if (mPlayPos >= index1 && mPlayPos <= index2) {
-                    mPlayPos--;
-                } else if (mPlayPos <= index1 && mPlayPos >= index2) {
-                    mPlayPos++;
-                }
-                notifyChange(QUEUE_CHANGED);
+            // swap track
+            Collections.swap(mPlayList, from, to);
+            // set current play pos
+            if (mPlayPos == from) {
+                mPlayPos = to;
+            } else if (mPlayPos >= from && mPlayPos <= to) {
+                mPlayPos--;
+            } else if (mPlayPos <= from && mPlayPos >= to) {
+                mPlayPos++;
             }
+            mNextPlayPos = getNextPosition(false);
+            notifyChange(QUEUE_CHANGED);
         }
     }
 

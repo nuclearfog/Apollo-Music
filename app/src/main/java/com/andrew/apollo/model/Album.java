@@ -56,8 +56,7 @@ public class Album {
      * @param songNumber The number of songs in the album
      * @param albumYear  The year the album was released
      */
-    public Album(final long albumId, final String albumName, final String artistName,
-                 final int songNumber, final String albumYear) {
+    public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
         super();
         mAlbumId = albumId;
         mAlbumName = albumName;
@@ -71,7 +70,7 @@ public class Album {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + (int) mAlbumId;
         result = prime * result + (mAlbumName == null ? 0 : mAlbumName.hashCode());

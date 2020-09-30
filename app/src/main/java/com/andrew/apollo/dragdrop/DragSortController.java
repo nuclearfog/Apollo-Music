@@ -1,5 +1,6 @@
 package com.andrew.apollo.dragdrop;
 
+import android.annotation.SuppressLint;
 import android.graphics.Point;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -145,6 +146,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
     /**
      * {@inheritDoc}
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent ev) {
         mDetector.onTouchEvent(ev);
@@ -348,5 +350,4 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
     @Override
     public void onShowPress(MotionEvent ev) {
     }
-
 }

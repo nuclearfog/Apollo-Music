@@ -56,8 +56,7 @@ public class Song {
      * @param albumName  The song album
      * @param duration   The duration of a song in seconds
      */
-    public Song(final long songId, final String songName, final String artistName,
-                final String albumName, final int duration) {
+    public Song(long songId, String songName, String artistName, String albumName, int duration) {
         mSongId = songId;
         mSongName = songName;
         mArtistName = artistName;
@@ -70,7 +69,7 @@ public class Song {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + (mAlbumName == null ? 0 : mAlbumName.hashCode());
         result = prime * result + (mArtistName == null ? 0 : mArtistName.hashCode());
@@ -84,7 +83,7 @@ public class Song {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }

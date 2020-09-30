@@ -50,8 +50,7 @@ public class Artist {
      * @param songNumber  The number of songs for the artist
      * @param albumNumber The number of albums for the artist
      */
-    public Artist(final long artistId, final String artistName, final int songNumber,
-                  final int albumNumber) {
+    public Artist(long artistId, String artistName, int songNumber, int albumNumber) {
         super();
         mArtistId = artistId;
         mArtistName = artistName;
@@ -64,7 +63,7 @@ public class Artist {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + mAlbumNumber;
         result = prime * result + (int) mArtistId;

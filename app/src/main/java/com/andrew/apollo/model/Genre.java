@@ -38,7 +38,7 @@ public class Genre {
      * @param genreId   The Id of the genre
      * @param genreName The genre name
      */
-    public Genre(final long genreId, final String genreName) {
+    public Genre(long genreId, String genreName) {
         super();
         mGenreId = genreId;
         mGenreName = genreName;
@@ -49,7 +49,7 @@ public class Genre {
      */
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + (int) mGenreId;
         result = prime * result + (mGenreName == null ? 0 : mGenreName.hashCode());
@@ -60,7 +60,7 @@ public class Genre {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }

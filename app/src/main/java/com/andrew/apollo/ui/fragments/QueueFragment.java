@@ -334,13 +334,15 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      */
     @Override
     public void drop(int from, int to) {
-        mSong = mAdapter.getItem(from);
-        mAdapter.remove(mSong);
-        mAdapter.insert(mSong, to);
-        mAdapter.notifyDataSetChanged();
-        MusicUtils.moveQueueItem(from, to);
-        // Build the cache
-        mAdapter.buildCache();
+        if (from != to) {
+            MusicUtils.moveQueueItem(from, to);
+            mSong = mAdapter.getItem(from);
+            mAdapter.remove(mSong);
+            mAdapter.insert(mSong, to);
+            mAdapter.notifyDataSetChanged();
+            // Build the cache
+            mAdapter.buildCache();
+        }
     }
 
     /**

@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height">
 
@@ -23,7 +23,8 @@
         android:layout_width="@dimen/drag_and_drop_handle"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
-        android:src="@drawable/playlist_tile_normal" />
+        android:src="@drawable/playlist_tile_normal"
+        tools:ignore="ContentDescription" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -33,6 +34,7 @@
         android:layout_toEndOf="@+id/edit_track_list_item_handle">
 
         <include layout="@layout/list_item_simple" />
+
     </FrameLayout>
 
 </RelativeLayout>

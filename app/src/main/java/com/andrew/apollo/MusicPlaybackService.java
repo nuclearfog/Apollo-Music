@@ -69,7 +69,7 @@ import java.util.TreeSet;
  * A backbround {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
-public class MusicPlaybackService extends Service {
+public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
 
     /**
      * For backwards compatibility reasons, also provide sticky
@@ -311,6 +311,16 @@ public class MusicPlaybackService extends Service {
     private final RecentWidgetProvider mRecentWidgetProvider = RecentWidgetProvider.getInstance();
 
     /**
+     * Broadcast receiver for widget actions
+     */
+    private final BroadcastReceiver mIntentReceiver = new WidgetBroadcastReceiver();
+
+    /**
+     * broadcast listener for unmounting external storage
+     */
+    private BroadcastReceiver mUnmountReceiver = null;
+
+    /**
      * The media player
      */
     private MultiPlayer mPlayer;
@@ -396,16 +406,7 @@ public class MusicPlaybackService extends Service {
     private int mServiceStartId = -1;
 
     private MusicPlayerHandler mPlayerHandler;
-    private final OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onAudioFocusChange(int focusChange) {
-            mPlayerHandler.obtainMessage(FOCUSCHANGE, focusChange, 0).sendToTarget();
-        }
-    };
-    private BroadcastReceiver mUnmountReceiver = null;
+
     /**
      * Image cache
      */
@@ -422,30 +423,6 @@ public class MusicPlaybackService extends Service {
      * Favorites database
      */
     private FavoritesStore mFavoritesCache;
-    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String command = intent.getStringExtra(CMDNAME);
-            if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetSmall.performUpdate(MusicPlaybackService.this, small);
-            } else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] large = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetLarge.performUpdate(MusicPlaybackService.this, large);
-            } else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] largeAlt = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetLargeAlternate.performUpdate(MusicPlaybackService.this, largeAlt);
-            } else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] recent = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mRecentWidgetProvider.performUpdate(MusicPlaybackService.this, recent);
-            } else {
-                handleCommandIntent(intent);
-            }
-        }
-    };
 
     /**
      * {@inheritDoc}
@@ -569,6 +546,14 @@ public class MusicPlaybackService extends Service {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        mPlayerHandler.obtainMessage(FOCUSCHANGE, focusChange, 0).sendToTarget();
+    }
+
+    /**
      * Initializes the remote control client
      */
     private void setUpRemoteControlClient() {
@@ -617,26 +602,19 @@ public class MusicPlaybackService extends Service {
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
         sendBroadcast(audioEffectsIntent);
-
         // remove any pending alarms
         mAlarmManager.cancel(mShutdownIntent);
-
         // Remove all pending messages before kill the player
         mPlayerHandler.removeCallbacksAndMessages(null);
-
         // Release the player
         mPlayer.release();
-
         // Remove the audio focus listener and lock screen controls
-        mAudioManager.abandonAudioFocus(mAudioFocusListener);
+        mAudioManager.abandonAudioFocus(this);
         mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
-
         // Remove any callbacks from the handler
         mPlayerHandler.removeCallbacksAndMessages(null);
-
         // Close the cursor
         closeCursor();
-
         // Unregister the mount listener
         unregisterReceiver(mIntentReceiver);
         if (mUnmountReceiver != null) {
@@ -651,7 +629,6 @@ public class MusicPlaybackService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mServiceStartId = startId;
-
         if (intent != null) {
             String action = intent.getAction();
             if (intent.hasExtra(NOW_IN_FOREGROUND)) {
@@ -665,32 +642,33 @@ public class MusicPlaybackService extends Service {
             }
             handleCommandIntent(intent);
         }
-
         // Make sure the service will shut down on its own if it was
         // just started but not bound to and nothing is playing
         scheduleDelayedShutdown();
-
         if (intent != null && intent.getBooleanExtra(FROM_MEDIA_BUTTON, false)) {
             MediaButtonIntentReceiver.completeWakefulIntent(intent);
         }
-
         return START_STICKY;
     }
 
+    /**
+     *
+     */
     private void releaseServiceUiAndStop() {
         if (isPlaying() || mPausedByTransientLossOfFocus || mPlayerHandler.hasMessages(TRACK_ENDED)) {
             return;
         }
-
         stopForeground(true);
-        mAudioManager.abandonAudioFocus(mAudioFocusListener);
-
+        mAudioManager.abandonAudioFocus(this);
         if (!mServiceInUse) {
             saveQueue(true);
             stopSelf(mServiceStartId);
         }
     }
 
+    /**
+     *
+     */
     private void handleCommandIntent(Intent intent) {
         String action = intent.getAction();
         String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
@@ -739,6 +717,9 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     *
+     */
     private void getCardId() {
         try {
             ContentResolver resolver = getContentResolver();
@@ -769,27 +750,7 @@ public class MusicPlaybackService extends Service {
      */
     public void registerExternalStorageListener() {
         if (mUnmountReceiver == null) {
-            mUnmountReceiver = new BroadcastReceiver() {
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String action = intent.getAction();
-                    if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
-                        saveQueue(true);
-                        mQueueIsSaveable = false;
-                        closeExternalStorageFiles();
-                    } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-                        mMediaMountedCount++;
-                        getCardId();
-                        reloadQueue();
-                        mQueueIsSaveable = true;
-                        notifyChange(QUEUE_CHANGED);
-                        notifyChange(META_CHANGED);
-                    }
-                }
-            };
+            mUnmountReceiver = new UnmountBroadcastReceiver();
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_MEDIA_EJECT);
             filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
@@ -798,11 +759,17 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     *
+     */
     private void scheduleDelayedShutdown() {
         mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY, mShutdownIntent);
         mShutdownScheduled = true;
     }
 
+    /**
+     *
+     */
     private void cancelShutdown() {
         if (mShutdownScheduled) {
             mAlarmManager.cancel(mShutdownIntent);
@@ -854,10 +821,8 @@ public class MusicPlaybackService extends Service {
             } else if (mPlayPos > last) {
                 mPlayPos -= last - first + 1;
             }
-
             // remove a range of tracks from playlist
             mPlayList.subList(first, last + 1).clear();
-
             if (gotonext) {
                 if (mPlayList.isEmpty()) {
                     stop(true);
@@ -911,6 +876,9 @@ public class MusicPlaybackService extends Service {
         updateCursor("_id=" + trackId, null);
     }
 
+    /**
+     *
+     */
     private void updateCursor(String selection, String[] selectionArgs) {
         synchronized (this) {
             closeCursor();
@@ -919,6 +887,9 @@ public class MusicPlaybackService extends Service {
         updateAlbumCursor();
     }
 
+    /**
+     *
+     */
     private void updateCursor(Uri uri) {
         synchronized (this) {
             closeCursor();
@@ -927,6 +898,9 @@ public class MusicPlaybackService extends Service {
         updateAlbumCursor();
     }
 
+    /**
+     *
+     */
     private void updateAlbumCursor() {
         long albumId = getAlbumId();
         if (albumId >= 0) {
@@ -936,6 +910,9 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     *
+     */
     private Cursor openCursorAndGoToFirst(Uri uri, String[] projection, String selection, String[] selectionArgs) {
         Cursor c = getContentResolver().query(uri, projection, selection, selectionArgs, null, null);
         if (c == null) {
@@ -948,6 +925,9 @@ public class MusicPlaybackService extends Service {
         return c;
     }
 
+    /**
+     *
+     */
     private void closeCursor() {
         if (mCursor != null) {
             mCursor.close();
@@ -980,7 +960,6 @@ public class MusicPlaybackService extends Service {
             stop(false);
             updateCursor(mPlayList.get(mPlayPos));
             boolean fileOpenFailed = !openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX));
-
             if (mCursor == null || mCursor.isClosed() || fileOpenFailed) {
                 // if we get here then opening the file failed. We can close the
                 // cursor now, because
@@ -1013,8 +992,7 @@ public class MusicPlaybackService extends Service {
     }
 
     /**
-     * @param force True to force the player onto the track next, false
-     *              otherwise.
+     * @param force True to force the player onto the track next, false otherwise.
      * @return The next position to play.
      */
     private int getNextPosition(boolean force) {
@@ -1161,7 +1139,9 @@ public class MusicPlaybackService extends Service {
         }
     }
 
-    /**/
+    /**
+     *
+     */
     private boolean wasRecentlyUsed(int idx, int lookbacksize) {
         if (lookbacksize == 0) {
             return false;
@@ -1179,7 +1159,6 @@ public class MusicPlaybackService extends Service {
         }
         return false;
     }
-
 
     /**
      * Notify the change-receivers that something has changed.
@@ -1776,7 +1755,7 @@ public class MusicPlaybackService extends Service {
      * Resumes or starts playback.
      */
     public void play() {
-        int status = mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        int status = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (status == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mAudioManager.registerMediaButtonEventReceiver(new ComponentName(this, MediaButtonIntentReceiver.class));
             if (mPlayer.isInitialized()) {
@@ -2101,6 +2080,62 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     * widget Broadcast listener
+     */
+    private final class WidgetBroadcastReceiver extends BroadcastReceiver {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String command = intent.getStringExtra(CMDNAME);
+            if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
+                int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+                mAppWidgetSmall.performUpdate(MusicPlaybackService.this, small);
+            } else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
+                int[] large = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+                mAppWidgetLarge.performUpdate(MusicPlaybackService.this, large);
+            } else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
+                int[] largeAlt = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+                mAppWidgetLargeAlternate.performUpdate(MusicPlaybackService.this, largeAlt);
+            } else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
+                int[] recent = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+                mRecentWidgetProvider.performUpdate(MusicPlaybackService.this, recent);
+            } else {
+                handleCommandIntent(intent);
+            }
+        }
+    }
+
+    /**
+     * Custom broadcast listener for unmounting external storage
+     */
+    private final class UnmountBroadcastReceiver extends BroadcastReceiver {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
+                saveQueue(true);
+                mQueueIsSaveable = false;
+                closeExternalStorageFiles();
+            } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
+                mMediaMountedCount++;
+                getCardId();
+                reloadQueue();
+                mQueueIsSaveable = true;
+                notifyChange(QUEUE_CHANGED);
+                notifyChange(META_CHANGED);
+            }
+        }
+    }
+
+    /**
+     *
+     */
     private static final class Shuffler {
 
         private final LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
@@ -2147,6 +2182,9 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     *
+     */
     private static final class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
         private final WeakReference<MusicPlaybackService> mService;
@@ -2381,6 +2419,9 @@ public class MusicPlaybackService extends Service {
         }
     }
 
+    /**
+     *
+     */
     private static final class ServiceStub extends IApolloService.Stub {
 
         private final WeakReference<MusicPlaybackService> mService;

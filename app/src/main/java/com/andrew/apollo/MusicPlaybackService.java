@@ -60,7 +60,6 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -1902,8 +1901,9 @@ public class MusicPlaybackService extends Service {
             if (to >= mPlayList.size()) {
                 to = mPlayList.size() - 1;
             }
-            // swap track
-            Collections.swap(mPlayList, from, to);
+            // move track
+            long trackId = mPlayList.remove(from);
+            mPlayList.add(to, trackId);
             // set current play pos
             if (mPlayPos == from) {
                 mPlayPos = to;
@@ -2496,8 +2496,7 @@ public class MusicPlaybackService extends Service {
         public void refresh() {
             MusicPlaybackService service = mService.get();
             if (service != null)
-                if (mService.get() != null)
-                    service.refresh();
+                service.refresh();
         }
 
         /**

@@ -38,8 +38,8 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
      * @return A new instance of this dialog.
      */
     public static CreateNewPlaylist getInstance(long[] list) {
-        final CreateNewPlaylist frag = new CreateNewPlaylist();
-        final Bundle args = new Bundle();
+        CreateNewPlaylist frag = new CreateNewPlaylist();
+        Bundle args = new Bundle();
         args.putLongArray("playlist_list", list);
         frag.setArguments(args);
         return frag;
@@ -69,20 +69,20 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
             getDialog().dismiss();
             return;
         }
-        final String promptformat = getString(R.string.create_playlist_prompt);
+        String promptformat = getString(R.string.create_playlist_prompt);
         mPrompt = String.format(promptformat, mDefaultname);
     }
 
     @Override
     public void onSaveClick() {
-        final String playlistName = mPlaylist.getText().toString();
+        String playlistName = mPlaylist.getText().toString();
         if (playlistName.length() > 0) {
-            final int playlistId = (int) MusicUtils.getIdForPlaylist(requireContext(), playlistName);
+            int playlistId = (int) MusicUtils.getIdForPlaylist(requireContext(), playlistName);
             if (playlistId >= 0) {
                 MusicUtils.clearPlaylist(requireContext(), playlistId);
                 MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, playlistId);
             } else {
-                final long newId = MusicUtils.createPlaylist(getActivity(),
+                long newId = MusicUtils.createPlaylist(getActivity(),
                         Capitalize.capitalize(playlistName));
                 MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, newId);
             }
@@ -98,7 +98,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
      */
     @Override
     public void onTextChangedListener() {
-        final String playlistName = mPlaylist.getText().toString();
+        String playlistName = mPlaylist.getText().toString();
         mSaveButton = mPlaylistDialog.getButton(Dialog.BUTTON_POSITIVE);
         if (mSaveButton == null) {
             return;
@@ -116,13 +116,11 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
     }
 
     private void makePlaylistName() {
-        final String template = getString(R.string.new_playlist_name_template);
+        String template = getString(R.string.new_playlist_name_template);
         int num = 1;
-        final String[] projection = new String[]{
-                MediaStore.Audio.Playlists.NAME
-        };
-        final ContentResolver resolver = requireActivity().getContentResolver();
-        final String selection = MediaStore.Audio.Playlists.NAME + " != ''";
+        String[] projection = new String[]{MediaStore.Audio.Playlists.NAME};
+        ContentResolver resolver = requireActivity().getContentResolver();
+        String selection = MediaStore.Audio.Playlists.NAME + " != ''";
         Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, projection,
                 selection, null, MediaStore.Audio.Playlists.NAME);
         if (cursor == null) {
@@ -136,7 +134,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
             done = true;
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                final String playlistname = cursor.getString(0);
+                String playlistname = cursor.getString(0);
                 if (playlistname.compareToIgnoreCase(suggestedname) == 0) {
                     suggestedname = String.format(template, num++);
                     done = false;

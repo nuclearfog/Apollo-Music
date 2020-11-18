@@ -96,7 +96,7 @@ public class DeleteDialog extends DialogFragment {
                 .setPositiveButton(delete, new OnClickListener() {
 
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         // Remove the items from the image cache
                         mFetcher.removeFromCache(key);
                         // Delete the selected item(s)
@@ -109,7 +109,7 @@ public class DeleteDialog extends DialogFragment {
                 }).setNegativeButton(R.string.cancel, new OnClickListener() {
 
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 }).create();

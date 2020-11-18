@@ -36,9 +36,9 @@ import java.util.Iterator;
  */
 public class PaginatedResult<T> implements Iterable<T> {
 
-    public final Collection<T> pageResults;
-    private final int page;
-    private final int totalPages;
+    public Collection<T> pageResults;
+    private int page;
+    private int totalPages;
 
 
     PaginatedResult(int page, int totalPages, Collection<T> pageResults) {

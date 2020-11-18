@@ -35,7 +35,7 @@ public class NowPlayingCursor extends AbstractCursor {
             AudioColumns.DURATION
     };
 
-    private final Context mContext;
+    private Context mContext;
 
     private long[] mNowPlaying;
 
@@ -196,7 +196,7 @@ public class NowPlayingCursor extends AbstractCursor {
                 mQueueCursor.close();
                 mQueueCursor = null;
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.close();
@@ -269,7 +269,7 @@ public class NowPlayingCursor extends AbstractCursor {
                 i++;
             }
             onMove(-1, mCurPos);
-        } catch (final RemoteException e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

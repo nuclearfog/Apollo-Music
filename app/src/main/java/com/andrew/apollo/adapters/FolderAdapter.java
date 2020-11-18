@@ -17,6 +17,9 @@ import java.io.File;
 
 import static android.view.View.GONE;
 
+/**
+ * decompiled from Apollo.APK version 1.6
+ */
 public class FolderAdapter extends ArrayAdapter<File> {
 
     private final int mLayoutId;

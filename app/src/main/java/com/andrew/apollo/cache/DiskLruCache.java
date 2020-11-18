@@ -137,28 +137,28 @@ public final class DiskLruCache implements Closeable {
      * if it exists when the cache is opened.
      */
 
-    private final File directory;
+    private File directory;
 
-    private final File journalFile;
+    private File journalFile;
 
-    private final File journalFileTmp;
+    private File journalFileTmp;
 
-    private final int appVersion;
+    private int appVersion;
 
-    private final long maxSize;
+    private long maxSize;
 
-    private final int valueCount;
-    private final LinkedHashMap<String, Entry> lruEntries = new LinkedHashMap<>(0,
+    private int valueCount;
+    private LinkedHashMap<String, Entry> lruEntries = new LinkedHashMap<>(0,
             0.75f, true);
     /**
      * This cache uses a single background thread to evict entries.
      */
-    private final ExecutorService executorService = new ThreadPoolExecutor(0, 1, 60L,
+    private ExecutorService executorService = new ThreadPoolExecutor(0, 1, 60L,
             TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     private long size = 0;
     private Writer journalWriter;
     private int redundantOpCount;
-    private final Callable<Void> cleanupCallable = new Callable<Void>() {
+    private Callable<Void> cleanupCallable = new Callable<Void>() {
         @Override
         public Void call() throws Exception {
             synchronized (DiskLruCache.this) {

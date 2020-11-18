@@ -35,7 +35,7 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
     /**
      * The result
      */
-    private final ArrayList<Artist> mArtistsList = Lists.newArrayList();
+    private ArrayList<Artist> mArtistsList = Lists.newArrayList();
 
     /**
      * Constructor of <code>ArtistLoader</code>

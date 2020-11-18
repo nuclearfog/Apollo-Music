@@ -32,7 +32,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * The Id of the genre the songs belong to.
@@ -44,7 +44,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      *
      * @param context The {@link Context} to use.
      */
-    public GenreSongLoader(final Context context, final Long genreId) {
+    public GenreSongLoader(Context context, Long genreId) {
         super(context);
         mGenreID = genreId;
     }
@@ -65,9 +65,9 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         /* 1 */
                         MediaStore.Audio.Genres.Members.TITLE,
                         /* 2 */
-                        MediaStore.Audio.Genres.Members.ALBUM,
+                        "album",
                         /* 3 */
-                        MediaStore.Audio.Genres.Members.ARTIST,
+                        "artist",
                         /* 4 */
                         "duration"
                         //MediaStore.Audio.Genres.Members.DURATION

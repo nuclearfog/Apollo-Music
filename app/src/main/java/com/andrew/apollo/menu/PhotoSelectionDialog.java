@@ -46,7 +46,7 @@ public class PhotoSelectionDialog extends DialogFragment {
 
     private static final int FETCH_IMAGE = 3;
     private static ProfileType mProfileType;
-    private final ArrayList<String> mChoices = Lists.newArrayList();
+    private ArrayList<String> mChoices = Lists.newArrayList();
 
     public PhotoSelectionDialog() {
     }
@@ -86,26 +86,26 @@ public class PhotoSelectionDialog extends DialogFragment {
         }
         // Dialog item Adapter
 
-        final ProfileActivity activity = (ProfileActivity) requireActivity();
+        final ProfileActivity PROFILE_ACTIVITY = (ProfileActivity) requireActivity();
         String title = getArguments() != null ? getArguments().getString(Config.NAME) : "";
-        ListAdapter adapter = new ArrayAdapter<>(activity, android.R.layout.select_dialog_item, mChoices);
-        return new AlertDialog.Builder(activity).setTitle(title)
+        ListAdapter adapter = new ArrayAdapter<>(PROFILE_ACTIVITY, android.R.layout.select_dialog_item, mChoices);
+        return new AlertDialog.Builder(PROFILE_ACTIVITY).setTitle(title)
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
 
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case NEW_PHOTO:
-                                activity.selectNewPhoto();
+                                PROFILE_ACTIVITY.selectNewPhoto();
                                 break;
                             case OLD_PHOTO:
-                                activity.selectOldPhoto();
+                                PROFILE_ACTIVITY.selectOldPhoto();
                                 break;
                             case FETCH_IMAGE:
-                                activity.fetchAlbumArt();
+                                PROFILE_ACTIVITY.fetchAlbumArt();
                                 break;
                             case GOOGLE_SEARCH:
-                                activity.googleSearch();
+                                PROFILE_ACTIVITY.googleSearch();
                                 break;
                             default:
                                 break;

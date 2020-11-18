@@ -65,7 +65,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     /**
      * Used with the loader and voice queries
      */
-    private final ArrayList<Song> mSong = Lists.newArrayList();
+    private ArrayList<Song> mSong = Lists.newArrayList();
     /**
      * Service token
      */
@@ -91,7 +91,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      * then artist. If all of those fail, it checks for playlists and genres via
      * a  #mPlaylistGenreQuery.
      */
-    private final LoaderCallbacks<List<Song>> mSongAlbumArtistQuery = new LoaderCallbacks<List<Song>>() {
+    private LoaderCallbacks<List<Song>> mSongAlbumArtistQuery = new LoaderCallbacks<List<Song>>() {
 
         /**
          * {@inheritDoc}

@@ -35,7 +35,7 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     /**
      * The result
      */
-    private final ArrayList<Album> mAlbumsList = Lists.newArrayList();
+    private ArrayList<Album> mAlbumsList = Lists.newArrayList();
 
     /**
      * Constructor of <code>AlbumLoader</code>

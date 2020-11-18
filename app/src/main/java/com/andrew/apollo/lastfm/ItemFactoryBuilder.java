@@ -36,7 +36,7 @@ final class ItemFactoryBuilder {
     private final static ItemFactoryBuilder INSTANCE = new ItemFactoryBuilder();
 
     @SuppressWarnings("rawtypes")
-    private final Map<Class, ItemFactory> factories = new HashMap<>();
+    private Map<Class, ItemFactory> factories = new HashMap<>();
 
     private ItemFactoryBuilder() {
         // register default factories

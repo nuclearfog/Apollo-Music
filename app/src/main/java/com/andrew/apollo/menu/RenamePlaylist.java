@@ -38,8 +38,8 @@ public class RenamePlaylist extends BasePlaylistDialog {
      * @return A new instance of this dialog.
      */
     public static RenamePlaylist getInstance(Long id) {
-        final RenamePlaylist frag = new RenamePlaylist();
-        final Bundle args = new Bundle();
+        RenamePlaylist frag = new RenamePlaylist();
+        Bundle args = new Bundle();
         args.putLong("rename", id);
         frag.setArguments(args);
         return frag;

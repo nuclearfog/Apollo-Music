@@ -39,7 +39,7 @@ public class NotificationHelper {
     /**
      * Context
      */
-    private final MusicPlaybackService mService;
+    private MusicPlaybackService mService;
 
     private NotificationManager mNotificationManager;
 

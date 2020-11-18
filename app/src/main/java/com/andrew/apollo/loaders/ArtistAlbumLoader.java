@@ -35,12 +35,12 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     /**
      * The result
      */
-    private final ArrayList<Album> mAlbumsList = Lists.newArrayList();
+    private ArrayList<Album> mAlbumsList = Lists.newArrayList();
 
     /**
      * The Id of the artist the albums belong to.
      */
-    private final Long mArtistID;
+    private Long mArtistID;
 
     /**
      * Constructor of <code>ArtistAlbumHandler</code>

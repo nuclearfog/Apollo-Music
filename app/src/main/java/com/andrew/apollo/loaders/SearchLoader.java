@@ -32,7 +32,7 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * The {@link Cursor} used to run the query.

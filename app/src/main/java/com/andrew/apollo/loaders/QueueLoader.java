@@ -30,7 +30,7 @@ public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * Constructor of <code>QueueLoader</code>

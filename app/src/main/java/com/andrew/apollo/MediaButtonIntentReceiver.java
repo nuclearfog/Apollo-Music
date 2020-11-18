@@ -51,7 +51,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     private static MessageHandler mHandler = new MessageHandler();
 
     private static void startService(Context context, String command) {
-        final Intent i = new Intent(context, MusicPlaybackService.class);
+        Intent i = new Intent(context, MusicPlaybackService.class);
         i.setAction(MusicPlaybackService.SERVICECMD);
         i.putExtra(MusicPlaybackService.CMDNAME, command);
         i.putExtra(MusicPlaybackService.FROM_MEDIA_BUTTON, true);
@@ -92,7 +92,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
      * {@inheritDoc}
      */
     @Override
-    public void onReceive(final Context context, final Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         String intentAction = intent.getAction();
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intentAction)) {
             startService(context, MusicPlaybackService.CMDPAUSE);
@@ -185,12 +185,12 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     static class MessageHandler extends Handler {
 
         @Override
-        public void handleMessage(final Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_LONGPRESS_TIMEOUT:
                     if (!mLaunched) {
-                        final Context context = (Context) msg.obj;
-                        final Intent i = new Intent();
+                        Context context = (Context) msg.obj;
+                        Intent i = new Intent();
                         i.setClass(context, HomeActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         context.startActivity(i);
@@ -199,9 +199,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                     break;
 
                 case MSG_HEADSET_DOUBLE_CLICK_TIMEOUT:
-                    final int clickCount = msg.arg1;
-                    final String command;
-
+                    int clickCount = msg.arg1;
+                    String command;
                     switch (clickCount) {
                         case 1:
                             command = MusicPlaybackService.CMDTOGGLEPAUSE;
@@ -216,9 +215,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                             command = null;
                             break;
                     }
-
                     if (command != null) {
-                        final Context context = (Context) msg.obj;
+                        Context context = (Context) msg.obj;
                         startService(context, command);
                     }
                     break;

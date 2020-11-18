@@ -46,17 +46,17 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     /**
      * The resource Id of the layout to inflate
      */
-    private final int mLayoutId;
+    private int mLayoutId;
 
     /**
      * Image cache and image fetcher
      */
-    private final ImageFetcher mImageFetcher;
+    private ImageFetcher mImageFetcher;
 
     /**
      * Semi-transparent overlay
      */
-    private final int mOverlay;
+    private int mOverlay;
 
     /**
      * Determines if the grid or list should be the default style
@@ -156,7 +156,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         mData = new DataHolder[getCount()];
         for (int i = 0; i < getCount(); i++) {
             // Build the album
-            final Album album = getItem(i);
+            Album album = getItem(i);
             if (album != null) {
                 // Build the data holder
                 mData[i] = new DataHolder();

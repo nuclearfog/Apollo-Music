@@ -34,7 +34,7 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * Constructor of <code>LastAddedHandler</code>
@@ -50,7 +50,7 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
      * @return The {@link Cursor} used to run the song query.
      */
     public static Cursor makeLastAddedCursor(Context context) {
-        final int fourWeeks = 4 * 3600 * 24 * 7;
+        int fourWeeks = 4 * 3600 * 24 * 7;
         String selection = AudioColumns.IS_MUSIC + "=1" +
                 " AND " + AudioColumns.TITLE + " != ''" + //$NON-NLS-2$
                 " AND " + MediaStore.Audio.Media.DATE_ADDED + ">" + //$NON-NLS-2$
@@ -62,9 +62,9 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         /* 1 */
                         AudioColumns.TITLE,
                         /* 2 */
-                        AudioColumns.ARTIST,
+                        "artist",
                         /* 3 */
-                        AudioColumns.ALBUM,
+                        "album",
                         /* 4 */
                         "duration"
                         //AudioColumns.DURATION

@@ -40,7 +40,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
     /**
      * Simple {@link TextWatcher}
      */
-    private final TextWatcher mTextWatcher = new TextWatcher() {
+    private TextWatcher mTextWatcher = new TextWatcher() {
 
         /**
          * {@inheritDoc}
@@ -97,7 +97,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
                 new OnClickListener() {
 
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         onSaveClick();
                         MusicUtils.refresh();
                         dialog.dismiss();
@@ -108,7 +108,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
                 new OnClickListener() {
 
                     @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         closeKeyboard();
                         MusicUtils.refresh();
                         dialog.dismiss();
@@ -142,7 +142,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
      * Opens the soft keyboard
      */
     protected void openKeyboard() {
-        final InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity()
+        InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         mInputMethodManager.toggleSoftInputFromWindow(mPlaylist.getApplicationWindowToken(),
                 InputMethodManager.SHOW_FORCED, 0);
@@ -152,8 +152,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
      * Closes the soft keyboard
      */
     protected void closeKeyboard() {
-        final InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         mInputMethodManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
     }
 

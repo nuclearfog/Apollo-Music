@@ -49,7 +49,7 @@ public final class ImageCache {
     /**
      * The {@link Uri} used to retrieve album art
      */
-    private static final Uri mArtworkUri;
+    private static Uri mArtworkUri;
 
     /**
      * Default memory cache size as a percent of device memory class
@@ -81,7 +81,7 @@ public final class ImageCache {
         mArtworkUri = Uri.parse("content://media/external/audio/albumart");
     }
 
-    private final Object mPauseLock = new Object();
+    private final Object PAUSELOCK = new Object();
     /**
      * Used to temporarily pause the disk cache while scrolling
      */
@@ -646,22 +646,22 @@ public final class ImageCache {
      * @param pause True to temporarily pause the disk cache, false otherwise.
      */
     public void setPauseDiskCache(boolean pause) {
-        synchronized (mPauseLock) {
+        synchronized (PAUSELOCK) {
             if (mPauseDiskAccess != pause) {
                 mPauseDiskAccess = pause;
                 if (!pause) {
-                    mPauseLock.notify();
+                    PAUSELOCK.notify();
                 }
             }
         }
     }
 
     private void waitUntilUnpaused() {
-        synchronized (mPauseLock) {
+        synchronized (PAUSELOCK) {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 while (mPauseDiskAccess) {
                     try {
-                        mPauseLock.wait();
+                        PAUSELOCK.wait();
                     } catch (InterruptedException e) {
                         // ignored, we'll start waiting again
                     }

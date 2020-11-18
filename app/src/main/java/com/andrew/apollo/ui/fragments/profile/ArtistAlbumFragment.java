@@ -73,13 +73,13 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     private ArtistAlbumAdapter mAdapter;
     // Pause disk cache access to ensure smoother scrolling
-    private final ScrollableHeader mScrollableHeader = new ScrollableHeader() {
+    private ScrollableHeader mScrollableHeader = new ScrollableHeader() {
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public void onScrollStateChanged(final AbsListView view, final int scrollState) {
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
             if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
                     || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                 mAdapter.setPauseDiskCache(true);

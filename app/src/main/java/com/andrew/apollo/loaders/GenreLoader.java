@@ -34,7 +34,7 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
     /**
      * The result
      */
-    private final ArrayList<Genre> mGenreList = Lists.newArrayList();
+    private ArrayList<Genre> mGenreList = Lists.newArrayList();
 
     /**
      * Constructor of <code>GenreLoader</code>

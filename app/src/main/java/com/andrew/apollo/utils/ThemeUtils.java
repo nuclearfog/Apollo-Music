@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
 
 /**
@@ -46,7 +47,7 @@ public class ThemeUtils {
     /**
      * Default package name.
      */
-    public static final String APOLLO_PACKAGE = "com.andrew.apollo";
+    public static final String APOLLO_PACKAGE = BuildConfig.APPLICATION_ID;
     /**
      * Current theme package name.
      */

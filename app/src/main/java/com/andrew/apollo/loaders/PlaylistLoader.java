@@ -36,7 +36,7 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     /**
      * The result
      */
-    private final ArrayList<Playlist> mPlaylistList = Lists.newArrayList();
+    private ArrayList<Playlist> mPlaylistList = Lists.newArrayList();
 
     /**
      * Constructor of <code>PlaylistLoader</code>

@@ -255,22 +255,18 @@ public abstract class AppCompatBase extends AppCompatActivity
      */
     @Override
     public void onClick(final View v) {
-        switch (v.getId()) {
-            case R.id.bottom_action_bar_album_art:
-                if (MusicUtils.getCurrentAudioId() != -1) {
-                    NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
-                } else {
-                    MusicUtils.shuffleAll(this);
-                }
-                break;
-
-            case R.id.bottom_action_bar:
-                if (MusicUtils.getCurrentAudioId() != -1) {
-                    NavUtils.openAudioPlayer(this);
-                } else {
-                    MusicUtils.shuffleAll(this);
-                }
-                break;
+        if (v.getId() == R.id.bottom_action_bar_album_art) {
+            if (MusicUtils.getCurrentAudioId() != -1) {
+                NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
+            } else {
+                MusicUtils.shuffleAll(this);
+            }
+        } else if (v.getId() == R.id.bottom_action_bar) {
+            if (MusicUtils.getCurrentAudioId() != -1) {
+                NavUtils.openAudioPlayer(this);
+            } else {
+                MusicUtils.shuffleAll(this);
+            }
         }
     }
 

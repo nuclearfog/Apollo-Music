@@ -46,22 +46,22 @@ public abstract class ImageWorker {
     /**
      * Default artwork
      */
-    private final BitmapDrawable mDefaultArtwork;
+    private BitmapDrawable mDefaultArtwork;
 
     /**
      * The resources to use
      */
-    private final Resources mResources;
+    private Resources mResources;
 
     /**
      * Layer drawable used to cross fade the result from the worker
      */
-    private final Drawable[] mArrayDrawable;
+    private Drawable[] mArrayDrawable;
 
     /**
      * Default album art
      */
-    private final Bitmap mDefault;
+    private Bitmap mDefault;
 
     /**
      * The Context to use
@@ -253,7 +253,7 @@ public abstract class ImageWorker {
      */
     private static final class AsyncDrawable extends ColorDrawable {
 
-        private final WeakReference<BitmapWorkerTask> mBitmapWorkerTaskReference;
+        private WeakReference<BitmapWorkerTask> mBitmapWorkerTaskReference;
 
         /**
          * Constructor of <code>AsyncDrawable</code>
@@ -279,12 +279,12 @@ public abstract class ImageWorker {
         /**
          * The {@link ImageView} used to set the result
          */
-        private final WeakReference<ImageView> mImageReference;
+        private WeakReference<ImageView> mImageReference;
 
         /**
          * Type of URL to download
          */
-        private final ImageType mImageType;
+        private ImageType mImageType;
 
         /**
          * The key used to store cached entries

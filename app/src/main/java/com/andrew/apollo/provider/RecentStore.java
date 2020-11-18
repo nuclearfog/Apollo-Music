@@ -46,7 +46,7 @@ public class RecentStore extends SQLiteOpenHelper {
      *
      * @param context The {@link Context} to use
      */
-    public RecentStore(final Context context) {
+    public RecentStore(Context context) {
         super(context, DATABASENAME, null, VERSION);
     }
 
@@ -54,7 +54,7 @@ public class RecentStore extends SQLiteOpenHelper {
      * @param context The {@link Context} to use
      * @return A new instance of this class.
      */
-    public static synchronized RecentStore getInstance(final Context context) {
+    public static synchronized RecentStore getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new RecentStore(context.getApplicationContext());
         }
@@ -65,7 +65,7 @@ public class RecentStore extends SQLiteOpenHelper {
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(final SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + RecentStoreColumns.NAME + " ("
                 + RecentStoreColumns.ID + " LONG NOT NULL," + RecentStoreColumns.ALBUMNAME
                 + " TEXT NOT NULL," + RecentStoreColumns.ARTISTNAME + " TEXT NOT NULL,"
@@ -78,7 +78,7 @@ public class RecentStore extends SQLiteOpenHelper {
      * {@inheritDoc}
      */
     @Override
-    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + RecentStoreColumns.NAME);
         onCreate(db);
     }
@@ -91,14 +91,12 @@ public class RecentStore extends SQLiteOpenHelper {
      * @param songCount  The number of tracks for the album.
      * @param albumYear  The year the album was released.
      */
-    public void addAlbumId(final Long albumId, final String albumName, final String artistName,
-                           final String songCount, final String albumYear) {
+    public void addAlbumId(Long albumId, String albumName, String artistName, String songCount, String albumYear) {
         if (albumId == null || albumName == null || artistName == null || songCount == null) {
             return;
         }
-
-        final SQLiteDatabase database = getWritableDatabase();
-        final ContentValues values = new ContentValues(6);
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues values = new ContentValues(6);
 
         database.beginTransaction();
 
@@ -124,40 +122,37 @@ public class RecentStore extends SQLiteOpenHelper {
      * @param key The key to reference.
      * @return The most recently listened album for an artist.
      */
-    public String getAlbumName(final String key) {
+    public String getAlbumName(String key) {
         if (TextUtils.isEmpty(key)) {
             return null;
         }
-        final SQLiteDatabase database = getReadableDatabase();
-        final String[] projection = new String[]{
+        SQLiteDatabase database = getReadableDatabase();
+        String[] projection = new String[]{
                 RecentStoreColumns.ID, RecentStoreColumns.ALBUMNAME, RecentStoreColumns.ARTISTNAME,
                 RecentStoreColumns.TIMEPLAYED
         };
-        final String selection = RecentStoreColumns.ARTISTNAME + "=?";
-        final String[] having = new String[]{
-                key
-        };
+        String selection = RecentStoreColumns.ARTISTNAME + "=?";
+        String[] having = new String[]{key};
         Cursor cursor = database.query(RecentStoreColumns.NAME, projection, selection, having,
                 null, null, RecentStoreColumns.TIMEPLAYED + " DESC", null);
-        if (cursor != null && cursor.moveToFirst()) {
-            cursor.moveToFirst();
-            final String album = cursor.getString(cursor
-                    .getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
-            cursor.close();
-            return album;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                String album = cursor.getString(cursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
+                cursor.close();
+                return album;
+            }
         }
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
-
         return null;
     }
 
     /**
      *
      */
-    public void removeItem(final long albumId) {
-        final SQLiteDatabase database = getReadableDatabase();
+    public void removeItem(long albumId) {
+        SQLiteDatabase database = getReadableDatabase();
         database.delete(RecentStoreColumns.NAME, RecentStoreColumns.ID + " = ?", new String[]{
                 String.valueOf(albumId)
         });

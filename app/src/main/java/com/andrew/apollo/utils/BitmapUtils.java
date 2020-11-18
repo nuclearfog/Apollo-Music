@@ -37,7 +37,7 @@ public final class BitmapUtils {
      * @param sentBitmap The {@link Bitmap} to blur.
      * @return A blurred version of the given {@link Bitmap}.
      */
-    public static Bitmap createBlurredBitmap(final Bitmap sentBitmap) {
+    public static Bitmap createBlurredBitmap(Bitmap sentBitmap) {
         if (sentBitmap == null) {
             return null;
         }
@@ -70,40 +70,40 @@ public final class BitmapUtils {
         //
         // Stack Blur Algorithm by Mario Klingemann <mario@quasimondo.com>
 
-        final Bitmap mBitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+        Bitmap mBitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
 
-        final int w = mBitmap.getWidth();
-        final int h = mBitmap.getHeight();
+        int w = mBitmap.getWidth();
+        int h = mBitmap.getHeight();
 
-        final int[] pix = new int[w * h];
+        int[] pix = new int[w * h];
         mBitmap.getPixels(pix, 0, w, 0, 0, w, h);
 
-        final int wm = w - 1;
-        final int hm = h - 1;
-        final int wh = w * h;
-        final int div = DEFAULT_BLUR_RADIUS + DEFAULT_BLUR_RADIUS + 1;
+        int wm = w - 1;
+        int hm = h - 1;
+        int wh = w * h;
+        int div = DEFAULT_BLUR_RADIUS + DEFAULT_BLUR_RADIUS + 1;
 
-        final int[] r = new int[wh];
-        final int[] g = new int[wh];
-        final int[] b = new int[wh];
-        final int[] vmin = new int[Math.max(w, h)];
+        int[] r = new int[wh];
+        int[] g = new int[wh];
+        int[] b = new int[wh];
+        int[] vmin = new int[Math.max(w, h)];
         int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
 
         int divsum = div + 1 >> 1;
         divsum *= divsum;
-        final int[] dv = new int[256 * divsum];
+        int[] dv = new int[256 * divsum];
         for (i = 0; i < 256 * divsum; i++) {
             dv[i] = i / divsum;
         }
 
         yw = yi = 0;
 
-        final int[][] stack = new int[div][3];
+        int[][] stack = new int[div][3];
         int stackpointer;
         int stackstart;
         int[] sir;
         int rbs;
-        final int r1 = DEFAULT_BLUR_RADIUS + 1;
+        int r1 = DEFAULT_BLUR_RADIUS + 1;
         int routsum, goutsum, boutsum;
         int rinsum, ginsum, binsum;
 
@@ -273,22 +273,22 @@ public final class BitmapUtils {
      * @return A {@link Bitmap} that has been resized and cropped for a launcher
      * shortcut.
      */
-    public static Bitmap resizeAndCropCenter(final Bitmap bitmap, final int size) {
-        final int w = bitmap.getWidth();
-        final int h = bitmap.getHeight();
+    public static Bitmap resizeAndCropCenter(Bitmap bitmap, int size) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
         if (w == size && h == size) {
             return bitmap;
         }
 
-        final float mScale = (float) size / Math.min(w, h);
+        float mScale = (float) size / Math.min(w, h);
 
-        final Bitmap mTarget = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        final int mWidth = Math.round(mScale * bitmap.getWidth());
-        final int mHeight = Math.round(mScale * bitmap.getHeight());
-        final Canvas mCanvas = new Canvas(mTarget);
+        Bitmap mTarget = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        int mWidth = Math.round(mScale * bitmap.getWidth());
+        int mHeight = Math.round(mScale * bitmap.getHeight());
+        Canvas mCanvas = new Canvas(mTarget);
         mCanvas.translate((size - mWidth) / 2f, (size - mHeight) / 2f);
         mCanvas.scale(mScale, mScale);
-        final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
         mCanvas.drawBitmap(bitmap, 0, 0, paint);
         return mTarget;
     }

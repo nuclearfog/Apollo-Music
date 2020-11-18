@@ -42,7 +42,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     /**
      * The resource Id of the layout to inflate
      */
-    private final int mLayoutId;
+    private int mLayoutId;
 
     /**
      * Image cache and image fetcher
@@ -52,7 +52,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     /**
      * Semi-transparent overlay
      */
-    private final int mOverlay;
+    private int mOverlay;
 
     /**
      * Used to cache the artist info

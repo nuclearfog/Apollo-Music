@@ -57,7 +57,7 @@ public final class ResponseBuilder {
         }
         Collection<DomElement> children = element.getChildren();
         Collection<T> items = new ArrayList<>(children.size());
-        for (final DomElement child : children) {
+        for (DomElement child : children) {
             items.add(factory.createItemFromElement(child));
         }
         return items;

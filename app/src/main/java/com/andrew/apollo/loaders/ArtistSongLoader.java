@@ -35,12 +35,12 @@ public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * The Id of the artist the songs belong to.
      */
-    private final Long mArtistID;
+    private Long mArtistID;
 
     /**
      * Constructor of <code>ArtistSongLoader</code>
@@ -88,7 +88,7 @@ public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Create the Cursor
         Cursor mCursor = makeArtistSongCursor(getContext(), mArtistID);
         // Gather the data
-        if (mCursor != null && mCursor.moveToFirst()) {
+        if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
                     // Copy the song Id

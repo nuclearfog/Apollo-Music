@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
-    private final ArrayList<File> mFolders = Lists.newArrayList();
+    private ArrayList<File> mFolders = Lists.newArrayList();
 
     public FolderLoader(Context paramContext) {
         super(paramContext);

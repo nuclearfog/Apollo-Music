@@ -38,7 +38,7 @@ import com.andrew.apollo.utils.MusicUtils;
 @SuppressLint("NewApi")
 public class CarouselTab extends FrameLayoutWithOverlay {
 
-    private final ImageFetcher mFetcher;
+    private ImageFetcher mFetcher;
     private ImageView mPhoto;
     private ImageView mAlbumArt;
     private TextView mLabelView;

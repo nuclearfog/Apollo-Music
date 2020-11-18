@@ -35,14 +35,14 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * Constructor of <code>SongLoader</code>
      *
      * @param context The {@link Context} to use
      */
-    public SongLoader(final Context context) {
+    public SongLoader(Context context) {
         super(context);
     }
 
@@ -62,9 +62,9 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         /* 1 */
                         AudioColumns.TITLE,
                         /* 2 */
-                        AudioColumns.ARTIST,
+                        "artist",
                         /* 3 */
-                        AudioColumns.ALBUM,
+                        "album",
                         /* 4 */
                         "duration"
                         //AudioColumns.DURATION

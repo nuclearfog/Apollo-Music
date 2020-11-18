@@ -35,12 +35,12 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The result
      */
-    private final ArrayList<Song> mSongList = Lists.newArrayList();
+    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * The Id of the album the songs belong to.
      */
-    private final Long mAlbumID;
+    private Long mAlbumID;
 
     /**
      * Constructor of <code>AlbumSongHandler</code>
@@ -70,9 +70,9 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         /* 1 */
                         AudioColumns.TITLE,
                         /* 2 */
-                        AudioColumns.ARTIST,
+                        "artist",
                         /* 3 */
-                        AudioColumns.ALBUM,
+                        "album",
                         /* 4 */
                         //AudioColumns.DURATION
                         "duration"

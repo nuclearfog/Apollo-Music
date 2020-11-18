@@ -40,7 +40,7 @@ public class RepeatingImageButton extends ImageButton implements OnClickListener
     private int mRepeatCount;
 
     private RepeatListener mListener;
-    private final Runnable mRepeater = new Runnable() {
+    private Runnable mRepeater = new Runnable() {
         @Override
         public void run() {
             doRepeat(false);

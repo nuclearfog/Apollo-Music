@@ -38,7 +38,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
     /**
      * The resource Id of the layout to inflate
      */
-    private final int mLayoutId;
+    private int mLayoutId;
 
     /**
      * Used to cache the song info

@@ -30,11 +30,11 @@ import static android.graphics.PixelFormat.TRANSLUCENT;
  */
 public class AlphaPatternDrawable extends Drawable {
 
-    private final Paint mPaint = new Paint();
+    private Paint mPaint = new Paint();
 
-    private final Paint mPaintWhite = new Paint();
+    private Paint mPaintWhite = new Paint();
 
-    private final Paint mPaintGray = new Paint();
+    private Paint mPaintGray = new Paint();
 
     private int mRectangleSize;
 
@@ -56,7 +56,7 @@ public class AlphaPatternDrawable extends Drawable {
      * {@inheritDoc}
      */
     @Override
-    public void draw(final Canvas canvas) {
+    public void draw(Canvas canvas) {
         canvas.drawBitmap(mBitmap, null, getBounds(), mPaint);
     }
 
@@ -72,14 +72,14 @@ public class AlphaPatternDrawable extends Drawable {
      * {@inheritDoc}
      */
     @Override
-    public void setAlpha(final int alpha) {
+    public void setAlpha(int alpha) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setColorFilter(final ColorFilter cf) {
+    public void setColorFilter(ColorFilter cf) {
     }
 
     /**

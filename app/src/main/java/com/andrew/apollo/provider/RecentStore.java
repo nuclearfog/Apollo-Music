@@ -141,8 +141,6 @@ public class RecentStore extends SQLiteOpenHelper {
                 cursor.close();
                 return album;
             }
-        }
-        if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
         return null;

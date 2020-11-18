@@ -70,7 +70,7 @@ public class Playlist {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Playlist other = (Playlist) obj;
+        Playlist other = (Playlist) obj;
         if (mPlaylistId != other.mPlaylistId) {
             return false;
         }

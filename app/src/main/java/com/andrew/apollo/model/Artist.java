@@ -76,7 +76,7 @@ public class Artist {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -86,7 +86,7 @@ public class Artist {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Artist other = (Artist) obj;
+        Artist other = (Artist) obj;
         if (mAlbumNumber != other.mAlbumNumber) {
             return false;
         }

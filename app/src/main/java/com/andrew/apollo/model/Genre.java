@@ -70,7 +70,7 @@ public class Genre {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Genre other = (Genre) obj;
+        Genre other = (Genre) obj;
         if (mGenreId != other.mGenreId) {
             return false;
         }

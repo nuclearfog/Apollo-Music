@@ -42,11 +42,11 @@ import java.util.Locale;
  */
 public class PagerAdapter extends FragmentPagerAdapter {
 
-    private final SparseArray<WeakReference<Fragment>> mFragmentArray = new SparseArray<>();
+    private SparseArray<WeakReference<Fragment>> mFragmentArray = new SparseArray<>();
 
-    private final List<Holder> mHolderList = Lists.newArrayList();
+    private List<Holder> mHolderList = Lists.newArrayList();
 
-    private final FragmentActivity mFragmentActivity;
+    private FragmentActivity mFragmentActivity;
 
     /**
      * Constructor of <code>PagerAdapter<code>

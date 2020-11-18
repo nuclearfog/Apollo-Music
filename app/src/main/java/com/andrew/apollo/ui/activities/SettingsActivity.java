@@ -72,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             finish();
@@ -145,13 +145,13 @@ public class SettingsActivity extends AppCompatActivity {
                     new AlertDialog.Builder(requireContext()).setMessage(R.string.delete_warning)
                             .setPositiveButton(android.R.string.ok, new OnClickListener() {
                                 @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     mImageCache.clearCaches();
                                 }
                             })
                             .setNegativeButton(R.string.cancel, new OnClickListener() {
                                 @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
+                                public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                 }
                             }).create().show();

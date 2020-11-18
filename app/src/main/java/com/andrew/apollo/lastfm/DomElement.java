@@ -35,7 +35,8 @@ import java.util.List;
  * @author Janni Kovacs
  */
 public class DomElement {
-    private final Element e;
+
+    private Element e;
 
     /**
      * Creates a new wrapper around the given {@link Element}.

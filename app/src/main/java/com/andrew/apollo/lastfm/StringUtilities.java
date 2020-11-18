@@ -46,8 +46,8 @@ public final class StringUtilities {
         }
         try {
             return URLEncoder.encode(s, "UTF-8");
-        } catch (final UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            //ignore
         }
         return null;
     }
@@ -58,11 +58,11 @@ public final class StringUtilities {
      * @param strings input strings, key-value alternating
      * @return a parameter map
      */
-    public static Map<String, String> map(final String... strings) {
+    public static Map<String, String> map(String... strings) {
         if (strings.length % 2 != 0) {
             throw new IllegalArgumentException("strings.length % 2 != 0");
         }
-        final Map<String, String> sMap = new HashMap<>();
+        Map<String, String> sMap = new HashMap<>();
         for (int i = 0; i < strings.length; i += 2) {
             sMap.put(strings[i], strings[i + 1]);
         }

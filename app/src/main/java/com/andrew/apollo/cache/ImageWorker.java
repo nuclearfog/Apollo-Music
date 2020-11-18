@@ -84,7 +84,7 @@ public abstract class ImageWorker {
         mResources = mContext.getResources();
         // Create the default artwork
         Drawable bitmap = ResourcesCompat.getDrawable(context.getResources(), R.drawable.default_artwork, null);
-        mDefault = ((BitmapDrawable)bitmap).getBitmap();
+        mDefault = ((BitmapDrawable) bitmap).getBitmap();
         mDefaultArtwork = new BitmapDrawable(mResources, mDefault);
         // No filter and no dither makes things much quicker
         mDefaultArtwork.setFilterBitmap(false);

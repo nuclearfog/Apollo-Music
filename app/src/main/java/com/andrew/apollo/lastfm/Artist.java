@@ -62,7 +62,7 @@ public class Artist extends MusicEntry {
      * @return detailed artist info
      */
     public static Artist getInfo(String artistOrMbid, Locale locale, String apiKey) {
-        final Map<String, String> mParams = new WeakHashMap<>();
+        Map<String, String> mParams = new WeakHashMap<>();
         mParams.put("artist", artistOrMbid);
         if (locale != null && locale.getLanguage().length() != 0) {
             mParams.put("lang", locale.getLanguage());
@@ -94,7 +94,7 @@ public class Artist extends MusicEntry {
             }
             DomElement artistElem = correctionElement.getChild("artist");
             return FACTORY.createItemFromElement(artistElem);
-        } catch (final Exception ignored) {
+        } catch (Exception ignored) {
             return null;
         }
     }

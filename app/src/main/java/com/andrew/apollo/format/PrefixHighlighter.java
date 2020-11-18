@@ -25,7 +25,7 @@ import com.andrew.apollo.utils.PreferenceUtils;
 public class PrefixHighlighter {
 
     /* Color used when highlighting the prefixes */
-    private final int mPrefixHighlightColor;
+    private int mPrefixHighlightColor;
 
     private ForegroundColorSpan mPrefixColorSpan;
 

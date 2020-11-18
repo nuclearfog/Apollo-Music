@@ -75,16 +75,16 @@ public class DeleteDialog extends DialogFragment {
         String delete = getString(R.string.context_menu_delete);
         Bundle arguments = getArguments();
         // Get the image cache key
-        final String key;
+        final String KEY;
         String title;
         if (arguments != null) {
-            key = arguments.getString("cachekey");
+            KEY = arguments.getString("cachekey");
             // Get the track(s) to delete
             mItemList = arguments.getLongArray("items");
             title = arguments.getString(Config.NAME);
         } else {
             title = "";
-            key = "";
+            KEY = "";
         }
 
         String dialogTitle = getString(R.string.delete_dialog_title, title);
@@ -98,7 +98,7 @@ public class DeleteDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Remove the items from the image cache
-                        mFetcher.removeFromCache(key);
+                        mFetcher.removeFromCache(KEY);
                         // Delete the selected item(s)
                         MusicUtils.deleteTracks(getActivity(), mItemList);
                         if (getActivity() instanceof DeleteDialogCallback) {

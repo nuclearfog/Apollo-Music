@@ -38,7 +38,7 @@ public class SquareImageView extends LayoutSuppressingImageView {
     @Override
     public void onMeasure(int widthSpec, int heightSpec) {
         super.onMeasure(widthSpec, heightSpec);
-        final int mSize = Math.min(getMeasuredWidth(), getMeasuredHeight());
+        int mSize = Math.min(getMeasuredWidth(), getMeasuredHeight());
         setMeasuredDimension(mSize, mSize);
     }
 }

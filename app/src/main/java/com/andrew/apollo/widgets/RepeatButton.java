@@ -98,20 +98,20 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
         switch (MusicUtils.getRepeatMode()) {
             case MusicPlaybackService.REPEAT_ALL:
                 info = getResources().getString(R.string.accessibility_repeat_all);
-                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_all);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
                 button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             case MusicPlaybackService.REPEAT_CURRENT:
                 info = getResources().getString(R.string.accessibility_repeat_one);
-                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_one);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
                 button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:
             case MusicPlaybackService.REPEAT_NONE:
                 info = getResources().getString(R.string.accessibility_repeat);
-                button = ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
                 break;
         }
         setContentDescription(info);

@@ -173,7 +173,7 @@ public class ThemeUtils {
      * background, title, and subtitle.
      *
      * @param actionBar The {@link ActionBar} to use.
-     * @param titleID     The title for the action bar
+     * @param titleID   The title for the action bar
      */
     public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
         String title = mResources.getString(titleID);

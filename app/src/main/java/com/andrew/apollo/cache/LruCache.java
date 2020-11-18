@@ -30,9 +30,9 @@ import java.util.Map;
  */
 public class LruCache<K, V> {
 
-    private final LinkedHashMap<K, V> map;
+    private LinkedHashMap<K, V> map;
 
-    private final int maxSize;
+    private int maxSize;
 
     /**
      * Size of this cache in units. Not necessarily the number of elements.

@@ -211,12 +211,14 @@ public final class MusicUtils {
                     case MusicPlaybackService.REPEAT_NONE:
                         mService.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
                         break;
+
                     case MusicPlaybackService.REPEAT_ALL:
                         mService.setRepeatMode(MusicPlaybackService.REPEAT_CURRENT);
                         if (mService.getShuffleMode() != MusicPlaybackService.SHUFFLE_NONE) {
                             mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                         }
                         break;
+
                     default:
                         mService.setRepeatMode(MusicPlaybackService.REPEAT_NONE);
                         break;
@@ -454,24 +456,24 @@ public final class MusicUtils {
      * @return The song list for a MIME type.
      */
     public static long[] getSongListForCursor(Cursor cursor) {
-        if (cursor == null) {
-            return sEmptyList;
+        if (cursor != null) {
+            int len = cursor.getCount();
+            long[] list = new long[len];
+            cursor.moveToFirst();
+            int columnIndex;
+            try {
+                columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID);
+            } catch (IllegalArgumentException notaplaylist) {
+                columnIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+            }
+            for (int i = 0; i < len; i++) {
+                list[i] = cursor.getLong(columnIndex);
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return list;
         }
-        int len = cursor.getCount();
-        long[] list = new long[len];
-        cursor.moveToFirst();
-        int columnIndex;
-        try {
-            columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID);
-        } catch (IllegalArgumentException notaplaylist) {
-            columnIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
-        }
-        for (int i = 0; i < len; i++) {
-            list[i] = cursor.getLong(columnIndex);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return list;
+        return sEmptyList;
     }
 
     /**
@@ -809,16 +811,18 @@ public final class MusicUtils {
         String[] projection = new String[]{"count(*)"};
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
         Cursor cursor = resolver.query(uri, projection, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            int base = cursor.getInt(0);
-            cursor.close();
-            int numinserted = 0;
-            for (int offSet = 0; offSet < size; offSet += 1000) {
-                makeInsertItems(ids, offSet, 1000, base);
-                numinserted += resolver.bulkInsert(uri, mContentValuesCache);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int base = cursor.getInt(0);
+                int numinserted = 0;
+                for (int offSet = 0; offSet < size; offSet += 1000) {
+                    makeInsertItems(ids, offSet, 1000, base);
+                    numinserted += resolver.bulkInsert(uri, mContentValuesCache);
+                }
+                String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+                AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
             }
-            String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
-            AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+            cursor.close();
         }
     }
 
@@ -876,14 +880,13 @@ public final class MusicUtils {
         String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, MediaColumns.TITLE};
         String selection = BaseColumns._ID + "=" + id;
         Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, null);
-        if (cursor != null && cursor.getCount() == 1) {
-            cursor.moveToFirst();
-            Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-            String message = context.getString(R.string.set_as_ringtone,
-                    cursor.getString(2));
-            AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
-        }
         if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
+                String message = context.getString(R.string.set_as_ringtone,
+                        cursor.getString(2));
+                AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
+            }
             cursor.close();
         }
     }
@@ -1100,19 +1103,18 @@ public final class MusicUtils {
         }
         subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
         Cursor cursor = PlaylistLoader.makePlaylistCursor(context);
-        if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                Intent intent = new Intent();
-                String name = cursor.getString(1);
-                if (name != null) {
-                    intent.putExtra("playlist", getIdForPlaylist(context, name));
-                    subMenu.add(groupId, FragmentMenuItems.PLAYLIST_SELECTED, Menu.NONE,
-                            name).setIntent(intent);
-                }
-                cursor.moveToNext();
-            }
-        }
         if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                while (!cursor.isAfterLast()) {
+                    Intent intent = new Intent();
+                    String name = cursor.getString(1);
+                    if (name != null) {
+                        intent.putExtra("playlist", getIdForPlaylist(context, name));
+                        subMenu.add(groupId, FragmentMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
+                    }
+                    cursor.moveToNext();
+                }
+            }
             cursor.close();
         }
     }

@@ -93,7 +93,7 @@ public class Song {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Song other = (Song) obj;
+        Song other = (Song) obj;
         if (mSongId != other.mSongId) {
             return false;
         }

@@ -278,126 +278,115 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // If an album profile, go up to the artist profile
-                if (isAlbum()) {
-                    NavUtils.openArtistProfile(this, mArtistName);
-                    finish();
-                } else {
-                    // Otherwise just go back
-                    goBack();
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            // If an album profile, go up to the artist profile
+            if (isAlbum()) {
+                NavUtils.openArtistProfile(this, mArtistName);
+                finish();
+            } else {
+                // Otherwise just go back
+                goBack();
+            }
+            return true;
+        } else if (itemId == R.id.menu_add_to_homescreen) {
+            // Place the artist, album, genre, or playlist onto the Home
+            // screen. Definitely one of my favorite features.
+            String name = isArtist() ? mArtistName : mProfileName;
+            long id = mArguments.getLong(Config.ID);
+            ApolloUtils.createShortcutIntent(name, mArtistName, id, mType, this);
+            return true;
+        } else if (itemId == R.id.menu_shuffle) {
+            long id = mArguments.getLong(Config.ID);
+            long[] list = null;
+            if (isArtist()) {
+                list = MusicUtils.getSongListForArtist(this, id);
+            } else if (isAlbum()) {
+                list = MusicUtils.getSongListForAlbum(this, id);
+            } else if (isGenre()) {
+                list = MusicUtils.getSongListForGenre(this, id);
+            }
+            if (isPlaylist()) {
+                MusicUtils.playPlaylist(this, id);
+            } else if (isFavorites()) {
+                MusicUtils.playFavorites(this);
+            } else if (isLastAdded()) {
+                MusicUtils.playLastAdded(this);
+            } else {
+                if (list != null && list.length > 0) {
+                    MusicUtils.playAll(list, 0, true);
                 }
                 return true;
-
-            case R.id.menu_add_to_homescreen:
-                // Place the artist, album, genre, or playlist onto the Home
-                // screen. Definitely one of my favorite features.
-                String name = isArtist() ? mArtistName : mProfileName;
-                long id = mArguments.getLong(Config.ID);
-                ApolloUtils.createShortcutIntent(name, mArtistName, id, mType, this);
-                return true;
-
-            case R.id.menu_shuffle:
-                id = mArguments.getLong(Config.ID);
-                long[] list = null;
-                if (isArtist()) {
-                    list = MusicUtils.getSongListForArtist(this, id);
-                } else if (isAlbum()) {
-                    list = MusicUtils.getSongListForAlbum(this, id);
-                } else if (isGenre()) {
-                    list = MusicUtils.getSongListForGenre(this, id);
-                }
-                if (isPlaylist()) {
-                    MusicUtils.playPlaylist(this, id);
-                } else if (isFavorites()) {
-                    MusicUtils.playFavorites(this);
-                } else if (isLastAdded()) {
-                    MusicUtils.playLastAdded(this);
-                } else {
-                    if (list != null && list.length > 0) {
-                        MusicUtils.playAll(list, 0, true);
-                    }
-                    return true;
-                }
-                break;
-
-            case R.id.menu_sort_by_az:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-                    getArtistSongFragment().refresh();
-                } else if (isArtistAlbumPage()) {
-                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-                    getArtistAlbumFragment().refresh();
-                } else {
-                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
-                    getAlbumSongFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_za:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-                    getArtistSongFragment().refresh();
-                } else if (isArtistAlbumPage()) {
-                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-                    getArtistAlbumFragment().refresh();
-                } else {
-                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-                    getAlbumSongFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_album:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
-                    getArtistSongFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_year:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
-                    getArtistSongFragment().refresh();
-                } else if (isArtistAlbumPage()) {
-                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
-                    getArtistAlbumFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_duration:
-                if (isArtistSongPage()) {
-                    mPreferences
-                            .setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-                    getArtistSongFragment().refresh();
-                } else {
-                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-                    getAlbumSongFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_date_added:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
-                    getArtistSongFragment().refresh();
-                }
-                return true;
-
-            case R.id.menu_sort_by_track_list:
-                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
+            }
+        } else if (itemId == R.id.menu_sort_by_az) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+                getArtistSongFragment().refresh();
+            } else if (isArtistAlbumPage()) {
+                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
+                getArtistAlbumFragment().refresh();
+            } else {
+                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
                 getAlbumSongFragment().refresh();
-                return true;
-
-            case R.id.menu_sort_by_filename:
-                if (isArtistSongPage()) {
-                    mPreferences.setArtistSongSortOrder(
-                            SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-                    getArtistSongFragment().refresh();
-                } else {
-                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-                    getAlbumSongFragment().refresh();
-                }
-                return true;
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_za) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+                getArtistSongFragment().refresh();
+            } else if (isArtistAlbumPage()) {
+                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
+                getArtistAlbumFragment().refresh();
+            } else {
+                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
+                getAlbumSongFragment().refresh();
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_album) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
+                getArtistSongFragment().refresh();
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_year) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
+                getArtistSongFragment().refresh();
+            } else if (isArtistAlbumPage()) {
+                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
+                getArtistAlbumFragment().refresh();
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_duration) {
+            if (isArtistSongPage()) {
+                mPreferences
+                        .setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
+                getArtistSongFragment().refresh();
+            } else {
+                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
+                getAlbumSongFragment().refresh();
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_date_added) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
+                getArtistSongFragment().refresh();
+            }
+            return true;
+        } else if (itemId == R.id.menu_sort_by_track_list) {
+            mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
+            getAlbumSongFragment().refresh();
+            return true;
+        } else if (itemId == R.id.menu_sort_by_filename) {
+            if (isArtistSongPage()) {
+                mPreferences.setArtistSongSortOrder(
+                        SortOrder.ArtistSongSortOrder.SONG_FILENAME);
+                getArtistSongFragment().refresh();
+            } else {
+                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
+                getAlbumSongFragment().refresh();
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -492,25 +481,25 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             if (resultCode == RESULT_OK && selectedImage != null) {
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                if (cursor != null && cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String picturePath = cursor.getString(columnIndex);
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String picturePath = cursor.getString(columnIndex);
+                        String key = mProfileName;
+                        if (isArtist()) {
+                            key = mArtistName;
+                        } else if (isAlbum()) {
+                            key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
+                        }
+                        Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromFile(picturePath);
+                        mImageFetcher.addBitmapToCache(key, bitmap);
+                        if (isAlbum()) {
+                            mTabCarousel.getAlbumArt().setImageBitmap(bitmap);
+                        } else {
+                            mTabCarousel.getPhoto().setImageBitmap(bitmap);
+                        }
+                    }
                     cursor.close();
-
-                    String key = mProfileName;
-                    if (isArtist()) {
-                        key = mArtistName;
-                    } else if (isAlbum()) {
-                        key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
-                    }
-
-                    Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromFile(picturePath);
-                    mImageFetcher.addBitmapToCache(key, bitmap);
-                    if (isAlbum()) {
-                        mTabCarousel.getAlbumArt().setImageBitmap(bitmap);
-                    } else {
-                        mTabCarousel.getPhoto().setImageBitmap(bitmap);
-                    }
                 }
             } else {
                 selectOldPhoto();

@@ -20,11 +20,11 @@ public class Capitalize {
      * @return A captitalized string
      */
     public static String capitalize(String str, char[] delimiters) {
-        final int delimLen = delimiters == null ? -1 : delimiters.length;
+        int delimLen = delimiters == null ? -1 : delimiters.length;
         if (TextUtils.isEmpty(str) || delimLen == 0) {
             return str;
         }
-        final char[] buffer = str.toCharArray();
+        char[] buffer = str.toCharArray();
         boolean capitalizeNext = true;
         for (int i = 0; i < buffer.length; i++) {
             char ch = buffer[i];

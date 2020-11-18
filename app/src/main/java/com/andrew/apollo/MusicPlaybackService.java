@@ -250,8 +250,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * The columns used to retrieve any info from the current track
      */
-    private static final String[] PROJECTION = new String[]{
-            "audio._id AS _id", MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM,
+    private static final String[] PROJECTION = {
+            "audio._id AS _id", "artist", "album",
             MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.MIME_TYPE, MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST_ID
@@ -268,52 +268,52 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * Used to shuffle the tracks
      */
-    private static final Shuffler mShuffler = new Shuffler();
+    private static Shuffler mShuffler = new Shuffler();
 
     /**
      * Keeps a mapping of the track history
      */
-    private static final List<Integer> mHistory = new LinkedList<>();
+    private static List<Integer> mHistory = new LinkedList<>();
 
     /**
      * current playlist containing track ID's
      */
-    private final List<Long> mPlayList = new LinkedList<>();
+    private List<Long> mPlayList = new LinkedList<>();
 
     /**
      * current shuffle list contaning track ID's
      */
-    private final List<Long> mAutoShuffleList = new LinkedList<>();
+    private List<Long> mAutoShuffleList = new LinkedList<>();
 
     /**
      * Service stub
      */
-    private final IBinder mBinder = new ServiceStub(this);
+    private IBinder mBinder = new ServiceStub(this);
 
     /**
      * 4x1 widget
      */
-    private final AppWidgetSmall mAppWidgetSmall = AppWidgetSmall.getInstance();
+    private AppWidgetSmall mAppWidgetSmall = AppWidgetSmall.getInstance();
 
     /**
      * 4x2 widget
      */
-    private final AppWidgetLarge mAppWidgetLarge = AppWidgetLarge.getInstance();
+    private AppWidgetLarge mAppWidgetLarge = AppWidgetLarge.getInstance();
 
     /**
      * 4x2 alternate widget
      */
-    private final AppWidgetLargeAlternate mAppWidgetLargeAlternate = AppWidgetLargeAlternate.getInstance();
+    private AppWidgetLargeAlternate mAppWidgetLargeAlternate = AppWidgetLargeAlternate.getInstance();
 
     /**
      * Recently listened widget
      */
-    private final RecentWidgetProvider mRecentWidgetProvider = RecentWidgetProvider.getInstance();
+    private RecentWidgetProvider mRecentWidgetProvider = RecentWidgetProvider.getInstance();
 
     /**
      * Broadcast receiver for widget actions
      */
-    private final BroadcastReceiver mIntentReceiver = new WidgetBroadcastReceiver();
+    private BroadcastReceiver mIntentReceiver = new WidgetBroadcastReceiver();
 
     /**
      * broadcast listener for unmounting external storage
@@ -724,8 +724,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         try {
             ContentResolver resolver = getContentResolver();
             Cursor cursor = resolver.query(Uri.parse("content://media/external/fs_id"), null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                mCardId = cursor.getInt(0);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    mCardId = cursor.getInt(0);
+                }
                 cursor.close();
             }
         } catch (Exception e) {
@@ -1538,7 +1540,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             if (mCursor == null) {
                 return null;
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+            return mCursor.getString(mCursor.getColumnIndexOrThrow("album"));
         }
     }
 
@@ -1566,7 +1568,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             if (mCursor == null) {
                 return null;
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+            return mCursor.getString(mCursor.getColumnIndexOrThrow("artist"));
         }
     }
 
@@ -2138,11 +2140,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private static final class Shuffler {
 
-        private final LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
+        private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
 
-        private final TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
+        private TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
 
-        private final Random mRandom = new Random();
+        private Random mRandom = new Random();
 
         private int mPrevious;
 

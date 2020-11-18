@@ -84,7 +84,7 @@ public class Album {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -94,7 +94,7 @@ public class Album {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Album other = (Album) obj;
+        Album other = (Album) obj;
         if (mAlbumId != other.mAlbumId) {
             return false;
         }

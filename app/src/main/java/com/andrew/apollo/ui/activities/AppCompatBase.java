@@ -69,7 +69,7 @@ public abstract class AppCompatBase extends AppCompatActivity
     /**
      * Playstate and meta change listener
      */
-    private final ArrayList<MusicStateListener> mMusicStateListener = Lists.newArrayList();
+    private ArrayList<MusicStateListener> mMusicStateListener = Lists.newArrayList();
 
     /**
      * The service token
@@ -254,7 +254,7 @@ public abstract class AppCompatBase extends AppCompatActivity
      * {@inheritDoc}
      */
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         if (v.getId() == R.id.bottom_action_bar_album_art) {
             if (MusicUtils.getCurrentAudioId() != -1) {
                 NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
@@ -353,7 +353,7 @@ public abstract class AppCompatBase extends AppCompatActivity
      */
     private final static class PlaybackStatus extends BroadcastReceiver {
 
-        private final WeakReference<AppCompatBase> mReference;
+        private WeakReference<AppCompatBase> mReference;
 
         /**
          * Constructor of <code>PlaybackStatus</code>

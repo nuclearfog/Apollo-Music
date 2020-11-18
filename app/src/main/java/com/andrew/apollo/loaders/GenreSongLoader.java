@@ -37,7 +37,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * The Id of the genre the songs belong to.
      */
-    private final Long mGenreID;
+    private Long mGenreID;
 
     /**
      * Constructor of <code>GenreSongHandler</code>

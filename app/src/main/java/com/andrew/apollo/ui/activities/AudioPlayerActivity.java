@@ -850,7 +850,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private static final class TimeHandler extends Handler {
 
-        private final WeakReference<AudioPlayerActivity> mAudioPlayer;
+        private WeakReference<AudioPlayerActivity> mAudioPlayer;
 
         /**
          * Constructor of <code>TimeHandler</code>
@@ -873,7 +873,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private static final class PlaybackStatus extends BroadcastReceiver {
 
-        private final WeakReference<AudioPlayerActivity> mReference;
+        private WeakReference<AudioPlayerActivity> mReference;
 
         /**
          * Constructor of <code>PlaybackStatus</code>

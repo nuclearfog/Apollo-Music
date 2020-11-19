@@ -35,7 +35,7 @@
             android:contentDescription="@string/app_name"
             android:padding="@dimen/app_widget_recents_action_bar_item_padding"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_launcher" />
+            android:src="@mipmap/ic_launcher" />
 
         <TextView
             android:layout_width="wrap_content"

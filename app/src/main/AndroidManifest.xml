@@ -37,6 +37,12 @@
     <!-- Allows Apollo to stay in the foreground -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <queries>
+        <intent>
+            <action android:name="com.andrew.apollo.THEMES" />
+        </intent>
+    </queries>
+
     <application
         android:name=".ApolloApplication"
         android:allowBackup="false"

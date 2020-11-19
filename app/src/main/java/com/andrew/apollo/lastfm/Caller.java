@@ -125,7 +125,6 @@ public class Caller {
                 return lastResult;
             }
         } catch (IOException ioEx) {
-            ioEx.printStackTrace();
             lastResult = Result.createHttpErrorResult(HttpStatus.SC_SERVICE_UNAVAILABLE, ioEx.getLocalizedMessage());
             return lastResult;
         }

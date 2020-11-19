@@ -45,6 +45,8 @@ import com.devspark.appmsg.AppMsg;
 
 import java.util.List;
 
+import static android.content.Intent.CATEGORY_DEFAULT;
+
 /**
  * Used to show all of the available themes on a user's device.
  *
@@ -102,7 +104,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Intent apolloThemeIntent = new Intent(BuildConfig.APPLICATION_ID + ".THEMES");
-        apolloThemeIntent.addCategory("android.intent.category.DEFAULT");
+        apolloThemeIntent.addCategory(CATEGORY_DEFAULT);
 
         PackageManager mPackageManager = requireActivity().getPackageManager();
         List<ResolveInfo> mThemes = mPackageManager.queryIntentActivities(apolloThemeIntent, 0);

@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.utils;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -118,8 +119,10 @@ public class ThemeUtils {
         shopIntent.setData(Uri.parse(APP_URI + themeName));
         shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (shopIntent.resolveActivity(context.getPackageManager()) != null) {
+        try {
             context.startActivity(shopIntent);
+        } catch (ActivityNotFoundException err) {
+            // ignore
         }
     }
 
@@ -230,8 +233,10 @@ public class ThemeUtils {
         shopIntent.setData(Uri.parse(String.format(SEARCH_URI, Uri.encode(sApolloSearch))));
         shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (shopIntent.resolveActivity(context.getPackageManager()) != null) {
+        try {
             context.startActivity(shopIntent);
+        } catch (ActivityNotFoundException err) {
+            // ignore
         }
     }
 }

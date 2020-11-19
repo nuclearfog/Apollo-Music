@@ -31,7 +31,8 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/colorstrip"
         android:clickable="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:focusable="true">
 
         <com.andrew.apollo.widgets.SquareImageView
             android:id="@+id/bottom_action_bar_album_art"

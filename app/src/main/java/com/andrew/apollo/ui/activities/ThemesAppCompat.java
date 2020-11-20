@@ -60,15 +60,13 @@ public class ThemesAppCompat extends AppCompatBase {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-
-            case R.id.menu_shop:
-                ThemeUtils utils = new ThemeUtils(this);
-                utils.shopFor(this);
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        } else if (item.getItemId() == R.id.menu_shop) {
+            ThemeUtils utils = new ThemeUtils(this);
+            utils.shopFor(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -78,7 +78,6 @@ public abstract class ImageWorker {
      *
      * @param context The {@link Context} to use
      */
-    @SuppressWarnings("ConstantConditions")
     protected ImageWorker(Context context) {
         mContext = context.getApplicationContext();
         mResources = mContext.getResources();

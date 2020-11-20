@@ -89,7 +89,6 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
     /**
      * Sets the correct drawable for the shuffle state.
      */
-    @SuppressWarnings("ConstantConditions")
     public void updateShuffleState() {
         String info;
         Drawable button;

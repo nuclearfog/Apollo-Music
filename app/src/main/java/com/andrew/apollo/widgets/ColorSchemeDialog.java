@@ -81,42 +81,25 @@ public class ColorSchemeDialog extends AlertDialog implements OnColorChangedList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.color_scheme_dialog_preset_one:
-                mColorPicker.setColor(getColor(R.color.holo_green));
-                break;
-
-            case R.id.color_scheme_dialog_preset_two:
-                mColorPicker.setColor(getColor(R.color.holo_green_light));
-                break;
-
-            case R.id.color_scheme_dialog_preset_three:
-                mColorPicker.setColor(getColor(R.color.holo_orange_dark));
-                break;
-
-            case R.id.color_scheme_dialog_preset_four:
-                mColorPicker.setColor(getColor(R.color.holo_orange_light));
-                break;
-
-            case R.id.color_scheme_dialog_preset_five:
-                mColorPicker.setColor(getColor(R.color.holo_purple));
-                break;
-
-            case R.id.color_scheme_dialog_preset_six:
-                mColorPicker.setColor(getColor(R.color.holo_red_light));
-                break;
-
-            case R.id.color_scheme_dialog_preset_seven:
-                mColorPicker.setColor(getColor(R.color.white));
-                break;
-
-            case R.id.color_scheme_dialog_preset_eight:
-                mColorPicker.setColor(getColor(R.color.black));
-                break;
-
-            case R.id.color_scheme_dialog_old_color:
-                mColorPicker.setColor(mCurrentColor);
-                break;
+        int vid = v.getId();
+        if (vid == R.id.color_scheme_dialog_preset_one) {
+            mColorPicker.setColor(getColor(R.color.holo_green));
+        } else if (vid == R.id.color_scheme_dialog_preset_two) {
+            mColorPicker.setColor(getColor(R.color.holo_green_light));
+        } else if (vid == R.id.color_scheme_dialog_preset_three) {
+            mColorPicker.setColor(getColor(R.color.holo_orange_dark));
+        } else if (vid == R.id.color_scheme_dialog_preset_four) {
+            mColorPicker.setColor(getColor(R.color.holo_orange_light));
+        } else if (vid == R.id.color_scheme_dialog_preset_five) {
+            mColorPicker.setColor(getColor(R.color.holo_purple));
+        } else if (vid == R.id.color_scheme_dialog_preset_six) {
+            mColorPicker.setColor(getColor(R.color.holo_red_light));
+        } else if (vid == R.id.color_scheme_dialog_preset_seven) {
+            mColorPicker.setColor(getColor(R.color.white));
+        } else if (vid == R.id.color_scheme_dialog_preset_eight) {
+            mColorPicker.setColor(getColor(R.color.black));
+        } else if (vid == R.id.color_scheme_dialog_old_color) {
+            mColorPicker.setColor(mCurrentColor);
         }
         mListener.onColorChanged(getColor());
     }

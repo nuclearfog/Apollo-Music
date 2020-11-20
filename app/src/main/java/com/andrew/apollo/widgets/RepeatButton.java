@@ -91,7 +91,6 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
     /**
      * Sets the correct drawable for the repeat state.
      */
-    @SuppressWarnings("ConstantConditions")
     public void updateRepeatState() {
         String info;
         Drawable button;

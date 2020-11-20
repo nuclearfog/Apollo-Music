@@ -313,51 +313,44 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Go back to the home activity
-                NavUtils.goHome(this);
-                return true;
-
-            case R.id.menu_shuffle:
-                // Shuffle all the songs
-                MusicUtils.shuffleAll(this);
-                // Refresh the queue
-                ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
-                return true;
-
-            case R.id.menu_favorite:
-                // Toggle the current track as a favorite and update the menu
-                // item
-                MusicUtils.toggleFavorite();
-                invalidateOptionsMenu();
-                return true;
-
-            case R.id.menu_audio_player_ringtone:
-                // Set the current track as a ringtone
-                MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
-                return true;
-
-            case R.id.menu_audio_player_share:
-                // Share the current meta data
-                shareCurrentTrack();
-                return true;
-
-            case R.id.menu_audio_player_equalizer:
-                // Sound effects
-                NavUtils.openEffectsPanel(this);
-                return true;
-
-            case R.id.menu_settings:
-                // Settings
-                NavUtils.openSettings(this);
-                return true;
-
-            case R.id.menu_audio_player_delete:
-                // Delete current song
-                DeleteDialog.newInstance(MusicUtils.getTrackName(), new long[]{MusicUtils.getCurrentAudioId()
-                }, null).show(getSupportFragmentManager(), "DeleteDialog");
-                return true;
+        int vId = item.getItemId();
+        if (vId == android.R.id.home) {
+            // Go back to the home activity
+            NavUtils.goHome(this);
+            return true;
+        } else if (vId == R.id.menu_shuffle) {
+            // Shuffle all the songs
+            MusicUtils.shuffleAll(this);
+            // Refresh the queue
+            ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
+            return true;
+        } else if (vId == R.id.menu_favorite) {
+            // Toggle the current track as a favorite and update the menu
+            // item
+            MusicUtils.toggleFavorite();
+            invalidateOptionsMenu();
+            return true;
+        } else if (vId == R.id.menu_audio_player_ringtone) {
+            // Set the current track as a ringtone
+            MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
+            return true;
+        } else if (vId == R.id.menu_audio_player_share) {
+            // Share the current meta data
+            shareCurrentTrack();
+            return true;
+        } else if (vId == R.id.menu_audio_player_equalizer) {
+            // Sound effects
+            NavUtils.openEffectsPanel(this);
+            return true;
+        } else if (vId == R.id.menu_settings) {
+            // Settings
+            NavUtils.openSettings(this);
+            return true;
+        } else if (vId == R.id.menu_audio_player_delete) {
+            // Delete current song
+            DeleteDialog.newInstance(MusicUtils.getTrackName(), new long[]{MusicUtils.getCurrentAudioId()
+            }, null).show(getSupportFragmentManager(), "DeleteDialog");
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -450,36 +443,31 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.audio_player_header:
-                NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
-                break;
-
-            case R.id.audio_player_switch:
-                if (mPageContainer.getVisibility() == View.VISIBLE) {
-                    // Show the artwork, hide the queue
-                    showAlbumArt();
-                } else {
-                    // Scroll to the current track
-                    mAudioPlayerHeader.setOnClickListener(this);
-                    ((QueueFragment) mPagerAdapter.getFragment(0)).scrollToCurrentSong();
-                    // Show the queue, hide the artwork
-                    hideAlbumArt();
-                }
-                break;
+        if (v.getId() == R.id.audio_player_header) {
+            String albumname = MusicUtils.getAlbumName();
+            String artistname = MusicUtils.getArtistName();
+            long albumId = MusicUtils.getCurrentAlbumId();
+            NavUtils.openAlbumProfile(this, albumname, artistname, albumId);
+        } else if (v.getId() == R.id.audio_player_switch) {
+            if (mPageContainer.getVisibility() == View.VISIBLE) {
+                // Show the artwork, hide the queue
+                showAlbumArt();
+            } else {
+                // Scroll to the current track
+                mAudioPlayerHeader.setOnClickListener(this);
+                ((QueueFragment) mPagerAdapter.getFragment(0)).scrollToCurrentSong();
+                // Show the queue, hide the artwork
+                hideAlbumArt();
+            }
         }
     }
 
     @Override
     public void onRepeat(View v, long howlong, int repcnt) {
-        switch (v.getId()) {
-            case R.id.action_button_previous:
-                scanBackward(repcnt, howlong);
-                break;
-
-            case R.id.action_button_next:
-                scanForward(repcnt, howlong);
-                break;
+        if (v.getId() == R.id.action_button_previous) {
+            scanBackward(repcnt, howlong);
+        } else if (v.getId() == R.id.action_button_next) {
+            scanForward(repcnt, howlong);
         }
     }
 

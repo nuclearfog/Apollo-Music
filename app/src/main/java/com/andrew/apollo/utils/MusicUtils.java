@@ -86,9 +86,9 @@ public final class MusicUtils {
      * @return The new instance of {@link ServiceToken}
      */
     public static ServiceToken bindToService(Context context, ServiceConnection callback) {
-        Activity realActivity = ((Activity) context).getParent();
+        Context realActivity = ((Activity) context).getParent();
         if (realActivity == null) {
-            realActivity = (Activity) context;
+            realActivity = context;
         }
         ContextWrapper contextWrapper = new ContextWrapper(realActivity);
         contextWrapper.startService(new Intent(contextWrapper, MusicPlaybackService.class));

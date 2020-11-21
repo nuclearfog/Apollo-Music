@@ -26,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
@@ -78,7 +80,7 @@ public class ThemeUtils {
     /**
      * The theme resources.
      */
-    private Resources mResources;
+    private Resources themeRes, defRes;
 
     /**
      * Constructor for <code>ThemeUtils</code>
@@ -94,15 +96,15 @@ public class ThemeUtils {
         String mThemePackage = getThemePackageName();
         // Initialze the package manager
         PackageManager mPackageManager = context.getPackageManager();
+        defRes = context.getResources();
         try {
             // Find the theme resources
-            mResources = mPackageManager.getResourcesForApplication(mThemePackage);
+            themeRes = mPackageManager.getResourcesForApplication(mThemePackage);
         } catch (Exception e) {
             // If the user isn't using a theme, then the resources should be
             // Apollo's.
             setThemePackageName(APOLLO_PACKAGE);
-            mResources = context.getResources();
-            e.printStackTrace();
+            themeRes = defRes;
         }
         // Inflate the custom layout
         mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
@@ -162,10 +164,10 @@ public class ThemeUtils {
      * @param favorite The favorites action.
      */
     public void setFavoriteIcon(MenuItem favorite) {
-        Drawable favIcon = ResourcesCompat.getDrawable(mResources, R.drawable.ic_action_favorite, null);
+        Drawable favIcon = getDrawable(R.drawable.ic_action_favorite);
         if (favIcon != null) {
             if (MusicUtils.isFavorite()) {
-                favIcon.mutate().setColorFilter(mResources.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
+                favIcon.mutate().setColorFilter(themeRes.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
             }
             favorite.setIcon(favIcon);
         }
@@ -179,13 +181,13 @@ public class ThemeUtils {
      * @param titleID   The title for the action bar
      */
     public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
-        String title = mResources.getString(titleID);
+        String title = getString(titleID);
         // Set the custom layout
         actionBar.setCustomView(mActionBarLayout);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         // Theme the action bar background
-        Drawable background = ResourcesCompat.getDrawable(mResources, R.drawable.action_bar, null);
+        Drawable background = getDrawable(R.drawable.action_bar);
         actionBar.setBackgroundDrawable(background);
         // Theme the title
         setTitle(title);
@@ -199,7 +201,7 @@ public class ThemeUtils {
             // Get the title text view
             TextView actionBarTitle = mActionBarLayout.findViewById(R.id.action_bar_title);
             // Theme the title
-            int textColor = ResourcesCompat.getColor(mResources, R.color.action_bar_title, null);
+            int textColor = getColor(R.color.action_bar_title);
             actionBarTitle.setTextColor(textColor);
             // Set the title
             actionBarTitle.setText(title);
@@ -216,7 +218,7 @@ public class ThemeUtils {
             TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
             actionBarSubtitle.setVisibility(View.VISIBLE);
             // Theme the subtitle
-            int color = ResourcesCompat.getColor(mResources, R.color.action_bar_subtitle, null);
+            int color = getColor(R.color.action_bar_subtitle);
             actionBarSubtitle.setTextColor(color);
             // Set the subtitle
             actionBarSubtitle.setText(subtitle);
@@ -237,6 +239,33 @@ public class ThemeUtils {
             context.startActivity(shopIntent);
         } catch (ActivityNotFoundException err) {
             // ignore
+        }
+    }
+
+
+    private String getString(@StringRes int resId) {
+        try {
+            return themeRes.getString(resId);
+        } catch (Resources.NotFoundException err) {
+            return defRes.getString(resId);
+        }
+    }
+
+
+    private Drawable getDrawable(@DrawableRes int resId) {
+        try {
+            return ResourcesCompat.getDrawable(themeRes, resId, null);
+        } catch (Resources.NotFoundException err) {
+            return ResourcesCompat.getDrawable(defRes, resId, null);
+        }
+    }
+
+
+    private int getColor(@ColorRes int resId) {
+        try {
+            return ResourcesCompat.getColor(themeRes, resId, null);
+        } catch (Resources.NotFoundException err) {
+            return ResourcesCompat.getColor(defRes, resId, null);
         }
     }
 }

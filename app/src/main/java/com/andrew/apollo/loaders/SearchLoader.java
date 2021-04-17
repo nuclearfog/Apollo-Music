@@ -14,14 +14,12 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,15 +27,10 @@ import java.util.List;
  */
 public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * The result
-     */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "mime_type", "artist",
+            "album", "title", "data1", "data2"};
 
-    /**
-     * The {@link Cursor} used to run the query.
-     */
-    private Cursor mCursor;
+    private String query;
 
     /**
      * Constructor of <code>SongLoader</code>
@@ -48,23 +41,7 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public SearchLoader(Context context, String query) {
         super(context);
         // Create the Cursor
-        mCursor = makeSearchCursor(context, query);
-    }
-
-    /**
-     * * @param context The {@link Context} to use.
-     *
-     * @param query The user's query.
-     * @return The {@link Cursor} used to perform the search.
-     */
-    public static Cursor makeSearchCursor(Context context, String query) {
-        return context.getContentResolver().query(
-                Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query)),
-                new String[]{
-                        BaseColumns._ID, MediaStore.Audio.Media.MIME_TYPE,
-                        MediaStore.Audio.Artists.ARTIST, MediaStore.Audio.Albums.ALBUM,
-                        MediaStore.Audio.Media.TITLE, "data1", "data2" //$NON-NLS-2$
-                }, null, null, null);
+        this.query = query;
     }
 
     /**
@@ -72,7 +49,9 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Gather the data
+        Cursor mCursor = makeSearchCursor(query);
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
@@ -99,11 +78,22 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, -1);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * * @param context The {@link Context} to use.
+     *
+     * @param query The user's query.
+     * @return The {@link Cursor} used to perform the search.
+     */
+    private Cursor makeSearchCursor(String query) {
+        Uri media = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query));
+        return getContext().getContentResolver().query(media, PROJECTION, null, null, null);
     }
 }

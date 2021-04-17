@@ -13,15 +13,13 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
+import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AlbumColumns;
 
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.PreferenceUtils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,14 +31,14 @@ import java.util.List;
 public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
     /**
-     * The result
+     * projection of the columns to fetch
      */
-    private ArrayList<Album> mAlbumsList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "album", "artist", "numsongs", "minyear"};
 
     /**
      * The Id of the artist the albums belong to.
      */
-    private Long mArtistID;
+    private long mArtistID;
 
     /**
      * Constructor of <code>ArtistAlbumHandler</code>
@@ -54,32 +52,13 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     }
 
     /**
-     * @param context  The {@link Context} to use.
-     * @param artistId The Id of the artist the albums belong to.
-     */
-    public static Cursor makeArtistAlbumCursor(Context context, Long artistId) {
-        return context.getContentResolver().query(
-                MediaStore.Audio.Artists.Albums.getContentUri("external", artistId), new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        AlbumColumns.ALBUM,
-                        /* 2 */
-                        AlbumColumns.ARTIST,
-                        /* 3 */
-                        AlbumColumns.NUMBER_OF_SONGS,
-                        /* 4 */
-                        AlbumColumns.FIRST_YEAR
-                }, null, null, PreferenceUtils.getInstance(context).getArtistAlbumSortOrder());
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Album> loadInBackground() {
+        List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeArtistAlbumCursor(getContext(), mArtistID);
+        Cursor mCursor = makeArtistAlbumCursor();
         // Gather the dataS
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -97,11 +76,22 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
                     // Create a new album
                     Album album = new Album(id, albumName, artist, songCount, year);
                     // Add everything up
-                    mAlbumsList.add(album);
+                    result.add(album);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mAlbumsList;
+        return result;
+    }
+
+    /**
+     * Create cursor
+     *
+     * @return sql cursor
+     */
+    private Cursor makeArtistAlbumCursor() {
+        Uri media = MediaStore.Audio.Artists.Albums.getContentUri("external", mArtistID);
+        String order = PreferenceUtils.getInstance(getContext()).getArtistAlbumSortOrder();
+        return getContext().getContentResolver().query(media, PROJECTION, null, null, order);
     }
 }

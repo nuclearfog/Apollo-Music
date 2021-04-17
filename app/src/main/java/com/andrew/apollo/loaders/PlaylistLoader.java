@@ -14,16 +14,15 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.PlaylistsColumns;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Playlist;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
 
 /**
  * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
@@ -33,10 +32,9 @@ import java.util.List;
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 
-    /**
-     * The result
-     */
-    private ArrayList<Playlist> mPlaylistList = Lists.newArrayList();
+    public static final String[] PROJECTION = {"_id", "name"};
+
+    public static final String ORDER = "name";
 
     /**
      * Constructor of <code>PlaylistLoader</code>
@@ -48,31 +46,15 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the playlist query.
-     */
-    public static Cursor makePlaylistCursor(Context context) {
-        return context.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        PlaylistsColumns.NAME
-                }, null, null, MediaStore.Audio.Playlists.DEFAULT_SORT_ORDER);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Playlist> loadInBackground() {
+        List<Playlist> result = new LinkedList<>();
         // Add the deafult playlits to the adapter
-        makeDefaultPlaylists();
-
+        makeDefaultPlaylists(result);
         // Create the Cursor
-        Cursor mCursor = makePlaylistCursor(getContext());
+        Cursor mCursor = makePlaylistCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -84,16 +66,16 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
                     // Create a new playlist
                     Playlist playlist = new Playlist(id, name);
                     // Add everything up
-                    mPlaylistList.add(playlist);
+                    result.add(playlist);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mPlaylistList;
+        return result;
     }
 
     /* Adds the favorites and last added playlists */
-    private void makeDefaultPlaylists() {
+    private void makeDefaultPlaylists(List<Playlist> mPlaylistList) {
         Resources resources = getContext().getResources();
         /* Favorites list */
         Playlist favorites = new Playlist(-1, resources.getString(R.string.playlist_favorites));
@@ -101,5 +83,14 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         /* Last added list */
         Playlist lastAdded = new Playlist(-2, resources.getString(R.string.playlist_last_added));
         mPlaylistList.add(lastAdded);
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the playlist query.
+     */
+    private Cursor makePlaylistCursor() {
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER);
     }
 }

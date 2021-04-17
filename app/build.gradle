@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
     useLibrary 'org.apache.http.legacy'
 
     lintOptions {
@@ -19,7 +19,6 @@ android {
 
     buildTypes {
         all {
-            buildConfigField 'String', 'LAST_FM_KEY', LASTFM_KEY
         }
         release {
             minifyEnabled true

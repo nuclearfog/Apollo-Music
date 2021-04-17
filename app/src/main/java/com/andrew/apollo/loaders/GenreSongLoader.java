@@ -13,12 +13,12 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,9 +30,19 @@ import java.util.List;
 public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     /**
-     * The result
+     * set selected columns and order
      */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "title", "album", "artist", "duration"};
+
+    /**
+     * selection condition
+     */
+    private static final String SELECTION = "is_music=1 AND title!=''";
+
+    /**
+     * order by
+     */
+    private static final String ORDER = "title_key";
 
     /**
      * The Id of the genre the songs belong to.
@@ -50,37 +60,13 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     }
 
     /**
-     * @param context The {@link Context} to use.
-     * @param genreId The Id of the genre the songs belong to.
-     * @return The {@link Cursor} used to run the query.
-     */
-    public static Cursor makeGenreSongCursor(Context context, Long genreId) {
-        // Match the songs up with the genre
-        String selection = MediaStore.Audio.Genres.Members.IS_MUSIC + "=1" +
-                " AND " + MediaStore.Audio.Genres.Members.TITLE + "!=''";//$NON-NLS-2$
-        return context.getContentResolver().query(
-                MediaStore.Audio.Genres.Members.getContentUri("external", genreId), new String[]{
-                        /* 0 */
-                        MediaStore.Audio.Genres.Members._ID,
-                        /* 1 */
-                        MediaStore.Audio.Genres.Members.TITLE,
-                        /* 2 */
-                        "album",
-                        /* 3 */
-                        "artist",
-                        /* 4 */
-                        "duration"
-                        //MediaStore.Audio.Genres.Members.DURATION
-                }, selection, null, MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeGenreSongCursor(getContext(), mGenreID);
+        Cursor mCursor = makeGenreSongCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -100,11 +86,20 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, durationInSecs);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * @return The {@link Cursor} used to run the query.
+     */
+    private Cursor makeGenreSongCursor() {
+        // Match the songs up with the genre
+        Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", mGenreID);
+        return getContext().getContentResolver().query(media, PROJECTION, SELECTION, null, ORDER);
     }
 }

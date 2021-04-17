@@ -21,6 +21,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -57,6 +58,8 @@ import com.devspark.appmsg.AppMsg;
 import java.io.File;
 import java.util.Arrays;
 import java.util.WeakHashMap;
+
+import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -482,8 +485,7 @@ public final class MusicUtils {
      * @return The song list for an artist.
      */
     public static long[] getSongListForArtist(Context context, long id) {
-        String[] projection = new String[]{BaseColumns._ID
-        };
+        String[] projection = new String[]{BaseColumns._ID};
         String selection = AudioColumns.ARTIST_ID + "=" + id + " AND " + AudioColumns.IS_MUSIC + "=1";
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,
@@ -626,7 +628,9 @@ public final class MusicUtils {
      * @param context The {@link Context} to use.
      */
     public static void shuffleAll(Context context) {
-        Cursor cursor = SongLoader.makeSongCursor(context);
+        String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                SongLoader.PROJECTION, SongLoader.SELECTION, null, sort);
         long[] mTrackList = getSongListForCursor(cursor);
         int position = 0;
         if (mTrackList.length == 0 || mService == null) {
@@ -1041,7 +1045,9 @@ public final class MusicUtils {
      * @return The song list from our favorites database
      */
     public static long[] getSongListForFavorites(Context context) {
-        Cursor cursor = FavoritesLoader.makeFavoritesCursor(context);
+        SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
+        Cursor cursor = data.query(FavoriteColumns.NAME, FavoritesLoader.COLUMNS, null,
+                null, null, null, FavoritesLoader.ORDER);
         if (cursor != null) {
             long[] list = getSongListForFavoritesCursor(cursor);
             cursor.close();
@@ -1064,7 +1070,9 @@ public final class MusicUtils {
      * @return The song list for the last added playlist
      */
     public static long[] getSongListForLastAdded(Context context) {
-        Cursor cursor = LastAddedLoader.makeLastAddedCursor(context);
+        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                LastAddedLoader.PROJECTION, LastAddedLoader.SELECTION + time, null, LastAddedLoader.ORDER);
         if (cursor != null) {
             int count = cursor.getCount();
             long[] list = new long[count];
@@ -1072,6 +1080,7 @@ public final class MusicUtils {
                 cursor.moveToNext();
                 list[i] = cursor.getLong(0);
             }
+            cursor.close();
             return list;
         }
         return sEmptyList;
@@ -1102,10 +1111,11 @@ public final class MusicUtils {
             subMenu.add(groupId, FragmentMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
         }
         subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
-        Cursor cursor = PlaylistLoader.makePlaylistCursor(context);
+        Cursor cursor = context.getContentResolver().query(EXTERNAL_CONTENT_URI,
+                PlaylistLoader.PROJECTION, null, null, PlaylistLoader.ORDER);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                while (!cursor.isAfterLast()) {
+                do {
                     Intent intent = new Intent();
                     String name = cursor.getString(1);
                     if (name != null) {
@@ -1113,7 +1123,7 @@ public final class MusicUtils {
                         subMenu.add(groupId, FragmentMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
                     }
                     cursor.moveToNext();
-                }
+                } while (cursor.moveToNext());
             }
             cursor.close();
         }

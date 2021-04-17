@@ -13,14 +13,20 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ALBUMNAME;
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ARTISTNAME;
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ID;
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.NAME;
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.SONGNAME;
 
 /**
  * Used to query the {@link FavoritesStore} for the tracks marked as favorites.
@@ -30,9 +36,18 @@ import java.util.List;
 public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     /**
-     * The result
+     * Definition of the Columns to get from database
      */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+    public static final String[] COLUMNS = {
+            FavoriteColumns.ID + " as _id", FavoriteColumns.ID,
+            FavoriteColumns.SONGNAME, FavoriteColumns.ALBUMNAME,
+            FavoriteColumns.ARTISTNAME, FavoriteColumns.PLAYCOUNT
+    };
+
+    /**
+     * SQLite sport order
+     */
+    public static final String ORDER = FavoriteColumns.PLAYCOUNT + " DESC";
 
     /**
      * Constructor of <code>FavoritesHandler</code>
@@ -44,48 +59,41 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
     }
 
     /**
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the favorites query.
-     */
-    public static Cursor makeFavoritesCursor(Context context) {
-        return FavoritesStore
-                .getInstance(context)
-                .getReadableDatabase()
-                .query(FavoriteColumns.NAME,
-                        new String[]{
-                                FavoriteColumns.ID + " as _id", FavoriteColumns.ID,
-                                FavoriteColumns.SONGNAME, FavoriteColumns.ALBUMNAME,
-                                FavoriteColumns.ARTISTNAME, FavoriteColumns.PLAYCOUNT
-                        }, null, null, null, null, FavoriteColumns.PLAYCOUNT + " DESC");
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeFavoritesCursor(getContext());
+        Cursor mCursor = makeFavoritesCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
                     // Copy the song Id
-                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(FavoriteColumns.ID));
+                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(ID));
                     // Copy the song name
-                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.SONGNAME));
+                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(SONGNAME));
                     // Copy the artist name
-                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.ARTISTNAME));
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(ARTISTNAME));
                     // Copy the album name
-                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(FavoriteColumns.ALBUMNAME));
+                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(ALBUMNAME));
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, -1);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * @return The {@link Cursor} used to run the favorites query.
+     */
+    private Cursor makeFavoritesCursor() {
+        SQLiteDatabase data = FavoritesStore.getInstance(getContext()).getReadableDatabase();
+        return data.query(NAME, COLUMNS, null, null, null, null, ORDER);
     }
 }

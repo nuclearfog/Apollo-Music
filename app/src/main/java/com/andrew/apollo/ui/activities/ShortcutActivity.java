@@ -31,7 +31,6 @@ import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
 import com.andrew.apollo.loaders.AsyncHandler;
-import com.andrew.apollo.loaders.LastAddedLoader;
 import com.andrew.apollo.loaders.SearchLoader;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.Lists;
@@ -42,6 +41,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.loaders.LastAddedLoader.ORDER;
+import static com.andrew.apollo.loaders.LastAddedLoader.PROJECTION;
+import static com.andrew.apollo.loaders.LastAddedLoader.SELECTION;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -237,12 +239,12 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                         // Get the Favorites song list
                         mList = MusicUtils.getSongListForFavorites(ShortcutActivity.this);
                     } else if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
-
                         // Don't shuffle the last added track list
                         mShouldShuffle = false;
-
                         // Get the Last added song list
-                        Cursor cursor = LastAddedLoader.makeLastAddedCursor(ShortcutActivity.this);
+                        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
+                        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                PROJECTION, SELECTION + time, null, ORDER);
                         if (cursor != null) {
                             mList = MusicUtils.getSongListForCursor(cursor);
                             cursor.close();

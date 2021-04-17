@@ -13,14 +13,11 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AudioColumns;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,10 +28,12 @@ import java.util.List;
  */
 public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * The result
-     */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+
+    public static final String[] PROJECTION = {"_id", "title", "artist", "album", "duration"};
+
+    public static final String SELECTION = "is_music=1 AND title!='' AND date_added>";
+
+    public static final String ORDER = "date_added DESC";
 
     /**
      * Constructor of <code>LastAddedHandler</code>
@@ -46,38 +45,13 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
     }
 
     /**
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the song query.
-     */
-    public static Cursor makeLastAddedCursor(Context context) {
-        int fourWeeks = 4 * 3600 * 24 * 7;
-        String selection = AudioColumns.IS_MUSIC + "=1" +
-                " AND " + AudioColumns.TITLE + " != ''" + //$NON-NLS-2$
-                " AND " + MediaStore.Audio.Media.DATE_ADDED + ">" + //$NON-NLS-2$
-                (System.currentTimeMillis() / 1000 - fourWeeks);
-        return context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        AudioColumns.TITLE,
-                        /* 2 */
-                        "artist",
-                        /* 3 */
-                        "album",
-                        /* 4 */
-                        "duration"
-                        //AudioColumns.DURATION
-                }, selection, null, MediaStore.Audio.Media.DATE_ADDED + " DESC");
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeLastAddedCursor(getContext());
+        Cursor mCursor = makeLastAddedCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -97,11 +71,20 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, durationInSecs);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * @return The {@link Cursor} used to run the song query.
+     */
+    private Cursor makeLastAddedCursor() {
+        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
+        return getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                PROJECTION, SELECTION + time, null, ORDER);
     }
 }

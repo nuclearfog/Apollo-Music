@@ -11,8 +11,6 @@
 
 package com.andrew.apollo.model;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 /**
@@ -30,17 +28,17 @@ public class Song {
     /**
      * The song name
      */
-    public String mSongName;
+    public String mSongName = "";
 
     /**
      * The song artist
      */
-    public String mArtistName;
+    public String mArtistName = "";
 
     /**
      * The song album
      */
-    public String mAlbumName;
+    public String mAlbumName = "";
 
     /**
      * The song duration in seconds
@@ -57,10 +55,13 @@ public class Song {
      * @param duration   The duration of a song in seconds
      */
     public Song(long songId, String songName, String artistName, String albumName, int duration) {
+        if (songName != null)
+            mSongName = songName;
+        if (artistName != null)
+            mArtistName = artistName;
+        if (albumName != null)
+            mAlbumName = albumName;
         mSongId = songId;
-        mSongName = songName;
-        mArtistName = artistName;
-        mAlbumName = albumName;
         mDuration = duration;
     }
 
@@ -84,29 +85,14 @@ public class Song {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (obj == this)
             return true;
+        if (obj instanceof Song) {
+            Song other = (Song) obj;
+            return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
+                    mSongName.equals(other.mSongName) && mDuration == other.mDuration && mSongId == other.mSongId;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Song other = (Song) obj;
-        if (mSongId != other.mSongId) {
-            return false;
-        }
-        if (!TextUtils.equals(mAlbumName, other.mAlbumName)) {
-            return false;
-        }
-        if (!TextUtils.equals(mArtistName, other.mArtistName)) {
-            return false;
-        }
-        if (mDuration != other.mDuration) {
-            return false;
-        }
-        return TextUtils.equals(mSongName, other.mSongName);
+        return false;
     }
 
     /**

@@ -13,16 +13,15 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AudioColumns;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.PreferenceUtils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
 /**
  * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
@@ -33,9 +32,14 @@ import java.util.List;
 public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     /**
-     * The result
+     * SQL Projection
      */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "title", "artist", "album", "duration"};
+
+    /**
+     * SQL Query
+     */
+    private static final String SELECTION = "is_music=1 AND title!='' AND album_id=";
 
     /**
      * The Id of the album the songs belong to.
@@ -48,35 +52,9 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      * @param context The {@link Context} to use.
      * @param albumId The Id of the album the songs belong to.
      */
-    public AlbumSongLoader(Context context, Long albumId) {
+    public AlbumSongLoader(Context context, long albumId) {
         super(context);
         mAlbumID = albumId;
-    }
-
-    /**
-     * @param context The {@link Context} to use.
-     * @param albumId The Id of the album the songs belong to.
-     * @return The {@link Cursor} used to run the query.
-     */
-    public static Cursor makeAlbumSongCursor(Context context, Long albumId) {
-        // Match the songs up with the artist
-        String selection = AudioColumns.IS_MUSIC + "=1" +
-                " AND " + AudioColumns.TITLE + " != ''" +
-                " AND " + AudioColumns.ALBUM_ID + "=" + albumId;
-        return context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        AudioColumns.TITLE,
-                        /* 2 */
-                        "artist",
-                        /* 3 */
-                        "album",
-                        /* 4 */
-                        //AudioColumns.DURATION
-                        "duration"
-                }, selection, null, PreferenceUtils.getInstance(context).getAlbumSongSortOrder());
     }
 
     /**
@@ -84,8 +62,9 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeAlbumSongCursor(getContext(), mAlbumID);
+        Cursor mCursor = makeAlbumSongCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -105,11 +84,19 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, seconds);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * @return The {@link Cursor} used to run the query.
+     */
+    private Cursor makeAlbumSongCursor() {
+        String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSongSortOrder();
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION + mAlbumID, null, sortOrder);
     }
 }

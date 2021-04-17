@@ -17,10 +17,12 @@ import android.database.Cursor;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
+import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
 /**
  * Used to query {@link RecentStore} and return the last listened to albums.
@@ -29,10 +31,13 @@ import java.util.List;
  */
 public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
-    /**
-     * The result
-     */
-    private ArrayList<Album> mAlbumsList = Lists.newArrayList();
+
+    private static final String[] COLUMNS = {
+            RecentStoreColumns.ID + " as id", RecentStoreColumns.ID,
+            RecentStoreColumns.ALBUMNAME, RecentStoreColumns.ARTISTNAME,
+            RecentStoreColumns.ALBUMSONGCOUNT, RecentStoreColumns.ALBUMYEAR,
+            TIMEPLAYED
+    };
 
     /**
      * Constructor of <code>RecentLoader</code>
@@ -53,13 +58,7 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
         return RecentStore
                 .getInstance(context)
                 .getReadableDatabase()
-                .query(RecentStoreColumns.NAME,
-                        new String[]{
-                                RecentStoreColumns.ID + " as id", RecentStoreColumns.ID,
-                                RecentStoreColumns.ALBUMNAME, RecentStoreColumns.ARTISTNAME,
-                                RecentStoreColumns.ALBUMSONGCOUNT, RecentStoreColumns.ALBUMYEAR,
-                                RecentStoreColumns.TIMEPLAYED
-                        }, null, null, null, null, RecentStoreColumns.TIMEPLAYED + " DESC");
+                .query(NAME, COLUMNS, null, null, null, null, TIMEPLAYED + " DESC");
     }
 
     /**
@@ -67,6 +66,7 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
      */
     @Override
     public List<Album> loadInBackground() {
+        List<Album> result = new LinkedList<>();
         // Create the Cursor
         Cursor mCursor = makeRecentCursor(getContext());
         // Gather the data
@@ -86,11 +86,11 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
                     // Create a new album
                     Album album = new Album(id, albumName, artist, songCount, year);
                     // Add everything up
-                    mAlbumsList.add(album);
+                    result.add(album);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mAlbumsList;
+        return result;
     }
 }

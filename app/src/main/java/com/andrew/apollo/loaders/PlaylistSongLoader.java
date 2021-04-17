@@ -13,13 +13,12 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AudioColumns;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,10 +29,11 @@ import java.util.List;
  */
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * The result
-     */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"audio_id", "title", "artist", "album", "duration"};
+
+    private static final String SELECTION = "is_music=1 AND title != ''";
+
+    private static final String ORDER = "play_order";
 
     /**
      * The Id of the playlist the songs belong to.
@@ -51,40 +51,13 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context    The {@link Context} to use.
-     * @param playlistID The playlist the songs belong to.
-     * @return The {@link Cursor} used to run the song query.
-     */
-    public static Cursor makePlaylistSongCursor(Context context, Long playlistID) {
-        String mSelection = AudioColumns.IS_MUSIC + "=1" +
-                " AND " + AudioColumns.TITLE + " != ''";//$NON-NLS-2$
-        return context.getContentResolver().query(
-                MediaStore.Audio.Playlists.Members.getContentUri("external", playlistID),
-                new String[]{
-                        /* 0 */
-                        MediaStore.Audio.Playlists.Members.AUDIO_ID,
-                        /* 1 */
-                        AudioColumns.TITLE,
-                        /* 2 */
-                        "artist",
-                        /* 3 */
-                        "album",
-                        /* 4 */
-                        "duration"
-                        //AudioColumns.DURATION
-                }, mSelection, null,
-                MediaStore.Audio.Playlists.Members.DEFAULT_SORT_ORDER);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makePlaylistSongCursor(getContext(), mPlaylistID);
+        Cursor mCursor = makePlaylistSongCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -104,11 +77,21 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, durationInSecs);
                     // Add everything up
-                    mSongList.add(song);
+                    result.add(song);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mSongList;
+        return result;
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the song query.
+     */
+    private Cursor makePlaylistSongCursor() {
+        Uri media = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistID);
+        return getContext().getContentResolver().query(media, PROJECTION, SELECTION, null, ORDER);
     }
 }

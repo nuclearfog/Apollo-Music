@@ -13,15 +13,13 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
+import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.ArtistColumns;
 
 import com.andrew.apollo.model.Artist;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.PreferenceUtils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,9 +31,14 @@ import java.util.List;
 public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 
     /**
-     * The result
+     * content uri to get the music from
      */
-    private ArrayList<Artist> mArtistsList = Lists.newArrayList();
+    private static final Uri CONTENT = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
+
+    /**
+     * projection of the column
+     */
+    private static final String[] PROJECTION = {"_id", "artist", "number_of_albums", "number_of_tracks"};
 
     /**
      * Constructor of <code>ArtistLoader</code>
@@ -47,57 +50,44 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the artist query.
-     */
-    public static Cursor makeArtistCursor(Context context) {
-        return context.getContentResolver().query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        ArtistColumns.ARTIST,
-                        /* 2 */
-                        ArtistColumns.NUMBER_OF_ALBUMS,
-                        /* 3 */
-                        ArtistColumns.NUMBER_OF_TRACKS
-                }, null, null, PreferenceUtils.getInstance(context).getArtistSortOrder());
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Artist> loadInBackground() {
+        List<Artist> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeArtistCursor(getContext());
+        Cursor mCursor = makeArtistCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
                     // Copy the artist id
                     long id = mCursor.getLong(0);
-
                     // Copy the artist name
                     String artistName = mCursor.getString(1);
-
                     // Copy the number of albums
                     int albumCount = mCursor.getInt(2);
-
                     // Copy the number of songs
                     int songCount = mCursor.getInt(3);
 
                     // Create a new artist
                     Artist artist = new Artist(id, artistName, songCount, albumCount);
-
                     // Add everything up
-                    mArtistsList.add(artist);
+                    result.add(artist);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mArtistsList;
+        return result;
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the artist query.
+     */
+    private Cursor makeArtistCursor() {
+        String order = PreferenceUtils.getInstance(getContext()).getArtistSortOrder();
+        return getContext().getContentResolver().query(CONTENT, PROJECTION, null, null, order);
     }
 }

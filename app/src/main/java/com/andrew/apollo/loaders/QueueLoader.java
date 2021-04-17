@@ -12,12 +12,10 @@
 package com.andrew.apollo.loaders;
 
 import android.content.Context;
-import android.database.Cursor;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,11 +24,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
-    /**
-     * The result
-     */
-    private ArrayList<Song> mSongList = Lists.newArrayList();
 
     /**
      * Constructor of <code>QueueLoader</code>
@@ -42,20 +35,11 @@ public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the song query.
-     */
-    public static Cursor makeQueueCursor(Context context) {
-        return new NowPlayingCursor(context);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Song> loadInBackground() {
+        List<Song> result = new LinkedList<>();
         // Create the Cursor
         NowPlayingCursor mCursor = new NowPlayingCursor(getContext());
         // Gather the data
@@ -76,10 +60,10 @@ public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
                 // Create a new song
                 Song song = new Song(id, songName, artist, album, durationInSecs);
                 // Add everything up
-                mSongList.add(song);
+                result.add(song);
             } while (mCursor.moveToNext());
         }
         mCursor.close();
-        return mSongList;
+        return result;
     }
 }

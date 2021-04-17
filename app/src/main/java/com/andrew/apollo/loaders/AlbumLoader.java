@@ -13,16 +13,15 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AlbumColumns;
 
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.PreferenceUtils;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static android.provider.MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
 
 /**
  * Used to query {@link MediaStore.Audio.Albums#EXTERNAL_CONTENT_URI} and return
@@ -33,9 +32,9 @@ import java.util.List;
 public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
     /**
-     * The result
+     * SQL Projection
      */
-    private ArrayList<Album> mAlbumsList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "album", "artist", "numsongs", "minyear"};
 
     /**
      * Constructor of <code>AlbumLoader</code>
@@ -47,34 +46,13 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the album query.
-     */
-    public static Cursor makeAlbumCursor(Context context) {
-        return context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        AlbumColumns.ALBUM,
-                        /* 2 */
-                        AlbumColumns.ARTIST,
-                        /* 3 */
-                        AlbumColumns.NUMBER_OF_SONGS,
-                        /* 4 */
-                        AlbumColumns.FIRST_YEAR
-                }, null, null, PreferenceUtils.getInstance(context).getAlbumSortOrder());
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Album> loadInBackground() {
+        List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeAlbumCursor(getContext());
+        Cursor mCursor = makeAlbumCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -92,11 +70,21 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
                     // Create a new album
                     Album album = new Album(id, albumName, artist, songCount, year);
                     // Add everything up
-                    mAlbumsList.add(album);
+                    result.add(album);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mAlbumsList;
+        return result;
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the album query.
+     */
+    private Cursor makeAlbumCursor() {
+        String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSortOrder();
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, null, null, sortOrder);
     }
 }

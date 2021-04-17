@@ -166,7 +166,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      * @param artist   The {@link ImageView} holding the aritst image
      * @param position The position of the artist to play.
      */
-    private void playArtist(final ImageView artist, final int position) {
+    private void playArtist(ImageView artist, final int position) {
         artist.setOnClickListener(new OnClickListener() {
 
             @Override

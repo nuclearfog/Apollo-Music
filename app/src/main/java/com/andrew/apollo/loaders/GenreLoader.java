@@ -13,15 +13,14 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.GenresColumns;
 
 import com.andrew.apollo.model.Genre;
-import com.andrew.apollo.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static android.provider.MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
 
 /**
  * Used to query {@link MediaStore.Audio.Genres#EXTERNAL_CONTENT_URI} and return
@@ -32,9 +31,19 @@ import java.util.List;
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 
     /**
-     * The result
+     * COLUMN projection
      */
-    private ArrayList<Genre> mGenreList = Lists.newArrayList();
+    private static final String[] PROJECTION = {"_id", "name"};
+
+    /**
+     * condition to filter empty names
+     */
+    private static final String SELECTION = "name!=''";
+
+    /**
+     * sort genres by name
+     */
+    private static final String SORT = "name";
 
     /**
      * Constructor of <code>GenreLoader</code>
@@ -46,30 +55,13 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the genre query.
-     */
-    public static Cursor makeGenreCursor(Context context) {
-        return context.getContentResolver().query(MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                new String[]{
-                        /* 0 */
-                        BaseColumns._ID,
-                        /* 1 */
-                        GenresColumns.NAME
-                }, MediaStore.Audio.Genres.NAME + " != ''"
-                /* 0 */
-                /* 1 */, null, MediaStore.Audio.Genres.DEFAULT_SORT_ORDER);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Genre> loadInBackground() {
+        List<Genre> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeGenreCursor(getContext());
+        Cursor mCursor = makeGenreCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -81,11 +73,20 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
                     // Create a new genre
                     Genre genre = new Genre(id, name);
                     // Add everything up
-                    mGenreList.add(genre);
+                    result.add(genre);
                 } while (mCursor.moveToNext());
             }
             mCursor.close();
         }
-        return mGenreList;
+        return result;
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the genre query.
+     */
+    private Cursor makeGenreCursor() {
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, SORT);
     }
 }

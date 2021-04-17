@@ -3,56 +3,67 @@ package com.andrew.apollo.loaders;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
 /**
  * decompiled from Apollo.APK version 1.6
  */
 public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
+
+    private static final String[] PROJECTION = {"_id", "title", "album", "artist", "duration", "_data"};
+
+    private static final String SELECTION = "is_music=1 AND title!='' AND _data LIKE ?";
+
+    private static final String ORDER = "title_key";
+
     private File mFolder;
 
-    private ArrayList<Song> mSongList = Lists.newArrayList();
-
-
-    public FolderSongLoader(Context paramContext, File paramFile) {
+    /**
+     * @param paramContext Application context
+     * @param folder       folder to open
+     */
+    public FolderSongLoader(Context paramContext, File folder) {
         super(paramContext);
-        this.mFolder = paramFile;
+        this.mFolder = folder;
     }
 
 
-    private static Cursor makeFileSongCursor(Context paramContext, File paramFile) {
-        ContentResolver contentResolver = paramContext.getContentResolver();
-        String[] projection = {"_id", "title", "album", "artist", "duration"};
-        String[] order = {paramFile.toString() + '%'};
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        return contentResolver.query(uri, projection, "is_music=1 AND title!='' AND _data LIKE ?", order, "title_key");
-    }
-
-
+    @Override
     public List<Song> loadInBackground() {
-        Cursor cursor = makeFileSongCursor(getContext(), this.mFolder);
+        List<Song> result = new LinkedList<>();
+        Cursor cursor = makeFileSongCursor();
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    long id = cursor.getLong(0);
-                    String songTitle = cursor.getString(1);
-                    String albumTitle = cursor.getString(2);
-                    String artistName = cursor.getString(3);
-                    int duration = (int) cursor.getLong(4) / 1000;
-                    Song song = new Song(id, songTitle, artistName, albumTitle, duration);
-                    this.mSongList.add(song);
+                    String filename = cursor.getString(5);
+                    File file = new File(filename);
+                    if (mFolder.equals(file.getParentFile())) {
+                        long id = cursor.getLong(0);
+                        String songTitle = cursor.getString(1);
+                        String albumTitle = cursor.getString(2);
+                        String artistName = cursor.getString(3);
+                        int duration = (int) (cursor.getLong(4) / 1000);
+                        Song song = new Song(id, songTitle, artistName, albumTitle, duration);
+                        result.add(song);
+                    }
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
-        return this.mSongList;
+        return result;
+    }
+
+
+    private Cursor makeFileSongCursor() {
+        ContentResolver contentResolver = getContext().getContentResolver();
+        String[] args = {mFolder.toString() + "%"};
+        return contentResolver.query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, args, ORDER);
     }
 }

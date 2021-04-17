@@ -30,12 +30,12 @@ public class Album {
     /**
      * The name of the album
      */
-    public String mAlbumName;
+    public String mAlbumName = "";
 
     /**
      * The album artist
      */
-    public String mArtistName;
+    public String mArtistName = "";
 
     /**
      * The number of songs in the album
@@ -45,7 +45,7 @@ public class Album {
     /**
      * The year the album was released
      */
-    public String mYear;
+    public String mYear = "";
 
     /**
      * Constructor of <code>Album</code>
@@ -58,11 +58,14 @@ public class Album {
      */
     public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
         super();
-        mAlbumId = albumId;
-        mAlbumName = albumName;
-        mArtistName = artistName;
+        if (albumYear != null)
+            mYear = albumYear;
+        if (albumName != null)
+            mAlbumName = albumName;
+        if (artistName != null)
+            mArtistName = artistName;
         mSongNumber = songNumber;
-        mYear = albumYear;
+        mAlbumId = albumId;
     }
 
     /**

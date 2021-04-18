@@ -26,6 +26,8 @@ import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
 
+import java.util.ArrayList;
+
 /**
  * This {@link ArrayAdapter} is used to display all of the songs on a user's
  * device for {@link SongFragment}. It is also used to show the queue in
@@ -43,7 +45,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
     /**
      * Used to cache the song info
      */
-    private DataHolder[] mData;
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Constructor of <code>SongAdapter</code>
@@ -75,7 +77,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the data holder
-        DataHolder dataHolder = mData[position];
+        DataHolder dataHolder = mData.get(position);
         // Set each song name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the song duration (line one, right)
@@ -93,37 +95,36 @@ public class SongAdapter extends ArrayAdapter<Song> {
         return true;
     }
 
+
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
     /**
      * Method used to cache the data used to populate the list or grid. The idea
      * is to cache everything before {@code #getView(int, View, ViewGroup)} is
      * called.
      */
     public void buildCache() {
-        mData = new DataHolder[getCount()];
+        mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the song
             Song song = getItem(i);
-
             if (song != null) {
                 // Build the data holder
-                mData[i] = new DataHolder();
+                DataHolder holder = new DataHolder();
                 // Song Id
-                mData[i].mItemId = song.mSongId;
+                holder.mItemId = song.mSongId;
                 // Song names (line one)
-                mData[i].mLineOne = song.mSongName;
+                holder.mLineOne = song.mSongName;
                 // Song duration (line one, right)
-                mData[i].mLineOneRight = MusicUtils.makeTimeString(getContext(), song.mDuration);
+                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.mDuration);
                 // Album names (line two)
-                mData[i].mLineTwo = song.mAlbumName;
+                holder.mLineTwo = song.mAlbumName;
+                mData.add(holder);
             }
         }
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
-        mData = null;
     }
 }

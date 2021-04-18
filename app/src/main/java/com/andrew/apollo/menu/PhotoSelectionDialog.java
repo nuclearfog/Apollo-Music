@@ -25,9 +25,9 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.Lists;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used when the user touches the image in the header in {@link ProfileActivity}
@@ -45,8 +45,10 @@ public class PhotoSelectionDialog extends DialogFragment {
     private static final int GOOGLE_SEARCH = 2;
 
     private static final int FETCH_IMAGE = 3;
+
     private static ProfileType mProfileType;
-    private ArrayList<String> mChoices = Lists.newArrayList();
+
+    private List<String> mChoices = new ArrayList<>(5);
 
     public PhotoSelectionDialog() {
     }

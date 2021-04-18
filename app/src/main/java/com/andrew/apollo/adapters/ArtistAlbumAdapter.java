@@ -28,10 +28,7 @@ import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.MusicUtils;
-
-import java.util.List;
 
 /**
  * This {@link ArrayAdapter} is used to display the albums for a particular
@@ -70,11 +67,6 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      * Image cache and image fetcher
      */
     private ImageFetcher mImageFetcher;
-
-    /**
-     * Used to set the size of the data in the adapter
-     */
-    private List<Album> mCount = Lists.newArrayList();
 
     /**
      * Constructor of <code>ArtistAlbumAdapter</code>
@@ -149,15 +141,8 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @Override
     public int getCount() {
-        int size = mCount.size();
+        int size = super.getCount();
         return size == 0 ? 0 : size + 1;
-    }
-
-    /**
-     * @param data The {@link List} used to return the count for the adapter.
-     */
-    public void setCount(List<Album> data) {
-        mCount = data;
     }
 
     /**
@@ -208,13 +193,6 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
                 }
             }
         });
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
     }
 
     /**

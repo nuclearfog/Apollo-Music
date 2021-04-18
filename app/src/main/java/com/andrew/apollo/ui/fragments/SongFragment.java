@@ -266,7 +266,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
         // Start fresh
-        mAdapter.unload();
+        mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
@@ -288,7 +288,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

@@ -33,11 +33,10 @@ import com.andrew.apollo.format.Capitalize;
 import com.andrew.apollo.loaders.AsyncHandler;
 import com.andrew.apollo.loaders.SearchLoader;
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
@@ -67,7 +66,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     /**
      * Used with the loader and voice queries
      */
-    private ArrayList<Song> mSong = Lists.newArrayList();
+    private List<Song> mSong = new LinkedList<>();
     /**
      * Service token
      */

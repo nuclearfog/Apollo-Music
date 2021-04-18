@@ -309,7 +309,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             emptyInfo.setVisibility(View.VISIBLE);
         } else {
             // Start fresh
-            mAdapter.unload();
+            mAdapter.clear();
             // Add the data to the adpater
             for (Album album : data)
                 mAdapter.add(album);
@@ -325,7 +325,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

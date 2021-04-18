@@ -29,6 +29,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -258,8 +259,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
             return;
         }
         mAlbum = mAdapter.getItem(position - 1);
-        NavUtils.openAlbumProfile(getActivity(), mAlbum.mAlbumName,
-                mAlbum.mArtistName, mAlbum.mAlbumId);
+        NavUtils.openAlbumProfile(getActivity(), mAlbum.mAlbumName, mAlbum.mArtistName, mAlbum.mAlbumId);
         requireActivity().finish();
     }
 
@@ -268,8 +268,9 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @NonNull
     @Override
-    public Loader<List<Album>> onCreateLoader(int id, Bundle args) {
-        return new ArtistAlbumLoader(getActivity(), args.getLong(Config.ID));
+    public Loader<List<Album>> onCreateLoader(int id, @Nullable Bundle args) {
+        long artistId = args != null ? args.getLong(Config.ID) : 0;
+        return new ArtistAlbumLoader(getActivity(), artistId);
     }
 
     /**
@@ -282,9 +283,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
             return;
         }
         // Start fresh
-        mAdapter.unload();
-        // Return the correct count
-        mAdapter.setCount(data);
+        mAdapter.clear();
         // Add the data to the adpater
         for (Album album : data) {
             mAdapter.add(album);
@@ -297,7 +296,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

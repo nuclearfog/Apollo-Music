@@ -130,7 +130,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> paramLoader, List<File> paramList) {
         // Clear list
-        mAdapter.unload();
+        mAdapter.clear();
         if (paramList.isEmpty()) {
             emptyholder.setVisibility(View.VISIBLE);
         } else {
@@ -144,6 +144,6 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public void onLoaderReset(@NonNull Loader<List<File>> paramLoader) {
-        this.mAdapter.unload();
+        mAdapter.clear();
     }
 }

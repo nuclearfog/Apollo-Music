@@ -56,7 +56,7 @@ public class ThemeUtils {
      */
     public static final String PACKAGE_NAME = "theme_package_name";
     /**
-     * Used to searc the "Apps" section of the Play Store for "Apollo Themes".
+     * Used to search the "Apps" section of the Play Store for "Apollo Themes".
      */
     private static final String SEARCH_URI = "https://market.android.com/search?q=%s&c=apps&featured=APP_STORE_SEARCH";
     /**

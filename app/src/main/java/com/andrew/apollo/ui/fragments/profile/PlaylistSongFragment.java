@@ -305,9 +305,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             return;
         }
         // Start fresh
-        mAdapter.unload();
-        // Return the correct count
-        mAdapter.setCount(data);
+        mAdapter.clear();
         // Add the data to the adpater
         for (Song song : data) {
             mAdapter.add(song);
@@ -320,7 +318,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

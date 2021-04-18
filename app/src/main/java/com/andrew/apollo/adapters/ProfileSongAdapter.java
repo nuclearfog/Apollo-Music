@@ -28,10 +28,7 @@ import com.andrew.apollo.ui.fragments.profile.FavoriteFragment;
 import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.MusicUtils;
-
-import java.util.List;
 
 /**
  * This {@link ArrayAdapter} is used to display the songs for a particular
@@ -89,11 +86,6 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     private final int mDisplaySetting;
 
     /**
-     * Used to set the size of the data in the adapter
-     */
-    private List<Song> mCount = Lists.newArrayList();
-
-    /**
      * Constructor of <code>ProfileSongAdapter</code>
      *
      * @param context  The {@link Context} to use
@@ -127,12 +119,10 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
         // Return a faux header at position 0
         if (position == 0) {
             return mHeader;
         }
-
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
@@ -194,15 +184,8 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public int getCount() {
-        int size = mCount.size();
+        int size = super.getCount();
         return size == 0 ? 0 : size + 1;
-    }
-
-    /**
-     * @param data The {@link List} used to return the count for the adapter.
-     */
-    public void setCount(List<Song> data) {
-        mCount = data;
     }
 
     /**
@@ -233,12 +216,5 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
             return ITEM_VIEW_TYPE_HEADER;
         }
         return ITEM_VIEW_TYPE_MUSIC;
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
     }
 }

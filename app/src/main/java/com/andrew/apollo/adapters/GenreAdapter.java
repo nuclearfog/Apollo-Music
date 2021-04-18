@@ -26,6 +26,8 @@ import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.ui.fragments.GenreFragment;
 
+import java.util.ArrayList;
+
 /**
  * This {@link ArrayAdapter} is used to display all of the genres on a user's
  * device for {@link GenreFragment} .
@@ -47,7 +49,7 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
     /**
      * Used to cache the genre info
      */
-    private DataHolder[] mData;
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Constructor of <code>GenreAdapter</code>
@@ -81,10 +83,8 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the data holder
-        DataHolder dataHolder = mData[position];
-
+        DataHolder dataHolder = mData.get(position);
         // Set each genre name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         return convertView;
@@ -107,32 +107,33 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
+    /**
      * Method used to cache the data used to populate the list or grid. The idea
      * is to cache everything before {@code #getView(int, View, ViewGroup)} is
      * called.
      */
     public void buildCache() {
-        mData = new DataHolder[getCount()];
+        mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the artist
-            final Genre genre = getItem(i);
-
+            Genre genre = getItem(i);
             if (genre != null) {
                 // Build the data holder
-                mData[i] = new DataHolder();
+                DataHolder holder = new DataHolder();
                 // Genre Id
-                mData[i].mItemId = genre.mGenreId;
+                holder.mItemId = genre.mGenreId;
                 // Genre names (line one)
-                mData[i].mLineOne = genre.mGenreName;
+                holder.mLineOne = genre.mGenreName;
+                mData.add(holder);
             }
         }
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
-        mData = null;
     }
 }

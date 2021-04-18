@@ -73,9 +73,9 @@ public abstract class BasePlaylistDialog extends DialogFragment {
     /* The dialog save button */
     protected Button mSaveButton;
     /* The dialog prompt */
-    protected String mPrompt;
+    protected String mPrompt = "";
     /* The default edit text text */
-    protected String mDefaultname;
+    protected String mDefaultname = "";
 
     /**
      * {@inheritDoc}

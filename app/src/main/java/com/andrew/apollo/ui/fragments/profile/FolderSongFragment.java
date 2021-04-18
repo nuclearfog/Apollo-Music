@@ -187,8 +187,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> paramLoader, List<Song> paramList) {
         if (!paramList.isEmpty()) {
-            mAdapter.unload();
-            mAdapter.setCount(paramList);
+            mAdapter.clear();
             for (Song song : paramList)
                 mAdapter.add(song);
             mAdapter.notifyDataSetChanged();
@@ -197,7 +196,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> paramLoader) {
-        this.mAdapter.unload();
+        mAdapter.clear();
     }
 
     @Override

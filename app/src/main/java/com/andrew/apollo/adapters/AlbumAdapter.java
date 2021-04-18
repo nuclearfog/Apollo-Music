@@ -30,6 +30,8 @@ import com.andrew.apollo.model.Album;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
+import java.util.ArrayList;
+
 /**
  * This {@link ArrayAdapter} is used to display all of the albums on a user's
  * device for {@link com.andrew.apollo.ui.fragments.RecentFragment} and {@link com.andrew.apollo.ui.fragments.AlbumFragment}.
@@ -72,7 +74,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     /**
      * Used to cache the album info
      */
-    private DataHolder[] mData;
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Constructor of <code>AlbumAdapter</code>
@@ -105,10 +107,8 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the data holder
-        DataHolder dataHolder = mData[position];
-
+        DataHolder dataHolder = mData.get(position);
         // Set each album name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the artist name (line two)
@@ -147,27 +147,35 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         return VIEW_TYPE_COUNT;
     }
 
+
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
     /**
      * Method used to cache the data used to populate the list or grid. The idea
      * is to cache everything before {@code #getView(int, View, ViewGroup)} is
      * called.
      */
     public void buildCache() {
-        mData = new DataHolder[getCount()];
+        mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the album
             Album album = getItem(i);
             if (album != null) {
                 // Build the data holder
-                mData[i] = new DataHolder();
+                DataHolder holder = new DataHolder();
                 // Album Id
-                mData[i].mItemId = album.mAlbumId;
+                holder.mItemId = album.mAlbumId;
                 // Album names (line one)
-                mData[i].mLineOne = album.mAlbumName;
+                holder.mLineOne = album.mAlbumName;
                 // Album artist names (line two)
-                mData[i].mLineTwo = album.mArtistName;
+                holder.mLineTwo = album.mArtistName;
                 // Number of songs for each album (line three)
-                mData[i].mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.mSongNumber);
+                holder.mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.mSongNumber);
+                mData.add(holder);
             }
         }
     }
@@ -190,14 +198,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
                 }
             }
         });
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
-        mData = null;
     }
 
     /**

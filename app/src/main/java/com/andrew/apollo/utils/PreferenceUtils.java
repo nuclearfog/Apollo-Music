@@ -115,7 +115,7 @@ public final class PreferenceUtils {
      *
      * @return The page to start on when the app is opened.
      */
-    public final int getStartPage() {
+    public int getStartPage() {
         return mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
     }
 
@@ -148,7 +148,7 @@ public final class PreferenceUtils {
      *
      * @return The default theme color.
      */
-    public final int getDefaultThemeColor() {
+    public int getDefaultThemeColor() {
         return themeColor;
     }
 
@@ -156,7 +156,7 @@ public final class PreferenceUtils {
      * @return True if the user has checked to only download images on Wi-Fi,
      * false otherwise
      */
-    public final boolean onlyOnWifi() {
+    public boolean onlyOnWifi() {
         return mPreferences.getBoolean(ONLY_ON_WIFI, true);
     }
 
@@ -164,7 +164,7 @@ public final class PreferenceUtils {
      * @return True if the user has checked to download missing album covers,
      * false otherwise.
      */
-    public final boolean downloadMissingArtwork() {
+    public boolean downloadMissingArtwork() {
         return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTWORK, true);
     }
 
@@ -172,7 +172,7 @@ public final class PreferenceUtils {
      * @return True if the user has checked to download missing artist images,
      * false otherwise.
      */
-    public final boolean downloadMissingArtistImages() {
+    public boolean downloadMissingArtistImages() {
         return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTIST_IMAGES, true);
     }
 
@@ -191,7 +191,7 @@ public final class PreferenceUtils {
     /**
      * @return The sort order used for the artist list in {@link ArtistFragment}
      */
-    public final String getArtistSortOrder() {
+    public String getArtistSortOrder() {
         // This is only to prevent return an invalid field name caused by bug BUGDUMP-21136
         String defaultSortKey = SortOrder.ArtistSortOrder.ARTIST_A_Z;
         String key = mPreferences.getString(ARTIST_SORT_ORDER, defaultSortKey);
@@ -214,7 +214,7 @@ public final class PreferenceUtils {
      * @return The sort order used for the artist song list in
      * {@link ArtistSongFragment}
      */
-    public final String getArtistSongSortOrder() {
+    public String getArtistSongSortOrder() {
         return mPreferences.getString(ARTIST_SONG_SORT_ORDER, SortOrder.ArtistSongSortOrder.SONG_A_Z);
     }
 
@@ -231,7 +231,7 @@ public final class PreferenceUtils {
      * @return The sort order used for the artist album list in
      * {@link ArtistAlbumFragment}
      */
-    public final String getArtistAlbumSortOrder() {
+    public String getArtistAlbumSortOrder() {
         return mPreferences.getString(ARTIST_ALBUM_SORT_ORDER, SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
     }
 
@@ -247,7 +247,7 @@ public final class PreferenceUtils {
     /**
      * @return The sort order used for the album list in {@link AlbumFragment}
      */
-    public final String getAlbumSortOrder() {
+    public String getAlbumSortOrder() {
         return mPreferences.getString(ALBUM_SORT_ORDER, SortOrder.AlbumSortOrder.ALBUM_A_Z);
     }
 
@@ -264,7 +264,7 @@ public final class PreferenceUtils {
      * @return The sort order used for the album song in
      * {@link AlbumSongFragment}
      */
-    public final String getAlbumSongSortOrder() {
+    public String getAlbumSongSortOrder() {
         return mPreferences.getString(ALBUM_SONG_SORT_ORDER, SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
     }
 
@@ -343,7 +343,7 @@ public final class PreferenceUtils {
     /**
      * @return The sort order used for the song list in {@link SongFragment}
      */
-    public final String getSongSortOrder() {
+    public String getSongSortOrder() {
         return mPreferences.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);
     }
 

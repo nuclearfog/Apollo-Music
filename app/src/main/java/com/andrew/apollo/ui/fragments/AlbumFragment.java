@@ -294,7 +294,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
         // Start fresh
-        mAdapter.unload();
+        mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
             emptyInfo.setVisibility(View.VISIBLE);
@@ -314,7 +314,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

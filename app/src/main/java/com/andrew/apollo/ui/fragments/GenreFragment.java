@@ -198,12 +198,12 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     @Override
     public void onLoadFinished(@NonNull Loader<List<Genre>> loader, List<Genre> data) {
         // Start fresh
-        mAdapter.unload();
+        mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
             emptyHolder.setVisibility(View.VISIBLE);
         } else {
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Genre genre : data)
                 mAdapter.add(genre);
             // Build the cache
@@ -218,6 +218,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     @Override
     public void onLoaderReset(@NonNull Loader<List<Genre>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 }

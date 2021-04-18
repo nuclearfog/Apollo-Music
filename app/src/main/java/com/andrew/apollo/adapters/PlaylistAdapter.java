@@ -25,6 +25,8 @@ import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.ui.fragments.PlaylistFragment;
 
+import java.util.ArrayList;
+
 /**
  * This {@link ArrayAdapter} is used to display all of the playlists on a user's
  * device for {@link PlaylistFragment}.
@@ -46,7 +48,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     /**
      * Used to cache the playlist info
      */
-    private DataHolder[] mData;
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Constructor of <code>PlaylistAdapter</code>
@@ -80,10 +82,8 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the data holder
-        final DataHolder dataHolder = mData[position];
-
+        DataHolder dataHolder = mData.get(position);
         // Set each playlist name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         return convertView;
@@ -105,33 +105,32 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         return VIEW_TYPE_COUNT;
     }
 
+
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
     /**
      * Method used to cache the data used to populate the list or grid. The idea
      * is to cache everything before {@code #getView(int, View, ViewGroup)} is
      * called.
      */
     public void buildCache() {
-        mData = new DataHolder[getCount()];
+        mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the artist
-            final Playlist playlist = getItem(i);
-
+            Playlist playlist = getItem(i);
             if (playlist != null) {
                 // Build the data holder
-                mData[i] = new DataHolder();
+                DataHolder holder = new DataHolder();
                 // Playlist Id
-                mData[i].mItemId = playlist.mPlaylistId;
+                holder.mItemId = playlist.mPlaylistId;
                 // Playlist names (line one)
-                mData[i].mLineOne = playlist.mPlaylistName;
+                holder.mLineOne = playlist.mPlaylistName;
+                mData.add(holder);
             }
         }
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
-        mData = null;
     }
 }

@@ -41,7 +41,6 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.MusicStateListener;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.Lists;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
@@ -51,7 +50,8 @@ import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.ShuffleButton;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -69,7 +69,7 @@ public abstract class AppCompatBase extends AppCompatActivity
     /**
      * Playstate and meta change listener
      */
-    private ArrayList<MusicStateListener> mMusicStateListener = Lists.newArrayList();
+    private List<MusicStateListener> mMusicStateListener = new LinkedList<>();
 
     /**
      * The service token
@@ -368,15 +368,16 @@ public abstract class AppCompatBase extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action != null)
+            AppCompatBase activity = mReference.get();
+            if (action != null && activity != null)
                 switch (action) {
                     case MusicPlaybackService.META_CHANGED:
                         // Current info
-                        mReference.get().updateBottomActionBarInfo();
+                        activity.updateBottomActionBarInfo();
                         // Update the favorites icon
-                        mReference.get().invalidateOptionsMenu();
-                        // Let the listener know to the meta chnaged
-                        for (MusicStateListener listener : mReference.get().mMusicStateListener) {
+                        activity.invalidateOptionsMenu();
+                        // Let the listener know to the meta changed
+                        for (MusicStateListener listener : activity.mMusicStateListener) {
                             if (listener != null) {
                                 listener.onMetaChanged();
                             }
@@ -384,20 +385,20 @@ public abstract class AppCompatBase extends AppCompatActivity
                         break;
                     case MusicPlaybackService.PLAYSTATE_CHANGED:
                         // Set the play and pause image
-                        mReference.get().mPlayPauseButton.updateState();
+                        activity.mPlayPauseButton.updateState();
                         break;
 
                     case MusicPlaybackService.REPEATMODE_CHANGED:
                     case MusicPlaybackService.SHUFFLEMODE_CHANGED:
                         // Set the repeat image
-                        mReference.get().mRepeatButton.updateRepeatState();
+                        activity.mRepeatButton.updateRepeatState();
                         // Set the shuffle image
-                        mReference.get().mShuffleButton.updateShuffleState();
+                        activity.mShuffleButton.updateShuffleState();
                         break;
 
                     case MusicPlaybackService.REFRESH:
                         // Let the listener know to update a list
-                        for (MusicStateListener listener : mReference.get().mMusicStateListener) {
+                        for (MusicStateListener listener : activity.mMusicStateListener) {
                             if (listener != null) {
                                 listener.restartLoader();
                             }

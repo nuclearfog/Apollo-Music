@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static android.view.View.GONE;
 
@@ -23,7 +25,8 @@ import static android.view.View.GONE;
 public class FolderAdapter extends ArrayAdapter<File> {
 
     private final int mLayoutId;
-    private MusicHolder.DataHolder[] mData;
+
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
 
     public FolderAdapter(Context paramContext, @LayoutRes int paramInt) {
@@ -32,19 +35,8 @@ public class FolderAdapter extends ArrayAdapter<File> {
     }
 
 
-    public void buildCache() {
-        mData = new MusicHolder.DataHolder[getCount()];
-        for (int i = 0; i < getCount(); i++) {
-            File file = getItem(i);
-            if (file != null) {
-                this.mData[i] = new MusicHolder.DataHolder();
-                this.mData[i].mLineOne = file.getName();
-            }
-        }
-    }
-
-
     @NonNull
+    @Override
     public View getView(int paramInt, @Nullable View paramView, @NonNull ViewGroup paramViewGroup) {
         MusicHolder holder;
         if (paramView == null) {
@@ -59,24 +51,40 @@ public class FolderAdapter extends ArrayAdapter<File> {
         } else {
             holder = (MusicHolder) paramView.getTag();
         }
-        MusicHolder.DataHolder dataHolder1 = this.mData[paramInt];
+        DataHolder dataHolder1 = mData.get(paramInt);
         holder.mLineOne.setText(dataHolder1.mLineOne);
         return paramView;
     }
 
 
+    @Override
     public int getViewTypeCount() {
         return 1;
     }
 
 
+    @Override
     public boolean hasStableIds() {
         return false;
     }
 
 
-    public void unload() {
-        clear();
-        this.mData = null;
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
+
+    public void buildCache() {
+        mData.ensureCapacity(getCount());
+        for (int i = 0; i < getCount(); i++) {
+            File file = getItem(i);
+            if (file != null) {
+                DataHolder holder = new DataHolder();
+                holder.mLineOne = file.getName();
+                mData.add(holder);
+            }
+        }
     }
 }

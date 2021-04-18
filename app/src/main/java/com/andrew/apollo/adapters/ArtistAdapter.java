@@ -29,6 +29,8 @@ import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
+import java.util.ArrayList;
+
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
@@ -57,7 +59,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     /**
      * Used to cache the artist info
      */
-    private DataHolder[] mData;
+    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Loads line three and the background image if the user decides to.
@@ -85,7 +87,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      */
     @NonNull
     @Override
-    public View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
@@ -95,10 +97,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the data holder
-        final DataHolder dataHolder = mData[position];
-
+        DataHolder dataHolder = mData.get(position);
         // Set each artist name (line one)
         holder.mLineOne.setText(dataHolder.mLineOne);
         // Set the number of albums (line two)
@@ -135,26 +135,36 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        super.clear();
+        mData.clear();
+    }
+
+    /**
      * Method used to cache the data used to populate the list or grid. The idea
      * is to cache everything before {@code #getView(int, View, ViewGroup)} is
      * called.
      */
     public void buildCache() {
-        mData = new DataHolder[getCount()];
+        mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the artist
             final Artist artist = getItem(i);
             if (artist != null) {
                 // Build the data holder
-                mData[i] = new DataHolder();
+                DataHolder holder = new DataHolder();
                 // Artist Id
-                mData[i].mItemId = artist.mArtistId;
+                holder.mItemId = artist.mArtistId;
                 // Artist names (line one)
-                mData[i].mLineOne = artist.mArtistName;
+                holder.mLineOne = artist.mArtistName;
                 // Number of albums (line two)
-                mData[i].mLineTwo = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.mAlbumNumber);
+                holder.mLineTwo = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.mAlbumNumber);
                 // Number of songs (line three)
-                mData[i].mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.mSongNumber);
+                holder.mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.mSongNumber);
+                mData.add(holder);
             }
         }
     }
@@ -179,14 +189,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
                 }
             }
         });
-    }
-
-    /**
-     * Method that unloads and clears the items in the adapter
-     */
-    public void unload() {
-        clear();
-        mData = null;
     }
 
     /**

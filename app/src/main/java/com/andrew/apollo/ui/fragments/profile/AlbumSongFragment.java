@@ -275,7 +275,8 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new AlbumSongLoader(getActivity(), args.getLong(Config.ID));
+        long albumId = args != null ? args.getLong(Config.ID) : 0;
+        return new AlbumSongLoader(getActivity(), albumId);
     }
 
     /**
@@ -288,9 +289,8 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
             return;
         }
         // Start fresh
-        mAdapter.unload();
-        // Return the correct count
-        mAdapter.setCount(data);
+        mAdapter.clear();
+
         // Add the data to the adpater
         for (Song song : data) {
             mAdapter.add(song);
@@ -303,7 +303,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

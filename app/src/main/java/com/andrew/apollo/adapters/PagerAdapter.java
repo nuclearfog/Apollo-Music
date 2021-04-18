@@ -30,9 +30,9 @@ import com.andrew.apollo.ui.fragments.GenreFragment;
 import com.andrew.apollo.ui.fragments.PlaylistFragment;
 import com.andrew.apollo.ui.fragments.RecentFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
-import com.andrew.apollo.utils.Lists;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,7 +44,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     private SparseArray<WeakReference<Fragment>> mFragmentArray = new SparseArray<>();
 
-    private List<Holder> mHolderList = Lists.newArrayList();
+    private List<Holder> mHolderList = new ArrayList<>(4);
 
     private FragmentActivity mFragmentActivity;
 
@@ -205,7 +205,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     /**
      * A private class with information about fragment initialization
      */
-    private final static class Holder {
+    private static final class Holder {
         String mClassName;
 
         Bundle mParams;

@@ -23,7 +23,7 @@ public final class SortOrder {
     /**
      * This class is never instantiated
      */
-    public SortOrder() {
+    private SortOrder() {
     }
 
     /**
@@ -150,5 +150,4 @@ public final class SortOrder {
         /* Artist album sort order year */
         String ALBUM_YEAR = MediaStore.Audio.Artists.Albums.FIRST_YEAR + " DESC";
     }
-
 }

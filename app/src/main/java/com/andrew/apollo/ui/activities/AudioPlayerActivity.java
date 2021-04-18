@@ -849,7 +849,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == REFRESH_TIME) {
+            if (msg.what == REFRESH_TIME && mAudioPlayer.get() != null) {
                 long next = mAudioPlayer.get().refreshCurrentTime();
                 mAudioPlayer.get().queueNextRefresh(next);
             }
@@ -876,26 +876,27 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action != null)
+            AudioPlayerActivity activity = mReference.get();
+            if (action != null && activity != null)
                 switch (action) {
                     case MusicPlaybackService.META_CHANGED:
                         // Current info
-                        mReference.get().updateNowPlayingInfo();
+                        activity.updateNowPlayingInfo();
                         // Update the favorites icon
-                        mReference.get().invalidateOptionsMenu();
+                        activity.invalidateOptionsMenu();
                         break;
 
                     case MusicPlaybackService.PLAYSTATE_CHANGED:
                         // Set the play and pause image
-                        mReference.get().mPlayPauseButton.updateState();
+                        activity.mPlayPauseButton.updateState();
                         break;
 
                     case MusicPlaybackService.REPEATMODE_CHANGED:
                     case MusicPlaybackService.SHUFFLEMODE_CHANGED:
                         // Set the repeat image
-                        mReference.get().mRepeatButton.updateRepeatState();
+                        activity.mRepeatButton.updateRepeatState();
                         // Set the shuffle image
-                        mReference.get().mShuffleButton.updateShuffleState();
+                        activity.mShuffleButton.updateShuffleState();
                         break;
                 }
         }

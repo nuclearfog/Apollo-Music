@@ -68,19 +68,15 @@ import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
  */
 public final class MusicUtils {
 
-    private static final WeakHashMap<Context, ServiceBinder> mConnectionMap;
-    private static final long[] sEmptyList;
+    private static final long[] EMPTY_LIST = new long[0];
+
+    private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>();
     public static IApolloService mService = null;
     private static int sForegroundActivities = 0;
     private static ContentValues[] mContentValuesCache = null;
 
-    static {
-        mConnectionMap = new WeakHashMap<>();
-        sEmptyList = new long[0];
-    }
-
     /* This class is never initiated */
-    public MusicUtils() {
+    private MusicUtils() {
     }
 
     /**
@@ -409,7 +405,7 @@ public final class MusicUtils {
         } catch (RemoteException err) {
             err.printStackTrace();
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -476,7 +472,7 @@ public final class MusicUtils {
             cursor.close();
             return list;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -495,7 +491,7 @@ public final class MusicUtils {
             cursor.close();
             return mList;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -514,7 +510,7 @@ public final class MusicUtils {
             cursor.close();
             return mList;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -546,7 +542,7 @@ public final class MusicUtils {
             cursor.close();
             return mList;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -712,7 +708,7 @@ public final class MusicUtils {
             cursor.close();
             return arrayOfLong;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -998,7 +994,7 @@ public final class MusicUtils {
             cursor.close();
             return list;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -1021,7 +1017,7 @@ public final class MusicUtils {
      */
     public static long[] getSongListForFavoritesCursor(Cursor cursor) {
         if (cursor == null) {
-            return sEmptyList;
+            return EMPTY_LIST;
         }
         int len = cursor.getCount();
         long[] list = new long[len];
@@ -1053,7 +1049,7 @@ public final class MusicUtils {
             cursor.close();
             return list;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -1083,7 +1079,7 @@ public final class MusicUtils {
             cursor.close();
             return list;
         }
-        return sEmptyList;
+        return EMPTY_LIST;
     }
 
     /**
@@ -1326,7 +1322,7 @@ public final class MusicUtils {
 
     private static long[] getSongListForAdapter(ArrayAdapter<Song> adapter) {
         if (adapter == null) {
-            return sEmptyList;
+            return EMPTY_LIST;
         }
         long[] list;
         int count = adapter.getCount() - (adapter.getViewTypeCount() > 1 ? 1 : 0);

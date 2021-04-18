@@ -300,10 +300,8 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
             emptyText.setVisibility(View.VISIBLE);
         } else {
             // Start fresh
-            mAdapter.unload();
-            // Return the correct count
-            mAdapter.setCount(data);
-            // Add the data to the adpater
+            mAdapter.clear();
+            // Add the data to the adapter
             for (Song song : data)
                 mAdapter.add(song);
             emptyText.setVisibility(View.INVISIBLE);
@@ -316,6 +314,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 }

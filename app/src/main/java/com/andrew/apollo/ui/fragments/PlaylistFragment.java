@@ -252,7 +252,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         // Check for any errors
         if (!data.isEmpty()) {
             // Start fresh
-            mAdapter.unload();
+            mAdapter.clear();
             // Add the data to the adpater
             for (Playlist playlist : data) {
                 mAdapter.add(playlist);
@@ -268,7 +268,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void onLoaderReset(@NonNull Loader<List<Playlist>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

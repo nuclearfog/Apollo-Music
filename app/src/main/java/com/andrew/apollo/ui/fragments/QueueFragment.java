@@ -283,7 +283,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         // Check for any errors
         if (!data.isEmpty()) {
             // Start fresh
-            mAdapter.unload();
+            mAdapter.clear();
             // Add the data to the adpater
             for (Song song : data) {
                 mAdapter.add(song);
@@ -299,7 +299,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
-        mAdapter.unload();
+        mAdapter.clear();
     }
 
     /**

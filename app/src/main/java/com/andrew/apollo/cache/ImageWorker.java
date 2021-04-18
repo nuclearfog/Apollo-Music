@@ -22,6 +22,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.andrew.apollo.R;
@@ -265,6 +266,7 @@ public abstract class ImageWorker {
         /**
          * @return The {@link BitmapWorkerTask} associated with this drawable
          */
+        @Nullable
         public BitmapWorkerTask getBitmapWorkerTask() {
             return mBitmapWorkerTaskReference.get();
         }
@@ -382,6 +384,7 @@ public abstract class ImageWorker {
          * the ImageView's task still points to this task as well.
          * Returns null otherwise.
          */
+        @Nullable
         private ImageView getAttachedImageView() {
             ImageView imageView = mImageReference.get();
             BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);

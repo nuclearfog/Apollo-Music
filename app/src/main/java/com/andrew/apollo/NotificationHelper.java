@@ -17,7 +17,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
@@ -34,7 +33,7 @@ public class NotificationHelper {
     /**
      * Notification ID
      */
-    private static final int APOLLO_MUSIC_SERVICE = 1;
+    private static final int APOLLO_MUSIC_SERVICE = 100;
 
     /**
      * Context
@@ -69,45 +68,39 @@ public class NotificationHelper {
      * Call this to build the {@link Notification}.
      */
     public void buildNotification() {
-        // Set up the content view
-        initCollapsedLayout(mService.getTrackName(), mService.getArtistName(), mService.getAlbumArt());
         // Notification Builder
         mNotification = new NotificationCompat.Builder(mService, Long.toString(mService.getAlbumId()))
                 .setSmallIcon(R.drawable.stat_notify_music)
                 .setContentIntent(getPendingIntent())
-                .setPriority(Notification.PRIORITY_DEFAULT)
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setCustomBigContentView(mExpandedView)
                 .setCustomContentView(mSmallContent)
                 .build();
-
         // Control playback from the notification
         initPlaybackActions(mService.isPlaying());
+        // Set up the content view
+        initCollapsedLayout();
         // Control playback from the notification
         initExpandedPlaybackActions(mService.isPlaying());
         // Set up the expanded content view
-        initExpandedLayout(mService.getTrackName(), mService.getAlbumName(), mService.getArtistName(), mService.getAlbumArt());
+        initExpandedLayout();
+        // start notification
         mService.startForeground(APOLLO_MUSIC_SERVICE, mNotification);
     }
 
     /**
      * Changes the playback controls in and out of a paused state
-     *
-     * @param isPlaying True if music is playing, false otherwise
      */
-    public void updatePlayState(boolean isPlaying) {
-        if (mNotification == null || mNotificationManager == null) {
-            return;
+    public void updateNotification() {
+        if (mNotification != null && mNotificationManager != null) {
+            int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
+            mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
+            mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
+            initExpandedLayout();
+            initCollapsedLayout();
+            // Update notification
+            mNotificationManager.notify(APOLLO_MUSIC_SERVICE, mNotification);
         }
-        int iconRes;
-        if (isPlaying) {
-            iconRes = R.drawable.btn_playback_pause;
-        } else {
-            iconRes = R.drawable.btn_playback_play;
-        }
-        mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
-        mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-
-        mNotificationManager.notify(APOLLO_MUSIC_SERVICE, mNotification);
     }
 
     /**
@@ -174,27 +167,27 @@ public class NotificationHelper {
     /**
      * Sets the track name, artist name, and album art in the normal layout
      */
-    private void initCollapsedLayout(String trackName, String artistName, Bitmap albumArt) {
+    private void initCollapsedLayout() {
         // Track name (line one)
-        mSmallContent.setTextViewText(R.id.notification_base_line_one, trackName);
+        mSmallContent.setTextViewText(R.id.notification_base_line_one, mService.getTrackName());
         // Artist name (line two)
-        mSmallContent.setTextViewText(R.id.notification_base_line_two, artistName);
+        mSmallContent.setTextViewText(R.id.notification_base_line_two, mService.getArtistName());
         // Album art
-        mSmallContent.setImageViewBitmap(R.id.notification_base_image, albumArt);
+        mSmallContent.setImageViewBitmap(R.id.notification_base_image, mService.getAlbumArt());
     }
 
     /**
      * Sets the track name, album name, artist name, and album art in the
      * expanded layout
      */
-    private void initExpandedLayout(String trackName, String artistName, String albumName, Bitmap albumArt) {
+    private void initExpandedLayout() {
         // Track name (line one)
-        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, trackName);
+        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, mService.getTrackName());
         // Album name (line two)
-        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, albumName);
+        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, mService.getAlbumName());
         // Artist name (line three)
-        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, artistName);
+        mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, mService.getArtistName());
         // Album art
-        mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, albumArt);
+        mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, mService.getAlbumArt());
     }
 }

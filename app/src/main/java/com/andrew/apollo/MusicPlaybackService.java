@@ -376,11 +376,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private boolean mPausedByTransientLossOfFocus = false;
 
     /**
-     * Used to track whether any of Apollo's activities is in the foreground
-     */
-    private boolean mAnyActivityInForeground = false;
-
-    /**
      * Lock screen controls
      */
     private RemoteControlClient mRemoteControlClient;
@@ -632,8 +627,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         if (intent != null) {
             String action = intent.getAction();
             if (intent.hasExtra(NOW_IN_FOREGROUND)) {
-                mAnyActivityInForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false);
-                updateNotification();
+                boolean isForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false);
+                if (isForeground) {
+                    stopForeground(true);
+                } else if (isPlaying()) {
+                    mNotificationHelper.buildNotification();
+                }
             }
             if (SHUTDOWN.equals(action)) {
                 mShutdownScheduled = false;
@@ -703,17 +702,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             cycleRepeat();
         } else if (SHUFFLE_ACTION.equals(action)) {
             cycleShuffle();
-        }
-    }
-
-    /**
-     * Updates the notification, considering the current play and activity state
-     */
-    private void updateNotification() {
-        if (!mAnyActivityInForeground && isPlaying()) {
-            mNotificationHelper.buildNotification();
-        } else if (mAnyActivityInForeground) {
-            stopForeground(true);
         }
     }
 
@@ -999,10 +987,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private int getNextPosition(boolean force) {
         if (!force && mRepeatMode == REPEAT_CURRENT) {
-            if (mPlayPos < 0) {
-                return 0;
-            }
-            return mPlayPos;
+            return Math.max(mPlayPos, 0);
         } else if (mShuffleMode == SHUFFLE_NORMAL) {
             if (mPlayPos >= 0) {
                 mHistory.add(mPlayPos);
@@ -1203,13 +1188,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             saveQueue(false);
         }
         if (what.equals(PLAYSTATE_CHANGED)) {
-            mNotificationHelper.updatePlayState(isPlaying());
+            mNotificationHelper.updateNotification();
         }
         // Update the app-widgets
         mAppWidgetSmall.notifyChange(this, what);
         mAppWidgetLarge.notifyChange(this, what);
         mAppWidgetLargeAlternate.notifyChange(this, what);
         mRecentWidgetProvider.notifyChange(this, what);
+    }
+
+
+    public void updateNotification() {
+        mNotificationHelper.updateNotification();
     }
 
     /**

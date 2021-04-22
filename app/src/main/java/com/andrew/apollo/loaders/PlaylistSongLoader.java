@@ -21,6 +21,8 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+
 /**
  * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
  * return the songs for a particular playlist.
@@ -28,8 +30,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
-    private static final String[] PROJECTION = {"audio_id", "title", "artist", "album", "duration"};
 
     private static final String SELECTION = "is_music=1 AND title != ''";
 
@@ -92,6 +92,6 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makePlaylistSongCursor() {
         Uri media = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistID);
-        return getContext().getContentResolver().query(media, PROJECTION, SELECTION, null, ORDER);
+        return getContext().getContentResolver().query(media, SONG_COLUMNS, SELECTION, null, ORDER);
     }
 }

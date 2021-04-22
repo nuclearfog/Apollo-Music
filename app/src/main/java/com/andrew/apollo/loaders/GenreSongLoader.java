@@ -21,6 +21,8 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+
 /**
  * Used to query {@link MediaStore.Audio.Genres.Members#EXTERNAL_CONTENT_URI}
  * and return the songs for a particular genre.
@@ -28,11 +30,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
-    /**
-     * set selected columns and order
-     */
-    private static final String[] PROJECTION = {"_id", "title", "album", "artist", "duration"};
 
     /**
      * selection condition
@@ -75,10 +72,10 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     long id = mCursor.getLong(0);
                     // Copy the song name
                     String songName = mCursor.getString(1);
-                    // Copy the album name
-                    String album = mCursor.getString(2);
                     // Copy the artist name
-                    String artist = mCursor.getString(3);
+                    String artist = mCursor.getString(2);
+                    // Copy the album name
+                    String album = mCursor.getString(3);
                     // Copy the duration
                     long duration = mCursor.getLong(4);
                     // Convert the duration into seconds
@@ -100,6 +97,6 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     private Cursor makeGenreSongCursor() {
         // Match the songs up with the genre
         Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", mGenreID);
-        return getContext().getContentResolver().query(media, PROJECTION, SELECTION, null, ORDER);
+        return getContext().getContentResolver().query(media, SONG_COLUMNS, SELECTION, null, ORDER);
     }
 }

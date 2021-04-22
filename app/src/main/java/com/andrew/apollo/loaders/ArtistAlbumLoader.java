@@ -14,7 +14,7 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Artists.Albums;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.utils.PreferenceUtils;
@@ -22,18 +22,15 @@ import com.andrew.apollo.utils.PreferenceUtils;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.andrew.apollo.loaders.AlbumLoader.ALBUM_COLUMN;
+
 /**
- * Used to query {@link MediaStore.Audio.Artists.Albums} and return the albums
+ * Used to query {@link Albums} and return the albums
  * for a particular artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
-
-    /**
-     * projection of the columns to fetch
-     */
-    private static final String[] PROJECTION = {"_id", "album", "artist", "numsongs", "minyear"};
 
     /**
      * The Id of the artist the albums belong to.
@@ -90,8 +87,8 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
      * @return sql cursor
      */
     private Cursor makeArtistAlbumCursor() {
-        Uri media = MediaStore.Audio.Artists.Albums.getContentUri("external", mArtistID);
+        Uri media = Albums.getContentUri("external", mArtistID);
         String order = PreferenceUtils.getInstance(getContext()).getArtistAlbumSortOrder();
-        return getContext().getContentResolver().query(media, PROJECTION, null, null, order);
+        return getContext().getContentResolver().query(media, ALBUM_COLUMN, null, null, order);
     }
 }

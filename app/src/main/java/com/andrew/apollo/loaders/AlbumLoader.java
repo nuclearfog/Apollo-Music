@@ -34,7 +34,13 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     /**
      * SQL Projection
      */
-    private static final String[] PROJECTION = {"_id", "album", "artist", "numsongs", "minyear"};
+    public static final String[] ALBUM_COLUMN = {
+            MediaStore.Audio.Albums._ID,
+            MediaStore.Audio.Albums.ALBUM,
+            MediaStore.Audio.Albums.ARTIST,
+            MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+            MediaStore.Audio.Albums.FIRST_YEAR
+    };
 
     /**
      * Constructor of <code>AlbumLoader</code>
@@ -85,6 +91,6 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
      */
     private Cursor makeAlbumCursor() {
         String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, null, null, sortOrder);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, ALBUM_COLUMN, null, null, sortOrder);
     }
 }

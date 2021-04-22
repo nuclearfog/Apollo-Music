@@ -27,8 +27,14 @@ import java.util.List;
  */
 public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    private static final String[] PROJECTION = {"_id", "mime_type", "artist",
-            "album", "title", "data1", "data2"};
+    private static final String[] PROJECTION = {
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.MIME_TYPE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.TITLE,
+            "data1", "data2"
+    };
 
     private String query;
 

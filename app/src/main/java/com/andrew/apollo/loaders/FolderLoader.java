@@ -3,6 +3,7 @@ package com.andrew.apollo.loaders;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.MediaStore;
 
 import com.andrew.apollo.utils.PreferenceUtils;
 
@@ -28,7 +29,9 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     /**
      * SQL Projection
      */
-    private static final String[] PROJECTION = {"_data"};
+    private static final String[] PROJECTION = {
+            MediaStore.Audio.Media.DATA
+    };
 
     /**
      * @param paramContext Activity context

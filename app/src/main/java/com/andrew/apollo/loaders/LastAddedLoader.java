@@ -20,6 +20,9 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
+import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+
 /**
  * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
  * the Song the user added over the past four of weeks.
@@ -29,9 +32,7 @@ import java.util.List;
 public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
 
-    public static final String[] PROJECTION = {"_id", "title", "artist", "album", "duration"};
-
-    public static final String SELECTION = "is_music=1 AND title!='' AND date_added>";
+    public static final String LAST_ADDED_SELECTION = "is_music=1 AND title!='' AND date_added>";
 
     public static final String ORDER = "date_added DESC";
 
@@ -83,8 +84,7 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
      * @return The {@link Cursor} used to run the song query.
      */
     private Cursor makeLastAddedCursor() {
-        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
-        return getContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                PROJECTION, SELECTION + time, null, ORDER);
+        String select = LAST_ADDED_SELECTION + (System.currentTimeMillis() / 1000 - 2419200);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, select, null, ORDER);
     }
 }

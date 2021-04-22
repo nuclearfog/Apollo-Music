@@ -40,9 +40,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.loaders.LastAddedLoader.LAST_ADDED_SELECTION;
 import static com.andrew.apollo.loaders.LastAddedLoader.ORDER;
-import static com.andrew.apollo.loaders.LastAddedLoader.PROJECTION;
-import static com.andrew.apollo.loaders.LastAddedLoader.SELECTION;
+import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -243,7 +243,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                         // Get the Last added song list
                         String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
                         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                PROJECTION, SELECTION + time, null, ORDER);
+                                SONG_COLUMNS, LAST_ADDED_SELECTION + time, null, ORDER);
                         if (cursor != null) {
                             mList = MusicUtils.getSongListForCursor(cursor);
                             cursor.close();

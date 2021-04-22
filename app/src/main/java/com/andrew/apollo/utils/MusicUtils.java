@@ -47,7 +47,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.loaders.FavoritesLoader;
 import com.andrew.apollo.loaders.LastAddedLoader;
 import com.andrew.apollo.loaders.PlaylistLoader;
-import com.andrew.apollo.loaders.SongLoader;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -60,6 +59,9 @@ import java.util.Arrays;
 import java.util.WeakHashMap;
 
 import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+import static com.andrew.apollo.loaders.LastAddedLoader.LAST_ADDED_SELECTION;
+import static com.andrew.apollo.loaders.SongLoader.SELECTION;
+import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -626,7 +628,7 @@ public final class MusicUtils {
     public static void shuffleAll(Context context) {
         String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SongLoader.PROJECTION, SongLoader.SELECTION, null, sort);
+                SONG_COLUMNS, SELECTION, null, sort);
         long[] mTrackList = getSongListForCursor(cursor);
         int position = 0;
         if (mTrackList.length == 0 || mService == null) {
@@ -1042,7 +1044,7 @@ public final class MusicUtils {
      */
     public static long[] getSongListForFavorites(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
-        Cursor cursor = data.query(FavoriteColumns.NAME, FavoritesLoader.COLUMNS, null,
+        Cursor cursor = data.query(FavoriteColumns.NAME, FavoritesLoader.FAVORITE_COLUMNS, null,
                 null, null, null, FavoritesLoader.ORDER);
         if (cursor != null) {
             long[] list = getSongListForFavoritesCursor(cursor);
@@ -1066,9 +1068,9 @@ public final class MusicUtils {
      * @return The song list for the last added playlist
      */
     public static long[] getSongListForLastAdded(Context context) {
-        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
+        String select = LAST_ADDED_SELECTION + (System.currentTimeMillis() / 1000 - 2419200);
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                LastAddedLoader.PROJECTION, LastAddedLoader.SELECTION + time, null, LastAddedLoader.ORDER);
+                SONG_COLUMNS, select, null, LastAddedLoader.ORDER);
         if (cursor != null) {
             int count = cursor.getCount();
             long[] list = new long[count];
@@ -1108,7 +1110,7 @@ public final class MusicUtils {
         }
         subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
         Cursor cursor = context.getContentResolver().query(EXTERNAL_CONTENT_URI,
-                PlaylistLoader.PROJECTION, null, null, PlaylistLoader.ORDER);
+                PlaylistLoader.PLAYLIST_COLUMNS, null, null, PlaylistLoader.ORDER);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

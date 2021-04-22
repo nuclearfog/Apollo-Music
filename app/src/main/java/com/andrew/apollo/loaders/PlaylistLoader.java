@@ -32,7 +32,10 @@ import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 
-    public static final String[] PROJECTION = {"_id", "name"};
+    public static final String[] PLAYLIST_COLUMNS = {
+            MediaStore.Audio.Playlists._ID,
+            MediaStore.Audio.Playlists.NAME
+    };
 
     public static final String ORDER = "name";
 
@@ -91,6 +94,6 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
      * @return The {@link Cursor} used to run the playlist query.
      */
     private Cursor makePlaylistCursor() {
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, null, null, ORDER);
     }
 }

@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.loaders;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
@@ -31,8 +32,18 @@ import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
  */
 public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-
-    public static final String[] PROJECTION = {"_id", "title", "artist", "album", "duration"};
+    /**
+     * SQL Projection
+     */
+    @SuppressLint("InlinedApi")
+    public static final String[] SONG_COLUMNS = {
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DATA,
+    };
 
     public static final String SELECTION = "is_music=1 AND title!=''";
 
@@ -88,6 +99,6 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makeSongCursor() {
         String sort = PreferenceUtils.getInstance(getContext()).getSongSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, sort);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, SELECTION, null, sort);
     }
 }

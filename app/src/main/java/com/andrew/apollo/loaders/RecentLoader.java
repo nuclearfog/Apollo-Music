@@ -13,6 +13,7 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
@@ -32,12 +33,15 @@ import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAY
 public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
 
-    private static final String[] COLUMNS = {
-            RecentStoreColumns.ID + " as id", RecentStoreColumns.ID,
-            RecentStoreColumns.ALBUMNAME, RecentStoreColumns.ARTISTNAME,
-            RecentStoreColumns.ALBUMSONGCOUNT, RecentStoreColumns.ALBUMYEAR,
-            TIMEPLAYED
+    private static final String[] RECENT_COLUMNS = {
+            RecentStoreColumns.ID,
+            RecentStoreColumns.ALBUMNAME,
+            RecentStoreColumns.ARTISTNAME,
+            RecentStoreColumns.ALBUMSONGCOUNT,
+            RecentStoreColumns.ALBUMYEAR
     };
+
+    private static final String RECENT_ORDER = TIMEPLAYED + " DESC";
 
     /**
      * Constructor of <code>RecentLoader</code>
@@ -49,40 +53,27 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @param context The {@link Context} to use.
-     * @return The {@link Cursor} used to run the album query.
-     */
-    public static Cursor makeRecentCursor(Context context) {
-        return RecentStore
-                .getInstance(context)
-                .getReadableDatabase()
-                .query(NAME, COLUMNS, null, null, null, null, TIMEPLAYED + " DESC");
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public List<Album> loadInBackground() {
         List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeRecentCursor(getContext());
+        Cursor mCursor = makeRecentCursor();
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
                     // Copy the album id
-                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
+                    long id = mCursor.getLong(0);
                     // Copy the album name
-                    String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
+                    String albumName = mCursor.getString(1);
                     // Copy the artist name
-                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
+                    String artist = mCursor.getString(2);
                     // Copy the number of songs
-                    int songCount = mCursor.getInt(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMSONGCOUNT));
+                    int songCount = mCursor.getInt(3);
                     // Copy the release year
-                    String year = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMYEAR));
+                    String year = mCursor.getString(4);
                     // Create a new album
                     Album album = new Album(id, albumName, artist, songCount, year);
                     // Add everything up
@@ -92,5 +83,15 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
             mCursor.close();
         }
         return result;
+    }
+
+    /**
+     * Creates the {@link Cursor} used to run the query.
+     *
+     * @return The {@link Cursor} used to run the album query.
+     */
+    private Cursor makeRecentCursor() {
+        SQLiteDatabase database = RecentStore.getInstance(getContext()).getReadableDatabase();
+        return database.query(NAME, RECENT_COLUMNS, null, null, null, null, RECENT_ORDER);
     }
 }

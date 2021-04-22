@@ -33,7 +33,10 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
     /**
      * COLUMN projection
      */
-    private static final String[] PROJECTION = {"_id", "name"};
+    private static final String[] GENRE_COLUMNS = {
+            MediaStore.Audio.Genres._ID,
+            MediaStore.Audio.Genres.NAME
+    };
 
     /**
      * condition to filter empty names
@@ -71,6 +74,15 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
                     // Copy the genre name
                     String name = mCursor.getString(1);
                     // Create a new genre
+                    // Genres separated by a semicolon will be separated into single genres
+                    int separator = name.indexOf(";");
+                    while (separator > 0) {
+                        String subGenre = name.substring(0, separator);
+                        name = name.substring(separator + 1);
+                        Genre genre = new Genre(id, subGenre);
+                        result.add(genre);
+                        separator = name.indexOf(";");
+                    }
                     Genre genre = new Genre(id, name);
                     // Add everything up
                     result.add(genre);
@@ -87,6 +99,6 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
      * @return The {@link Cursor} used to run the genre query.
      */
     private Cursor makeGenreCursor() {
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, SORT);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, GENRE_COLUMNS, SELECTION, null, SORT);
     }
 }

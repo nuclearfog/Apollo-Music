@@ -91,7 +91,7 @@ public class ThemeUtils {
         // Get the search query
         sApolloSearch = context.getString(R.string.apollo_themes_shop_key);
         // Get the preferences
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         // Get the theme package name
         String mThemePackage = getThemePackageName();
         // Initialze the package manager

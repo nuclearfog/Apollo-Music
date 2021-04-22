@@ -38,10 +38,13 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * Definition of the Columns to get from database
      */
-    public static final String[] COLUMNS = {
-            FavoriteColumns.ID + " as _id", FavoriteColumns.ID,
-            FavoriteColumns.SONGNAME, FavoriteColumns.ALBUMNAME,
-            FavoriteColumns.ARTISTNAME, FavoriteColumns.PLAYCOUNT
+    public static final String[] FAVORITE_COLUMNS = {
+            FavoriteColumns.ID + " as _id",
+            FavoriteColumns.ID,
+            FavoriteColumns.SONGNAME,
+            FavoriteColumns.ALBUMNAME,
+            FavoriteColumns.ARTISTNAME,
+            FavoriteColumns.PLAYCOUNT
     };
 
     /**
@@ -94,6 +97,6 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makeFavoritesCursor() {
         SQLiteDatabase data = FavoritesStore.getInstance(getContext()).getReadableDatabase();
-        return data.query(NAME, COLUMNS, null, null, null, null, ORDER);
+        return data.query(NAME, FAVORITE_COLUMNS, null, null, null, null, ORDER);
     }
 }

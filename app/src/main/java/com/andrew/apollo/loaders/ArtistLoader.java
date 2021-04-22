@@ -38,7 +38,12 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
     /**
      * projection of the column
      */
-    private static final String[] PROJECTION = {"_id", "artist", "number_of_albums", "number_of_tracks"};
+    private static final String[] ARTIST_COLUMN = {
+            MediaStore.Audio.Artists._ID,
+            MediaStore.Audio.Artists.ARTIST,
+            MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
+            MediaStore.Audio.Artists.NUMBER_OF_TRACKS
+    };
 
     /**
      * Constructor of <code>ArtistLoader</code>
@@ -69,7 +74,6 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
                     int albumCount = mCursor.getInt(2);
                     // Copy the number of songs
                     int songCount = mCursor.getInt(3);
-
                     // Create a new artist
                     Artist artist = new Artist(id, artistName, songCount, albumCount);
                     // Add everything up
@@ -88,6 +92,6 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
      */
     private Cursor makeArtistCursor() {
         String order = PreferenceUtils.getInstance(getContext()).getArtistSortOrder();
-        return getContext().getContentResolver().query(CONTENT, PROJECTION, null, null, order);
+        return getContext().getContentResolver().query(CONTENT, ARTIST_COLUMN, null, null, order);
     }
 }

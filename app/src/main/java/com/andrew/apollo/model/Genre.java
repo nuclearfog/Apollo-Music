@@ -39,9 +39,9 @@ public class Genre {
      * @param genreName The genre name
      */
     public Genre(long genreId, String genreName) {
-        super();
         mGenreId = genreId;
         mGenreName = genreName;
+
     }
 
     /**

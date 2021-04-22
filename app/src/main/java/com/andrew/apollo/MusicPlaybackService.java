@@ -11,6 +11,7 @@
 
 package com.andrew.apollo;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -58,7 +59,6 @@ import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
@@ -250,10 +250,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * The columns used to retrieve any info from the current track
      */
+    @SuppressLint("InlinedApi")
     private static final String[] PROJECTION = {
-            "audio._id AS _id", "artist", "album",
-            MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.MIME_TYPE, MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.MIME_TYPE,
+            MediaStore.Audio.Media.ALBUM_ID,
             MediaStore.Audio.Media.ARTIST_ID
     };
 
@@ -2228,10 +2233,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                     }
                     player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     player.prepare();
-                } catch (IOException err) {
-                    err.printStackTrace();
-                    return false;
-                } catch (IllegalArgumentException err) {
+                } catch (Exception err) {
                     err.printStackTrace();
                     return false;
                 }
@@ -2438,7 +2440,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         @Override
         public void open(long[] list, int position) {
             MusicPlaybackService service = mService.get();
-            if (service != null && list != null)
+            if (mService.get() != null && list != null)
                 service.open(list, position);
         }
 

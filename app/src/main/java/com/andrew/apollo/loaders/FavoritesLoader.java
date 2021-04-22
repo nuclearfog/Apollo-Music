@@ -39,7 +39,6 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
      * Definition of the Columns to get from database
      */
     public static final String[] FAVORITE_COLUMNS = {
-            FavoriteColumns.ID + " as _id",
             FavoriteColumns.ID,
             FavoriteColumns.SONGNAME,
             FavoriteColumns.ALBUMNAME,

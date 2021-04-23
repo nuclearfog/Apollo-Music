@@ -139,32 +139,32 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         Song song = getItem(position - 1);
         if (song != null) {
             // Set each track name (line one)
-            holder.mLineOne.setText(song.mSongName);
+            holder.mLineOne.setText(song.getName());
             // Set the line two
             String SEPARATOR_STRING = " - ";
             switch (mDisplaySetting) {
                 // show duration if on album fragment
                 case DISPLAY_ALBUM_SETTING:
                     holder.mLineOneRight.setVisibility(View.GONE);
-                    holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
+                    holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.length()));
                     break;
 
                 case DISPLAY_PLAYLIST_SETTING:
-                    if (song.mDuration == -1) {
+                    if (song.length() == -1) {
                         holder.mLineOneRight.setVisibility(View.GONE);
                     } else {
                         holder.mLineOneRight.setVisibility(View.VISIBLE);
-                        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
+                        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.length()));
                     }
-                    String sb = song.mArtistName + SEPARATOR_STRING + song.mAlbumName;
+                    String sb = song.getArtist() + SEPARATOR_STRING + song.getAlbum();
                     holder.mLineTwo.setText(sb);
                     break;
 
                 case DISPLAY_DEFAULT_SETTING:
                 default:
                     holder.mLineOneRight.setVisibility(View.VISIBLE);
-                    holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.mDuration));
-                    holder.mLineTwo.setText(song.mAlbumName);
+                    holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.length()));
+                    holder.mLineTwo.setText(song.getAlbum());
                     break;
             }
         }

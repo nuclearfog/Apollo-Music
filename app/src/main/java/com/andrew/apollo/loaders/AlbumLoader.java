@@ -13,7 +13,8 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.provider.MediaStore.Audio.Albums;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.utils.PreferenceUtils;
@@ -21,25 +22,26 @@ import com.andrew.apollo.utils.PreferenceUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
 
 /**
- * Used to query {@link MediaStore.Audio.Albums#EXTERNAL_CONTENT_URI} and return
+ * Used to query {@link Albums#EXTERNAL_CONTENT_URI} and return
  * the albums on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
+    public static final Uri ALBUM_URI = Albums.EXTERNAL_CONTENT_URI;
+
     /**
-     * SQL Projection
+     * SQL Projection of an album row
      */
     public static final String[] ALBUM_COLUMN = {
-            MediaStore.Audio.Albums._ID,
-            MediaStore.Audio.Albums.ALBUM,
-            MediaStore.Audio.Albums.ARTIST,
-            MediaStore.Audio.Albums.NUMBER_OF_SONGS,
-            MediaStore.Audio.Albums.FIRST_YEAR
+            Albums._ID,
+            Albums.ALBUM,
+            Albums.ARTIST,
+            Albums.NUMBER_OF_SONGS,
+            Albums.FIRST_YEAR
     };
 
     /**
@@ -91,6 +93,6 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
      */
     private Cursor makeAlbumCursor() {
         String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, ALBUM_COLUMN, null, null, sortOrder);
+        return getContext().getContentResolver().query(ALBUM_URI, ALBUM_COLUMN, null, null, sortOrder);
     }
 }

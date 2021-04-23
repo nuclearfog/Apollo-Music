@@ -157,13 +157,13 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
                 // Build the data holder
                 DataHolder holder = new DataHolder();
                 // Artist Id
-                holder.mItemId = artist.mArtistId;
+                holder.mItemId = artist.getId();
                 // Artist names (line one)
-                holder.mLineOne = artist.mArtistName;
+                holder.mLineOne = artist.getName();
                 // Number of albums (line two)
-                holder.mLineTwo = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.mAlbumNumber);
+                holder.mLineTwo = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
                 // Number of songs (line three)
-                holder.mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.mSongNumber);
+                holder.mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
                 mData.add(holder);
             }
         }
@@ -183,7 +183,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
             public void onClick(final View v) {
                 Artist artist = getItem(position);
                 if (artist != null) {
-                    final long id = artist.mArtistId;
+                    final long id = artist.getId();
                     final long[] list = MusicUtils.getSongListForArtist(getContext(), id);
                     MusicUtils.playAll(list, 0, false);
                 }

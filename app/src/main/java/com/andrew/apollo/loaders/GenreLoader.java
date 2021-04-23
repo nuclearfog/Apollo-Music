@@ -13,17 +13,17 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.provider.MediaStore.Audio.Genres;
 
 import com.andrew.apollo.model.Genre;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
 
 /**
- * Used to query {@link MediaStore.Audio.Genres#EXTERNAL_CONTENT_URI} and return
+ * Used to query {@link Genres#EXTERNAL_CONTENT_URI} and return
  * the genres on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -31,11 +31,16 @@ import static android.provider.MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI;
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 
     /**
+     *
+     */
+    private static final Uri GENRE_URI = Genres.EXTERNAL_CONTENT_URI;
+
+    /**
      * COLUMN projection
      */
     private static final String[] GENRE_COLUMNS = {
-            MediaStore.Audio.Genres._ID,
-            MediaStore.Audio.Genres.NAME
+            Genres._ID,
+            Genres.NAME
     };
 
     /**
@@ -99,6 +104,6 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
      * @return The {@link Cursor} used to run the genre query.
      */
     private Cursor makeGenreCursor() {
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, GENRE_COLUMNS, SELECTION, null, SORT);
+        return getContext().getContentResolver().query(GENRE_URI, GENRE_COLUMNS, SELECTION, null, SORT);
     }
 }

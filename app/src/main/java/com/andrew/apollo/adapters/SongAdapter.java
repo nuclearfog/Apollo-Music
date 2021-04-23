@@ -116,13 +116,13 @@ public class SongAdapter extends ArrayAdapter<Song> {
                 // Build the data holder
                 DataHolder holder = new DataHolder();
                 // Song Id
-                holder.mItemId = song.mSongId;
+                holder.mItemId = song.getId();
                 // Song names (line one)
-                holder.mLineOne = song.mSongName;
+                holder.mLineOne = song.getName();
                 // Song duration (line one, right)
-                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.mDuration);
+                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.length());
                 // Album names (line two)
-                holder.mLineTwo = song.mAlbumName;
+                holder.mLineTwo = song.getName();
                 mData.add(holder);
             }
         }

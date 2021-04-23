@@ -184,8 +184,8 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mArtistName = mSong.getArtist();
         }
 
         // Play the song
@@ -261,7 +261,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null)
+                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null)
                             .show(getParentFragmentManager(), "DeleteDialog");
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);

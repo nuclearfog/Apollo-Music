@@ -110,7 +110,7 @@ public abstract class AppCompatBase extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialze the theme resources
+        // Initialize the theme resources
         ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style
         mResources.setOverflowStyle(this);
@@ -131,7 +131,7 @@ public abstract class AppCompatBase extends AppCompatActivity
             mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
         }
         setContentView(root);
-        // Initialze the bottom action bar
+        // Initialize the bottom action bar
         initBottomActionBar();
     }
 

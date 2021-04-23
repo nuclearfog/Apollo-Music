@@ -120,7 +120,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
                 case 9:
                     break;
             }
-            DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
+            DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
             refresh();
             return true;
         }
@@ -139,10 +139,10 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         int position = ((AdapterContextMenuInfo) paramContextMenuInfo).position - 1;
         mSong = mAdapter.getItem(position);
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mSongName = mSong.mSongName;
-            mAlbumName = mSong.mAlbumName;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mSongName = mSong.getName();
+            mAlbumName = mSong.getAlbum();
+            mArtistName = mSong.getArtist();
         }
         paramContextMenu.add(14, 1, 0, R.string.context_menu_play_selection);
         paramContextMenu.add(14, 16, 0, R.string.context_menu_play_next);

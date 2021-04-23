@@ -13,39 +13,27 @@ package com.andrew.apollo.model;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 /**
  * A class that represents an album.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Album {
-
-    /**
-     * The unique Id of the album
-     */
-    public long mAlbumId;
-
-    /**
-     * The name of the album
-     */
-    public String mAlbumName = "";
+public class Album extends Music {
 
     /**
      * The album artist
      */
-    public String mArtistName = "";
+    private String mArtistName = "";
 
     /**
      * The number of songs in the album
      */
-    public int mSongNumber;
+    private int mSongNumber;
 
     /**
      * The year the album was released
      */
-    public String mYear = "";
+    private String mYear = "";
 
     /**
      * Constructor of <code>Album</code>
@@ -57,15 +45,27 @@ public class Album {
      * @param albumYear  The year the album was released
      */
     public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
-        super();
+        super(albumId, albumName);
         if (albumYear != null)
             mYear = albumYear;
-        if (albumName != null)
-            mAlbumName = albumName;
         if (artistName != null)
             mArtistName = artistName;
         mSongNumber = songNumber;
-        mAlbumId = albumId;
+    }
+
+
+    public String getArtist() {
+        return mArtistName;
+    }
+
+
+    public int getTrackCount() {
+        return mSongNumber;
+    }
+
+
+    public String getRelease() {
+        return mYear;
     }
 
     /**
@@ -75,11 +75,11 @@ public class Album {
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + (int) mAlbumId;
-        result = prime * result + (mAlbumName == null ? 0 : mAlbumName.hashCode());
-        result = prime * result + (mArtistName == null ? 0 : mArtistName.hashCode());
+        result = prime * result + (int) id;
+        result = prime * result + name.hashCode();
+        result = prime * result + mArtistName.hashCode();
         result = prime * result + mSongNumber;
-        result = prime * result + (mYear == null ? 0 : mYear.hashCode());
+        result = prime * result + mYear.hashCode();
         return result;
     }
 
@@ -98,10 +98,10 @@ public class Album {
             return false;
         }
         Album other = (Album) obj;
-        if (mAlbumId != other.mAlbumId) {
+        if (id != other.id) {
             return false;
         }
-        if (!TextUtils.equals(mAlbumName, other.mAlbumName)) {
+        if (!TextUtils.equals(name, other.name)) {
             return false;
         }
         if (!TextUtils.equals(mArtistName, other.mArtistName)) {
@@ -111,14 +111,5 @@ public class Album {
             return false;
         }
         return TextUtils.equals(mYear, other.mYear);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public String toString() {
-        return mAlbumName;
     }
 }

@@ -14,7 +14,8 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Playlist;
@@ -22,21 +23,30 @@ import com.andrew.apollo.model.Playlist;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
-
 /**
- * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
+ * Used to query {@link Playlists#EXTERNAL_CONTENT_URI} and
  * return the playlists on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 
+    /**
+     *
+     */
+    private static final Uri PLAYLIST_URI = Playlists.EXTERNAL_CONTENT_URI;
+
+    /**
+     * Projection of the columns
+     */
     public static final String[] PLAYLIST_COLUMNS = {
-            MediaStore.Audio.Playlists._ID,
-            MediaStore.Audio.Playlists.NAME
+            Playlists._ID,
+            Playlists.NAME
     };
 
+    /**
+     *
+     */
     public static final String ORDER = "name";
 
     /**
@@ -54,7 +64,7 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     @Override
     public List<Playlist> loadInBackground() {
         List<Playlist> result = new LinkedList<>();
-        // Add the deafult playlits to the adapter
+        // Add the default playlists to the adapter
         makeDefaultPlaylists(result);
         // Create the Cursor
         Cursor mCursor = makePlaylistCursor();
@@ -94,6 +104,6 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
      * @return The {@link Cursor} used to run the playlist query.
      */
     private Cursor makePlaylistCursor() {
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, null, null, ORDER);
+        return getContext().getContentResolver().query(PLAYLIST_URI, PLAYLIST_COLUMNS, null, null, ORDER);
     }
 }

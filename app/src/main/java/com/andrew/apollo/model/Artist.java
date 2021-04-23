@@ -13,34 +13,22 @@ package com.andrew.apollo.model;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 /**
  * A class that represents an artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Artist {
-
-    /**
-     * The unique Id of the artist
-     */
-    public long mArtistId;
-
-    /**
-     * The artist name
-     */
-    public String mArtistName;
+public class Artist extends Music {
 
     /**
      * The number of albums for the artist
      */
-    public int mAlbumNumber;
+    private int mAlbumNumber;
 
     /**
      * The number of songs for the artist
      */
-    public int mSongNumber;
+    private int mSongNumber;
 
     /**
      * Constructor of <code>Artist</code>
@@ -51,11 +39,19 @@ public class Artist {
      * @param albumNumber The number of albums for the artist
      */
     public Artist(long artistId, String artistName, int songNumber, int albumNumber) {
-        super();
-        mArtistId = artistId;
-        mArtistName = artistName;
+        super(artistId, artistName);
         mSongNumber = songNumber;
         mAlbumNumber = albumNumber;
+    }
+
+
+    public int getAlbumCount() {
+        return mAlbumNumber;
+    }
+
+
+    public int getTrackCount() {
+        return mSongNumber;
     }
 
     /**
@@ -66,8 +62,8 @@ public class Artist {
         int prime = 31;
         int result = 1;
         result = prime * result + mAlbumNumber;
-        result = prime * result + (int) mArtistId;
-        result = prime * result + (mArtistName == null ? 0 : mArtistName.hashCode());
+        result = prime * result + (int) id;
+        result = prime * result + name.hashCode();
         result = prime * result + mSongNumber;
         return result;
     }
@@ -90,21 +86,12 @@ public class Artist {
         if (mAlbumNumber != other.mAlbumNumber) {
             return false;
         }
-        if (mArtistId != other.mArtistId) {
+        if (id != other.id) {
             return false;
         }
-        if (!TextUtils.equals(mArtistName, other.mArtistName)) {
+        if (!TextUtils.equals(name, other.name)) {
             return false;
         }
         return mSongNumber == other.mSongNumber;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public String toString() {
-        return mArtistName;
     }
 }

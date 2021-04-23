@@ -126,9 +126,9 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
                 // Build the data holder
                 DataHolder holder = new DataHolder();
                 // Playlist Id
-                holder.mItemId = playlist.mPlaylistId;
+                holder.mItemId = playlist.getId();
                 // Playlist names (line one)
-                holder.mLineOne = playlist.mPlaylistName;
+                holder.mLineOne = playlist.getName();
                 mData.add(holder);
             }
         }

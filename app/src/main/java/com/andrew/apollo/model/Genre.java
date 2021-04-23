@@ -13,24 +13,12 @@ package com.andrew.apollo.model;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 /**
  * A class that represents a genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Genre {
-
-    /**
-     * The unique Id of the genre
-     */
-    public long mGenreId;
-
-    /**
-     * The genre name
-     */
-    public String mGenreName;
+public class Genre extends Music {
 
     /**
      * Constructor of <code>Genre</code>
@@ -39,9 +27,7 @@ public class Genre {
      * @param genreName The genre name
      */
     public Genre(long genreId, String genreName) {
-        mGenreId = genreId;
-        mGenreName = genreName;
-
+        super(genreId, genreName);
     }
 
     /**
@@ -51,8 +37,8 @@ public class Genre {
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + (int) mGenreId;
-        result = prime * result + (mGenreName == null ? 0 : mGenreName.hashCode());
+        result = prime * result + (int) id;
+        result = prime * result + name.hashCode();
         return result;
     }
 
@@ -71,18 +57,9 @@ public class Genre {
             return false;
         }
         Genre other = (Genre) obj;
-        if (mGenreId != other.mGenreId) {
+        if (id != other.id) {
             return false;
         }
-        return TextUtils.equals(mGenreName, other.mGenreName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public String toString() {
-        return mGenreName;
+        return TextUtils.equals(name, other.name);
     }
 }

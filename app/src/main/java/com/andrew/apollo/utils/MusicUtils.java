@@ -60,8 +60,8 @@ import java.util.WeakHashMap;
 
 import static android.provider.MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
 import static com.andrew.apollo.loaders.LastAddedLoader.LAST_ADDED_SELECTION;
-import static com.andrew.apollo.loaders.SongLoader.SELECTION;
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.SONG_SELECT;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -628,7 +628,7 @@ public final class MusicUtils {
     public static void shuffleAll(Context context) {
         String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_COLUMNS, SELECTION, null, sort);
+                TRACK_COLUMNS, SONG_SELECT, null, sort);
         long[] mTrackList = getSongListForCursor(cursor);
         int position = 0;
         if (mTrackList.length == 0 || mService == null) {
@@ -1070,7 +1070,7 @@ public final class MusicUtils {
     public static long[] getSongListForLastAdded(Context context) {
         String select = LAST_ADDED_SELECTION + (System.currentTimeMillis() / 1000 - 2419200);
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                SONG_COLUMNS, select, null, LastAddedLoader.ORDER);
+                TRACK_COLUMNS, select, null, LastAddedLoader.ORDER);
         if (cursor != null) {
             int count = cursor.getCount();
             long[] list = new long[count];
@@ -1332,7 +1332,7 @@ public final class MusicUtils {
         for (int i = 0; i < count; i++) {
             Song song = adapter.getItem(i);
             if (song != null) {
-                list[i] = song.mSongId;
+                list[i] = song.getId();
             }
         }
         return list;

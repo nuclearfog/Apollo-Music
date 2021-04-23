@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.Config;
@@ -54,8 +55,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class GenreSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener {
+public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<Song>>, OnItemClickListener {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -182,13 +182,13 @@ public class GenreSongFragment extends Fragment implements LoaderManager.LoaderC
         // Get the position of the selected item
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         int mSelectedPosition = info.position - 1;
-        // Creat a new song
+        // Create a new song
         mSong = mAdapter.getItem(mSelectedPosition);
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mSongName = mSong.mSongName;
-            mAlbumName = mSong.mAlbumName;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mSongName = mSong.getName();
+            mAlbumName = mSong.getAlbum();
+            mArtistName = mSong.getArtist();
         }
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -206,6 +206,7 @@ public class GenreSongFragment extends Fragment implements LoaderManager.LoaderC
         // Delete the song
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
+
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
@@ -254,7 +255,7 @@ public class GenreSongFragment extends Fragment implements LoaderManager.LoaderC
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId
+                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId
                     }, null).show(getParentFragmentManager(), "DeleteDialog");
                     refresh();
                     return true;

@@ -21,7 +21,7 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Genres.Members#EXTERNAL_CONTENT_URI}
@@ -97,6 +97,6 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     private Cursor makeGenreSongCursor() {
         // Match the songs up with the genre
         Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", mGenreID);
-        return getContext().getContentResolver().query(media, SONG_COLUMNS, SELECTION, null, ORDER);
+        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SELECTION, null, ORDER);
     }
 }

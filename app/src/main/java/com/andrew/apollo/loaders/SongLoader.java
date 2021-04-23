@@ -14,7 +14,8 @@ package com.andrew.apollo.loaders;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.provider.MediaStore.Audio.Media;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.PreferenceUtils;
@@ -22,10 +23,9 @@ import com.andrew.apollo.utils.PreferenceUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
 /**
- * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
+ * Used to query {@link Media#EXTERNAL_CONTENT_URI} and return
  * the songs on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -33,19 +33,28 @@ import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     /**
-     * SQL Projection
+     *
+     */
+    public static final Uri TRACK_URI = Media.EXTERNAL_CONTENT_URI;
+
+    /**
+     * SQL Projection to get song information in a fixed order
      */
     @SuppressLint("InlinedApi")
-    public static final String[] SONG_COLUMNS = {
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.DATA,
+    public static final String[] TRACK_COLUMNS = {
+            Media._ID,
+            Media.TITLE,
+            Media.ARTIST,
+            Media.ALBUM,
+            Media.DURATION,
+            Media.DATA,
+            Media.MIME_TYPE
     };
 
-    public static final String SELECTION = "is_music=1 AND title!=''";
+    /**
+     * Selection to filter songs with empty name
+     */
+    public static final String SONG_SELECT = "is_music=1 AND title!=''";
 
     /**
      * Constructor of <code>SongLoader</code>
@@ -55,7 +64,6 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public SongLoader(Context context) {
         super(context);
     }
-
 
     /**
      * {@inheritDoc}
@@ -79,10 +87,8 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     String album = mCursor.getString(3);
                     // Copy the duration
                     long duration = mCursor.getLong(4);
-                    // Convert the duration into seconds
-                    int durationInSecs = (int) duration / 1000;
                     // Create a new song
-                    Song song = new Song(id, songName, artist, album, durationInSecs);
+                    Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up
                     result.add(song);
                 } while (mCursor.moveToNext());
@@ -99,6 +105,6 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makeSongCursor() {
         String sort = PreferenceUtils.getInstance(getContext()).getSongSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, SELECTION, null, sort);
+        return getContext().getContentResolver().query(TRACK_URI, TRACK_COLUMNS, null, null, sort);
     }
 }

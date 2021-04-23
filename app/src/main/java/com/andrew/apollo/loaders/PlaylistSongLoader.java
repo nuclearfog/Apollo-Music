@@ -21,7 +21,7 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
@@ -31,8 +31,14 @@ import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
  */
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
+    /**
+     *
+     */
     private static final String SELECTION = "is_music=1 AND title != ''";
 
+    /**
+     *
+     */
     private static final String ORDER = "play_order";
 
     /**
@@ -92,6 +98,6 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makePlaylistSongCursor() {
         Uri media = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistID);
-        return getContext().getContentResolver().query(media, SONG_COLUMNS, SELECTION, null, ORDER);
+        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SELECTION, null, ORDER);
     }
 }

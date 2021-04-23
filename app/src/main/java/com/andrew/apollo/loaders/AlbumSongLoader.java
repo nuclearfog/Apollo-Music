@@ -21,8 +21,8 @@ import com.andrew.apollo.utils.PreferenceUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_URI;
 
 /**
  * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
@@ -35,7 +35,7 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * SQL Query
      */
-    private static final String SELECTION = "is_music=1 AND title!='' AND album_id=";
+    private static final String SELECTION = "is_music=1 AND title!='' AND album_id=?";
 
     /**
      * The Id of the album the songs belong to.
@@ -92,7 +92,8 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      * @return The {@link Cursor} used to run the query.
      */
     private Cursor makeAlbumSongCursor() {
+        String[] args = {Long.toString(mAlbumID)};
         String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSongSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, SELECTION + mAlbumID, null, sortOrder);
+        return getContext().getContentResolver().query(TRACK_URI, TRACK_COLUMNS, SELECTION, args, sortOrder);
     }
 }

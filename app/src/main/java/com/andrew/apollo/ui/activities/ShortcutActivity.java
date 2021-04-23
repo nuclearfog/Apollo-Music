@@ -42,7 +42,7 @@ import java.util.List;
 import static com.andrew.apollo.Config.MIME_TYPE;
 import static com.andrew.apollo.loaders.LastAddedLoader.LAST_ADDED_SELECTION;
 import static com.andrew.apollo.loaders.LastAddedLoader.ORDER;
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -134,11 +134,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
             // this. It allows the user to perform very specific queries. i.e.
             // "Listen to Ethio
 
-            String song = mSong.get(0).mSongName;
-            String album = mSong.get(0).mAlbumName;
-            String artist = mSong.get(0).mArtistName;
+            String song = mSong.get(0).getName();
+            String album = mSong.get(0).getAlbum();
+            String artist = mSong.get(0).getArtist();
             // This tripes as the song, album, and artist Id
-            long id = mSong.get(0).mSongId;
+            long id = mSong.get(0).getId();
             // First, try to play a song
             if (mList == null && song != null) {
                 mList = new long[]{
@@ -243,7 +243,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                         // Get the Last added song list
                         String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
                         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                SONG_COLUMNS, LAST_ADDED_SELECTION + time, null, ORDER);
+                                TRACK_COLUMNS, LAST_ADDED_SELECTION + time, null, ORDER);
                         if (cursor != null) {
                             mList = MusicUtils.getSongListForCursor(cursor);
                             cursor.close();

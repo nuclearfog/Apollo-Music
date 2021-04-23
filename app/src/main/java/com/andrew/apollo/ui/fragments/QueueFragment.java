@@ -185,10 +185,10 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mSongName = mSong.mSongName;
-            mAlbumName = mSong.mAlbumName;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mSongName = mSong.getName();
+            mAlbumName = mSong.getAlbum();
+            mArtistName = mSong.getArtist();
         }
         // Play the song next
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
@@ -247,7 +247,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId
+                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId
                     }, null).show(getParentFragmentManager(), "DeleteDialog");
                     return true;
             }
@@ -322,7 +322,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         mSong = mAdapter.getItem(which);
         mAdapter.remove(mSong);
         mAdapter.notifyDataSetChanged();
-        MusicUtils.removeTrack(mSong.mSongId);
+        MusicUtils.removeTrack(mSong.getId());
         // Build the cache
         mAdapter.buildCache();
     }
@@ -365,7 +365,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         }
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Song song = mAdapter.getItem(i);
-            if (song != null && song.mSongId == trackId) {
+            if (song != null && song.getId() == trackId) {
                 return i;
             }
         }

@@ -171,10 +171,10 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         // Create a new song
         mSong = mAdapter.getItem(mSelectedPosition);
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mSongName = mSong.mSongName;
-            mAlbumName = mSong.mAlbumName;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mSongName = mSong.getName();
+            mAlbumName = mSong.getAlbum();
+            mArtistName = mSong.getArtist();
         }
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -236,7 +236,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 
                 case FragmentMenuItems.DELETE:
                     mShouldRefresh = true;
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
                     return true;
             }
         }
@@ -314,7 +314,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Song song = mAdapter.getItem(i);
-            if (song != null && song.mSongId == trackId) {
+            if (song != null && song.getId() == trackId) {
                 return i;
             }
         }

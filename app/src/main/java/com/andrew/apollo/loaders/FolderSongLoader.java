@@ -10,8 +10,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_URI;
 
 /**
  * decompiled from Apollo.APK version 1.6
@@ -67,6 +67,6 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     private Cursor makeFileSongCursor() {
         ContentResolver contentResolver = getContext().getContentResolver();
         String[] args = {mFolder.toString() + "%"};
-        return contentResolver.query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, SELECTION, args, ORDER);
+        return contentResolver.query(TRACK_URI, TRACK_COLUMNS, SELECTION, args, ORDER);
     }
 }

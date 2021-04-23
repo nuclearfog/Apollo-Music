@@ -124,7 +124,7 @@ public final class NavUtils {
     /**
      * Opens to {@link SearchActivity}.
      *
-     * @param activity The {@link Activity} to start a new Actvity.
+     * @param activity The {@link Activity} to start a new Activity.
      * @param query    The search query.
      */
     public static void openSearch(Activity activity, String query) {

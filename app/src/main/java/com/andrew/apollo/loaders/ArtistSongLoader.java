@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-import static com.andrew.apollo.loaders.SongLoader.SONG_COLUMNS;
+import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
@@ -93,6 +93,6 @@ public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
      */
     private Cursor makeArtistSongCursor() {
         String order = PreferenceUtils.getInstance(getContext()).getArtistSongSortOrder();
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, SONG_COLUMNS, SELECTION + mArtistID, null, order);
+        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, TRACK_COLUMNS, SELECTION + mArtistID, null, order);
     }
 }

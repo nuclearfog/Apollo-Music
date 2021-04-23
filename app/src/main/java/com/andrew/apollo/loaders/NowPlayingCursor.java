@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.os.RemoteException;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
 
@@ -24,7 +23,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
     private static final String[] PROJECTION = new String[]{
             /* 0 */
-            BaseColumns._ID,
+            AudioColumns._ID,
             /* 1 */
             AudioColumns.TITLE,
             /* 2 */

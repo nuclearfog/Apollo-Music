@@ -13,24 +13,13 @@ package com.andrew.apollo.model;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 
 /**
  * A class that represents a playlist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Playlist {
-
-    /**
-     * The unique Id of the playlist
-     */
-    public long mPlaylistId;
-
-    /**
-     * The playlist name
-     */
-    public String mPlaylistName;
+public class Playlist extends Music {
 
     /**
      * Constructor of <code>Genre</code>
@@ -39,9 +28,7 @@ public class Playlist {
      * @param playlistName The playlist name
      */
     public Playlist(long playlistId, String playlistName) {
-        super();
-        mPlaylistId = playlistId;
-        mPlaylistName = playlistName;
+        super(playlistId, playlistName);
     }
 
     /**
@@ -51,8 +38,8 @@ public class Playlist {
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + (int) mPlaylistId;
-        result = prime * result + (mPlaylistName == null ? 0 : mPlaylistName.hashCode());
+        result = prime * result + (int) id;
+        result = prime * result + name.hashCode();
         return result;
     }
 
@@ -71,18 +58,9 @@ public class Playlist {
             return false;
         }
         Playlist other = (Playlist) obj;
-        if (mPlaylistId != other.mPlaylistId) {
+        if (id != other.id) {
             return false;
         }
-        return TextUtils.equals(mPlaylistName, other.mPlaylistName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public String toString() {
-        return mPlaylistName;
+        return TextUtils.equals(name, other.name);
     }
 }

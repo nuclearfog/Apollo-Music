@@ -178,7 +178,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                     } else if (info.position == 1) {
                         MusicUtils.playLastAdded(getActivity());
                     } else {
-                        MusicUtils.playPlaylist(getActivity(), mPlaylist.mPlaylistId);
+                        MusicUtils.playPlaylist(getActivity(), mPlaylist.getId());
                     }
                     return true;
 
@@ -189,13 +189,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                     } else if (info.position == 1) {
                         list = MusicUtils.getSongListForLastAdded(getActivity());
                     } else {
-                        list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.mPlaylistId);
+                        list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.getId());
                     }
                     MusicUtils.addToQueue(getActivity(), list);
                     return true;
 
                 case FragmentMenuItems.RENAME_PLAYLIST:
-                    RenamePlaylist.getInstance(mPlaylist.mPlaylistId).show(getParentFragmentManager(), "RenameDialog");
+                    RenamePlaylist.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), "RenameDialog");
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -224,9 +224,9 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
             bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
         } else if (mPlaylist != null) {
             // User created
-            playlistName = mPlaylist.mPlaylistName;
+            playlistName = mPlaylist.getName();
             bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Playlists.CONTENT_TYPE);
-            bundle.putLong(Config.ID, mPlaylist.mPlaylistId);
+            bundle.putLong(Config.ID, mPlaylist.getId());
         }
         bundle.putString(Config.NAME, playlistName);
         // Create the intent to launch the profile activity
@@ -295,11 +295,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     private AlertDialog buildDeleteDialog() {
         return new AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.delete_dialog_title, mPlaylist.mPlaylistName))
+                .setTitle(getString(R.string.delete_dialog_title, mPlaylist.getName()))
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Uri mUri = ContentUris.withAppendedId(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mPlaylist.mPlaylistId);
+                        Uri mUri = ContentUris.withAppendedId(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
                         requireActivity().getContentResolver().delete(mUri, null, null);
                         MusicUtils.refresh();
                     }

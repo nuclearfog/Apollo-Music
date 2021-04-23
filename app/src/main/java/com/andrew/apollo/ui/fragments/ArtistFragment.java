@@ -199,7 +199,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         // Creat a new model
         mArtist = mAdapter.getItem(info.position);
         // Create a list of the artist's songs
-        mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.mArtistId);
+        mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
         // Play the artist
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Add the artist to the queue
@@ -238,7 +238,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 
                 case FragmentMenuItems.DELETE:
                     mShouldRefresh = true;
-                    String artist = mArtist.mArtistName;
+                    String artist = mArtist.getName();
                     DeleteDialog.newInstance(artist, mArtistList, artist).show(getParentFragmentManager(), "DeleteDialog");
                     return true;
             }
@@ -267,7 +267,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mArtist = mAdapter.getItem(position);
-        NavUtils.openArtistProfile(getActivity(), mArtist.mArtistName);
+        NavUtils.openArtistProfile(getActivity(), mArtist.getName());
     }
 
     /**
@@ -330,7 +330,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         }
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Artist artist = mAdapter.getItem(i);
-            if (artist != null && artist.mArtistId == artistId) {
+            if (artist != null && artist.getId() == artistId) {
                 return i;
             }
         }

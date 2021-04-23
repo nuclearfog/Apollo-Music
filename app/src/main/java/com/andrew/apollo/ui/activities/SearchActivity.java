@@ -11,43 +11,38 @@
 
 package com.andrew.apollo.ui.activities;
 
-import android.app.LoaderManager.LoaderCallbacks;
 import android.app.SearchManager;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.BaseColumns;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CursorAdapter;
 import android.widget.GridView;
-import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder;
-import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.format.PrefixHighlighter;
+import com.andrew.apollo.adapters.SearchAdapter;
+import com.andrew.apollo.loaders.MusicSearchLoader;
+import com.andrew.apollo.model.Album;
+import com.andrew.apollo.model.Artist;
+import com.andrew.apollo.model.Music;
+import com.andrew.apollo.model.Song;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
@@ -55,7 +50,7 @@ import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.ThemeUtils;
 
-import java.util.Locale;
+import java.util.List;
 
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -64,7 +59,7 @@ import static com.andrew.apollo.utils.MusicUtils.mService;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cursor>,
+public class SearchActivity extends AppCompatBase implements LoaderCallbacks<List<Music>>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection {
     /**
      * Grid view column count. ONE - list, TWO - normal grid
@@ -129,7 +124,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
         mGridView.setAdapter(mAdapter);
         // Recycle the data
         mGridView.setRecyclerListener(new RecycleHolder());
-        // Seepd up scrolling
+        // Speed up scrolling
         mGridView.setOnScrollListener(this);
         mGridView.setOnItemClickListener(this);
         if (ApolloUtils.isLandscape(this)) {
@@ -139,7 +134,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
         }
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        LoaderManager.getInstance(this).initLoader(0, null, this);
     }
 
     /**
@@ -152,7 +147,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
         mFilterString = !TextUtils.isEmpty(query) ? query : null;
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
-        getLoaderManager().restartLoader(0, null, this);
+        LoaderManager.getInstance(this).restartLoader(0, null, this);
     }
 
     /**
@@ -201,47 +196,36 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(mFilterString));
-        String[] projection = new String[]{
-                BaseColumns._ID, MediaStore.Audio.Media.MIME_TYPE, MediaStore.Audio.Artists.ARTIST,
-                MediaStore.Audio.Albums.ALBUM, MediaStore.Audio.Media.TITLE, "data1", "data2"
-        };
-        return new CursorLoader(this, uri, projection, null, null, null);
+    public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
+        return new MusicSearchLoader(this, mFilterString);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data == null || data.isClosed() || data.getCount() <= 0) {
+    public void onLoadFinished(@NonNull Loader<List<Music>> loader, List<Music> data) {
+        if (data.isEmpty()) {
             mGridView.setEmptyView(emptyText);
             emptyText.setVisibility(View.VISIBLE);
         } else {
-            // Swap the new cursor in. (The framework will take care of closing the
-            // old cursor once we return.)
-            mAdapter.swapCursor(data);
+            for (Music music : data)
+                mAdapter.add(music);
             emptyText.setVisibility(View.INVISIBLE);
         }
     }
+
+
+    @Override
+    public void onLoaderReset(@NonNull androidx.loader.content.Loader<List<Music>> loader) {
+    }
+
 
     @Override
     public View getContentView() {
         return View.inflate(this, R.layout.list_search, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed. We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
-    }
 
     /**
      * {@inheritDoc}
@@ -272,7 +256,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
         mFilterString = !TextUtils.isEmpty(newText) ? newText : null;
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
-        getLoaderManager().restartLoader(0, null, this);
+        LoaderManager.getInstance(this).restartLoader(0, null, this);
         return true;
     }
 
@@ -281,30 +265,24 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Cursor cursor = mAdapter.getCursor();
-        cursor.moveToPosition(position);
-        if (cursor.isBeforeFirst() || cursor.isAfterLast()) {
-            return;
-        }
-        // Get the MIME type
-        String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE));
+        Music music = mAdapter.getItem(position);
 
         // If it's an artist, open the artist profile
-        if ("artist".equals(mimeType)) {
-            NavUtils.openArtistProfile(this, cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)));
-        } else if ("album".equals(mimeType)) {
-            // If it's an album, open the album profile
-            NavUtils.openAlbumProfile(this,
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST)),
-                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID)));
-        } else if (position >= 0 && id >= 0) {
-            // If it's a song, play it and leave
-            long[] list = new long[]{id};
+        if (music instanceof Artist) {
+            Artist artist = (Artist) music;
+            NavUtils.openArtistProfile(this, artist.getName());
+        }
+        // If it's an album, open the album profile
+        else if (music instanceof Album) {
+            Album album = (Album) music;
+            NavUtils.openAlbumProfile(this, album.getName(), album.getArtist(), album.getId());
+        }
+        // If it's a song, play it and leave
+        else if (music instanceof Song) {
+            Song song = (Song) music;
+            long[] list = new long[]{song.getId()};
             MusicUtils.playAll(list, 0, false);
         }
-        // Close it up
-        cursor.close();
         // All done
         finish();
     }
@@ -331,151 +309,5 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Cur
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         // Nothing to do
-    }
-
-    /**
-     * Used to populate the list view with the search results.
-     */
-    private static final class SearchAdapter extends CursorAdapter {
-
-        /**
-         * Number of views (ImageView and TextView)
-         */
-        private static final int VIEW_TYPE_COUNT = 2;
-
-        /**
-         * Image cache and image fetcher
-         */
-        private final ImageFetcher mImageFetcher;
-
-        /**
-         * Highlights the query
-         */
-        private final PrefixHighlighter mHighlighter;
-
-        /**
-         * The prefix that's highlighted
-         */
-        private char[] mPrefix;
-
-        /**
-         * Constructor for <code>SearchAdapter</code>
-         *
-         * @param context The {@link Context} to use.
-         */
-        public SearchAdapter(AppCompatActivity context) {
-            super(context, null, false);
-            // Initialize the cache & image fetcher
-            mImageFetcher = ApolloUtils.getImageFetcher(context);
-            // Create the prefix highlighter
-            mHighlighter = new PrefixHighlighter(context);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void bindView(View convertView, Context context, Cursor cursor) {
-            /* Recycle ViewHolder's items */
-            MusicHolder holder = (MusicHolder) convertView.getTag();
-            if (holder == null) {
-                holder = new MusicHolder(convertView);
-                convertView.setTag(holder);
-            }
-            // Get the MIME type
-            String mimetype = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE));
-            if (mimetype.equals("artist")) {
-                holder.mImage.setScaleType(ScaleType.CENTER_CROP);
-                // Get the artist name
-                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
-                holder.mLineOne.setText(artist);
-                // Get the album count
-                int albumCount = cursor.getInt(cursor.getColumnIndexOrThrow("data1"));
-                holder.mLineTwo.setText(MusicUtils.makeLabel(context, R.plurals.Nalbums, albumCount));
-                // Get the song count
-                int songCount = cursor.getInt(cursor.getColumnIndexOrThrow("data2"));
-                holder.mLineThree.setText(MusicUtils.makeLabel(context, R.plurals.Nsongs, songCount));
-                // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mImage);
-                // Highlght the query
-                mHighlighter.setText(holder.mLineOne, artist, mPrefix);
-            } else if (mimetype.equals("album")) {
-                holder.mImage.setScaleType(ScaleType.FIT_XY);
-                // Get the Id of the album
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
-                // Get the album name
-                String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));
-                holder.mLineOne.setText(album);
-                // Get the artist name
-                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST));
-                holder.mLineTwo.setText(artist);
-                // Asynchronously load the album images into the adapter
-                mImageFetcher.loadAlbumImage(artist, album, id, holder.mImage);
-                // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mBackground);
-                // Highlght the query
-                mHighlighter.setText(holder.mLineOne, album, mPrefix);
-            } else if (mimetype.startsWith("audio/") || mimetype.equals("application/ogg") || mimetype.equals("application/x-ogg")) {
-                holder.mImage.setScaleType(ScaleType.FIT_XY);
-                holder.mImage.setImageResource(R.drawable.header_temp);
-                // Get the track name
-                String track = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
-                holder.mLineOne.setText(track);
-                // Get the album name
-                String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
-                holder.mLineTwo.setText(album);
-                String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                // Asynchronously load the artist image into the adapter
-                mImageFetcher.loadArtistImage(artist, holder.mBackground);
-                holder.mLineThree.setText(artist);
-                // Highlght the query
-                mHighlighter.setText(holder.mLineOne, track, mPrefix);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return View.inflate(context, R.layout.list_item_detailed, null);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_TYPE_COUNT;
-        }
-
-        /**
-         * @param pause True to temporarily pause the disk cache, false
-         *              otherwise.
-         */
-        public void setPauseDiskCache(boolean pause) {
-            if (mImageFetcher != null) {
-                mImageFetcher.setPauseDiskCache(pause);
-            }
-        }
-
-        /**
-         * @param prefix The query to filter.
-         */
-        public void setPrefix(CharSequence prefix) {
-            if (!TextUtils.isEmpty(prefix)) {
-                mPrefix = prefix.toString().toUpperCase(Locale.getDefault()).toCharArray();
-            } else {
-                mPrefix = null;
-            }
-        }
     }
 }

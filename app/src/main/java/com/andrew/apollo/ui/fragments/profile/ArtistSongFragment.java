@@ -184,10 +184,10 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         mSong = mAdapter.getItem(mSelectedPosition);
 
         if (mSong != null) {
-            mSelectedId = mSong.mSongId;
-            mSongName = mSong.mSongName;
-            mAlbumName = mSong.mAlbumName;
-            mArtistName = mSong.mArtistName;
+            mSelectedId = mSong.getId();
+            mSongName = mSong.getName();
+            mAlbumName = mSong.getAlbum();
+            mArtistName = mSong.getArtist();
         }
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -247,7 +247,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.mSongName, new long[]{mSelectedId}, null)
+                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null)
                             .show(getParentFragmentManager(), "DeleteDialog");
                     refresh();
                     return true;

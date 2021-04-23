@@ -113,15 +113,15 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         Album album = getItem(position - 1);
 
         if (album != null) {
-            String albumName = album.mAlbumName;
+            String albumName = album.getName();
             // Set each album name (line one)
             holder.mLineOne.setText(albumName);
             // Set the number of songs (line two)
-            holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.mSongNumber));
+            holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
             // Set the album year (line three)
-            holder.mLineThree.setText(album.mYear);
+            holder.mLineThree.setText(album.getRelease());
             // Asynchronously load the album images into the adapter
-            mImageFetcher.loadAlbumImage(album.mArtistName, albumName, album.mAlbumId, holder.mImage);
+            mImageFetcher.loadAlbumImage(album.getArtist(), albumName, album.getId(), holder.mImage);
             // Play the album when the artwork is touched
             playAlbum(holder.mImage, position);
         }
@@ -187,7 +187,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
             public void onClick(View v) {
                 Album album = getItem(position - 1);
                 if (album != null) {
-                    long id = album.mAlbumId;
+                    long id = album.getId();
                     long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
                     MusicUtils.playAll(list, 0, false);
                 }

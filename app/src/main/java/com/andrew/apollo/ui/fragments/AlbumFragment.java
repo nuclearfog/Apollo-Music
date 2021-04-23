@@ -200,7 +200,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             mAlbum = mAdapter.getItem(info.position);
         }
         // Create a list of the album's songs
-        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.mAlbumId);
+        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
         // Play the album
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Add the album to the queue
@@ -235,7 +235,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mAlbum.mArtistName);
+                    NavUtils.openArtistProfile(getActivity(), mAlbum.getName());
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
@@ -245,9 +245,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
                 case FragmentMenuItems.DELETE:
                     mShouldRefresh = true;
-                    String album = mAlbum.mAlbumName;
+                    String album = mAlbum.getName();
                     DeleteDialog.newInstance(album, mAlbumList,
-                            ImageFetcher.generateAlbumCacheKey(album, mAlbum.mArtistName))
+                            ImageFetcher.generateAlbumCacheKey(album, mAlbum.getArtist()))
                             .show(getParentFragmentManager(), "DeleteDialog");
                     return true;
             }
@@ -276,7 +276,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mAlbum = mAdapter.getItem(position);
-        NavUtils.openAlbumProfile(requireActivity(), mAlbum.mAlbumName, mAlbum.mArtistName, mAlbum.mAlbumId);
+        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
     }
 
     /**
@@ -338,7 +338,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         }
         for (int i = 0; i < mAdapter.getCount(); i++) {
             Album a = mAdapter.getItem(i);
-            if (a != null && a.mAlbumId == albumId) {
+            if (a != null && a.getId() == albumId) {
                 return i;
             }
         }

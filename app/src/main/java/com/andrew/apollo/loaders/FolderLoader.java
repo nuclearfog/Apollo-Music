@@ -3,7 +3,8 @@ package com.andrew.apollo.loaders;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
+import android.net.Uri;
+import android.provider.MediaStore.Audio.Media;
 
 import com.andrew.apollo.utils.PreferenceUtils;
 
@@ -14,12 +15,16 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 
 /**
  * return all music folders from storage
  */
 public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
+
+    /**
+     *
+     */
+    private static final Uri FOLDER_URI = Media.EXTERNAL_CONTENT_URI;
 
     /**
      * SQL Selection
@@ -30,7 +35,7 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
      * SQL Projection
      */
     private static final String[] PROJECTION = {
-            MediaStore.Audio.Media.DATA
+            Media.DATA
     };
 
     /**
@@ -72,6 +77,6 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     private Cursor makeSongCursor() {
         ContentResolver contentResolver = getContext().getContentResolver();
         String sortOrder = PreferenceUtils.getInstance(getContext()).getSongSortOrder();
-        return contentResolver.query(EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, sortOrder);
+        return contentResolver.query(FOLDER_URI, PROJECTION, SELECTION, null, sortOrder);
     }
 }

@@ -204,7 +204,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Create a new album
         mAlbum = mAdapter.getItem(info.position - 1);
         // Create a list of the album's songs
-        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.mAlbumId);
+        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
         // Play the album
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Add the album to the queue
@@ -242,7 +242,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mAlbum.mAlbumName, mAlbumList, null).show(getParentFragmentManager(), "DeleteDialog");
+                    DeleteDialog.newInstance(mAlbum.getName(), mAlbumList, null).show(getParentFragmentManager(), "DeleteDialog");
                     refresh();
                     return true;
             }
@@ -259,7 +259,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
             return;
         }
         mAlbum = mAdapter.getItem(position - 1);
-        NavUtils.openAlbumProfile(getActivity(), mAlbum.mAlbumName, mAlbum.mArtistName, mAlbum.mAlbumId);
+        NavUtils.openAlbumProfile(getActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
         requireActivity().finish();
     }
 

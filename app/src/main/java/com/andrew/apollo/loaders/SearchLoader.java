@@ -11,10 +11,13 @@
 
 package com.andrew.apollo.loaders;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Albums;
+import android.provider.MediaStore.Audio.Artists;
+import android.provider.MediaStore.Audio.Media;
 import android.text.TextUtils;
 
 import com.andrew.apollo.model.Song;
@@ -27,13 +30,15 @@ import java.util.List;
  */
 public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
+    @SuppressLint("InlinedApi")
     private static final String[] PROJECTION = {
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.MIME_TYPE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.TITLE,
-            "data1", "data2"
+            Media._ID,
+            Media.MIME_TYPE,
+            Media.ARTIST,
+            Media.ALBUM,
+            Media.TITLE,
+            "data1",
+            "data2"
     };
 
     private String query;
@@ -64,22 +69,22 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     // Copy the song Id
                     long id = -1;
                     // Copy the song name
-                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(Media.TITLE));
                     // Check for a song Id
                     if (!TextUtils.isEmpty(songName)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
                     }
                     // Copy the album name
-                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));
+                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(Albums.ALBUM));
                     // Check for a album Id
                     if (id < 0 && !TextUtils.isEmpty(album)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Albums._ID));
                     }
                     // Copy the artist name
-                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
+                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(Artists.ARTIST));
                     // check for a artist Id
                     if (id < 0 && !TextUtils.isEmpty(artist)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
+                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Artists._ID));
                     }
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, -1);

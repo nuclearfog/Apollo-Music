@@ -944,8 +944,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             }
             stop(false);
             updateCursor(mPlayList.get(mPlayPos));
-            boolean fileOpenFailed = !openFile(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX));
-            if (mCursor == null || mCursor.isClosed() || fileOpenFailed) {
+            boolean fileOpenFailed;
+            if (mCursor != null) {
+                String path = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX);
+                fileOpenFailed = !openFile(path);
+            } else {
+                fileOpenFailed = false;
+            }
+            if (fileOpenFailed || mCursor.isClosed()) {
                 // if we get here then opening the file failed. We can close the
                 // cursor now, because
                 // we're either going to create a new one next, or stop trying
@@ -2381,9 +2387,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             MusicPlaybackService musicService = mService.get();
             if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED && musicService != null) {
                 mIsInitialized = false;
-                mCurrentMediaPlayer.release();
-                mCurrentMediaPlayer = new MediaPlayer();
-                mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
+                mCurrentMediaPlayer.reset();
                 mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED), 2000);
                 return true;
             }

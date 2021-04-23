@@ -33,13 +33,15 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 
     public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";
 
-    private static AppWidgetLargeAlternate mInstance;
+    private static final AppWidgetLargeAlternate INSTANCE = new AppWidgetLargeAlternate();
+
+
+    private AppWidgetLargeAlternate() {
+    }
+
 
     public static synchronized AppWidgetLargeAlternate getInstance() {
-        if (mInstance == null) {
-            mInstance = new AppWidgetLargeAlternate();
-        }
-        return mInstance;
+        return INSTANCE;
     }
 
     /**
@@ -56,38 +58,9 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
     }
 
     /**
-     * Initialize given widgets to default state, where we launch Music on
-     * default click and hide actions if service not running.
+     * {@inheritDoc}
      */
-    private void defaultAppWidget(Context context, int[] appWidgetIds) {
-        RemoteViews appWidgetViews = new RemoteViews(context.getPackageName(), R.layout.app_widget_large_alternate);
-        linkButtons(context, appWidgetViews, false);
-        pushUpdate(context, appWidgetIds, appWidgetViews);
-    }
-
-    private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        if (appWidgetIds != null) {
-            appWidgetManager.updateAppWidget(appWidgetIds, views);
-        } else {
-            appWidgetManager.updateAppWidget(new ComponentName(context, getClass()), views);
-        }
-    }
-
-    /**
-     * Check against {@link AppWidgetManager} if there are any instances of this
-     * widget.
-     */
-    private boolean hasInstances(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
-        return mAppWidgetIds.length > 0;
-    }
-
-    /**
-     * Handle a change notification coming over from
-     * {@link MusicPlaybackService}
-     */
+    @Override
     public void notifyChange(MusicPlaybackService service, String what) {
         if (hasInstances(service)) {
             if (MusicPlaybackService.META_CHANGED.equals(what)
@@ -100,8 +73,9 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
     }
 
     /**
-     * Update all active widget instances by pushing changes
+     * {@inheritDoc}
      */
+    @Override
     public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
         RemoteViews appWidgetView = new RemoteViews(service.getPackageName(), R.layout.app_widget_large_alternate);
 
@@ -139,25 +113,52 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat, R.drawable.btn_playback_repeat);
                 break;
         }
-
         // Set the correct drawable for the shuffle state
         switch (service.getShuffleMode()) {
             case MusicPlaybackService.SHUFFLE_NONE:
-                appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle,
-                        R.drawable.btn_playback_shuffle);
+                appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle);
                 break;
             case MusicPlaybackService.SHUFFLE_AUTO:
             default:
-                appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle,
-                        R.drawable.btn_playback_shuffle_all);
+                appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle, R.drawable.btn_playback_shuffle_all);
                 break;
         }
-
         // Link actions buttons to intents
         linkButtons(service, appWidgetView, isPlaying);
-
         // Update the app-widget
         pushUpdate(service, appWidgetIds, appWidgetView);
+    }
+
+    /**
+     * Initialize given widgets to default state, where we launch Music on
+     * default click and hide actions if service not running.
+     */
+    private void defaultAppWidget(Context context, int[] appWidgetIds) {
+        RemoteViews appWidgetViews = new RemoteViews(context.getPackageName(), R.layout.app_widget_large_alternate);
+        linkButtons(context, appWidgetViews, false);
+        pushUpdate(context, appWidgetIds, appWidgetViews);
+    }
+
+    /**
+     *
+     */
+    private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        if (appWidgetIds != null) {
+            appWidgetManager.updateAppWidget(appWidgetIds, views);
+        } else {
+            appWidgetManager.updateAppWidget(new ComponentName(context, getClass()), views);
+        }
+    }
+
+    /**
+     * Check against {@link AppWidgetManager} if there are any instances of this
+     * widget.
+     */
+    private boolean hasInstances(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
+        return mAppWidgetIds.length > 0;
     }
 
     /**
@@ -180,8 +181,7 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
             action = new Intent(context, HomeActivity.class);
         }
         pendingIntent = PendingIntent.getActivity(context, 0, action, 0);
-        views.setOnClickPendingIntent(R.id.app_widget_large_alternate_info_container,
-                pendingIntent);
+        views.setOnClickPendingIntent(R.id.app_widget_large_alternate_info_container, pendingIntent);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_image, pendingIntent);
         // Shuffle modes
         pendingIntent = buildPendingIntent(context, MusicPlaybackService.SHUFFLE_ACTION, serviceName);

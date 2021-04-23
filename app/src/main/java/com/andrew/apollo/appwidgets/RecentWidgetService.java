@@ -14,6 +14,7 @@ package com.andrew.apollo.appwidgets;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.RemoteViews;
@@ -25,6 +26,8 @@ import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
+
+import static com.andrew.apollo.loaders.RecentLoader.RECENT_COLUMNS;
 
 /**
  * This class is used to build the recently listened list for the
@@ -63,9 +66,9 @@ public class RecentWidgetService extends RemoteViewsService {
         private final ImageFetcher mFetcher;
 
         /**
-         * Recents db
+         * Recent db
          */
-        private final RecentStore mRecentsStore;
+        private final RecentStore mRecentStore;
 
         /**
          * Cursor to use
@@ -80,11 +83,11 @@ public class RecentWidgetService extends RemoteViewsService {
         public WidgetRemoteViewsFactory(Context context) {
             // Get the context
             mContext = context;
-            // Initialze the image cache
+            // Initialize the image cache
             mFetcher = ImageFetcher.getInstance(context);
             mFetcher.setImageCache(ImageCache.getInstance(context));
-            // Initialze the recents store
-            mRecentsStore = RecentStore.getInstance(context);
+            // Initialize the recent's store
+            mRecentStore = RecentStore.getInstance(context);
         }
 
         /**
@@ -135,10 +138,8 @@ public class RecentWidgetService extends RemoteViewsService {
             if (bitmap != null) {
                 mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
             } else {
-                mViews.setImageViewResource(R.id.app_widget_recents_base_image,
-                        R.drawable.default_artwork);
+                mViews.setImageViewResource(R.id.app_widget_recents_base_image, R.drawable.default_artwork);
             }
-
             // Open the profile of the touched album
             Intent profileIntent = new Intent();
             Bundle profileExtras = new Bundle();
@@ -184,14 +185,9 @@ public class RecentWidgetService extends RemoteViewsService {
                 mCursor.close();
                 mCursor = null;
             }
-            mCursor = mRecentsStore.getReadableDatabase().query(
-                    RecentStoreColumns.NAME,
-                    new String[]{
-                            RecentStoreColumns.ID + " as id", RecentStoreColumns.ID,
-                            RecentStoreColumns.ALBUMNAME, RecentStoreColumns.ARTISTNAME,
-                            RecentStoreColumns.ALBUMSONGCOUNT, RecentStoreColumns.ALBUMYEAR,
-                            RecentStoreColumns.TIMEPLAYED
-                    }, null, null, null, null, RecentStoreColumns.TIMEPLAYED + " DESC");
+            SQLiteDatabase db = mRecentStore.getReadableDatabase();
+            String order = RecentStoreColumns.TIMEPLAYED + " DESC";
+            mCursor = db.query(RecentStoreColumns.NAME, RECENT_COLUMNS, null, null, null, null, order);
         }
 
         /**

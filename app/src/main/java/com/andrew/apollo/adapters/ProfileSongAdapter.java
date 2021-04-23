@@ -184,8 +184,9 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public int getCount() {
-        int size = super.getCount();
-        return size == 0 ? 0 : size + 1;
+        if (super.getCount() > 0)
+            return super.getCount() + 1;
+        return 0;
     }
 
     /**
@@ -193,9 +194,6 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public long getItemId(int position) {
-        if (position == 0) {
-            return -1;
-        }
         return position - 1;
     }
 

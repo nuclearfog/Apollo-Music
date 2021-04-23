@@ -27,4 +27,15 @@ public abstract class AppWidgetBase extends AppWidgetProvider {
         intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, false);
         return PendingIntent.getService(context, 0, intent, 0);
     }
+
+    /**
+     * Update all active widget instances by pushing changes
+     */
+    public abstract void performUpdate(MusicPlaybackService service, int[] appWidgetIds);
+
+    /**
+     * Handle a change notification coming over from
+     * {@link MusicPlaybackService}
+     */
+    public abstract void notifyChange(MusicPlaybackService service, String what);
 }

@@ -54,14 +54,14 @@ public class RecentWidgetProvider extends AppWidgetBase {
 
     private static Handler sWorkerQueue;
 
-    private static RecentWidgetProvider mInstance;
+    private static final RecentWidgetProvider INSTANCE = new RecentWidgetProvider();
 
     private RemoteViews mViews;
 
     /**
      * Constructor of <code>RecentWidgetProvider</code>
      */
-    public RecentWidgetProvider() {
+    private RecentWidgetProvider() {
         // Start the worker thread
         HandlerThread workerThread = new HandlerThread("RecentWidgetProviderWorker", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         workerThread.start();
@@ -69,13 +69,10 @@ public class RecentWidgetProvider extends AppWidgetBase {
     }
 
     /**
-     * @return A singelton of {@link RecentWidgetProvider}
+     * @return A singleton of {@link RecentWidgetProvider}
      */
     public static synchronized RecentWidgetProvider getInstance() {
-        if (mInstance == null) {
-            mInstance = new RecentWidgetProvider();
-        }
-        return mInstance;
+        return INSTANCE;
     }
 
     /**
@@ -154,38 +151,14 @@ public class RecentWidgetProvider extends AppWidgetBase {
                     context.startActivity(profileIntent);
                 }
             }
-
         }
         super.onReceive(context, intent);
     }
 
-    private void compatSetRemoteAdapter(RemoteViews rv, Intent intent) {
-        rv.setRemoteAdapter(R.id.app_widget_recents_list, intent);
-    }
-
     /**
-     * Check against {@link AppWidgetManager} if there are any instances of this
-     * widget.
+     * {@inheritDoc}
      */
-    private boolean hasInstances(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass()));
-        return appWidgetIds.length > 0;
-    }
-
-    private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        if (appWidgetIds != null) {
-            appWidgetManager.updateAppWidget(appWidgetIds, views);
-        } else {
-            appWidgetManager.updateAppWidget(new ComponentName(context, this.getClass()), views);
-        }
-    }
-
-    /**
-     * Handle a change notification coming over from
-     * {@link MusicPlaybackService}
-     */
+    @Override
     public void notifyChange(final MusicPlaybackService service, String what) {
         if (hasInstances(service)) {
             if (MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
@@ -208,11 +181,11 @@ public class RecentWidgetProvider extends AppWidgetBase {
     }
 
     /**
-     * Update all active widget instances by pushing changes
+     * {@inheritDoc}
      */
+    @Override
     public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
         mViews = new RemoteViews(service.getPackageName(), R.layout.app_widget_recents);
-
         /* Set correct drawable for pause state */
         boolean isPlaying = service.isPlaying();
         if (isPlaying) {
@@ -220,12 +193,39 @@ public class RecentWidgetProvider extends AppWidgetBase {
         } else {
             mViews.setImageViewResource(R.id.app_widget_recents_play, R.drawable.btn_playback_play);
         }
-
         // Link actions buttons to intents
         linkButtons(service, mViews, isPlaying);
-
         // Update the app-widget
         pushUpdate(service, appWidgetIds, mViews);
+    }
+
+    /**
+     *
+     */
+    private void compatSetRemoteAdapter(RemoteViews rv, Intent intent) {
+        rv.setRemoteAdapter(R.id.app_widget_recents_list, intent);
+    }
+
+    /**
+     * Check against {@link AppWidgetManager} if there are any instances of this
+     * widget.
+     */
+    private boolean hasInstances(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass()));
+        return appWidgetIds.length > 0;
+    }
+
+    /**
+     *
+     */
+    private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        if (appWidgetIds != null) {
+            appWidgetManager.updateAppWidget(appWidgetIds, views);
+        } else {
+            appWidgetManager.updateAppWidget(new ComponentName(context, this.getClass()), views);
+        }
     }
 
     /**

@@ -76,14 +76,9 @@ public class SearchAdapter extends ArrayAdapter<Music> {
         } else {
             /* Recycle ViewHolder's items */
             holder = (MusicHolder) convertView.getTag();
-            if (holder == null) {
-                holder = new MusicHolder(convertView);
-                convertView.setTag(holder);
-            }
         }
 
         Music music = getItem(position);
-
         if (music instanceof Artist) {
             Context context = parent.getContext();
             Artist artist = (Artist) music;
@@ -109,7 +104,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
             // Asynchronously load the artist image into the adapter
             mImageFetcher.loadArtistImage(album.getArtist(), holder.mBackground);
-            // Highlght the query
+            // Highlight the query
             mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
         } else if (music instanceof Song) {
             Song song = (Song) music;
@@ -146,8 +141,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     }
 
     /**
-     * @param pause True to temporarily pause the disk cache, false
-     *              otherwise.
+     * @param pause True to temporarily pause the disk cache, false otherwise.
      */
     public void setPauseDiskCache(boolean pause) {
         if (mImageFetcher != null) {

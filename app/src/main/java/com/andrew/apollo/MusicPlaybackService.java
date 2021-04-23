@@ -47,6 +47,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.andrew.apollo.appwidgets.AppWidgetBase;
 import com.andrew.apollo.appwidgets.AppWidgetLarge;
 import com.andrew.apollo.appwidgets.AppWidgetLargeAlternate;
 import com.andrew.apollo.appwidgets.AppWidgetSmall;
@@ -295,25 +296,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private IBinder mBinder = new ServiceStub(this);
 
-    /**
-     * 4x1 widget
-     */
-    private AppWidgetSmall mAppWidgetSmall = AppWidgetSmall.getInstance();
 
-    /**
-     * 4x2 widget
-     */
-    private AppWidgetLarge mAppWidgetLarge = AppWidgetLarge.getInstance();
-
-    /**
-     * 4x2 alternate widget
-     */
-    private AppWidgetLargeAlternate mAppWidgetLargeAlternate = AppWidgetLargeAlternate.getInstance();
-
-    /**
-     * Recently listened widget
-     */
-    private RecentWidgetProvider mRecentWidgetProvider = RecentWidgetProvider.getInstance();
+    private AppWidgetBase[] widgets = {
+            AppWidgetSmall.getInstance(),
+            AppWidgetLarge.getInstance(),
+            AppWidgetLargeAlternate.getInstance(),
+            RecentWidgetProvider.getInstance()
+    };
 
     /**
      * Broadcast receiver for widget actions
@@ -1196,13 +1185,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             mNotificationHelper.updateNotification();
         }
         // Update the app-widgets
-        mAppWidgetSmall.notifyChange(this, what);
-        mAppWidgetLarge.notifyChange(this, what);
-        mAppWidgetLargeAlternate.notifyChange(this, what);
-        mRecentWidgetProvider.notifyChange(this, what);
+        for (AppWidgetBase widget : widgets) {
+            widget.notifyChange(this, what);
+        }
     }
 
-
+    /**
+     *
+     */
     public void updateNotification() {
         mNotificationHelper.updateNotification();
     }
@@ -2081,24 +2071,23 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * widget Broadcast listener
      */
     private final class WidgetBroadcastReceiver extends BroadcastReceiver {
+
         /**
          * {@inheritDoc}
          */
         @Override
         public void onReceive(Context context, Intent intent) {
             String command = intent.getStringExtra(CMDNAME);
+            int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+
             if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetSmall.performUpdate(MusicPlaybackService.this, small);
+                widgets[0].performUpdate(MusicPlaybackService.this, small);
             } else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] large = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetLarge.performUpdate(MusicPlaybackService.this, large);
+                widgets[1].performUpdate(MusicPlaybackService.this, small);
             } else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] largeAlt = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mAppWidgetLargeAlternate.performUpdate(MusicPlaybackService.this, largeAlt);
+                widgets[2].performUpdate(MusicPlaybackService.this, small);
             } else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
-                int[] recent = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-                mRecentWidgetProvider.performUpdate(MusicPlaybackService.this, recent);
+                widgets[3].performUpdate(MusicPlaybackService.this, small);
             } else {
                 handleCommandIntent(intent);
             }

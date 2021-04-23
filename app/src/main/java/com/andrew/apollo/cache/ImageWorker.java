@@ -346,7 +346,7 @@ public abstract class ImageWorker {
                     addBitmapToCache(mKey, bitmap);
                 }
 
-                // Add the second layer to the transiation drawable
+                // Add the second layer to the translation drawable
                 if (bitmap != null) {
                     BitmapDrawable layerTwo = new BitmapDrawable(mResources, bitmap);
                     layerTwo.setFilterBitmap(false);

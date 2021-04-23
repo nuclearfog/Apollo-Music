@@ -33,12 +33,13 @@ import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAY
 public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
 
-    private static final String[] RECENT_COLUMNS = {
+    public static final String[] RECENT_COLUMNS = {
             RecentStoreColumns.ID,
             RecentStoreColumns.ALBUMNAME,
             RecentStoreColumns.ARTISTNAME,
             RecentStoreColumns.ALBUMSONGCOUNT,
-            RecentStoreColumns.ALBUMYEAR
+            RecentStoreColumns.ALBUMYEAR,
+            RecentStoreColumns.TIMEPLAYED
     };
 
     private static final String RECENT_ORDER = TIMEPLAYED + " DESC";

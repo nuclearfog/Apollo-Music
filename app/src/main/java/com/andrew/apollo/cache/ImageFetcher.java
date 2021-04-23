@@ -221,11 +221,7 @@ public class ImageFetcher extends ImageWorker {
         if (albumName == null || artistName == null) {
             return null;
         }
-        return albumName +
-                "_" +
-                artistName +
-                "_" +
-                Config.ALBUM_ART_SUFFIX;
+        return albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
     }
 
     /**
@@ -253,29 +249,25 @@ public class ImageFetcher extends ImageWorker {
     protected String processImageUrl(String artistName, String albumName, ImageType imageType) {
         switch (imageType) {
             case ARTIST:
-                if (!TextUtils.isEmpty(artistName)) {
-                    if (PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-                        Artist artist = Artist.getInfo(artistName);
-                        if (artist != null) {
-                            return getBestImage(artist);
-                        }
+                if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
+                    Artist artist = Artist.getInfo(artistName);
+                    if (artist != null) {
+                        return getBestImage(artist);
                     }
                 }
                 break;
+
             case ALBUM:
-                if (!TextUtils.isEmpty(artistName) && !TextUtils.isEmpty(albumName)) {
-                    if (PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-                        Artist correction = Artist.getCorrection(artistName);
-                        if (correction != null) {
-                            Album album = Album.getInfo(correction.getName(), albumName);
-                            if (album != null) {
-                                return getBestImage(album);
-                            }
+                if (!TextUtils.isEmpty(artistName) && !TextUtils.isEmpty(albumName)
+                        && PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
+                    Artist correction = Artist.getCorrection(artistName);
+                    if (correction != null) {
+                        Album album = Album.getInfo(correction.getName(), albumName);
+                        if (album != null) {
+                            return getBestImage(album);
                         }
                     }
                 }
-                break;
-            default:
                 break;
         }
         return null;
@@ -338,8 +330,8 @@ public class ImageFetcher extends ImageWorker {
      * @param keyArtist The key (artist name) used to find the album art to return
      */
     public Bitmap getCachedArtwork(String keyAlbum, String keyArtist) {
-        return getCachedArtwork(keyAlbum, keyArtist,
-                MusicUtils.getIdForAlbum(mContext, keyAlbum, keyArtist));
+        long id = MusicUtils.getIdForAlbum(mContext, keyAlbum, keyArtist);
+        return getCachedArtwork(keyAlbum, keyArtist, id);
     }
 
     /**
@@ -349,9 +341,8 @@ public class ImageFetcher extends ImageWorker {
      */
     public Bitmap getCachedArtwork(String keyAlbum, String keyArtist, long keyId) {
         if (mImageCache != null) {
-            return mImageCache.getCachedArtwork(mContext,
-                    generateAlbumCacheKey(keyAlbum, keyArtist),
-                    keyId);
+            String key = generateAlbumCacheKey(keyAlbum, keyArtist);
+            return mImageCache.getCachedArtwork(mContext, key, keyId);
         }
         return getDefaultArtwork();
     }
@@ -371,8 +362,7 @@ public class ImageFetcher extends ImageWorker {
         Bitmap artwork = null;
 
         if (albumName != null && mImageCache != null) {
-            artwork = mImageCache.getBitmapFromDiskCache(
-                    generateAlbumCacheKey(albumName, artistName));
+            artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(albumName, artistName));
         }
         if (artwork == null && albumId >= 0 && mImageCache != null) {
             // Check for local artwork

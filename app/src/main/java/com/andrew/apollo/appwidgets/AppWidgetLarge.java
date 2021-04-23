@@ -35,6 +35,11 @@ public class AppWidgetLarge extends AppWidgetBase {
 
     private static AppWidgetLarge mInstance;
 
+
+    private AppWidgetLarge() {
+    }
+
+
     public static synchronized AppWidgetLarge getInstance() {
         if (mInstance == null) {
             mInstance = new AppWidgetLarge();
@@ -53,6 +58,52 @@ public class AppWidgetLarge extends AppWidgetBase {
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         context.sendBroadcast(updateIntent);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyChange(MusicPlaybackService service, String what) {
+        if (hasInstances(service)) {
+            if (MusicPlaybackService.META_CHANGED.equals(what)
+                    || MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
+                performUpdate(service, null);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
+        RemoteViews appWidgetView = new RemoteViews(service.getPackageName(), R.layout.app_widget_large);
+
+        CharSequence trackName = service.getTrackName();
+        CharSequence artistName = service.getArtistName();
+        CharSequence albumName = service.getAlbumName();
+        Bitmap bitmap = service.getAlbumArt();
+
+        // Set the titles and artwork
+        appWidgetView.setTextViewText(R.id.app_widget_large_line_one, trackName);
+        appWidgetView.setTextViewText(R.id.app_widget_large_line_two, artistName);
+        appWidgetView.setTextViewText(R.id.app_widget_large_line_three, albumName);
+        appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
+
+        // Set correct drawable for pause state
+        boolean isPlaying = service.isPlaying();
+        if (isPlaying) {
+            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_pause);
+            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_pause));
+        } else {
+            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_play);
+            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_play));
+        }
+        // Link actions buttons to intents
+        linkButtons(service, appWidgetView, isPlaying);
+        // Update the app-widget
+        pushUpdate(service, appWidgetIds, appWidgetView);
     }
 
     /**
@@ -82,51 +133,6 @@ public class AppWidgetLarge extends AppWidgetBase {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
         return mAppWidgetIds.length > 0;
-    }
-
-    /**
-     * Handle a change notification coming over from
-     * {@link MusicPlaybackService}
-     */
-    public void notifyChange(MusicPlaybackService service, String what) {
-        if (hasInstances(service)) {
-            if (MusicPlaybackService.META_CHANGED.equals(what)
-                    || MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
-                performUpdate(service, null);
-            }
-        }
-    }
-
-    /**
-     * Update all active widget instances by pushing changes
-     */
-    public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-        RemoteViews appWidgetView = new RemoteViews(service.getPackageName(), R.layout.app_widget_large);
-
-        CharSequence trackName = service.getTrackName();
-        CharSequence artistName = service.getArtistName();
-        CharSequence albumName = service.getAlbumName();
-        Bitmap bitmap = service.getAlbumArt();
-
-        // Set the titles and artwork
-        appWidgetView.setTextViewText(R.id.app_widget_large_line_one, trackName);
-        appWidgetView.setTextViewText(R.id.app_widget_large_line_two, artistName);
-        appWidgetView.setTextViewText(R.id.app_widget_large_line_three, albumName);
-        appWidgetView.setImageViewBitmap(R.id.app_widget_large_image, bitmap);
-
-        // Set correct drawable for pause state
-        boolean isPlaying = service.isPlaying();
-        if (isPlaying) {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_pause);
-            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_pause));
-        } else {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play, R.drawable.btn_playback_play);
-            appWidgetView.setContentDescription(R.id.app_widget_large_play, service.getString(R.string.accessibility_play));
-        }
-        // Link actions buttons to intents
-        linkButtons(service, appWidgetView, isPlaying);
-        // Update the app-widget
-        pushUpdate(service, appWidgetIds, appWidgetView);
     }
 
     /**

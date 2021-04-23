@@ -174,24 +174,24 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     if (info.position == 0) {
-                        MusicUtils.playFavorites(getActivity());
+                        MusicUtils.playFavorites(requireContext());
                     } else if (info.position == 1) {
-                        MusicUtils.playLastAdded(getActivity());
+                        MusicUtils.playLastAdded(requireContext());
                     } else {
-                        MusicUtils.playPlaylist(getActivity(), mPlaylist.getId());
+                        MusicUtils.playPlaylist(requireContext(), mPlaylist.getId());
                     }
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     long[] list;
                     if (info.position == 0) {
-                        list = MusicUtils.getSongListForFavorites(getActivity());
+                        list = MusicUtils.getSongListForFavorites(requireContext());
                     } else if (info.position == 1) {
-                        list = MusicUtils.getSongListForLastAdded(getActivity());
+                        list = MusicUtils.getSongListForLastAdded(requireContext());
                     } else {
                         list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.getId());
                     }
-                    MusicUtils.addToQueue(getActivity(), list);
+                    MusicUtils.addToQueue(requireContext(), list);
                     return true;
 
                 case FragmentMenuItems.RENAME_PLAYLIST:

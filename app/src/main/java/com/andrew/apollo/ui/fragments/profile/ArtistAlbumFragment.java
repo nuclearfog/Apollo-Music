@@ -130,7 +130,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
-        mAdapter = new ArtistAlbumAdapter(getActivity(), R.layout.list_item_detailed_no_background);
+        mAdapter = new ArtistAlbumAdapter(requireActivity(), R.layout.list_item_detailed_no_background);
     }
 
     /**
@@ -211,7 +211,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the album to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
         // Delete the album
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
@@ -229,7 +229,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), mAlbumList);
+                    MusicUtils.addToQueue(requireActivity(), mAlbumList);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -259,7 +259,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
             return;
         }
         mAlbum = mAdapter.getItem(position - 1);
-        NavUtils.openAlbumProfile(getActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
         requireActivity().finish();
     }
 
@@ -270,7 +270,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     @Override
     public Loader<List<Album>> onCreateLoader(int id, @Nullable Bundle args) {
         long artistId = args != null ? args.getLong(Config.ID) : 0;
-        return new ArtistAlbumLoader(getActivity(), artistId);
+        return new ArtistAlbumLoader(requireActivity(), artistId);
     }
 
     /**

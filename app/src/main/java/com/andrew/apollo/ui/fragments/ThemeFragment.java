@@ -172,7 +172,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mTheme.setThemePackageName(mValues[position]);
-        AppMsg.makeText(getActivity(), getString(R.string.theme_set, mEntries[position]), AppMsg.STYLE_CONFIRM).show();
+        AppMsg.makeText(requireActivity(), getString(R.string.theme_set, mEntries[position]), AppMsg.STYLE_CONFIRM).show();
     }
 
     public final static class DataHolder {

@@ -2229,8 +2229,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                         pfd.close();
                     } else {
                         player.setDataSource(path);
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     }
-                    player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                     player.prepare();
                 } catch (Exception err) {
                     err.printStackTrace();

@@ -133,7 +133,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pref = PreferenceUtils.getInstance(getActivity());
+        pref = PreferenceUtils.getInstance(requireContext());
         int layout;
         if (isSimpleLayout()) {
             layout = R.layout.list_item_normal;
@@ -285,7 +285,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mAlbum = mAdapter.getItem(position);
-        NavUtils.openAlbumProfile(getActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
     }
 
     /**

@@ -124,12 +124,9 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new ProfileSongAdapter(
-                getActivity(),
-                R.layout.list_item_simple,
-                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING
-        );
+        // Create the adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple,
+                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING);
     }
 
     /**
@@ -199,7 +196,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
 
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 
         // View more content by the song artist
         menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
@@ -229,7 +226,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), new long[]{
+                    MusicUtils.addToQueue(requireContext(), new long[]{
                             mSelectedId
                     });
                     return true;
@@ -248,7 +245,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
@@ -256,7 +253,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).removeItem(mSelectedId);
+                    FavoritesStore.getInstance(requireContext()).removeItem(mSelectedId);
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
 
@@ -285,7 +282,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new FavoritesLoader(getActivity());
+        return new FavoritesLoader(requireContext());
     }
 
     /**

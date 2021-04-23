@@ -140,7 +140,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         } else {
             layout = R.layout.grid_items_normal;
         }
-        mAdapter = new ArtistAdapter(getActivity(), layout);
+        mAdapter = new ArtistAdapter(requireActivity(), layout);
     }
 
     /**
@@ -206,7 +206,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the artist to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
+        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
         // Delete the artist
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
@@ -224,7 +224,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), mArtistList);
+                    MusicUtils.addToQueue(requireActivity(), mArtistList);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -267,7 +267,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mArtist = mAdapter.getItem(position);
-        NavUtils.openArtistProfile(getActivity(), mArtist.getName());
+        NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
     }
 
     /**
@@ -276,7 +276,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @NonNull
     @Override
     public Loader<List<Artist>> onCreateLoader(int id, Bundle args) {
-        return new ArtistLoader(getActivity());
+        return new ArtistLoader(requireActivity());
     }
 
     /**
@@ -411,10 +411,10 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 
 
     private boolean isSimpleLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isSimpleLayout(ARTIST_LAYOUT);
+        return PreferenceUtils.getInstance(requireContext()).isSimpleLayout(ARTIST_LAYOUT);
     }
 
     private boolean isDetailedLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isDetailedLayout(ARTIST_LAYOUT);
+        return PreferenceUtils.getInstance(requireContext()).isDetailedLayout(ARTIST_LAYOUT);
     }
 }

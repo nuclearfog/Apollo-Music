@@ -93,8 +93,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new GenreAdapter(getActivity(), R.layout.list_item_simple);
+        // Create the adapter
+        mAdapter = new GenreAdapter(requireContext(), R.layout.list_item_simple);
     }
 
     /**
@@ -159,7 +159,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), mGenreList);
+                    MusicUtils.addToQueue(requireContext(), mGenreList);
                     return true;
             }
         }

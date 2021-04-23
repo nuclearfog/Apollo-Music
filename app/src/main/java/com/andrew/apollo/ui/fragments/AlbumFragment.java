@@ -136,7 +136,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         } else {
             layout = R.layout.grid_items_normal;
         }
-        mAdapter = new AlbumAdapter(getActivity(), layout);
+        mAdapter = new AlbumAdapter(requireActivity(), layout);
     }
 
     /**
@@ -207,7 +207,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the album to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
         // View more content by the album artist
         menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Remove the album from the list
@@ -227,7 +227,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), mAlbumList);
+                    MusicUtils.addToQueue(requireContext(), mAlbumList);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -235,7 +235,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mAlbum.getName());
+                    NavUtils.openArtistProfile(requireActivity(), mAlbum.getName());
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
@@ -416,10 +416,10 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     }
 
     private boolean isSimpleLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isSimpleLayout(ALBUM_LAYOUT);
+        return PreferenceUtils.getInstance(requireContext()).isSimpleLayout(ALBUM_LAYOUT);
     }
 
     private boolean isDetailedLayout() {
-        return PreferenceUtils.getInstance(getActivity()).isDetailedLayout(ALBUM_LAYOUT);
+        return PreferenceUtils.getInstance(requireContext()).isDetailedLayout(ALBUM_LAYOUT);
     }
 }

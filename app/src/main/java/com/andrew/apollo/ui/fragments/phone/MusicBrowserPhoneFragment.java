@@ -83,7 +83,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Get the preferences
-        mPreferences = PreferenceUtils.getInstance(getActivity());
+        mPreferences = PreferenceUtils.getInstance(requireContext());
     }
 
     /**
@@ -179,7 +179,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         int vId = item.getItemId();
         if (vId == R.id.menu_shuffle) {
             // Shuffle all the songs
-            MusicUtils.shuffleAll(getActivity());
+            MusicUtils.shuffleAll(requireContext());
             return true;
         } else if (vId == R.id.menu_favorite) {
             // Toggle the current track as a favorite and update the menu

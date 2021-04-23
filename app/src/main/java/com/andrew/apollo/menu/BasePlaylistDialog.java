@@ -86,7 +86,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
         // Initialize the alert dialog
         mPlaylistDialog = new AlertDialog.Builder(requireContext()).create();
         // Initialize the edit text
-        mPlaylist = new EditText(getActivity());
+        mPlaylist = new EditText(requireContext());
         // To show the "done" button on the soft keyboard
         mPlaylist.setSingleLine(true);
         // All caps

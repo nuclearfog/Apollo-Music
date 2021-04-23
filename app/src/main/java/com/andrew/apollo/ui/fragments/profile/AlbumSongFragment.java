@@ -118,12 +118,9 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new ProfileSongAdapter(
-                getActivity(),
-                R.layout.list_item_simple,
-                ProfileSongAdapter.DISPLAY_ALBUM_SETTING
-        );
+        // Create the adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple,
+                ProfileSongAdapter.DISPLAY_ALBUM_SETTING);
     }
 
     /**
@@ -201,7 +198,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, true);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
         // Make the song a ringtone
         menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
         // Delete the song
@@ -223,13 +220,13 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), new long[]{
+                    MusicUtils.addToQueue(requireContext(), new long[]{
                             mSelectedId
                     });
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).addSongId(
+                    FavoritesStore.getInstance(requireContext()).addSongId(
                             mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
 
@@ -276,7 +273,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
         long albumId = args != null ? args.getLong(Config.ID) : 0;
-        return new AlbumSongLoader(getActivity(), albumId);
+        return new AlbumSongLoader(requireContext(), albumId);
     }
 
     /**

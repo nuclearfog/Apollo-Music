@@ -40,21 +40,21 @@ public final class NavUtils {
     /**
      * Opens the profile of an artist.
      *
-     * @param context    The {@link AppCompatActivity} to use.
+     * @param activity   The {@link AppCompatActivity} to use.
      * @param artistName The name of the artist
      */
-    public static void openArtistProfile(Activity context, String artistName) {
+    public static void openArtistProfile(Activity activity, String artistName) {
 
         // Create a new bundle to transfer the artist info
         Bundle bundle = new Bundle();
-        bundle.putLong(Config.ID, MusicUtils.getIdForArtist(context, artistName));
+        bundle.putLong(Config.ID, MusicUtils.getIdForArtist(activity, artistName));
         bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
         bundle.putString(Config.ARTIST_NAME, artistName);
 
         // Create the intent to launch the profile activity
-        Intent intent = new Intent(context, ProfileActivity.class);
+        Intent intent = new Intent(activity, ProfileActivity.class);
         intent.putExtras(bundle);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 
     /**
@@ -84,15 +84,15 @@ public final class NavUtils {
     /**
      * Opens the sound effects panel or DSP manager in CM
      *
-     * @param context The {@link AppCompatActivity} to use.
+     * @param activity The {@link AppCompatActivity} to use.
      */
-    public static void openEffectsPanel(Activity context) {
+    public static void openEffectsPanel(Activity activity) {
         try {
             Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
             effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicUtils.getAudioSessionId());
-            context.startActivity(effects);
+            activity.startActivity(effects);
         } catch (ActivityNotFoundException notFound) {
-            AppMsg.makeText(context, context.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
+            AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
             notFound.printStackTrace();
         }
     }

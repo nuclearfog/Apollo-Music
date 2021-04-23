@@ -124,12 +124,9 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new ProfileSongAdapter(
-                getActivity(),
-                R.layout.list_item_simple,
-                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING
-        );
+        // Create the adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple,
+                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING);
     }
 
     /**
@@ -196,7 +193,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, false);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
         // View more content by the song artist
         menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Make the song a ringtone
@@ -214,19 +211,15 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
                     return true;
 
                 case FragmentMenuItems.PLAY_NEXT:
-                    MusicUtils.playNext(new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.playNext(new long[]{mSelectedId});
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.addToQueue(requireContext(), new long[]{mSelectedId});
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).addSongId(
+                    FavoritesStore.getInstance(requireContext()).addSongId(
                             mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
 
@@ -242,7 +235,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
@@ -274,7 +267,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new LastAddedLoader(getActivity());
+        return new LastAddedLoader(requireContext());
     }
 
     /**

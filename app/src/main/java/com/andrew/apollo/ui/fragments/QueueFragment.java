@@ -194,7 +194,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, true);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
         // Remove the song from the queue
         menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_QUEUE, Menu.NONE, R.string.remove_from_queue);
         // View more content by the song artist
@@ -272,7 +272,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new QueueLoader(getActivity());
+        return new QueueLoader(requireContext());
     }
 
     /**

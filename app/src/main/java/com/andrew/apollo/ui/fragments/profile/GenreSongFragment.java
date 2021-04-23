@@ -119,8 +119,8 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new ProfileSongAdapter(getActivity(), R.layout.list_item_simple);
+        // Create the adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple);
     }
 
     /**
@@ -198,7 +198,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, true);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
         // View more content by the song artist
         menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Make the song a ringtone
@@ -223,14 +223,11 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.addToQueue(requireContext(), new long[]{mSelectedId});
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).addSongId(
-                            mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(requireContext()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -247,7 +244,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
@@ -281,7 +278,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new GenreSongLoader(getActivity(), args.getLong(Config.ID));
+        return new GenreSongLoader(requireContext(), args.getLong(Config.ID));
     }
 
     /**

@@ -89,7 +89,7 @@ public class DeleteDialog extends DialogFragment {
 
         String dialogTitle = getString(R.string.delete_dialog_title, title);
         // Initialize the image cache
-        mFetcher = ApolloUtils.getImageFetcher(getActivity());
+        mFetcher = ApolloUtils.getImageFetcher(requireActivity());
         // Build the dialog
         return new AlertDialog.Builder(requireContext()).setTitle(dialogTitle)
                 .setMessage(R.string.cannot_be_undone)
@@ -100,7 +100,7 @@ public class DeleteDialog extends DialogFragment {
                         // Remove the items from the image cache
                         mFetcher.removeFromCache(KEY);
                         // Delete the selected item(s)
-                        MusicUtils.deleteTracks(getActivity(), mItemList);
+                        MusicUtils.deleteTracks(requireContext(), mItemList);
                         if (getActivity() instanceof DeleteDialogCallback) {
                             ((DeleteDialogCallback) getActivity()).onDelete(mItemList);
                         }

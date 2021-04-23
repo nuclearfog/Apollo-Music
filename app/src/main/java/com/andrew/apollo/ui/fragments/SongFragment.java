@@ -126,8 +126,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new SongAdapter(getActivity(), R.layout.list_item_simple);
+        // Create the adapter
+        mAdapter = new SongAdapter(requireContext(), R.layout.list_item_simple);
     }
 
     /**
@@ -184,7 +184,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
         // Add the song to a playlist
         SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(getActivity(), GROUP_ID, subMenu, true);
+        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
         // View more content by the song artist
         menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
         // Make the song a ringtone
@@ -208,13 +208,11 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(getActivity(), new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.addToQueue(requireContext(), new long[]{mSelectedId});
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(getActivity()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(requireContext()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -227,7 +225,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(getActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
@@ -257,7 +255,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new SongLoader(getActivity());
+        return new SongLoader(requireContext());
     }
 
     /**
@@ -297,7 +295,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     public void scrollToCurrentSong() {
         int currentSongPosition = getItemPositionBySong();
-
         if (currentSongPosition != 0) {
             mListView.setSelection(currentSongPosition);
         }

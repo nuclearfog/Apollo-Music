@@ -121,8 +121,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
                 holder.mLineOne = song.getName();
                 // Song duration (line one, right)
                 holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.length());
-                // Album names (line two)
-                holder.mLineTwo = song.getName();
+                // Artist names (line two)
+                holder.mLineTwo = song.getArtist();
                 mData.add(holder);
             }
         }

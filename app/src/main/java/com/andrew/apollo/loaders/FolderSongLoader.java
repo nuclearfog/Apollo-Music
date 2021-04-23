@@ -48,7 +48,7 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                         String songTitle = cursor.getString(1);
                         String artistName = cursor.getString(2);
                         String albumTitle = cursor.getString(3);
-                        int duration = (int) (cursor.getLong(4) / 1000);
+                        long duration = cursor.getLong(4);
                         Song song = new Song(id, songTitle, artistName, albumTitle, duration);
                         result.add(song);
                     }

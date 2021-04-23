@@ -38,6 +38,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -67,7 +68,7 @@ import java.util.Random;
 import java.util.TreeSet;
 
 /**
- * A backbround {@link Service} used to keep music playing between activities
+ * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
 public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
@@ -2216,7 +2217,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                     player.reset();
                     player.setOnPreparedListener(null);
                     if (path.startsWith("content://")) {
-                        player.setDataSource(musicService, Uri.parse(path));
+                        ContentResolver resolver = musicService.getApplicationContext().getContentResolver();
+                        ParcelFileDescriptor pfd = resolver.openFileDescriptor(Uri.parse(path), "r");
+                        player.setDataSource(pfd.getFileDescriptor(), 0, pfd.getStatSize());
+                        pfd.close();
                     } else {
                         player.setDataSource(path);
                     }

@@ -75,10 +75,8 @@ public class AlbumSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     String album = mCursor.getString(3);
                     // Copy the duration
                     long duration = mCursor.getLong(4);
-                    // Make the duration label
-                    int seconds = (int) (duration / 1000);
                     // Create a new song
-                    Song song = new Song(id, songName, artist, album, seconds);
+                    Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up
                     result.add(song);
                 } while (mCursor.moveToNext());

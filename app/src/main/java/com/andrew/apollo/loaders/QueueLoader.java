@@ -55,10 +55,8 @@ public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
                 String album = mCursor.getString(3);
                 // Copy the duration
                 long duration = mCursor.getLong(4);
-                // Convert the duration into seconds
-                int durationInSecs = (int) duration / 1000;
                 // Create a new song
-                Song song = new Song(id, songName, artist, album, durationInSecs);
+                Song song = new Song(id, songName, artist, album, duration);
                 // Add everything up
                 result.add(song);
             } while (mCursor.moveToNext());

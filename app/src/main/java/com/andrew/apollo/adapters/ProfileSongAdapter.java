@@ -141,7 +141,6 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
             // Set each track name (line one)
             holder.mLineOne.setText(song.getName());
             // Set the line two
-            String SEPARATOR_STRING = " - ";
             switch (mDisplaySetting) {
                 // show duration if on album fragment
                 case DISPLAY_ALBUM_SETTING:
@@ -156,7 +155,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
                         holder.mLineOneRight.setVisibility(View.VISIBLE);
                         holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.length()));
                     }
-                    String sb = song.getArtist() + SEPARATOR_STRING + song.getAlbum();
+                    String sb = song.getArtist() + " - " + song.getAlbum();
                     holder.mLineTwo.setText(sb);
                     break;
 

@@ -22,6 +22,8 @@ import android.widget.RemoteViews;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import static com.andrew.apollo.MusicPlaybackService.NOTIFICAITON_ID;
+
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
  * expanded notification by default.
@@ -36,17 +38,29 @@ public class NotificationHelper {
     private static final int APOLLO_MUSIC_SERVICE = 100;
 
     /**
-     * Context
+     * Service context
      */
     private MusicPlaybackService mService;
 
+    /**
+     * manage and update notification
+     */
     private NotificationManager mNotificationManager;
 
+    /**
+     * current notification
+     */
     private Notification mNotification;
 
+    /**
+     * notification views
+     */
     @NonNull
     private RemoteViews mSmallContent, mExpandedView;
 
+    /**
+     * callbacks to the service
+     */
     private PendingIntent[] callbacks;
 
     /**
@@ -74,8 +88,10 @@ public class NotificationHelper {
                 .setContentIntent(getPendingIntent())
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setCustomBigContentView(mExpandedView)
+                .setChannelId(NOTIFICAITON_ID)
                 .setCustomContentView(mSmallContent)
                 .build();
+
         // Control playback from the notification
         initPlaybackActions(mService.isPlaying());
         // Set up the content view

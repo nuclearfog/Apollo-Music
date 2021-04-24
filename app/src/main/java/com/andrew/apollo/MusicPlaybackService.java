@@ -13,6 +13,8 @@ package com.andrew.apollo;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -33,6 +35,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.RemoteControlClient;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -198,6 +201,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 
     private static final String TAG = "MusicPlaybackService";
+
+    private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
+
+
+    public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
+
+
     /**
      * Used by the alarm intent to shutdown the service after being idle
      */
@@ -527,6 +537,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // Initialize the delayed shutdown intent
         Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
         shutdownIntent.setAction(SHUTDOWN);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager nManager = getSystemService(NotificationManager.class);
+            NotificationChannel channel = new NotificationChannel(NOTIFICAITON_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
+            nManager.createNotificationChannel(channel);
+        }
 
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, 0);

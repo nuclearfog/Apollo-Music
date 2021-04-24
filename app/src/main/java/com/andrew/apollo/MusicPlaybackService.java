@@ -71,6 +71,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+
 /**
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
@@ -161,6 +164,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public static final String CMDPLAY = "play";
     public static final String CMDPREVIOUS = "previous";
     public static final String CMDNEXT = "next";
+
+    private static final String HANDLER_NAME = "MusicPlayerHandler";
     /**
      * Moves a list to the front of the queue
      */
@@ -198,16 +203,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Repeats all the tracks in a list
      */
     public static final int REPEAT_ALL = 2;
-
-
+    /**
+     *
+     */
     private static final String TAG = "MusicPlaybackService";
-
-    private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
-
-
+    /**
+     *
+     */
+    private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
+    /**
+     * Notification channel ID
+     */
     public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
-
-
+    /**
+     * Notification name
+     */
+    private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
     /**
      * Used by the alarm intent to shutdown the service after being idle
      */
@@ -497,14 +508,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // separate thread because the service normally runs in the process's
         // main thread, which we don't want to block. We also make it
         // background priority so CPU-intensive work will not disrupt the UI.
-        HandlerThread thread = new HandlerThread("MusicPlayerHandler", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
         // Initialize the handler
         mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
 
         // Initialize the audio manager and register any headset controls for playback
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         mMediaButtonReceiverComponent = new ComponentName(this, MediaButtonIntentReceiver.class);
         mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
 
@@ -531,6 +542,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         filter.addAction(PREVIOUS_ACTION);
         filter.addAction(REPEAT_ACTION);
         filter.addAction(SHUFFLE_ACTION);
+
         // Attach the broadcast listener
         registerReceiver(mIntentReceiver, filter);
 
@@ -538,9 +550,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
         shutdownIntent.setAction(SHUTDOWN);
 
+        // Create notification channel on Android 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager nManager = getSystemService(NotificationManager.class);
-            NotificationChannel channel = new NotificationChannel(NOTIFICAITON_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
+            NotificationChannel channel = new NotificationChannel(NOTIFICAITON_ID, NOTFICIATION_NAME, IMPORTANCE_LOW);
             nManager.createNotificationChannel(channel);
         }
 
@@ -607,7 +620,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
         // Remove any sound effects
         Intent audioEffectsIntent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
@@ -632,6 +644,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             unregisterReceiver(mUnmountReceiver);
             mUnmountReceiver = null;
         }
+        mNotificationHelper.cancelNotification();
+        super.onDestroy();
     }
 
     /**
@@ -646,6 +660,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 boolean isForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false);
                 if (isForeground) {
                     stopForeground(true);
+                    mNotificationHelper.ignoreUpdate();
                 } else if (isPlaying()) {
                     mNotificationHelper.buildNotification();
                 }
@@ -727,7 +742,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void getCardId() {
         try {
             ContentResolver resolver = getContentResolver();
-            Cursor cursor = resolver.query(Uri.parse("content://media/external/fs_id"), null, null, null, null);
+            Cursor cursor = resolver.query(CARD_URI, null, null, null, null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     mCardId = cursor.getInt(0);

@@ -63,6 +63,8 @@ public class NotificationHelper {
      */
     private PendingIntent[] callbacks;
 
+    private boolean updateEnable = false;
+
     /**
      * Constructor of <code>NotificationHelper</code>
      *
@@ -102,13 +104,15 @@ public class NotificationHelper {
         initExpandedLayout();
         // start notification
         mService.startForeground(APOLLO_MUSIC_SERVICE, mNotification);
+        // Enable notification update
+        updateEnable = true;
     }
 
     /**
      * Changes the playback controls in and out of a paused state
      */
     public void updateNotification() {
-        if (mNotification != null && mNotificationManager != null) {
+        if (mNotification != null && mNotificationManager != null && updateEnable) {
             int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
             mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
             mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
@@ -116,6 +120,23 @@ public class NotificationHelper {
             initCollapsedLayout();
             // Update notification
             mNotificationManager.notify(APOLLO_MUSIC_SERVICE, mNotification);
+        }
+    }
+
+    /**
+     * ignore {@link #updateNotification()} when called, to prevent pop up while app is in foreground.
+     * calling {@link #buildNotification()} will enable updates
+     */
+    public void ignoreUpdate() {
+        updateEnable = false;
+    }
+
+    /**
+     * cancel notification on service end
+     */
+    public void cancelNotification() {
+        if (mNotificationManager != null) {
+            mNotificationManager.cancel(APOLLO_MUSIC_SERVICE);
         }
     }
 

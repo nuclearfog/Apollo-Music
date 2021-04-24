@@ -83,24 +83,19 @@ public class LruCache<K, V> {
     /**
      * Caches {@code value} for {@code key}. The value is moved to the head of
      * the queue.
-     *
-     * @return the previous value mapped by {@code key}.
      */
-    public V put(K key, V value) {
+    public void put(K key, V value) {
         if (key == null || value == null) {
             throw new NullPointerException("key == null || value == null");
         }
-
-        V previous;
         synchronized (this) {
             this.size += safeSizeOf(key, value);
-            previous = this.map.put(key, value);
+            V previous = this.map.put(key, value);
             if (previous != null) {
                 this.size -= safeSizeOf(key, previous);
             }
         }
         trimToSize(maxSize);
-        return previous;
     }
 
     /**
@@ -132,27 +127,22 @@ public class LruCache<K, V> {
 
     /**
      * Removes the entry for {@code key} if it exists.
-     *
-     * @return the previous value mapped by {@code key}.
      */
-    public V remove(K key) {
+    public void remove(K key) {
         if (key == null) {
             throw new NullPointerException("key == null");
         }
-
-        V previous;
         synchronized (this) {
-            previous = this.map.remove(key);
+            V previous = this.map.remove(key);
             if (previous != null) {
                 this.size -= safeSizeOf(key, previous);
             }
         }
-        return previous;
     }
 
 
     private int safeSizeOf(K key, V value) {
-        int result = sizeOf(key, value);
+        int result = sizeOf(value);
         if (result < 0) {
             throw new IllegalStateException("Negative size: " + key + "=" + value);
         }
@@ -166,7 +156,7 @@ public class LruCache<K, V> {
      * <p>
      * An entry's size must not change while it is in the cache.
      */
-    protected int sizeOf(K key, V value) {
+    protected int sizeOf(V value) {
         return 1;
     }
 

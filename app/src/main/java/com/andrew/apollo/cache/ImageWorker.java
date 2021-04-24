@@ -84,7 +84,8 @@ public abstract class ImageWorker {
         mResources = mContext.getResources();
         // Create the default artwork
         Drawable bitmap = ResourcesCompat.getDrawable(context.getResources(), R.drawable.default_artwork, null);
-        mDefault = ((BitmapDrawable) bitmap).getBitmap();
+        if (bitmap != null)
+            mDefault = ((BitmapDrawable) bitmap).getBitmap();
         mDefaultArtwork = new BitmapDrawable(mResources, mDefault);
         // No filter and no dither makes things much quicker
         mDefaultArtwork.setFilterBitmap(false);
@@ -145,17 +146,6 @@ public abstract class ImageWorker {
     }
 
     /**
-     * Closes the disk cache associated with this ImageCache object. Note that
-     * this includes disk access so this should not be executed on the main/UI
-     * thread.
-     */
-    public void close() {
-        if (mImageCache != null) {
-            mImageCache.close();
-        }
-    }
-
-    /**
      * flush() is called to synchronize up other methods that are accessing the
      * cache first
      */
@@ -177,8 +167,9 @@ public abstract class ImageWorker {
     }
 
     /**
-     * @return The deafult artwork
+     * @return The default artwork
      */
+    @Nullable
     public Bitmap getDefaultArtwork() {
         return mDefault;
     }

@@ -54,6 +54,6 @@ public final class Config {
     public static final String PLAY_FROM_SEARCH = "android.media.action.MEDIA_PLAY_FROM_SEARCH";
 
     /* This class is never initiated. */
-    public Config() {
+    private Config() {
     }
 }

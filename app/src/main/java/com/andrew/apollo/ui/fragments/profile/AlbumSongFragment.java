@@ -97,12 +97,6 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     private ProfileTabCarousel mProfileTabCarousel;
 
     /**
-     * Empty constructor as per the {@link Fragment} documentation
-     */
-    public AlbumSongFragment() {
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

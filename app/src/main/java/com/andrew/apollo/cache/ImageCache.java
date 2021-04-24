@@ -581,30 +581,6 @@ public final class ImageCache {
     }
 
     /**
-     * Closes the disk cache associated with this ImageCache object. Note that
-     * this includes disk access so this should not be executed on the main/UI
-     * thread.
-     */
-    public void close() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (mDiskCache != null) {
-                    try {
-                        if (!mDiskCache.isClosed()) {
-                            mDiskCache.close();
-                            mDiskCache = null;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "close - " + e);
-                    }
-                }
-            }
-        }).start();
-    }
-
-    /**
      * Evicts all of the items from the memory cache and lets the system know
      * now would be a good time to garbage collect
      */
@@ -743,7 +719,7 @@ public final class ImageCache {
          * {@inheritDoc}
          */
         @Override
-        protected int sizeOf(String paramString, Bitmap paramBitmap) {
+        protected int sizeOf(Bitmap paramBitmap) {
             return getBitmapSize(paramBitmap);
         }
     }

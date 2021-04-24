@@ -356,7 +356,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
     @Override
-    public void onDelete(long[] ids) {
+    public void onDelete() {
         ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
         if (MusicUtils.getQueue().length == 0) {
             NavUtils.goHome(this);
@@ -844,6 +844,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
          * Constructor of <code>TimeHandler</code>
          */
         public TimeHandler(AudioPlayerActivity player) {
+            super();
             mAudioPlayer = new WeakReference<>(player);
         }
 

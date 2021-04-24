@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.utils;
 
+import android.annotation.SuppressLint;
 import android.provider.MediaStore;
 
 /**
@@ -68,6 +69,7 @@ public final class SortOrder {
     /**
      * Song sort order entries.
      */
+    @SuppressLint("InlinedApi")
     public interface SongSortOrder {
         /* Song sort order A-Z */
         String SONG_A_Z = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;
@@ -114,6 +116,7 @@ public final class SortOrder {
     /**
      * Artist song sort order entries.
      */
+    @SuppressLint("InlinedApi")
     public interface ArtistSongSortOrder {
         /* Artist song sort order A-Z */
         String SONG_A_Z = MediaStore.Audio.Media.DEFAULT_SORT_ORDER;

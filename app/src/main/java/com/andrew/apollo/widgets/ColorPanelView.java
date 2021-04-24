@@ -13,6 +13,7 @@ package com.andrew.apollo.widgets;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -33,8 +34,6 @@ public class ColorPanelView extends View {
     private final static float BORDER_WIDTH_PX = 1;
 
     private static float mDensity = 1f;
-
-    private int mColor = 0xff000000;
 
     private Paint mBorderPaint;
 
@@ -79,8 +78,7 @@ public class ColorPanelView extends View {
         if (mAlphaPattern != null) {
             mAlphaPattern.draw(canvas);
         }
-
-        mColorPaint.setColor(mColor);
+        mColorPaint.setColor(Color.BLACK);
         canvas.drawRect(rect, mColorPaint);
     }
 
@@ -120,20 +118,5 @@ public class ColorPanelView extends View {
         mColorRect = new RectF(left, top, right, bottom);
         mAlphaPattern = new AlphaPatternDrawable((int) (5 * mDensity));
         mAlphaPattern.setBounds(Math.round(mColorRect.left), Math.round(mColorRect.top), Math.round(mColorRect.right), Math.round(mColorRect.bottom));
-    }
-
-    /**
-     * Get the color currently show by this view.
-     */
-    public int getColor() {
-        return mColor;
-    }
-
-    /**
-     * Set the color that should be shown by this view.
-     */
-    public void setColor(int color) {
-        mColor = color;
-        invalidate();
     }
 }

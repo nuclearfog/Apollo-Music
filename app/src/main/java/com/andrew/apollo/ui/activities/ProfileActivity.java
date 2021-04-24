@@ -456,7 +456,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * {@inheritDoc}
      */
     @Override
-    public void onScrollChanged(int l, int t, int oldl, int oldt) {
+    public void onScrollChanged(int l, int oldl) {
         if (mViewPager.isFakeDragging()) {
             mViewPager.fakeDragBy(oldl - l);
         }

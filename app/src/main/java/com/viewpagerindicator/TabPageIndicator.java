@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.R;
@@ -160,55 +159,7 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     }
 
 
-    @Override
-    public void setViewPager(ViewPager view) {
-        if (mViewPager == view) {
-            return;
-        }
-        if (mViewPager != null) {
-            mViewPager.removeOnPageChangeListener(this);
-        }
-        PagerAdapter adapter = view.getAdapter();
-        if (adapter == null) {
-            throw new IllegalStateException("ViewPager does not have adapter instance.");
-        }
-        mViewPager = view;
-        view.addOnPageChangeListener(this);
-        notifyDataSetChanged();
-    }
-
-
-    public void notifyDataSetChanged() {
-        mTabLayout.removeAllViews();
-        PagerAdapter adapter = mViewPager.getAdapter();
-        IconPagerAdapter iconAdapter = null;
-        if (adapter instanceof IconPagerAdapter) {
-            iconAdapter = (IconPagerAdapter) adapter;
-        }
-        if (adapter != null) {
-            int count = adapter.getCount();
-            for (int i = 0; i < count; i++) {
-                CharSequence title = adapter.getPageTitle(i);
-                if (title == null) {
-                    title = EMPTY_TITLE;
-                }
-                int iconResId = 0;
-                if (iconAdapter != null) {
-                    iconResId = iconAdapter.getIconResId(i);
-                }
-                addTab(i, title, iconResId);
-            }
-            if (mSelectedTabIndex > count) {
-                mSelectedTabIndex = count - 1;
-            }
-            setCurrentItem(mSelectedTabIndex);
-            requestLayout();
-        }
-    }
-
-
-    @Override
-    public void setCurrentItem(int item) {
+    private void setCurrentItem(int item) {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }

@@ -69,7 +69,7 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
      * {@inheritDoc}
      */
     @Override
-    public void onDragFloatView(View floatView, Point position, Point touch) {
+    public void onDragFloatView(Point touch) {
         /* Nothing to do */
     }
 }

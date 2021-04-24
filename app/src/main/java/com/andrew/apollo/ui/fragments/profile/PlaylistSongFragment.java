@@ -320,7 +320,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      * {@inheritDoc}
      */
     @Override
-    public float getSpeed(float w, long t) {
+    public float getSpeed(float w) {
         if (w > 0.8f) {
             return mAdapter.getCount() / 0.001f;
         } else {

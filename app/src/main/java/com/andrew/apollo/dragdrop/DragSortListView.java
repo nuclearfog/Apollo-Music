@@ -231,7 +231,7 @@ public class DragSortListView extends ListView {
          * {@inheritDoc}
          */
         @Override
-        public float getSpeed(float w, long t) {
+        public float getSpeed(float w) {
             float mMaxScrollSpeed = 0.3f;
             return mMaxScrollSpeed * w;
         }
@@ -1303,7 +1303,7 @@ public class DragSortListView extends ListView {
 
         // let manager adjust proposed position first
         if (mFloatViewManager != null) {
-            mFloatViewManager.onDragFloatView(mFloatView, mFloatLoc, touch);
+            mFloatViewManager.onDragFloatView(touch);
         }
 
         // then we override if manager gives an unsatisfactory
@@ -1386,14 +1386,9 @@ public class DragSortListView extends ListView {
          * can be altered by setting <code>location.x</code> and
          * <code>location.y</code>.
          *
-         * @param floatView The floating View.
-         * @param location  The location (top-left; relative to DSLV top-left) at
-         *                  which the float View would like to appear, given the
-         *                  current touch location and the offset provided in
-         *                  {@link DragSortListView#startDrag}.
-         * @param touch     The current touch location (relative to DSLV top-left).
+         * @param touch The current touch location (relative to DSLV top-left).
          */
-        void onDragFloatView(View floatView, Point location, Point touch);
+        void onDragFloatView(Point touch);
 
         /**
          * Called when the float View is dropped; lets you perform any necessary
@@ -1442,29 +1437,23 @@ public class DragSortListView extends ListView {
          *
          * @param w Normalized position in scroll region (i.e. w \in [0,1]).
          *          Small w typically means slow scrolling.
-         * @param t Time (in milliseconds) since start of scroll (handy if you
-         *          want scroll acceleration).
          * @return Scroll speed at position w and time t in pixels/ms.
          */
-        float getSpeed(float w, long t);
+        float getSpeed(float w);
     }
 
     private static class ItemHeights {
         int item;
-
         int child;
     }
 
     private class AdapterWrapper extends HeaderViewListAdapter {
+
         private final ListAdapter mAdapter;
 
         public AdapterWrapper(ListAdapter adapter) {
             super(null, null, adapter);
             mAdapter = adapter;
-        }
-
-        public ListAdapter getAdapter() {
-            return mAdapter;
         }
 
         /**
@@ -1573,7 +1562,7 @@ public class DragSortListView extends ListView {
                         return;
                     }
                 }
-                mScrollSpeed = mScrollProfile.getSpeed((mUpScrollStartYF - maxY) / mDragUpScrollHeight, mPrevTime);
+                mScrollSpeed = mScrollProfile.getSpeed((mUpScrollStartYF - maxY) / mDragUpScrollHeight);
             } else {
                 View v = getChildAt(last - first);
                 if (v == null) {
@@ -1585,7 +1574,7 @@ public class DragSortListView extends ListView {
                         return;
                     }
                 }
-                mScrollSpeed = -mScrollProfile.getSpeed((minY - mDownScrollStartYF) / mDragDownScrollHeight, mPrevTime);
+                mScrollSpeed = -mScrollProfile.getSpeed((minY - mDownScrollStartYF) / mDragDownScrollHeight);
             }
             float dt = SystemClock.uptimeMillis() - mPrevTime;
             // dy is change in View position of a list item; i.e. positive dy

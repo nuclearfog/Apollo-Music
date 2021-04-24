@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Abstract superclass for all items that may contain images (such as
@@ -56,15 +55,6 @@ public abstract class ImageHolder {
                 holder.imageUrls.put(size, image.getText());
             }
         }
-    }
-
-    /**
-     * Returns a Set of all {@link ImageSize}s available.
-     *
-     * @return all sizes
-     */
-    public Set<ImageSize> availableSizes() {
-        return imageUrls.keySet();
     }
 
     /**

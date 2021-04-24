@@ -54,25 +54,16 @@ public class RecentWidgetProvider extends AppWidgetBase {
 
     private static Handler sWorkerQueue;
 
-    private static final RecentWidgetProvider INSTANCE = new RecentWidgetProvider();
-
     private RemoteViews mViews;
 
     /**
      * Constructor of <code>RecentWidgetProvider</code>
      */
-    private RecentWidgetProvider() {
+    public RecentWidgetProvider() {
         // Start the worker thread
         HandlerThread workerThread = new HandlerThread("RecentWidgetProviderWorker", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         workerThread.start();
         sWorkerQueue = new Handler(workerThread.getLooper());
-    }
-
-    /**
-     * @return A singleton of {@link RecentWidgetProvider}
-     */
-    public static synchronized RecentWidgetProvider getInstance() {
-        return INSTANCE;
     }
 
     /**

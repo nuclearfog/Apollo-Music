@@ -21,9 +21,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.R;
@@ -99,44 +97,8 @@ public class IconPageIndicator extends HorizontalScrollView implements PageIndic
         setCurrentItem(arg0);
     }
 
-    @Override
-    public void setViewPager(ViewPager view) {
-        if (mViewPager == view) {
-            return;
-        }
-        if (mViewPager != null) {
-            mViewPager.removeOnPageChangeListener(this);
-        }
-        PagerAdapter adapter = view.getAdapter();
-        if (adapter == null) {
-            throw new IllegalStateException("ViewPager does not have adapter instance.");
-        }
-        mViewPager = view;
-        view.addOnPageChangeListener(this);
-        notifyDataSetChanged();
-    }
 
-    public void notifyDataSetChanged() {
-        mIconsLayout.removeAllViews();
-        IconPagerAdapter iconAdapter = (IconPagerAdapter) mViewPager.getAdapter();
-        if (iconAdapter != null) {
-            int count = iconAdapter.getCount();
-            for (int i = 0; i < count; i++) {
-                ImageView view = new ImageView(getContext(), null, R.attr.vpiIconPageIndicatorStyle);
-                view.setImageResource(iconAdapter.getIconResId(i));
-                mIconsLayout.addView(view);
-            }
-            if (mSelectedIndex > count) {
-                mSelectedIndex = count - 1;
-            }
-            setCurrentItem(mSelectedIndex);
-            requestLayout();
-        }
-    }
-
-
-    @Override
-    public void setCurrentItem(int item) {
+    private void setCurrentItem(int item) {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }

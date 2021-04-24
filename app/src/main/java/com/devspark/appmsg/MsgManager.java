@@ -69,13 +69,6 @@ class MsgManager extends Handler {
     }
 
     /**
-     * Removes all {@link AppMsg} from the queue.
-     */
-    void clearMsg(AppMsg appMsg) {
-        msgQueue.remove(appMsg);
-    }
-
-    /**
      * Displays the next {@link AppMsg} within the queue.
      */
     private void displayMsg() {

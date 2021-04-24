@@ -5,7 +5,7 @@ import android.text.TextUtils;
 public class Capitalize {
 
     /* This class is never initiated */
-    public Capitalize() {
+    private Capitalize() {
     }
 
     public static String capitalize(String str) {

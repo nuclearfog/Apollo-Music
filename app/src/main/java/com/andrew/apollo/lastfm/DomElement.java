@@ -48,24 +48,6 @@ public class DomElement {
     }
 
     /**
-     * @return the original Element
-     */
-    public Element getElement() {
-        return e;
-    }
-
-    /**
-     * Tests if this element has an attribute with the specified name.
-     *
-     * @param name Name of the attribute.
-     * @return <code>true</code> if this element has an attribute with the
-     * specified name.
-     */
-    public boolean hasAttribute(String name) {
-        return e.hasAttribute(name);
-    }
-
-    /**
      * Returns the attribute value to a given attribute name or
      * <code>null</code> if the attribute doesn't exist.
      *
@@ -141,13 +123,6 @@ public class DomElement {
     }
 
     /**
-     * @return all children of this element
-     */
-    public List<DomElement> getChildren() {
-        return getChildren("*");
-    }
-
-    /**
      * Returns all children of this element with the given tag name.
      *
      * @param name The children's tag name
@@ -163,14 +138,5 @@ public class DomElement {
             }
         }
         return l;
-    }
-
-    /**
-     * Returns this element's tag name.
-     *
-     * @return the tag name
-     */
-    public String getTagName() {
-        return e.getTagName();
     }
 }

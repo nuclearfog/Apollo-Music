@@ -63,7 +63,7 @@ public class VerticalScrollListener implements OnScrollListener {
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         if (mHeader != null) {
-            mHeader.onScrollStateChanged(view, scrollState);
+            mHeader.onScrollStateChanged(scrollState);
         }
     }
 
@@ -73,6 +73,6 @@ public class VerticalScrollListener implements OnScrollListener {
     public interface ScrollableHeader {
 
         /* Used the pause the disk cache while scrolling */
-        void onScrollStateChanged(AbsListView view, int scrollState);
+        void onScrollStateChanged(int scrollState);
     }
 }

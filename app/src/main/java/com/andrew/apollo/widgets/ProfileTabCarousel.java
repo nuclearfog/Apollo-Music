@@ -249,7 +249,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
         }
         int scaledL = (int) (x * mScrollScaleFactor);
         int oldScaledL = (int) (oldX * mScrollScaleFactor);
-        mListener.onScrollChanged(scaledL, y, oldScaledL, oldY);
+        mListener.onScrollChanged(scaledL, oldScaledL);
         mLastScrollPosition = x;
         updateAlphaLayers();
     }
@@ -479,7 +479,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 
         void onTouchUp();
 
-        void onScrollChanged(int l, int t, int oldl, int oldt);
+        void onScrollChanged(int l, int oldl);
 
         void onTabSelected(int position);
     }

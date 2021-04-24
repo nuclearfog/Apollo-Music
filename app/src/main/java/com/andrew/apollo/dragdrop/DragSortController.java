@@ -182,7 +182,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
      * Overrides to provide fading when slide removal is enabled.
      */
     @Override
-    public void onDragFloatView(View floatView, Point position, Point touch) {
+    public void onDragFloatView(Point touch) {
         if (mRemoveEnabled) {
             int x = touch.x;
             if (mRemoveMode == SLIDE_RIGHT_REMOVE) {

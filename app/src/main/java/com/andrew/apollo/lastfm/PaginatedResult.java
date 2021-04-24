@@ -37,43 +37,10 @@ import java.util.Iterator;
 public class PaginatedResult<T> implements Iterable<T> {
 
     public Collection<T> pageResults;
-    private int page;
-    private int totalPages;
 
 
     PaginatedResult(int page, int totalPages, Collection<T> pageResults) {
-        this.page = page;
-        this.totalPages = totalPages;
         this.pageResults = pageResults;
-    }
-
-    /**
-     * Returns the page number of this result.
-     *
-     * @return page number
-     */
-    public int getPage() {
-        return page;
-    }
-
-    /**
-     * Returns the total number of pages available.
-     *
-     * @return total pages
-     */
-    public int getTotalPages() {
-        return totalPages;
-    }
-
-    /**
-     * Returns <code>true</code> if this Result contains no elements, which is
-     * the case for service calls that would have returned a
-     * <code>PaginatedResult</code> but fail.
-     *
-     * @return <code>true</code> if this result contains no elements
-     */
-    public boolean isEmpty() {
-        return pageResults == null || pageResults.isEmpty();
     }
 
     @NonNull

@@ -97,7 +97,8 @@ public class ShuffleButton extends ImageButton implements OnClickListener, OnLon
             case MusicPlaybackService.SHUFFLE_AUTO:
                 info = getResources().getString(R.string.accessibility_shuffle_all);
                 button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
-                button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+                if (button != null)
+                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:

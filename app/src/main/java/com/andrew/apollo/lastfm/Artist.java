@@ -39,8 +39,8 @@ public class Artist extends MusicEntry {
 
     protected final static ItemFactory<Artist> FACTORY = new ArtistFactory();
 
-    protected Artist(String name, String url) {
-        super(name, url);
+    protected Artist(String name) {
+        super(name, null);
     }
 
     /**
@@ -90,7 +90,7 @@ public class Artist extends MusicEntry {
             }
             DomElement correctionElement = result.getContentElement().getChild("correction");
             if (correctionElement == null) {
-                return new Artist(artist, null);
+                return new Artist(artist);
             }
             DomElement artistElem = correctionElement.getChild("artist");
             return FACTORY.createItemFromElement(artistElem);
@@ -109,7 +109,7 @@ public class Artist extends MusicEntry {
             if (element == null) {
                 return null;
             }
-            Artist artist = new Artist(null, null);
+            Artist artist = new Artist(null);
             MusicEntry.loadStandardInfo(artist, element);
             return artist;
         }

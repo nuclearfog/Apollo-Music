@@ -14,6 +14,8 @@ package com.andrew.apollo.widgets.theme;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.andrew.apollo.R;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -33,12 +35,12 @@ public class ThemeableTitlePageIndicator extends TitlePageIndicator {
     public ThemeableTitlePageIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Theme the background
-        setBackgroundResource(R.drawable.tpi_background);/*
+        setBackgroundResource(R.drawable.tpi_background);
         // Theme the selected text color
         setSelectedColor(ResourcesCompat.getColor(context.getResources(), R.color.tpi_selected_text_color, null));
         // Theme the unselected text color
         setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.tpi_unselected_text_color, null));
         // Theme the footer
-        setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.tpi_footer_color, null));*/
+        setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.tpi_footer_color, null));
     }
 }

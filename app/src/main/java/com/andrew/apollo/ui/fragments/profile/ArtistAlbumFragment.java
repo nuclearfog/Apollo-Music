@@ -80,7 +80,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
          * {@inheritDoc}
          */
         @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
+        public void onScrollStateChanged(int scrollState) {
             if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
                     || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                 mAdapter.setPauseDiskCache(true);

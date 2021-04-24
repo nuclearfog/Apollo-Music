@@ -165,23 +165,14 @@ public class TitlePageIndicator extends View implements PageIndicator {
         mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
     }
 
-    public int getTextColor() {
-        return mColorText;
-    }
-
     public void setTextColor(int textColor) {
         mPaintText.setColor(textColor);
         mColorText = textColor;
         invalidate();
     }
 
-    public float getTextSize() {
-        return mPaintText.getTextSize();
-    }
-
-    public void setTextSize(float textSize) {
-        mPaintText.setTextSize(textSize);
-        invalidate();
+    public void setSelectedColor(int color) {
+        mColorSelected = color;
     }
 
     /*
@@ -531,7 +522,6 @@ public class TitlePageIndicator extends View implements PageIndicator {
         return bounds;
     }
 
-    @Override
     public void setViewPager(ViewPager view) {
         if (mViewPager == view) {
             return;
@@ -547,11 +537,6 @@ public class TitlePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    @Override
-    public void notifyDataSetChanged() {
-        invalidate();
-    }
-
     /**
      * Set a callback listener for the center item click.
      *
@@ -561,8 +546,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
         mCenterItemClickListener = listener;
     }
 
-    @Override
-    public void setCurrentItem(int item) {
+    private void setCurrentItem(int item) {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }

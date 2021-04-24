@@ -53,4 +53,10 @@
     <!-- A dark Holo shade of orange -->
     <color name="holo_orange_dark">#ffff8800</color>
 
+    <color name="tpi_selected_text_color">#ffff00ff</color>
+
+    <color name="tpi_unselected_text_color">#ff000000</color>
+
+    <color name="tpi_footer_color">#ffffffff</color>
+
 </resources>

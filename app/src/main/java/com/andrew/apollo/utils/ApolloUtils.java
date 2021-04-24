@@ -54,7 +54,7 @@ import com.devspark.appmsg.AppMsg;
 public final class ApolloUtils {
 
     /* This class is never initiated */
-    public ApolloUtils() {
+    private ApolloUtils() {
     }
 
     /**

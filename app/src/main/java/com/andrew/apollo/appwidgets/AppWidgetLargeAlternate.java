@@ -33,16 +33,6 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 
     public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";
 
-    private static final AppWidgetLargeAlternate INSTANCE = new AppWidgetLargeAlternate();
-
-
-    private AppWidgetLargeAlternate() {
-    }
-
-
-    public static synchronized AppWidgetLargeAlternate getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * {@inheritDoc}

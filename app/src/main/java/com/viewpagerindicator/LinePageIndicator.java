@@ -230,36 +230,13 @@ public class LinePageIndicator extends View implements PageIndicator {
         return true;
     }
 
-    @Override
-    public void setViewPager(ViewPager viewPager) {
-        if (mViewPager == viewPager) {
-            return;
-        }
-        if (mViewPager != null) {
-            //Clear us from the old pager.
-            mViewPager.removeOnPageChangeListener(this);
-        }
-        if (viewPager.getAdapter() == null) {
-            throw new IllegalStateException("ViewPager does not have adapter instance.");
-        }
-        mViewPager = viewPager;
-        mViewPager.addOnPageChangeListener(this);
-        invalidate();
-    }
 
-
-    @Override
-    public void setCurrentItem(int item) {
+    private void setCurrentItem(int item) {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }
         mViewPager.setCurrentItem(item);
         mCurrentPage = item;
-        invalidate();
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
         invalidate();
     }
 

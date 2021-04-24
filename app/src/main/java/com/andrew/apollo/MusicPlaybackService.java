@@ -47,6 +47,7 @@ import android.provider.MediaStore.Audio.AudioColumns;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.andrew.apollo.appwidgets.AppWidgetBase;
 import com.andrew.apollo.appwidgets.AppWidgetLarge;
@@ -297,12 +298,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private IBinder mBinder = new ServiceStub(this);
 
-
+    /**
+     * App widgets to update
+     */
     private AppWidgetBase[] widgets = {
-            AppWidgetSmall.getInstance(),
-            AppWidgetLarge.getInstance(),
-            AppWidgetLargeAlternate.getInstance(),
-            RecentWidgetProvider.getInstance()
+            new AppWidgetSmall(),
+            new AppWidgetLarge(),
+            new AppWidgetLargeAlternate(),
+            new RecentWidgetProvider()
     };
 
     /**
@@ -337,12 +340,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * The cursor used to retrieve info on the current track and run the
      * necessary queries to play audio files
      */
+    @Nullable
     private Cursor mCursor;
 
     /**
      * The cursor used to retrieve info on the album the current track is
      * part of, if any.
      */
+    @Nullable
     private Cursor mAlbumCursor;
 
     /**
@@ -949,7 +954,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 String path = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX);
                 fileOpenFailed = !openFile(path);
             } else {
-                fileOpenFailed = false;
+                fileOpenFailed = true;
             }
             if (fileOpenFailed || mCursor.isClosed()) {
                 // if we get here then opening the file failed. We can close the

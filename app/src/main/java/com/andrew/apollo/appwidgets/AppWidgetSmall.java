@@ -33,20 +33,9 @@ import com.andrew.apollo.ui.activities.HomeActivity;
  */
 public class AppWidgetSmall extends AppWidgetBase {
 
+
     public static final String CMDAPPWIDGETUPDATE = "app_widget_small_update";
 
-    private static final AppWidgetSmall INSTANCE = new AppWidgetSmall();
-
-
-    private AppWidgetSmall() {
-    }
-
-    /**
-     * @return singleton instance
-     */
-    public static synchronized AppWidgetSmall getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * {@inheritDoc}

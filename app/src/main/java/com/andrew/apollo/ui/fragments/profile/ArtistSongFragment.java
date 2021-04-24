@@ -270,7 +270,8 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new ArtistSongLoader(requireContext(), args.getLong(Config.ID));
+        long songId = args != null ? args.getLong(Config.ID) : 0;
+        return new ArtistSongLoader(requireContext(), songId);
     }
 
     /**

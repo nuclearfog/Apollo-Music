@@ -38,7 +38,6 @@ public class AppMsg {
      * Show the view or text notification for a short period of time. This time
      * could be user-definable. This is the default.
      *
-     * @see #setDuration
      */
     public static final int LENGTH_SHORT = 3000;
 
@@ -46,7 +45,6 @@ public class AppMsg {
      * Show the view or text notification for a long period of time. This time
      * could be user-definable.
      *
-     * @see #setDuration
      */
     public static final int LENGTH_LONG = 5000;
 
@@ -67,11 +65,9 @@ public class AppMsg {
     private LayoutParams mLayoutParams;
 
     /**
-     * Construct an empty AppMsg object. You must call {@link #setView} before
-     * you can call {@link #show}.
+     * Construct an empty AppMsg object.
      *
-     * @param activity The context to use. Usually your
-     *                 {@link AppCompatActivity} object.
+     * @param activity The context to use. Usually your {@link AppCompatActivity} object.
      */
     public AppMsg(Activity activity) {
         this.activity = activity;
@@ -80,8 +76,7 @@ public class AppMsg {
     /**
      * Make a {@link AppMsg} that just contains a text view.
      *
-     * @param activity The context to use. Usually your
-     *                 {@link AppCompatActivity} object.
+     * @param activity The context to use. Usually your {@link AppCompatActivity} object.
      * @param text     The text to show. Can be formatted text.
      */
     public static AppMsg makeText(Activity activity, CharSequence text, Style style) {
@@ -114,19 +109,11 @@ public class AppMsg {
         return mView != null && mView.getParent() != null;
     }
 
-    /**
-     * Close the view if it's showing, or don't show it if it isn't showing yet.
-     * You do not normally have to call this.  Normally view will disappear on its own
-     * after the appropriate duration.
-     */
-    public void cancel() {
-        MsgManager.getInstance().clearMsg(this);
-    }
-
 
     public void addContentView(View v, LayoutParams params) {
         activity.addContentView(v, params);
     }
+
 
     public Context getContext() {
         return activity.getApplicationContext();
@@ -134,64 +121,16 @@ public class AppMsg {
 
     /**
      * Return the view.
-     *
-     * @see #setView
      */
     public View getView() {
         return mView;
     }
 
     /**
-     * Set the view to show.
-     *
-     * @see #getView
-     */
-    public void setView(View view) {
-        mView = view;
-    }
-
-    /**
      * Return the duration.
-     *
-     * @see #setDuration
      */
     public int getDuration() {
         return mDuration;
-    }
-
-    /**
-     * Set how long to show the view for.
-     *
-     * @see #LENGTH_SHORT
-     * @see #LENGTH_LONG
-     */
-    public void setDuration(int duration) {
-        mDuration = duration;
-    }
-
-    /**
-     * Update the text in a AppMsg that was previously created using one of the makeText() methods.
-     *
-     * @param resId The new text for the AppMsg.
-     */
-    public void setText(int resId) {
-        setText(activity.getText(resId));
-    }
-
-    /**
-     * Update the text in a AppMsg that was previously created using one of the makeText() methods.
-     *
-     * @param s The new text for the AppMsg.
-     */
-    public void setText(CharSequence s) {
-        if (mView == null) {
-            throw new RuntimeException("This AppMsg was not created with AppMsg.makeText()");
-        }
-        TextView tv = mView.findViewById(android.R.id.message);
-        if (tv == null) {
-            throw new RuntimeException("This AppMsg was not created with AppMsg.makeText()");
-        }
-        tv.setText(s);
     }
 
     /**
@@ -228,19 +167,6 @@ public class AppMsg {
             this.background = resId;
         }
 
-        /**
-         * Return the duration in milliseconds.
-         */
-        public int getDuration() {
-            return duration;
-        }
-
-        /**
-         * Return the resource id of background.
-         */
-        public int getBackground() {
-            return background;
-        }
 
         @Override
         public boolean equals(Object o) {

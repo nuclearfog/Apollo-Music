@@ -40,13 +40,14 @@ import static android.view.MotionEvent.ACTION_MASK;
 import static android.view.MotionEvent.ACTION_POINTER_DOWN;
 import static android.view.MotionEvent.ACTION_POINTER_UP;
 import static android.widget.LinearLayout.HORIZONTAL;
-import static android.widget.LinearLayout.VERTICAL;
 
 /**
  * Draws circles (one for each view). The current view position is filled and
  * others are only stroked.
  */
 public class CirclePageIndicator extends View implements PageIndicator {
+
+
     private static final int INVALID_POINTER = -1;
     private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
@@ -71,9 +72,11 @@ public class CirclePageIndicator extends View implements PageIndicator {
         this(context, null);
     }
 
+
     public CirclePageIndicator(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.vpiCirclePageIndicatorStyle);
     }
+
 
     public CirclePageIndicator(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -112,26 +115,8 @@ public class CirclePageIndicator extends View implements PageIndicator {
         a.recycle();
 
         mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
-
-
     }
 
-    public int getOrientation() {
-        return mOrientation;
-    }
-
-    public void setOrientation(int orientation) {
-        switch (orientation) {
-            case HORIZONTAL:
-            case VERTICAL:
-                mOrientation = orientation;
-                requestLayout();
-                break;
-
-            default:
-                throw new IllegalArgumentException("Orientation must be either HORIZONTAL or VERTICAL.");
-        }
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -292,35 +277,13 @@ public class CirclePageIndicator extends View implements PageIndicator {
         return true;
     }
 
-    @Override
-    public void setViewPager(ViewPager view) {
-        if (mViewPager == view) {
-            return;
-        }
-        if (mViewPager != null) {
-            mViewPager.removeOnPageChangeListener(this);
-        }
-        if (view.getAdapter() == null) {
-            throw new IllegalStateException("ViewPager does not have adapter instance.");
-        }
-        mViewPager = view;
-        mViewPager.addOnPageChangeListener(this);
-        invalidate();
-    }
 
-
-    @Override
-    public void setCurrentItem(int item) {
+    private void setCurrentItem(int item) {
         if (mViewPager == null) {
             throw new IllegalStateException("ViewPager has not been bound.");
         }
         mViewPager.setCurrentItem(item);
         mCurrentPage = item;
-        invalidate();
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
         invalidate();
     }
 

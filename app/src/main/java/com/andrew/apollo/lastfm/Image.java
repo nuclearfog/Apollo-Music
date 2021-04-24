@@ -33,13 +33,7 @@ public class Image extends ImageHolder {
 
     final static ItemFactory<Image> FACTORY = new ImageFactory();
 
-    private String url;
-
     private Image() {
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     private static class ImageFactory implements ItemFactory<Image> {
@@ -47,7 +41,6 @@ public class Image extends ImageHolder {
         @Override
         public Image createItemFromElement(DomElement element) {
             Image i = new Image();
-            i.url = element.getChildText("url");
             loadImages(i, element);
             return i;
         }

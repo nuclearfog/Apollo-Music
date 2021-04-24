@@ -45,43 +45,4 @@ public final class MapUtilities {
             map.put(key, value);
         }
     }
-
-    /**
-     * Puts the passed key and value into the map only if the value is not null.
-     *
-     * @param map   Map to add key and value to.
-     * @param key   Map key.
-     * @param value Map value, if null will not be added to map.
-     */
-    public static void nullSafePut(Map<String, String> map, String key, Integer value) {
-        if (value != null) {
-            map.put(key, value.toString());
-        }
-    }
-
-    /**
-     * Puts the passed key and value into the map only if the value is not -1.
-     *
-     * @param map   Map to add key and value to.
-     * @param key   Map key.
-     * @param value Map value, if -1 will not be added to map.
-     */
-    public static void nullSafePut(Map<String, String> map, String key, int value) {
-        if (value != -1) {
-            map.put(key, Integer.toString(value));
-        }
-    }
-
-    /**
-     * Puts the passed key and value into the map only if the value is not -1.
-     *
-     * @param map   Map to add key and value to.
-     * @param key   Map key.
-     * @param value Map value, if -1 will not be added to map.
-     */
-    public static void nullSafePut(Map<String, String> map, String key, double value) {
-        if (value != -1) {
-            map.put(key, Double.toString(value));
-        }
-    }
 }

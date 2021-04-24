@@ -19,8 +19,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.ImageButton;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
 import com.andrew.apollo.MusicPlaybackService;
@@ -32,11 +32,11 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
 import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 /**
- * A custom {@link ImageButton} that represents the "repeat" button.
+ * A custom {@link AppCompatImageButton} that represents the "repeat" button.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RepeatButton extends ImageButton implements OnClickListener, OnLongClickListener {
+public class RepeatButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**
      * Highlight color
@@ -98,13 +98,15 @@ public class RepeatButton extends ImageButton implements OnClickListener, OnLong
             case MusicPlaybackService.REPEAT_ALL:
                 info = getResources().getString(R.string.accessibility_repeat_all);
                 button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
-                button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+                if (button != null)
+                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             case MusicPlaybackService.REPEAT_CURRENT:
                 info = getResources().getString(R.string.accessibility_repeat_one);
                 button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
-                button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+                if (button != null)
+                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:

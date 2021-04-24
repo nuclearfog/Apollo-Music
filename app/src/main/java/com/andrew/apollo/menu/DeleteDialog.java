@@ -102,7 +102,7 @@ public class DeleteDialog extends DialogFragment {
                         // Delete the selected item(s)
                         MusicUtils.deleteTracks(requireContext(), mItemList);
                         if (getActivity() instanceof DeleteDialogCallback) {
-                            ((DeleteDialogCallback) getActivity()).onDelete(mItemList);
+                            ((DeleteDialogCallback) getActivity()).onDelete();
                         }
                         dialog.dismiss();
                     }
@@ -115,7 +115,8 @@ public class DeleteDialog extends DialogFragment {
                 }).create();
     }
 
+
     public interface DeleteDialogCallback {
-        void onDelete(long[] id);
+        void onDelete();
     }
 }

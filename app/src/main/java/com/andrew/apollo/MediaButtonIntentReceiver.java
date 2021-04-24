@@ -48,7 +48,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     private static long mLastClickTime = 0;
     private static boolean mDown = false;
     private static boolean mLaunched = false;
-    private static MessageHandler mHandler = new MessageHandler();
+
 
     private static void startService(Context context, String command) {
         Intent i = new Intent(context, MusicPlaybackService.class);
@@ -57,6 +57,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         i.putExtra(MusicPlaybackService.FROM_MEDIA_BUTTON, true);
         startWakefulService(context, i);
     }
+
 
     @SuppressLint("InvalidWakeLockTag")
     private static void acquireWakeLockAndSendMessage(Context context, Message msg, long delay) {
@@ -68,11 +69,13 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         }
         // Make sure we don't indefinitely hold the wake lock under any circumstances
         mWakeLock.acquire(10000);
-        mHandler.sendMessageDelayed(msg, delay);
+        MessageHandler.mHandler.sendMessageDelayed(msg, delay);
     }
 
+
     private static void releaseWakeLockIfHandlerIdle() {
-        if (mHandler.hasMessages(MSG_LONGPRESS_TIMEOUT) || mHandler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT)) {
+        if (MessageHandler.mHandler.hasMessages(MSG_LONGPRESS_TIMEOUT)
+                || MessageHandler.mHandler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT)) {
             return;
         }
         if (mWakeLock != null) {
@@ -139,7 +142,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                         if (MusicPlaybackService.CMDTOGGLEPAUSE.equals(command)
                                 || MusicPlaybackService.CMDPLAY.equals(command)) {
                             if (mLastClickTime != 0 && eventtime - mLastClickTime > LONG_PRESS_DELAY) {
-                                acquireWakeLockAndSendMessage(context, mHandler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context), 0);
+                                acquireWakeLockAndSendMessage(context, MessageHandler.mHandler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context), 0);
                             }
                         }
                     } else if (event.getRepeatCount() == 0) {
@@ -155,8 +158,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                                 mClickCounter = 0;
                             }
                             mClickCounter++;
-                            mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
-                            Message msg = mHandler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
+                            MessageHandler.mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
+                            Message msg = MessageHandler.mHandler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
 
                             long delay = mClickCounter < 3 ? DOUBLE_CLICK : 0;
                             if (mClickCounter >= 3) {
@@ -171,7 +174,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                         mDown = true;
                     }
                 } else {
-                    mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
+                    MessageHandler.mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
                     mDown = false;
                 }
                 if (isOrderedBroadcast()) {
@@ -182,7 +185,12 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     *
+     */
     static class MessageHandler extends Handler {
+
+        static final MessageHandler mHandler = new MessageHandler();
 
         @Override
         public void handleMessage(Message msg) {

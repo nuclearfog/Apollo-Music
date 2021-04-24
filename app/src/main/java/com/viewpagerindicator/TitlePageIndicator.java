@@ -50,7 +50,7 @@ import static android.view.MotionEvent.ACTION_POINTER_UP;
  * the right view (if exist). When the user scrolls the ViewPager then titles are
  * also scrolled.
  */
-public class TitlePageIndicator extends View implements PageIndicator {
+public class TitlePageIndicator extends View implements ViewPager.OnPageChangeListener {
     /**
      * Percentage indicating what percentage of the screen width away from
      * center should the underline be fully faded. A value of 0.25 means that

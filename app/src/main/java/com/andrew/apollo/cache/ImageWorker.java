@@ -268,6 +268,8 @@ public abstract class ImageWorker {
      */
     private class BitmapWorkerTask extends AsyncTask<String, Void, TransitionDrawable> {
 
+        private WeakReference<ImageWorker> ui;
+
         /**
          * The {@link ImageView} used to set the result
          */

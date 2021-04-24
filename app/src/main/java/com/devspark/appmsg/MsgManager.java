@@ -34,23 +34,17 @@ class MsgManager extends Handler {
     private static final int MESSAGE_ADD_VIEW = 0xc20074dd;
     private static final int MESSAGE_REMOVE = 0xc2007de1;
 
-    private static MsgManager mInstance;
+    private static final MsgManager INSTANCE = new MsgManager();
 
-    private Queue<AppMsg> msgQueue;
+    private Queue<AppMsg> msgQueue = new LinkedList<>();
     private Animation inAnimation, outAnimation;
 
-    private MsgManager() {
-        msgQueue = new LinkedList<>();
-    }
 
     /**
      * @return The currently used instance of the {@link MsgManager}.
      */
     static synchronized MsgManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new MsgManager();
-        }
-        return mInstance;
+        return INSTANCE;
     }
 
     /**

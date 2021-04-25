@@ -355,6 +355,16 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     }
 
     /**
+     * mark current track in the list
+     */
+    public void setCurrentTrack() {
+        int position = getItemPositionBySong();
+        if (mAdapter != null && position >= 0) {
+            mAdapter.setCurrentTrack(position);
+        }
+    }
+
+    /**
      * @return The position of an item in the list based on the name of the
      * currently playing song.
      */

@@ -322,7 +322,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             // Shuffle all the songs
             MusicUtils.shuffleAll(this);
             // Refresh the queue
-            ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
+            getFragment().refreshQueue();
             return true;
         } else if (vId == R.id.menu_favorite) {
             // Toggle the current track as a favorite and update the menu
@@ -357,7 +357,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
     @Override
     public void onDelete() {
-        ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
+        getFragment().refreshQueue();
         if (MusicUtils.getQueue().length == 0) {
             NavUtils.goHome(this);
         }
@@ -383,7 +383,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Current info
         updateNowPlayingInfo();
         // Refresh the queue
-        ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
+        getFragment().refreshQueue();
     }
 
     /**
@@ -455,7 +455,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             } else {
                 // Scroll to the current track
                 mAudioPlayerHeader.setOnClickListener(this);
-                ((QueueFragment) mPagerAdapter.getFragment(0)).scrollToCurrentSong();
+                getFragment().scrollToCurrentSong();
                 // Show the queue, hide the artwork
                 hideAlbumArt();
             }
@@ -558,8 +558,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
         // Update the current time
         queueNextRefresh(1);
-
+        getFragment().setCurrentTrack();
     }
+
 
     private long parseIdFromIntent(Intent intent, String longKey, String stringKey) {
         long id = intent.getLongExtra(longKey, -1);
@@ -617,7 +618,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             // Make sure to process intent only once
             setIntent(new Intent());
             // Refresh the queue
-            ((QueueFragment) mPagerAdapter.getFragment(0)).refreshQueue();
+            getFragment().refreshQueue();
         }
     }
 
@@ -831,6 +832,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
         }
+    }
+
+    /**
+     * @return Queue Fragment
+     */
+    private QueueFragment getFragment() {
+        return ((QueueFragment) mPagerAdapter.getFragment(0));
     }
 
     /**

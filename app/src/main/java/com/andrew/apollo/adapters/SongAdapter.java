@@ -25,6 +25,7 @@ import com.andrew.apollo.model.Song;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,11 @@ import java.util.ArrayList;
 public class SongAdapter extends ArrayAdapter<Song> {
 
     /**
+     * color mask to set background  transparency of the selected item
+     */
+    private static final int TRANSPARENCY_MASK = 0x3f000000;
+
+    /**
      * The resource Id of the layout to inflate
      */
     private int mLayoutId;
@@ -46,6 +52,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * Used to cache the song info
      */
     private ArrayList<DataHolder> mData = new ArrayList<>();
+
+    private int nowplayingPosition = -1;
 
     /**
      * Constructor of <code>SongAdapter</code>
@@ -84,6 +92,18 @@ public class SongAdapter extends ArrayAdapter<Song> {
         holder.mLineOneRight.setText(dataHolder.mLineOneRight);
         // Set the album name (line two)
         holder.mLineTwo.setText(dataHolder.mLineTwo);
+
+
+        if (holder.mBackground != null) {
+            // set background of the current track
+            if (position == nowplayingPosition) {
+                PreferenceUtils prefs = new PreferenceUtils(parent.getContext());
+                int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
+                holder.mBackground.setBackgroundColor(backgroundColor);
+            } else {
+                holder.mBackground.setBackgroundColor(0x0);
+            }
+        }
         return convertView;
     }
 
@@ -100,6 +120,16 @@ public class SongAdapter extends ArrayAdapter<Song> {
     public void clear() {
         super.clear();
         mData.clear();
+    }
+
+    /**
+     * set current track position
+     *
+     * @param pos position of the current track
+     */
+    public void setCurrentTrack(int pos) {
+        nowplayingPosition = pos;
+        notifyDataSetChanged();
     }
 
     /**

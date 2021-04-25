@@ -56,7 +56,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
      * @param context  The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
-    public PlaylistAdapter(final Context context, final int layoutId) {
+    public PlaylistAdapter(Context context, int layoutId) {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
@@ -67,7 +67,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
      */
     @NonNull
     @Override
-    public View getView(final int position, View convertView, @NonNull final ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {

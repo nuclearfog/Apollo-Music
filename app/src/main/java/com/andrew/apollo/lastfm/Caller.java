@@ -21,6 +21,7 @@
 
 package com.andrew.apollo.lastfm;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.andrew.apollo.lastfm.Result.Status;
@@ -40,6 +41,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,8 +71,6 @@ public class Caller {
     private static final String TAG = "LastFm.Caller";
 
     private static final String PARAM_API_KEY = "api_key";
-
-    private static final String UTF_8 = "UTF-8";
 
     private static final String DEFAULT_API_ROOT = "http://ws.audioscrobbler.com/2.0/";
 
@@ -179,20 +179,19 @@ public class Caller {
     private InputStream getInputStreamFromConnection(HttpURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
 
-        if (responseCode == HttpURLConnection.HTTP_FORBIDDEN
-                || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+        if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
             return connection.getErrorStream();
         } else if (responseCode == HttpURLConnection.HTTP_OK) {
             return connection.getInputStream();
         }
-
         return null;
     }
 
 
-    private Result createResultFromInputStream(InputStream inputStream) throws SAXException,
-            IOException {
-        Document document = newDocumentBuilder().parse(new InputSource(new InputStreamReader(inputStream, UTF_8)));
+    @SuppressLint("NewApi")
+    private Result createResultFromInputStream(InputStream inputStream) throws SAXException, IOException {
+        InputSource input = new InputSource(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        Document document = newDocumentBuilder().parse(input);
         Element root = document.getDocumentElement(); // lfm element
         String statusString = root.getAttribute("status");
         Status status = "ok".equals(statusString) ? Status.OK : Status.FAILED;

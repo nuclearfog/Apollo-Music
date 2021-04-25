@@ -14,7 +14,6 @@ package com.andrew.apollo.widgets.theme;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -28,7 +27,7 @@ import com.andrew.apollo.R;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ThemeableTextView extends TextView {
+public class ThemeableTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     /**
      * @param context The {@link Context} to use

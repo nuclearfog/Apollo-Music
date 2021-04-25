@@ -19,7 +19,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.ImageButton;
 
 import androidx.core.content.ContextCompat;
 
@@ -34,7 +33,7 @@ import static android.graphics.PorterDuff.Mode.MULTIPLY;
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ShuffleButton extends ImageButton implements OnClickListener, OnLongClickListener {
+public class ShuffleButton extends androidx.appcompat.widget.AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**
      * highlight color

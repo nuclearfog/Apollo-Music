@@ -144,6 +144,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         setHasOptionsMenu(true);
         // Start the loader
         LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        // Mark current track
+        setCurrentTrack();
     }
 
     /**
@@ -358,9 +360,9 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * mark current track in the list
      */
     public void setCurrentTrack() {
-        int position = getItemPositionBySong();
-        if (mAdapter != null && position >= 0) {
-            mAdapter.setCurrentTrack(position);
+        long trackId = MusicUtils.getCurrentAudioId();
+        if (mAdapter != null && trackId >= 0) {
+            mAdapter.setCurrentTrackId(trackId);
         }
     }
 

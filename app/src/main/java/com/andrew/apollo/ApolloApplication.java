@@ -35,7 +35,7 @@ public class ApolloApplication extends Application {
     public void onCreate() {
         super.onCreate();
         // Enable strict mode logging
-        enableStrictMode();
+        //enableStrictMode();
         // Turn off logging for jaudiotagger.
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }

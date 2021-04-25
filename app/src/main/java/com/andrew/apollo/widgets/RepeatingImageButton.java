@@ -31,7 +31,7 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
  * as the button is pressed, otherwise functions like a typecal
  * {@link ImageButton}
  */
-public class RepeatingImageButton extends ImageButton implements OnClickListener {
+public class RepeatingImageButton extends androidx.appcompat.widget.AppCompatImageButton implements OnClickListener {
 
     private static final long sInterval = 400;
 

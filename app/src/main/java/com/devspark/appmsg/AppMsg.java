@@ -37,14 +37,12 @@ public class AppMsg {
     /**
      * Show the view or text notification for a short period of time. This time
      * could be user-definable. This is the default.
-     *
      */
     public static final int LENGTH_SHORT = 3000;
 
     /**
      * Show the view or text notification for a long period of time. This time
      * could be user-definable.
-     *
      */
     public static final int LENGTH_LONG = 5000;
 

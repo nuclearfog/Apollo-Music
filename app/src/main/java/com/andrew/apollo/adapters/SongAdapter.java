@@ -53,7 +53,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
      */
     private ArrayList<DataHolder> mData = new ArrayList<>();
 
-    private int nowplayingPosition = -1;
+    private long nowplayingId = -1;
 
     /**
      * Constructor of <code>SongAdapter</code>
@@ -96,7 +96,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
 
         if (holder.mBackground != null) {
             // set background of the current track
-            if (position == nowplayingPosition) {
+            if (dataHolder.mItemId == nowplayingId) {
                 PreferenceUtils prefs = new PreferenceUtils(parent.getContext());
                 int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
                 holder.mBackground.setBackgroundColor(backgroundColor);
@@ -123,12 +123,12 @@ public class SongAdapter extends ArrayAdapter<Song> {
     }
 
     /**
-     * set current track position
+     * set current track ID
      *
-     * @param pos position of the current track
+     * @param id position of the current track
      */
-    public void setCurrentTrack(int pos) {
-        nowplayingPosition = pos;
+    public void setCurrentTrackId(long id) {
+        nowplayingId = id;
         notifyDataSetChanged();
     }
 

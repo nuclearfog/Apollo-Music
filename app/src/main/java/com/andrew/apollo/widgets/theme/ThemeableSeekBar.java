@@ -14,7 +14,6 @@ package com.andrew.apollo.widgets.theme;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.widget.SeekBar;
 
 import androidx.core.content.ContextCompat;
 
@@ -23,7 +22,7 @@ import com.andrew.apollo.R;
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ThemeableSeekBar extends SeekBar {
+public class ThemeableSeekBar extends androidx.appcompat.widget.AppCompatSeekBar {
     /**
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.

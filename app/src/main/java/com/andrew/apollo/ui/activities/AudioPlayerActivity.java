@@ -870,6 +870,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private static final class PlaybackStatus extends BroadcastReceiver {
 
+        /**
+         * weak reference to the activity {@link AudioPlayerActivity}
+         */
         private WeakReference<AudioPlayerActivity> mReference;
 
         /**

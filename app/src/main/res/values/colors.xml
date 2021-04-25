@@ -55,7 +55,7 @@
 
     <color name="tpi_selected_text_color">#ffff00ff</color>
 
-    <color name="tpi_unselected_text_color">#ff000000</color>
+    <color name="tpi_unselected_text_color">#ff7f7f7f</color>
 
     <color name="tpi_footer_color">#ffffffff</color>
 

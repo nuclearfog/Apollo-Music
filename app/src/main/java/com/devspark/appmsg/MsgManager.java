@@ -17,6 +17,7 @@
 package com.devspark.appmsg;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -39,6 +40,12 @@ class MsgManager extends Handler {
     private Queue<AppMsg> msgQueue = new LinkedList<>();
     private Animation inAnimation, outAnimation;
 
+    /**
+     *
+     */
+    private MsgManager() {
+        super(Looper.getMainLooper());
+    }
 
     /**
      * @return The currently used instance of the {@link MsgManager}.

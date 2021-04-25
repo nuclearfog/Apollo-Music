@@ -194,7 +194,7 @@ public abstract class ImageWorker {
                 imageView.setImageBitmap(lruBitmap);
             } else if (executePotentialWork(key, imageView) && !mImageCache.isDiskCachePaused()) {
                 // Otherwise run the worker task
-                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView, imageType);
+                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(this, imageView, imageType);
                 AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);
                 imageView.setImageDrawable(asyncDrawable);
                 try {
@@ -266,9 +266,12 @@ public abstract class ImageWorker {
     /**
      * The actual {@link AsyncTask} that will process the image.
      */
-    private class BitmapWorkerTask extends AsyncTask<String, Void, TransitionDrawable> {
+    private static class BitmapWorkerTask extends AsyncTask<String, Void, TransitionDrawable> {
 
-        private WeakReference<ImageWorker> ui;
+        /**
+         * callback reference to update image
+         */
+        private WeakReference<ImageWorker> callback;
 
         /**
          * The {@link ImageView} used to set the result
@@ -291,9 +294,11 @@ public abstract class ImageWorker {
          * @param imageView The {@link ImageView} to use.
          * @param imageType The type of image URL to fetch for.
          */
-        public BitmapWorkerTask(ImageView imageView, ImageType imageType) {
-            imageView.setBackground(mDefaultArtwork);
+        public BitmapWorkerTask(ImageWorker callback, ImageView imageView, ImageType imageType) {
+            super();
+            imageView.setBackground(callback.mDefaultArtwork);
             mImageReference = new WeakReference<>(imageView);
+            this.callback = new WeakReference<>(callback);
             mImageType = imageType;
         }
 
@@ -303,6 +308,10 @@ public abstract class ImageWorker {
         @Override
         protected TransitionDrawable doInBackground(String... params) {
             try {
+                ImageWorker worker = callback.get();
+                if (worker == null)
+                    return null;
+
                 // Define the key
                 mKey = params[0];
 
@@ -310,8 +319,8 @@ public abstract class ImageWorker {
                 Bitmap bitmap = null;
 
                 // First, check the disk cache for the image
-                if (mKey != null && mImageCache != null && !isCancelled() && getAttachedImageView() != null) {
-                    bitmap = mImageCache.getCachedBitmap(mKey);
+                if (mKey != null && worker.mImageCache != null && !isCancelled() && getAttachedImageView() != null) {
+                    bitmap = worker.mImageCache.getCachedBitmap(mKey);
                 }
 
                 // Define the album id now
@@ -319,35 +328,35 @@ public abstract class ImageWorker {
 
                 // Second, if we're fetching artwork, check the device for the image
                 if (bitmap == null && mImageType.equals(ImageType.ALBUM) && mAlbumId >= 0
-                        && mKey != null && !isCancelled() && getAttachedImageView() != null && mImageCache != null) {
-                    bitmap = mImageCache.getCachedArtwork(mContext, mKey, mAlbumId);
+                        && mKey != null && !isCancelled() && getAttachedImageView() != null && worker.mImageCache != null) {
+                    bitmap = worker.mImageCache.getCachedArtwork(worker.mContext, mKey, mAlbumId);
                 }
 
                 // Third, by now we need to download the image
-                if (bitmap == null && ApolloUtils.isOnline(mContext) && !isCancelled() && getAttachedImageView() != null) {
+                if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled() && getAttachedImageView() != null) {
                     // Now define what the artist name, album name, and url are.
                     String mArtistName = params[1];
                     String mAlbumName = params[2];
-                    String mUrl = processImageUrl(mArtistName, mAlbumName, mImageType);
+                    String mUrl = worker.processImageUrl(mArtistName, mAlbumName, mImageType);
                     if (mUrl != null) {
-                        bitmap = processBitmap(mUrl);
+                        bitmap = worker.processBitmap(mUrl);
                     }
                 }
 
                 // Fourth, add the new image to the cache
-                if (bitmap != null && mKey != null && mImageCache != null) {
-                    addBitmapToCache(mKey, bitmap);
+                if (bitmap != null && mKey != null && worker.mImageCache != null) {
+                    worker.addBitmapToCache(mKey, bitmap);
                 }
 
                 // Add the second layer to the translation drawable
                 if (bitmap != null) {
-                    BitmapDrawable layerTwo = new BitmapDrawable(mResources, bitmap);
+                    BitmapDrawable layerTwo = new BitmapDrawable(worker.mResources, bitmap);
                     layerTwo.setFilterBitmap(false);
                     layerTwo.setDither(false);
-                    mArrayDrawable[1] = layerTwo;
+                    worker.mArrayDrawable[1] = layerTwo;
 
                     // Finally, return the image
-                    TransitionDrawable result = new TransitionDrawable(mArrayDrawable);
+                    TransitionDrawable result = new TransitionDrawable(worker.mArrayDrawable);
                     result.setCrossFadeEnabled(true);
                     result.startTransition(FADE_IN_TIME);
                     return result;

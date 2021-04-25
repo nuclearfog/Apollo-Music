@@ -174,8 +174,7 @@ public class AppMsg {
                 return false;
             }
             Style style = (Style) o;
-            return style.duration == duration
-                    && style.background == background;
+            return style.duration == duration && style.background == background;
         }
 
     }

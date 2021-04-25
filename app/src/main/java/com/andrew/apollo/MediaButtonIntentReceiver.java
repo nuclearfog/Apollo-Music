@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -190,7 +191,18 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
      */
     static class MessageHandler extends Handler {
 
+        /**
+         * singleton instance
+         */
         static final MessageHandler mHandler = new MessageHandler();
+
+        /**
+         *
+         */
+        private MessageHandler() {
+            super(Looper.getMainLooper());
+        }
+
 
         @Override
         public void handleMessage(Message msg) {

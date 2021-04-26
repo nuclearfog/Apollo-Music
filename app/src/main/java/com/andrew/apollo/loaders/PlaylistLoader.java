@@ -47,7 +47,7 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     /**
      *
      */
-    public static final String ORDER = "name";
+    public static final String PLAYLIST_ORDER = PLAYLIST_COLUMNS[1];
 
     /**
      * Constructor of <code>PlaylistLoader</code>
@@ -104,6 +104,6 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
      * @return The {@link Cursor} used to run the playlist query.
      */
     private Cursor makePlaylistCursor() {
-        return getContext().getContentResolver().query(PLAYLIST_URI, PLAYLIST_COLUMNS, null, null, ORDER);
+        return getContext().getContentResolver().query(PLAYLIST_URI, PLAYLIST_COLUMNS, null, null, PLAYLIST_ORDER);
     }
 }

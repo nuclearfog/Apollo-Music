@@ -41,7 +41,8 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
             Albums.ALBUM,
             Albums.ARTIST,
             Albums.NUMBER_OF_SONGS,
-            Albums.FIRST_YEAR
+            Albums.FIRST_YEAR,
+            Albums.ARTIST_ID
     };
 
     /**

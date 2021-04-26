@@ -98,7 +98,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     /**
      * Album song list
      */
-    private long[] mAlbumList;
+    private long[] mAlbumList = {};
 
     /**
      * Represents an album

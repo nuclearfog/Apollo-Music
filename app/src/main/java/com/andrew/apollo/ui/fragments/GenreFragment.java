@@ -74,7 +74,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     /**
      * Genre song list
      */
-    private long[] mGenreList;
+    private long[] mGenreList = {};
 
     /**
      * Represents a genre

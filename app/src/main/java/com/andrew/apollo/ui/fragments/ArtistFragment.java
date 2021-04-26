@@ -79,7 +79,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     private static final int LOADER = 0;
 
-
     /**
      * The adapter for the grid
      */
@@ -90,12 +89,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     private AbsListView mList;
 
+    /**
+     * text to show if list is empty
+     */
     private TextView emptyHolder;
 
     /**
      * Artist song list
      */
-    private long[] mArtistList;
+    private long[] mArtistList = {};
 
     /**
      * Represents an artist

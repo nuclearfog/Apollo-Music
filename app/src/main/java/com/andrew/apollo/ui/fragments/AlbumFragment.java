@@ -98,7 +98,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * Album song list
      */
-    private long[] mAlbumList;
+    private long[] mAlbumList = {};
 
     /**
      * Represents an album

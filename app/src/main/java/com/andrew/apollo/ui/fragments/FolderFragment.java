@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +34,28 @@ import java.util.List;
 
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
 
+/**
+ * decompiled from Apollo 1.6 APK
+ */
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener {
+
+    private static final int GROUP_ID = 6;
+
+    private static final int ADD_QUEUE = 1;
+
+    private static final int SELECTION = 2;
 
     private FolderAdapter mAdapter;
 
+    /**
+     * current folder to search for tracks
+     */
     private File mFolder;
 
-    private long[] mSongList;
+    /**
+     * IDs of all tracks of the folder
+     */
+    private long[] mSongList = {};
 
     private TextView emptyholder;
 
@@ -58,6 +74,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         return mRootView;
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle paramBundle) {
         super.onActivityCreated(paramBundle);
@@ -65,24 +82,21 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         LoaderManager.getInstance(this).initLoader(0, null, this);
     }
 
+
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem paramMenuItem) {
-        if (paramMenuItem.getGroupId() == 5) {
+        if (paramMenuItem.getGroupId() == GROUP_ID) {
             switch (paramMenuItem.getItemId()) {
-                default:
-                    return super.onContextItemSelected(paramMenuItem);
-
-                case 1:
+                case SELECTION:
                     MusicUtils.playAll(mSongList, 0, false);
-                    return true;
 
-                case 2:
-                    break;
+                    // fallthrough
+                case ADD_QUEUE:
+                    MusicUtils.addToQueue(requireContext(), mSongList);
+                    return true;
             }
-            MusicUtils.addToQueue(requireContext(), mSongList);
-            return true;
         }
-        return false;
+        return super.onContextItemSelected(paramMenuItem);
     }
 
 
@@ -100,8 +114,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
             AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) paramContextMenuInfo;
             mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
             mSongList = MusicUtils.getSongListForFolder(requireContext(), mFolder);
-            paramContextMenu.add(5, 1, 0, R.string.context_menu_play_selection);
-            paramContextMenu.add(5, 2, 0, R.string.add_to_queue);
+            paramContextMenu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            paramContextMenu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
         }
     }
 

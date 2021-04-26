@@ -21,6 +21,7 @@ import com.andrew.apollo.model.Song;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.andrew.apollo.loaders.SongLoader.SONG_SELECT;
 import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
@@ -30,11 +31,6 @@ import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
-    /**
-     * selection condition
-     */
-    private static final String SELECTION = "is_music=1 AND title!=''";
 
     /**
      * order by
@@ -95,6 +91,6 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     private Cursor makeGenreSongCursor() {
         // Match the songs up with the genre
         Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", mGenreID);
-        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SELECTION, null, ORDER);
+        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SONG_SELECT, null, ORDER);
     }
 }

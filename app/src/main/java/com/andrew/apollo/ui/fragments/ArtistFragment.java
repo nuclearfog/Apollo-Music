@@ -41,7 +41,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAdapter;
 import com.andrew.apollo.loaders.ArtistLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.recycler.RecycleHolder;
@@ -241,7 +240,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
                 case FragmentMenuItems.DELETE:
                     mShouldRefresh = true;
                     String artist = mArtist.getName();
-                    DeleteDialog.newInstance(artist, mArtistList, artist).show(getParentFragmentManager(), "DeleteDialog");
+                    MusicUtils.openDeleteDialog(requireActivity(), artist, mArtistList);
                     return true;
             }
         }

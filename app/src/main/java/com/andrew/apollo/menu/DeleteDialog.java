@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -33,7 +32,7 @@ import com.andrew.apollo.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class DeleteDialog extends DialogFragment {
+public class DeleteDialog extends DialogFragment implements OnClickListener {
 
     /**
      * The item(s) to delete
@@ -44,10 +43,17 @@ public class DeleteDialog extends DialogFragment {
      */
     private ImageFetcher mFetcher;
 
+    private String key = "";
+
+    private String title = "";
+
     /**
      * Empty constructor as per the {@link androidx.fragment.app.Fragment} documentation
      */
-    public DeleteDialog() {
+    public DeleteDialog(String title, String key, long[] ids) {
+        this.key = key;
+        this.title = title;
+        mItemList = ids;
     }
 
     /**
@@ -57,13 +63,7 @@ public class DeleteDialog extends DialogFragment {
      * @return A new instance of the dialog
      */
     public static DeleteDialog newInstance(String title, long[] items, String key) {
-        DeleteDialog frag = new DeleteDialog();
-        Bundle args = new Bundle();
-        args.putString(Config.NAME, title);
-        args.putLongArray("items", items);
-        args.putString("cachekey", key);
-        frag.setArguments(args);
-        return frag;
+        return new DeleteDialog(title, key, items);
     }
 
     /**
@@ -73,46 +73,33 @@ public class DeleteDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         String delete = getString(R.string.context_menu_delete);
-        Bundle arguments = getArguments();
         // Get the image cache key
-        final String KEY;
-        String title;
-        if (arguments != null) {
-            KEY = arguments.getString("cachekey");
-            // Get the track(s) to delete
-            mItemList = arguments.getLongArray("items");
-            title = arguments.getString(Config.NAME);
-        } else {
-            title = "";
-            KEY = "";
-        }
-
         String dialogTitle = getString(R.string.delete_dialog_title, title);
         // Initialize the image cache
         mFetcher = ApolloUtils.getImageFetcher(requireActivity());
         // Build the dialog
         return new AlertDialog.Builder(requireContext()).setTitle(dialogTitle)
                 .setMessage(R.string.cannot_be_undone)
-                .setPositiveButton(delete, new OnClickListener() {
+                .setPositiveButton(delete, this)
+                .setNegativeButton(R.string.cancel, this)
+                .create();
+    }
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Remove the items from the image cache
-                        mFetcher.removeFromCache(KEY);
-                        // Delete the selected item(s)
-                        MusicUtils.deleteTracks(requireContext(), mItemList);
-                        if (getActivity() instanceof DeleteDialogCallback) {
-                            ((DeleteDialogCallback) getActivity()).onDelete();
-                        }
-                        dialog.dismiss();
-                    }
-                }).setNegativeButton(R.string.cancel, new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).create();
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            // Remove the items from the image cache
+            mFetcher.removeFromCache(key);
+            // Delete the selected item(s)
+            MusicUtils.deleteTracks(requireActivity(), mItemList);
+            if (getActivity() instanceof DeleteDialogCallback) {
+                ((DeleteDialogCallback) getActivity()).onDelete();
+            }
+            dialog.dismiss();
+        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+            dialog.dismiss();
+        }
     }
 
 

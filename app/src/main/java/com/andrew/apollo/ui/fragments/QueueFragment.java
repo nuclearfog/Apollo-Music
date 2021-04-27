@@ -40,7 +40,6 @@ import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.loaders.NowPlayingCursor;
 import com.andrew.apollo.loaders.QueueLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -249,8 +248,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId
-                    }, null).show(getParentFragmentManager(), "DeleteDialog");
+                    long[] id = {mSelectedId};
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
                     return true;
             }
         }

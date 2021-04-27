@@ -36,7 +36,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
 import com.andrew.apollo.loaders.ArtistSongLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -247,8 +246,8 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null)
-                            .show(getParentFragmentManager(), "DeleteDialog");
+                    long[] id = {mSelectedId};
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
                     refresh();
                     return true;
             }

@@ -45,6 +45,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -57,7 +58,6 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -74,6 +74,7 @@ import com.andrew.apollo.widgets.ShuffleButton;
 
 import java.lang.ref.WeakReference;
 
+import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
 /**
@@ -348,12 +349,22 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             return true;
         } else if (vId == R.id.menu_audio_player_delete) {
             // Delete current song
-            DeleteDialog.newInstance(MusicUtils.getTrackName(), new long[]{MusicUtils.getCurrentAudioId()
-            }, null).show(getSupportFragmentManager(), "DeleteDialog");
+            long[] ids = {MusicUtils.getCurrentAudioId()};
+            MusicUtils.openDeleteDialog(this, MusicUtils.getTrackName(), ids);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+            MusicUtils.onPostDelete(this);
+        }
+    }
+
 
     @Override
     public void onDelete() {

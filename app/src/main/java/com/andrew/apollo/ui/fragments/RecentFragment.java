@@ -38,10 +38,8 @@ import androidx.loader.content.Loader;
 import com.andrew.apollo.MusicStateListener;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.AlbumAdapter;
-import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.loaders.RecentLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
@@ -253,11 +251,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
                     return true;
 
                 case FragmentMenuItems.DELETE:
+                    MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
                     mShouldRefresh = true;
-                    String album = mAlbum.getName();
-                    DeleteDialog.newInstance(album, mAlbumList,
-                            ImageFetcher.generateAlbumCacheKey(album, mAlbum.getArtist()))
-                            .show(getParentFragmentManager(), "DeleteDialog");
                     return true;
             }
         }

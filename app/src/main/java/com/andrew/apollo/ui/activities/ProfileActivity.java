@@ -56,6 +56,8 @@ import com.andrew.apollo.utils.SortOrder;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
+import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
+
 /**
  * The {@link AppCompatActivity} is used to display the data for specific
  * artists, albums, playlists, and genres. This class is only used on phones.
@@ -391,6 +393,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public View getContentView() {
         return View.inflate(this, R.layout.activity_profile_base, null);
@@ -504,9 +507,14 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             } else {
                 selectOldPhoto();
             }
+        } else if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+            MusicUtils.onPostDelete(this);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.acivity_profile_base_tab_carousel) {

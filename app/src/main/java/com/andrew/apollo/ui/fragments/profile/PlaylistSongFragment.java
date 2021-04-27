@@ -41,7 +41,6 @@ import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.loaders.PlaylistSongLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -257,9 +256,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    DeleteDialog.newInstance(mSong.getName(), new long[]{mSelectedId}, null).show(getParentFragmentManager(), "DeleteDialog");
-                    mAdapter.notifyDataSetChanged();
-                    LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+                    long[] id = {mSelectedId};
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:

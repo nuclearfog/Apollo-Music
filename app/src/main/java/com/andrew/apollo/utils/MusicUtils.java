@@ -11,7 +11,9 @@
 
 package com.andrew.apollo.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -19,15 +21,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
+import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
+import android.provider.MediaStore.Audio.Playlists.Members;
 import android.provider.MediaStore.MediaColumns;
 import android.provider.Settings;
 import android.util.Log;
@@ -37,10 +42,12 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
+import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -54,6 +61,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
 
 
@@ -64,12 +72,53 @@ import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
  */
 public final class MusicUtils {
 
-    private static final long[] EMPTY_LIST = new long[0];
+    /**
+     * column selection for track rows
+     */
+    private static final String[] TRACK_COLUMNS = {
+            MediaColumns._ID,
+            MediaColumns.DATA,
+            MediaColumns.TITLE
+    };
+
+    /**
+     * column selection for audio rows
+     */
+    private static final String[] AUDIO_COLUMNS = {
+            AudioColumns._ID,
+            AudioColumns.DATA,
+            AudioColumns.ALBUM_ID
+    };
+
+    /**
+     * select track matching an audio ID
+     */
+    private static final String TRACK_SELECT = MediaColumns._ID + "=?";
+
+    /**
+     * select tracks to delete matching audio ID
+     */
+    private static final String PLAYLIST_REMOVE_TRACK = Playlists.Members.AUDIO_ID + "=?";
+
+    /**
+     * code to request file deleting
+     * only for scoped storage
+     */
+    public static final int REQUEST_DELETE_FILES = 5;
+
+    /**
+     * emty ID list
+     */
+    private static final long[] EMPTY_LIST = {};
+
 
     private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>();
     public static IApolloService mService = null;
     private static int sForegroundActivities = 0;
     private static ContentValues[] mContentValuesCache = null;
+
+    private static int markedTracks = 0;
+
 
     /* This class is never initiated */
     private MusicUtils() {
@@ -458,9 +507,9 @@ public final class MusicUtils {
             cursor.moveToFirst();
             int columnIndex;
             try {
-                columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.Members.AUDIO_ID);
+                columnIndex = cursor.getColumnIndexOrThrow(Members.AUDIO_ID);
             } catch (IllegalArgumentException notaplaylist) {
-                columnIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+                columnIndex = cursor.getColumnIndexOrThrow(Members._ID);
             }
             for (int i = 0; i < len; i++) {
                 list[i] = cursor.getLong(columnIndex);
@@ -784,7 +833,7 @@ public final class MusicUtils {
                 ContentResolver resolver = context.getContentResolver();
                 ContentValues values = new ContentValues(1);
                 values.put(PLAYLIST_COLUMNS[1], name);
-                Uri uri = resolver.insert(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
+                Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
                 cursor.close();
                 if (uri != null && uri.getLastPathSegment() != null) {
                     return Long.parseLong(uri.getLastPathSegment());
@@ -798,8 +847,9 @@ public final class MusicUtils {
      * @param context    The {@link Context} to use.
      * @param playlistId The playlist ID.
      */
+    @SuppressLint("InlinedApi")
     public static void clearPlaylist(Context context, int playlistId) {
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistId);
         context.getContentResolver().delete(uri, null, null);
     }
 
@@ -808,11 +858,12 @@ public final class MusicUtils {
      * @param ids        The id of the song(s) to add.
      * @param playlistid The id of the playlist being added to.
      */
+    @SuppressLint("InlinedApi")
     public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
         ContentResolver resolver = activity.getContentResolver();
         String[] projection = new String[]{"count(*)"};
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistid);
         Cursor cursor = resolver.query(uri, projection, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -833,15 +884,15 @@ public final class MusicUtils {
      * Removes a single track from a given playlist
      *
      * @param context    The {@link Context} to use.
-     * @param id         The id of the song to remove.
+     * @param trackId    The id of the song to remove.
      * @param playlistId The id of the playlist being removed from.
      */
-    public static void removeFromPlaylist(Context context, long id, long playlistId) {
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+    @SuppressLint("InlinedApi")
+    public static void removeFromPlaylist(Context context, long trackId, long playlistId) {
+        String[] args = {Long.toString(trackId)};
+        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistId);
         ContentResolver resolver = context.getContentResolver();
-        resolver.delete(uri, Playlists.Members.AUDIO_ID + " = ? ", new String[]{
-                Long.toString(id)
-        });
+        resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
         String message = context.getResources().getQuantityString(
                 R.plurals.NNNtracksfromplaylist, 1, 1);
         AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
@@ -870,7 +921,7 @@ public final class MusicUtils {
      */
     public static void setRingtone(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
-        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id);
         try {
             ContentValues values = new ContentValues(2);
             values.put(AudioColumns.IS_RINGTONE, "1");
@@ -880,9 +931,8 @@ public final class MusicUtils {
             err.printStackTrace();
             return;
         }
-        String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, MediaColumns.TITLE};
-        String selection = BaseColumns._ID + "=" + id;
-        Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, null);
+        String[] args = {Long.toString(id)};
+        Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, args, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
@@ -1229,71 +1279,50 @@ public final class MusicUtils {
     /**
      * Perminately deletes item(s) from the user's device
      *
-     * @param context The {@link Context} to use.
+     * @param activity Activity used to access scoped storage. on old android version
+     *                 otherwise its a context
      * @param list    The item(s) to delete.
      */
-    public static void deleteTracks(Context context, long[] list) {
-        String[] projection = new String[]{BaseColumns._ID, MediaColumns.DATA, AudioColumns.ALBUM_ID};
-        StringBuilder selection = new StringBuilder();
-        selection.append(BaseColumns._ID + " IN (");
-        for (int i = 0; i < list.length; i++) {
-            selection.append(list[i]);
-            if (i < list.length - 1) {
-                selection.append(",");
+    public static void deleteTracks(Activity activity, long[] list) {
+        markedTracks = list.length;
+        ContentResolver resolver = activity.getContentResolver();
+
+        String[] paths = removeTracksFromDatabase(activity.getApplicationContext(), list);
+
+        // Use Scoped storage and build in dialog
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                List<Uri> uris = new LinkedList<>();
+                for (long id : list) {
+                    Uri uri = Media.getContentUri(VOLUME_EXTERNAL, id);
+                    uris.add(uri);
+                }
+                PendingIntent requestRemove = MediaStore.createDeleteRequest(resolver, uris);
+                activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException err) {
+                err.printStackTrace();
             }
         }
-        selection.append(")");
-        Cursor c = context.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection.toString(), null, null);
-        if (c != null) {
-            // Step 1: Remove selected tracks from the current playlist, as well
-            // as from the album art cache
-            c.moveToFirst();
-            while (!c.isAfterLast()) {
-                // Remove from current playlist
-                long id = c.getLong(0);
-                removeTrack(id);
-                // Remove from the favorites playlist
-                FavoritesStore.getInstance(context).removeItem(id);
-                // Remove any items in the recents database
-                RecentStore.getInstance(context).removeItem(c.getLong(2));
-                c.moveToNext();
-            }
-
-            // Step 2: Remove selected tracks from the database
-            context.getContentResolver().delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    selection.toString(), null);
-
-            // Step 3: Remove files from card
-            c.moveToFirst();
-            while (!c.isAfterLast()) {
-                String name = c.getString(1);
-                File f = new File(name);
-                try { // File.delete can throw a security exception
-                    if (!f.delete()) {
-                        // I'm not sure if we'd ever get here (deletion would
-                        // have to fail, but no exception thrown)
-                        Log.e("MusicUtils", "Failed to delete file " + name);
+        // remove tracks directly from storage
+        else {
+            for (String filename : paths) {
+                File file = new File(filename);
+                try {
+                    // File.delete can throw a security exception
+                    if (!file.delete()) {
+                        Log.e("MusicUtils", "Failed to delete file " + filename);
                     }
-                    c.moveToNext();
                 } catch (SecurityException ex) {
-                    c.moveToNext();
+                    ex.printStackTrace();
                 }
             }
-            c.close();
+            onPostDelete(activity);
         }
-
-        String message = makeLabel(context, R.plurals.NNNtracksdeleted, list.length);
-
-        AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
-        // We deleted a number of tracks, which could affect any number of
-        // things
-        // in the media content domain, so update everything.
-        context.getContentResolver().notifyChange(Uri.parse("content://media"), null);
-        // Notify the lists to update
-        refresh();
     }
 
+    /**
+     *
+     */
     public static void playAllFromUserItemClick(ArrayAdapter<Song> adapter, int position) {
         if (adapter.getViewTypeCount() > 1 && position == 0) {
             return;
@@ -1306,6 +1335,91 @@ public final class MusicUtils {
         MusicUtils.playAll(list, pos, false);
     }
 
+    /**
+     * open delete dialog for tracks
+     *
+     * @param activity activity
+     * @param title    title of the dialog
+     * @param ids      list of IDs to remove
+     */
+    public static void openDeleteDialog(FragmentActivity activity, String title, long[] ids) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Use system Dialog to delete media files
+            deleteTracks(activity, ids);
+        } else {
+            DeleteDialog dialog = DeleteDialog.newInstance(title, ids, null);
+            dialog.show(activity.getSupportFragmentManager(), "DeleteDialog");
+        }
+    }
+
+    /**
+     * Action to take after tracks are removed
+     *
+     * @param activity activity context
+     */
+    public static void onPostDelete(Activity activity) {
+        String message = makeLabel(activity, R.plurals.NNNtracksdeleted, markedTracks);
+        AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+        // We deleted a number of tracks, which could affect any number of
+        // things in the media content domain, so update everything.
+        activity.getContentResolver().notifyChange(Uri.parse("content://media"), null);
+        // Notify the lists to update
+        refresh();
+    }
+
+    /**
+     * remove tracks from media database
+     *
+     * @param context application context
+     * @param ids     list of track IDs
+     * @return path to removed entries
+     */
+    private static String[] removeTracksFromDatabase(Context context, long[] ids) {
+        ContentResolver resolver = context.getContentResolver();
+        StringBuilder builder = new StringBuilder();
+        builder.append(AudioColumns._ID + " IN (");
+        for (int i = 0; i < ids.length; i++) {
+            builder.append(ids[i]);
+            if (i < ids.length - 1) {
+                builder.append(",");
+            }
+        }
+        builder.append(")");
+        String selection = builder.toString();
+        Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection, null, null);
+        String[] result = {};
+
+        // Step 1: Remove selected tracks from the current playlist, as well
+        // as from the album art cache
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                result = new String[ids.length];
+                for (int i = 0; i < ids.length && cursor.moveToNext(); i++) {
+                    // Remove from current playlist
+                    long trackId = cursor.getLong(0);
+                    result[i] = cursor.getString(1);
+                    long albumId = cursor.getLong(2);
+                    //
+                    removeTrack(trackId);
+                    // Remove from the favorites playlist
+                    FavoritesStore.getInstance(context).removeItem(trackId);
+                    // Remove any items in the recents database
+                    RecentStore.getInstance(context).removeItem(albumId);
+                }
+            }
+            cursor.close();
+        }
+
+        // Step 2: Remove selected tracks from the database
+        context.getContentResolver().delete(Media.EXTERNAL_CONTENT_URI, selection, null);
+
+        // return path to the files
+        return result;
+    }
+
+    /**
+     *
+     */
     private static long[] getSongListForAdapter(ArrayAdapter<Song> adapter) {
         if (adapter == null) {
             return EMPTY_LIST;
@@ -1322,6 +1436,9 @@ public final class MusicUtils {
         return list;
     }
 
+    /**
+     *
+     */
     public static final class ServiceBinder implements ServiceConnection {
         private final ServiceConnection mCallback;
 

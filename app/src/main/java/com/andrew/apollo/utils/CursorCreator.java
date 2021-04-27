@@ -12,6 +12,7 @@ import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Genres;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
+import android.provider.MediaStore.Audio.Playlists.Members;
 
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
@@ -21,6 +22,7 @@ import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 import java.io.File;
 
 import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
 import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
@@ -61,7 +63,7 @@ public class CursorCreator {
     /**
      * projection of the column
      */
-    public static final String[] ARTIST_COLUMN = {
+    public static final String[] ARTIST_COLUMNS = {
             Artists._ID,
             Artists.ARTIST,
             Artists.NUMBER_OF_ALBUMS,
@@ -99,6 +101,16 @@ public class CursorCreator {
             Playlists.NAME
     };
 
+
+    @SuppressLint("InlinedApi")
+    public static final String[] PLAYLIST_TRACK_COLUMNS = {
+            Members.AUDIO_ID,
+            Members.TITLE,
+            Members.ARTIST,
+            Members.ALBUM,
+            Members.DURATION
+    };
+
     /**
      * projection for genre columns
      */
@@ -117,58 +129,59 @@ public class CursorCreator {
     /**
      * condition to filter empty names
      */
-    private static final String GENRE_SELECT = "name!=''";
+    private static final String GENRE_SELECT = Genres.NAME + "!=''";
 
 
     /**
      * Selection to filter songs with empty name
      */
-    public static final String TRACK_SELECT = "is_music=1 AND title!=''";
+    public static final String TRACK_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
 
     /**
      *
      */
-    public static final String LAST_ADDED_SELECT = "is_music=1 AND title!='' AND date_added>?";
+    public static final String LAST_ADDED_SELECT = TRACK_SELECT + " AND " + Media.DATE_ADDED + ">?";
 
     /**
      * folder track selection
      */
-    private static final String FOLDER_TRACK_SELECT = "is_music=1 AND title!='' AND _data LIKE ?";
+    private static final String FOLDER_TRACK_SELECT = TRACK_SELECT + " AND " + Media.DATA + " LIKE ?";
 
     /**
      * SQL selection
      */
-    private static final String ARTIST_SONG_SELECT = "is_music=1 AND title!='' AND artist_id=?";
+    private static final String ARTIST_SONG_SELECT = TRACK_SELECT + " AND " + Media.ARTIST_ID + "=?";
 
     /**
      * selection for albums of an artist
      */
-    private static final String ARTIST_ALBUM_SELECT = "artist_id=?";
+    @SuppressLint("InlinedApi")
+    private static final String ARTIST_ALBUM_SELECT = Albums.ARTIST_ID + "=?";
 
     /**
      * SQL Query
      */
-    private static final String ALBUM_SONG_SELECT = "is_music=1 AND title!='' AND album_id=?";
+    private static final String ALBUM_SONG_SELECT = TRACK_SELECT + " AND " + Media.ALBUM_ID + "=?";
 
     /**
      * select specific album matching artist and name
      */
-    private static final String ALBUM_SELECT_NAME = ALBUM_COLUMN[1] + "=? AND " + ALBUM_COLUMN[2] + "=?";
+    private static final String ALBUM_NAME_SELECT = Albums.ALBUM + "=? AND " + Albums.ARTIST + "=?";
 
     /**
      * select specific album matching artist and name
      */
-    private static final String ALBUM_SELECT_ID = ALBUM_COLUMN[0] + "=?";
+    private static final String ALBUM_ID_SELECT = Albums._ID + "=?";
 
     /**
      * select specific artist matching name
      */
-    private static final String ARTIST_SELECT = ARTIST_COLUMN[1] + "=?";
+    private static final String ARTIST_SELECT = Artists.ARTIST + "=?";
 
     /**
      * select specific artist matching name
      */
-    private static final String PLAYLIST_SELECT = PLAYLIST_COLUMNS[1] + "=?";
+    private static final String PLAYLIST_SELECT = Playlists.NAME + "=?";
 
     /**
      * selection to find artists matchin search
@@ -188,22 +201,22 @@ public class CursorCreator {
     /**
      *
      */
-    private static final String PLAYLIST_TRACK_ORDER = "play_order";
+    private static final String PLAYLIST_TRACK_ORDER = Members.PLAY_ORDER;
 
     /**
      *
      */
-    private static final String PLAYLIST_ORDER = PLAYLIST_COLUMNS[1];
+    private static final String PLAYLIST_ORDER = Playlists.NAME;
 
     /**
      * order by
      */
-    private static final String GENRE_TRACK_ORDER = "title_key";
+    private static final String GENRE_TRACK_ORDER = Media.DEFAULT_SORT_ORDER;
 
     /**
      * sort genres by name
      */
-    private static final String GENRE_ORDER = "name";
+    private static final String GENRE_ORDER = Genres.DEFAULT_SORT_ORDER;
 
     /**
      * sort recent played audio tracks
@@ -213,17 +226,17 @@ public class CursorCreator {
     /**
      * sort folder tracks
      */
-    private static final String FOLER_TRACKS_ORDER = "title_key";
+    private static final String FOLER_TRACKS_ORDER = Media.DEFAULT_SORT_ORDER;
 
     /**
      * sort folder
      */
-    public static final String ORDER_TIME = "date_added DESC";
+    public static final String ORDER_TIME = Media.DATE_ADDED + " DESC";
 
     /**
      * SQLite sport order
      */
-    public static final String ORDER = FAVORITE_COLUMNS[4] + " DESC";
+    public static final String ORDER = FavoriteColumns.PLAYCOUNT + " DESC";
 
 
     private CursorCreator() {
@@ -256,10 +269,11 @@ public class CursorCreator {
      * @param id playlist ID
      * @return The {@link Cursor} used to run the song query.
      */
+    @SuppressLint("InlinedApi")
     public static Cursor makePlaylistSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
-        Uri media = Playlists.Members.getContentUri("external", id);
-        return resolver.query(media, TRACK_COLUMNS, TRACK_SELECT, null, PLAYLIST_TRACK_ORDER);
+        Uri content = Members.getContentUri(VOLUME_EXTERNAL, id);
+        return resolver.query(content, PLAYLIST_TRACK_COLUMNS, null, null, PLAYLIST_TRACK_ORDER);
     }
 
     /**
@@ -293,7 +307,7 @@ public class CursorCreator {
         Cursor[] cursors = new Cursor[3];
         ContentResolver resolver = context.getContentResolver();
         String[] args = {search};
-        cursors[0] = resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMN, ARTIST_MATCH, args, null);
+        cursors[0] = resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_MATCH, args, null);
         cursors[1] = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_MATCH, args, null);
         cursors[2] = resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_MATCH, args, null);
         return cursors;
@@ -356,7 +370,7 @@ public class CursorCreator {
      */
     public static Cursor makeFavoritesCursor(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
-        return data.query(FavoritesStore.FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, ORDER);
+        return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, ORDER);
     }
 
     /**
@@ -377,7 +391,7 @@ public class CursorCreator {
     public static Cursor makeArtistCursor(Context context) {
         String order = PreferenceUtils.getInstance(context).getArtistSortOrder();
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMN, null, null, order);
+        return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, null, null, order);
     }
 
     /**
@@ -388,7 +402,7 @@ public class CursorCreator {
     public static Cursor makeArtistCursor(Context context, String name) {
         String[] args = {name};
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMN, ARTIST_SELECT, args, null);
+        return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_SELECT, args, null);
     }
 
     /**
@@ -432,18 +446,20 @@ public class CursorCreator {
         String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         ContentResolver resolver = context.getContentResolver();
         String[] args = {Long.toString(id)};
-        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_SELECT_ID, args, sortOrder);
+        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_ID_SELECT, args, sortOrder);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * Creates cursor to parse album table
      *
-     * @return The {@link Cursor} used to run the album query.
+     * @param album album name
+     * @param artist artist name of the album
+     * @return Cursor
      */
     public static Cursor makeAlbumCursor(Context context, String album, String artist) {
         String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         ContentResolver resolver = context.getContentResolver();
         String[] args = {album, artist};
-        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_SELECT_NAME, args, sortOrder);
+        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_NAME_SELECT, args, sortOrder);
     }
 }

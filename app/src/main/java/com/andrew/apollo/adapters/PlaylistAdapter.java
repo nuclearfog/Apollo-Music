@@ -107,6 +107,12 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
 
     @Override
+    public long getItemId(int position) {
+        return getItem(position).getId();
+    }
+
+
+    @Override
     public void clear() {
         super.clear();
         mData.clear();

@@ -13,9 +13,9 @@ package com.andrew.apollo.ui.activities;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.MediaStore;
@@ -40,9 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
-import static com.andrew.apollo.loaders.LastAddedLoader.LAST_ADDED_SELECTION;
-import static com.andrew.apollo.loaders.LastAddedLoader.ORDER;
-import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -189,6 +186,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+        final Context context = getApplicationContext();
         mService = IApolloService.Stub.asInterface(service);
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
@@ -208,46 +206,40 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                         mShouldShuffle = true;
 
                         // Get the artist song list
-                        mList = MusicUtils.getSongListForArtist(ShortcutActivity.this, getId());
+                        mList = MusicUtils.getSongListForArtist(context, getId());
                     } else if (MediaStore.Audio.Albums.CONTENT_TYPE.equals(requestedMimeType)) {
 
                         // Shuffle the album track list
                         mShouldShuffle = true;
 
                         // Get the album song list
-                        mList = MusicUtils.getSongListForAlbum(ShortcutActivity.this, getId());
+                        mList = MusicUtils.getSongListForAlbum(context, getId());
                     } else if (MediaStore.Audio.Genres.CONTENT_TYPE.equals(requestedMimeType)) {
 
                         // Shuffle the genre track list
                         mShouldShuffle = true;
 
                         // Get the genre song list
-                        mList = MusicUtils.getSongListForGenre(ShortcutActivity.this, getId());
+                        mList = MusicUtils.getSongListForGenre(context, getId());
                     } else if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(requestedMimeType)) {
 
                         // Don't shuffle the playlist track list
                         mShouldShuffle = false;
 
                         // Get the playlist song list
-                        mList = MusicUtils.getSongListForPlaylist(ShortcutActivity.this, getId());
+                        mList = MusicUtils.getSongListForPlaylist(context, getId());
                     } else if (PAGE_FAVORIT.equals(requestedMimeType)) {
 
                         // Don't shuffle the Favorites track list
                         mShouldShuffle = false;
 
                         // Get the Favorites song list
-                        mList = MusicUtils.getSongListForFavorites(ShortcutActivity.this);
+                        mList = MusicUtils.getSongListForFavorites(context);
                     } else if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
                         // Don't shuffle the last added track list
                         mShouldShuffle = false;
                         // Get the Last added song list
-                        String time = Long.toString(System.currentTimeMillis() / 1000 - 2419200);
-                        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                TRACK_COLUMNS, LAST_ADDED_SELECTION + time, null, ORDER);
-                        if (cursor != null) {
-                            mList = MusicUtils.getSongListForCursor(cursor);
-                            cursor.close();
-                        }
+                        mList = MusicUtils.getSongListForLastAdded(context);
                     }
                     // Finish up
                     allDone();

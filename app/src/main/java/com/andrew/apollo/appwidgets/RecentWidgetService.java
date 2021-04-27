@@ -27,8 +27,6 @@ import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
-import static com.andrew.apollo.loaders.RecentLoader.RECENT_COLUMNS;
-
 /**
  * This class is used to build the recently listened list for the
  * {@link RecentWidgetProvider}.
@@ -187,7 +185,7 @@ public class RecentWidgetService extends RemoteViewsService {
             }
             SQLiteDatabase db = mRecentStore.getReadableDatabase();
             String order = RecentStoreColumns.TIMEPLAYED + " DESC";
-            mCursor = db.query(RecentStoreColumns.NAME, RECENT_COLUMNS, null, null, null, null, order);
+            mCursor = db.query(RecentStoreColumns.NAME, null, null, null, null, null, order);
         }
 
         /**

@@ -13,17 +13,13 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
-import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
-import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
 /**
  * Used to query {@link RecentStore} and return the last listened to albums.
@@ -31,18 +27,6 @@ import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAY
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
-
-
-    public static final String[] RECENT_COLUMNS = {
-            RecentStoreColumns.ID,
-            RecentStoreColumns.ALBUMNAME,
-            RecentStoreColumns.ARTISTNAME,
-            RecentStoreColumns.ALBUMSONGCOUNT,
-            RecentStoreColumns.ALBUMYEAR,
-            RecentStoreColumns.TIMEPLAYED
-    };
-
-    private static final String RECENT_ORDER = TIMEPLAYED + " DESC";
 
     /**
      * Constructor of <code>RecentLoader</code>
@@ -60,7 +44,7 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
     public List<Album> loadInBackground() {
         List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeRecentCursor();
+        Cursor mCursor = CursorCreator.makeRecentCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -84,15 +68,5 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the album query.
-     */
-    private Cursor makeRecentCursor() {
-        SQLiteDatabase database = RecentStore.getInstance(getContext()).getReadableDatabase();
-        return database.query(NAME, RECENT_COLUMNS, null, null, null, null, RECENT_ORDER);
     }
 }

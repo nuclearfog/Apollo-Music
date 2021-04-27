@@ -16,12 +16,10 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
@@ -31,15 +29,6 @@ import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
  */
 public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     *
-     */
-    public static final String LAST_ADDED_SELECTION = "is_music=1 AND title!='' AND date_added>?";
-
-    /**
-     *
-     */
-    public static final String ORDER = "date_added DESC";
 
     /**
      * Constructor of <code>LastAddedHandler</code>
@@ -57,7 +46,7 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeLastAddedCursor();
+        Cursor mCursor = CursorCreator.makeLastAddedCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -81,13 +70,5 @@ public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * @return The {@link Cursor} used to run the song query.
-     */
-    private Cursor makeLastAddedCursor() {
-        String[] select = {Long.toString(System.currentTimeMillis() / 1000 - 2419200)};
-        return getContext().getContentResolver().query(EXTERNAL_CONTENT_URI, TRACK_COLUMNS, LAST_ADDED_SELECTION, select, ORDER);
     }
 }

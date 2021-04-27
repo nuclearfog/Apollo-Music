@@ -1,12 +1,9 @@
 package com.andrew.apollo.loaders;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore.Audio.Media;
 
-import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.io.File;
 import java.util.Collections;
@@ -15,28 +12,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-
 /**
  * return all music folders from storage
  */
 public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
 
-    /**
-     *
-     */
-    private static final Uri FOLDER_URI = Media.EXTERNAL_CONTENT_URI;
-
-    /**
-     * SQL Selection
-     */
-    private static final String SELECTION = "is_music=1 AND title != ''";
-
-    /**
-     * SQL Projection
-     */
-    private static final String[] PROJECTION = {
-            Media.DATA
-    };
 
     /**
      * @param paramContext Activity context
@@ -49,7 +29,7 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     @Override
     public List<File> loadInBackground() {
         HashSet<File> hashSet = new HashSet<>();
-        Cursor cursor = makeSongCursor();
+        Cursor cursor = CursorCreator.makeFolderCursor(getContext());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -67,16 +47,5 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
             }
         });
         return result;
-    }
-
-    /**
-     * create cursor to get data from
-     *
-     * @return cursor
-     */
-    private Cursor makeSongCursor() {
-        ContentResolver contentResolver = getContext().getContentResolver();
-        String sortOrder = PreferenceUtils.getInstance(getContext()).getSongSortOrder();
-        return contentResolver.query(FOLDER_URI, PROJECTION, SELECTION, null, sortOrder);
     }
 }

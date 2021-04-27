@@ -1,27 +1,23 @@
 package com.andrew.apollo.loaders;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
-import static com.andrew.apollo.loaders.SongLoader.TRACK_URI;
 
 /**
  * decompiled from Apollo.APK version 1.6
  */
 public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    private static final String SELECTION = "is_music=1 AND title!='' AND _data LIKE ?";
-
-    private static final String ORDER = "title_key";
-
+    /**
+     * folder to search tracks
+     */
     private File mFolder;
 
     /**
@@ -37,7 +33,7 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     @Override
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
-        Cursor cursor = makeFileSongCursor();
+        Cursor cursor = CursorCreator.makeFolderSongCursor(getContext(), mFolder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -57,16 +53,5 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
             cursor.close();
         }
         return result;
-    }
-
-    /**
-     * create cursor to pare all music files
-     *
-     * @return cursor
-     */
-    private Cursor makeFileSongCursor() {
-        ContentResolver contentResolver = getContext().getContentResolver();
-        String[] args = {mFolder.toString() + "%"};
-        return contentResolver.query(TRACK_URI, TRACK_COLUMNS, SELECTION, args, ORDER);
     }
 }

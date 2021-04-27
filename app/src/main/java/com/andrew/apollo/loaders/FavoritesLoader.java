@@ -13,11 +13,10 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.List;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ALBUMNAME;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ARTISTNAME;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ID;
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.NAME;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.SONGNAME;
 
 /**
@@ -35,21 +33,6 @@ import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.SONGNAME
  */
 public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * Definition of the Columns to get from database
-     */
-    public static final String[] FAVORITE_COLUMNS = {
-            FavoriteColumns.ID,
-            FavoriteColumns.SONGNAME,
-            FavoriteColumns.ALBUMNAME,
-            FavoriteColumns.ARTISTNAME,
-            FavoriteColumns.PLAYCOUNT
-    };
-
-    /**
-     * SQLite sport order
-     */
-    public static final String ORDER = FavoriteColumns.PLAYCOUNT + " DESC";
 
     /**
      * Constructor of <code>FavoritesHandler</code>
@@ -67,7 +50,7 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeFavoritesCursor();
+        Cursor mCursor = CursorCreator.makeFavoritesCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -89,13 +72,5 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * @return The {@link Cursor} used to run the favorites query.
-     */
-    private Cursor makeFavoritesCursor() {
-        SQLiteDatabase data = FavoritesStore.getInstance(getContext()).getReadableDatabase();
-        return data.query(NAME, FAVORITE_COLUMNS, null, null, null, null, ORDER);
     }
 }

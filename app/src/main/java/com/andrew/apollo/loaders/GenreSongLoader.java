@@ -13,16 +13,14 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.loaders.SongLoader.SONG_SELECT;
-import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Genres.Members#EXTERNAL_CONTENT_URI}
@@ -32,10 +30,6 @@ import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
  */
 public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * order by
-     */
-    private static final String ORDER = "title_key";
 
     /**
      * The Id of the genre the songs belong to.
@@ -59,7 +53,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeGenreSongCursor();
+        Cursor mCursor = CursorCreator.makeGenreSongCursor(getContext(), mGenreID);
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -83,14 +77,5 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * @return The {@link Cursor} used to run the query.
-     */
-    private Cursor makeGenreSongCursor() {
-        // Match the songs up with the genre
-        Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", mGenreID);
-        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SONG_SELECT, null, ORDER);
     }
 }

@@ -13,15 +13,13 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Albums;
 
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
-
 
 /**
  * Used to query {@link Albums#EXTERNAL_CONTENT_URI} and return
@@ -30,20 +28,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
-
-    public static final Uri ALBUM_URI = Albums.EXTERNAL_CONTENT_URI;
-
-    /**
-     * SQL Projection of an album row
-     */
-    public static final String[] ALBUM_COLUMN = {
-            Albums._ID,
-            Albums.ALBUM,
-            Albums.ARTIST,
-            Albums.NUMBER_OF_SONGS,
-            Albums.FIRST_YEAR,
-            Albums.ARTIST_ID
-    };
 
     /**
      * Constructor of <code>AlbumLoader</code>
@@ -61,7 +45,7 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     public List<Album> loadInBackground() {
         List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeAlbumCursor();
+        Cursor mCursor = CursorCreator.makeAlbumCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -85,15 +69,5 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the album query.
-     */
-    private Cursor makeAlbumCursor() {
-        String sortOrder = PreferenceUtils.getInstance(getContext()).getAlbumSortOrder();
-        return getContext().getContentResolver().query(ALBUM_URI, ALBUM_COLUMN, null, null, sortOrder);
     }
 }

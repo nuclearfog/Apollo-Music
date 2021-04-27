@@ -13,11 +13,10 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Artists;
 
 import com.andrew.apollo.model.Artist;
-import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,21 +28,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
-
-    /**
-     * content uri to get the music from
-     */
-    public static final Uri ARTIST_URI = Artists.EXTERNAL_CONTENT_URI;
-
-    /**
-     * projection of the column
-     */
-    public static final String[] ARTIST_COLUMN = {
-            Artists._ID,
-            Artists.ARTIST,
-            Artists.NUMBER_OF_ALBUMS,
-            Artists.NUMBER_OF_TRACKS
-    };
 
     /**
      * Constructor of <code>ArtistLoader</code>
@@ -61,7 +45,7 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
     public List<Artist> loadInBackground() {
         List<Artist> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeArtistCursor();
+        Cursor mCursor = CursorCreator.makeArtistCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -83,15 +67,5 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the artist query.
-     */
-    private Cursor makeArtistCursor() {
-        String order = PreferenceUtils.getInstance(getContext()).getArtistSortOrder();
-        return getContext().getContentResolver().query(ARTIST_URI, ARTIST_COLUMN, null, null, order);
     }
 }

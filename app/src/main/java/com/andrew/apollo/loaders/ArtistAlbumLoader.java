@@ -13,17 +13,13 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Artists.Albums;
 
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.andrew.apollo.loaders.AlbumLoader.ALBUM_COLUMN;
-import static com.andrew.apollo.loaders.AlbumLoader.ALBUM_URI;
 
 /**
  * Used to query {@link Albums} and return the albums
@@ -56,7 +52,7 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
     public List<Album> loadInBackground() {
         List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeArtistAlbumCursor();
+        Cursor mCursor = CursorCreator.makeArtistAlbumCursor(getContext(), mArtistID);
         // Gather the dataS
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -71,9 +67,6 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
                     int songCount = mCursor.getInt(3);
                     // Copy the release year
                     String year = mCursor.getString(4);
-
-                    long test = mCursor.getLong(5);
-
                     // Create a new album
                     Album album = new Album(id, albumName, artist, songCount, year);
                     // Add everything up
@@ -83,17 +76,5 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Create cursor
-     *
-     * @return sql cursor
-     */
-    private Cursor makeArtistAlbumCursor() {
-        Uri media = Albums.getContentUri("external", mArtistID);
-        String select = null;//ALBUM_COLUMN[5] + '=' + mArtistID;
-        String order = PreferenceUtils.getInstance(getContext()).getArtistAlbumSortOrder();
-        return getContext().getContentResolver().query(ALBUM_URI, ALBUM_COLUMN, select, null, order);
     }
 }

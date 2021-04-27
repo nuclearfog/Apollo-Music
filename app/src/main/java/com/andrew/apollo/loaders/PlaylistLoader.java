@@ -14,11 +14,11 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Playlist;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,24 +30,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
-
-    /**
-     *
-     */
-    private static final Uri PLAYLIST_URI = Playlists.EXTERNAL_CONTENT_URI;
-
-    /**
-     * Projection of the columns
-     */
-    public static final String[] PLAYLIST_COLUMNS = {
-            Playlists._ID,
-            Playlists.NAME
-    };
-
-    /**
-     *
-     */
-    public static final String PLAYLIST_ORDER = PLAYLIST_COLUMNS[1];
 
     /**
      * Constructor of <code>PlaylistLoader</code>
@@ -67,7 +49,7 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         // Add the default playlists to the adapter
         makeDefaultPlaylists(result);
         // Create the Cursor
-        Cursor mCursor = makePlaylistCursor();
+        Cursor mCursor = CursorCreator.makePlaylistCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -96,14 +78,5 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         /* Last added list */
         Playlist lastAdded = new Playlist(-2, resources.getString(R.string.playlist_last_added));
         mPlaylistList.add(lastAdded);
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the playlist query.
-     */
-    private Cursor makePlaylistCursor() {
-        return getContext().getContentResolver().query(PLAYLIST_URI, PLAYLIST_COLUMNS, null, null, PLAYLIST_ORDER);
     }
 }

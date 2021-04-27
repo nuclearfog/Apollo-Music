@@ -11,14 +11,12 @@
 
 package com.andrew.apollo.loaders;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Media;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,29 +30,6 @@ import java.util.List;
  */
 public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     *
-     */
-    public static final Uri TRACK_URI = Media.EXTERNAL_CONTENT_URI;
-
-    /**
-     * SQL Projection to get song information in a fixed order
-     */
-    @SuppressLint("InlinedApi")
-    public static final String[] TRACK_COLUMNS = {
-            Media._ID,
-            Media.TITLE,
-            Media.ARTIST,
-            Media.ALBUM,
-            Media.DURATION,
-            Media.DATA,
-            Media.MIME_TYPE
-    };
-
-    /**
-     * Selection to filter songs with empty name
-     */
-    public static final String SONG_SELECT = "is_music=1 AND title!=''";
 
     /**
      * Constructor of <code>SongLoader</code>
@@ -72,7 +47,7 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makeSongCursor();
+        Cursor mCursor = CursorCreator.makeTrackCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -96,15 +71,5 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the song query.
-     */
-    private Cursor makeSongCursor() {
-        String sort = PreferenceUtils.getInstance(getContext()).getSongSortOrder();
-        return getContext().getContentResolver().query(TRACK_URI, TRACK_COLUMNS, null, null, sort);
     }
 }

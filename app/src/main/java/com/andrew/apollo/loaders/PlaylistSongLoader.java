@@ -13,15 +13,14 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
 
 /**
  * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
@@ -31,15 +30,7 @@ import static com.andrew.apollo.loaders.SongLoader.TRACK_COLUMNS;
  */
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     *
-     */
-    private static final String SELECTION = "is_music=1 AND title != ''";
 
-    /**
-     *
-     */
-    private static final String ORDER = "play_order";
 
     /**
      * The Id of the playlist the songs belong to.
@@ -63,7 +54,7 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = makePlaylistSongCursor();
+        Cursor mCursor = CursorCreator.makePlaylistSongCursor(getContext(), mPlaylistID);
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
@@ -87,15 +78,5 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
-     *
-     * @return The {@link Cursor} used to run the song query.
-     */
-    private Cursor makePlaylistSongCursor() {
-        Uri media = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistID);
-        return getContext().getContentResolver().query(media, TRACK_COLUMNS, SELECTION, null, ORDER);
     }
 }

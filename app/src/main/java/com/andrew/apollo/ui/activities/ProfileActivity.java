@@ -67,14 +67,38 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
  */
 public class ProfileActivity extends AppCompatBase implements OnPageChangeListener, Listener, OnClickListener {
 
+    /**
+     * request code to load new photo
+     */
     private static final int NEW_PHOTO = 1;
-
+    /**
+     * page index of the {@link ArtistSongFragment} if {@link Type#ARTIST} is set
+     */
+    private static final int ARTIST_SONG = 0;
+    /**
+     * page index of the {@link ArtistAlbumFragment} if {@link Type#ARTIST} is set
+     */
+    private static final int ARTIST_ALBUM = 1;
+    /**
+     * page index of the {@link AlbumSongFragment} if {@link Type#ARTIST} is not set
+     */
+    private static final int ALBUM_SONG = 0;
+    /**
+     * mime type of the {@link FolderSongFragment}
+     */
     public static final String PAGE_FOLDERS = "page_folders";
-
+    /**
+     * mime type of the {@link FavoriteFragment}
+     */
     public static final String PAGE_FAVORIT = "page_fav";
-
+    /**
+     * mime type of the {@link LastAddedFragment}
+     */
     public static final String PAGE_LAST_ADDED = "playlist";
 
+    /**
+     * constants defining fragment type
+     */
     private enum Type {
         ARTIST,
         ALBUM,
@@ -318,10 +342,12 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         // Shuffle
         getMenuInflater().inflate(R.menu.shuffle, menu);
         // Sort orders
-        if (isArtistSongPage()) {
-            getMenuInflater().inflate(R.menu.artist_song_sort_by, menu);
-        } else if (isArtistAlbumPage()) {
-            getMenuInflater().inflate(R.menu.artist_album_sort_by, menu);
+        if (type == Type.ARTIST) {
+            if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                getMenuInflater().inflate(R.menu.artist_song_sort_by, menu);
+            } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
+                getMenuInflater().inflate(R.menu.artist_album_sort_by, menu);
+            }
         } else if (type == Type.ALBUM) {
             getMenuInflater().inflate(R.menu.album_song_sort_by, menu);
         }
@@ -343,19 +369,15 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Otherwise just go back
                 goBack();
             }
-            return true;
         } else if (itemId == R.id.menu_add_to_homescreen) {
             // Place the artist, album, genre, or playlist onto the Home
             // screen. Definitely one of my favorite features.
-            String name;
             long id = mArguments.getLong(Config.ID);
             if (type == Type.ARTIST) {
-                name = mArtistName;
+                ApolloUtils.createShortcutIntent(mArtistName, mArtistName, id, mType, this);
             } else {
-                name = mProfileName;
+                ApolloUtils.createShortcutIntent(mProfileName, mArtistName, id, mType, this);
             }
-            ApolloUtils.createShortcutIntent(name, mArtistName, id, mType, this);
-            return true;
         } else if (itemId == R.id.menu_shuffle) {
             long id = mArguments.getLong(Config.ID);
             long[] list = {};
@@ -387,76 +409,75 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             if (list.length > 0) {
                 MusicUtils.playAll(list, 0, true);
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_az) {
-            if (isArtistSongPage()) {
-                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-                getArtistSongFragment().refresh();
-            } else if (isArtistAlbumPage()) {
-                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-                getArtistAlbumFragment().refresh();
-            } else {
-                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
-                getAlbumSongFragment().refresh();
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
+                    refresh(ARTIST_SONG);
+                } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
+                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
+                    refresh(ARTIST_ALBUM);
+                } else {
+                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
+                    refresh(ALBUM_SONG);
+                }
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_za) {
-            if (isArtistSongPage()) {
-                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-                getArtistSongFragment().refresh();
-            } else if (isArtistAlbumPage()) {
-                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-                getArtistAlbumFragment().refresh();
-            } else {
-                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-                getAlbumSongFragment().refresh();
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
+                    refresh(ARTIST_SONG);
+                } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
+                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
+                    refresh(ARTIST_ALBUM);
+                } else {
+                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
+                    refresh(ALBUM_SONG);
+                }
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_album) {
-            if (isArtistSongPage()) {
+            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
-                getArtistSongFragment().refresh();
+                refresh(ARTIST_SONG);
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_year) {
-            if (isArtistSongPage()) {
-                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
-                getArtistSongFragment().refresh();
-            } else if (isArtistAlbumPage()) {
-                mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
-                getArtistAlbumFragment().refresh();
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
+                    refresh(ARTIST_SONG);
+                } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
+                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
+                    refresh(ARTIST_ALBUM);
+                }
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_duration) {
-            if (isArtistSongPage()) {
+            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-                getArtistSongFragment().refresh();
+                refresh(ARTIST_SONG);
             } else {
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-                getAlbumSongFragment().refresh();
+                refresh(ALBUM_SONG);
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_date_added) {
-            if (isArtistSongPage()) {
+            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
-                getArtistSongFragment().refresh();
+                refresh(ARTIST_SONG);
             }
-            return true;
         } else if (itemId == R.id.menu_sort_by_track_list) {
             mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
-            getAlbumSongFragment().refresh();
-            return true;
+            refresh(ALBUM_SONG);
         } else if (itemId == R.id.menu_sort_by_filename) {
-            if (isArtistSongPage()) {
+            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-                getArtistSongFragment().refresh();
+                refresh(ARTIST_SONG);
             } else {
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-                getAlbumSongFragment().refresh();
+                refresh();
             }
-            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
 
@@ -574,7 +595,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             }
         } else if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
             MusicUtils.onPostDelete(this);
-            getAlbumSongFragment().refresh();
+            refresh();
         }
     }
 
@@ -683,23 +704,39 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         finish();
     }
 
-    private boolean isArtistSongPage() {
-        return type == Type.ARTIST && mViewPager.getCurrentItem() == 0;
+    /**
+     * get fragment callback at specific position
+     *
+     * @param index position of the fragment
+     * @return callback
+     */
+    private FragmentCallback getFragment(int index) {
+        return (FragmentCallback) mPagerAdapter.getFragment(index);
     }
 
-    private boolean isArtistAlbumPage() {
-        return type == Type.ARTIST && mViewPager.getCurrentItem() == 1;
+    /**
+     * refresh fragment at index
+     *
+     * @param index index of the fragment
+     */
+    private void refresh(int index) {
+        getFragment(index).refresh();
     }
 
-    private ArtistSongFragment getArtistSongFragment() {
-        return (ArtistSongFragment) mPagerAdapter.getFragment(0);
+    /**
+     * refresh all fragments
+     */
+    private void refresh() {
+        for (int i = 0; i < mPagerAdapter.getCount(); i++) {
+            refresh(i);
+        }
     }
 
-    private ArtistAlbumFragment getArtistAlbumFragment() {
-        return (ArtistAlbumFragment) mPagerAdapter.getFragment(1);
-    }
+    /**
+     * callback for sub fragments to refresh
+     */
+    public interface FragmentCallback {
 
-    private AlbumSongFragment getAlbumSongFragment() {
-        return (AlbumSongFragment) mPagerAdapter.getFragment(0);
+        void refresh();
     }
 }

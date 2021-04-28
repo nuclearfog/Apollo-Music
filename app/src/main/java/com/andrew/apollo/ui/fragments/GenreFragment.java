@@ -40,6 +40,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -49,7 +50,8 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>, OnItemClickListener {
+public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>,
+        OnItemClickListener, BrowserCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -219,5 +221,17 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     public void onLoaderReset(@NonNull Loader<List<Genre>> loader) {
         // Clear the data in the adapter
         mAdapter.clear();
+    }
+
+
+    @Override
+    public void refresh() {
+        mAdapter.clear();
+        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+    }
+
+
+    @Override
+    public void scrollToCurrent() {
     }
 }

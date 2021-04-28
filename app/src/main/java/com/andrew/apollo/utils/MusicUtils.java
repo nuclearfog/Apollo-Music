@@ -21,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
@@ -63,7 +62,6 @@ import java.util.WeakHashMap;
 
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
-
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -1286,7 +1284,6 @@ public final class MusicUtils {
     public static void deleteTracks(Activity activity, long[] list) {
         markedTracks = list.length;
         ContentResolver resolver = activity.getContentResolver();
-
         String[] paths = removeTracksFromDatabase(activity.getApplicationContext(), list);
 
         // Use Scoped storage and build in dialog
@@ -1299,20 +1296,22 @@ public final class MusicUtils {
                 }
                 PendingIntent requestRemove = MediaStore.createDeleteRequest(resolver, uris);
                 activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
-            } catch (IntentSender.SendIntentException err) {
+            } catch (Exception err) {
+                // thrown when no audio file were found
                 err.printStackTrace();
             }
         }
         // remove tracks directly from storage
         else {
             for (String filename : paths) {
-                File file = new File(filename);
                 try {
+                    File file = new File(filename);
                     // File.delete can throw a security exception
                     if (!file.delete()) {
                         Log.e("MusicUtils", "Failed to delete file " + filename);
                     }
-                } catch (SecurityException ex) {
+                } catch (Exception ex) {
+                    // catch exception if file was not found
                     ex.printStackTrace();
                 }
             }
@@ -1393,7 +1392,7 @@ public final class MusicUtils {
         // as from the album art cache
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                result = new String[ids.length];
+                result = new String[cursor.getCount()];
                 for (int i = 0; i < ids.length && cursor.moveToNext(); i++) {
                     // Remove from current playlist
                     long trackId = cursor.getLong(0);

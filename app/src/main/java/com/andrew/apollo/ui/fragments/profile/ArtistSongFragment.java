@@ -40,6 +40,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.VerticalScrollListener;
@@ -52,7 +53,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener {
+        OnItemClickListener, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -203,6 +204,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
+
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         if (item.getGroupId() == GROUP_ID) {
@@ -302,6 +304,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     /**
      * Restarts the loader.
      */
+    @Override
     public void refresh() {
         // Scroll to the stop of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it

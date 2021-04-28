@@ -45,6 +45,7 @@ import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -61,7 +62,7 @@ import static com.andrew.apollo.utils.PreferenceUtils.RECENT_LAYOUT;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>,
-        OnScrollListener, OnItemClickListener, MusicStateListener {
+        OnScrollListener, OnItemClickListener, MusicStateListener, BrowserCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -132,15 +133,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = PreferenceUtils.getInstance(requireContext());
-        int layout;
-        if (isSimpleLayout()) {
-            layout = R.layout.list_item_normal;
-        } else if (isDetailedLayout()) {
-            layout = R.layout.list_item_detailed;
+        if (pref.isSimpleLayout(RECENT_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
+        } else if (pref.isDetailedLayout(RECENT_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
         } else {
-            layout = R.layout.grid_items_normal;
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_items_normal);
         }
-        mAdapter = new AlbumAdapter(requireActivity(), layout);
     }
 
     /**
@@ -150,7 +149,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View mRootView;
-        if (isSimpleLayout()) {
+        if (pref.isSimpleLayout(RECENT_LAYOUT)) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
             mList = mRootView.findViewById(R.id.list_base);
@@ -289,7 +288,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @NonNull
     @Override
     public Loader<List<Album>> onCreateLoader(int id, Bundle args) {
-        return new RecentLoader(requireActivity());
+        return new RecentLoader(requireContext());
     }
 
     /**
@@ -297,14 +296,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
-        // Check for any errors
+        // Start fresh
+        mAdapter.clear();
         if (data.isEmpty()) {
             // Set the empty text
             mList.setEmptyView(emptyInfo);
             emptyInfo.setVisibility(View.VISIBLE);
         } else {
-            // Start fresh
-            mAdapter.clear();
             // Add the data to the adpater
             for (Album album : data)
                 mAdapter.add(album);
@@ -351,6 +349,18 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
     }
 
+
+    @Override
+    public void refresh() {
+        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+    }
+
+
+    @Override
+    public void scrollToCurrent() {
+        mList.smoothScrollToPosition(0);
+    }
+
     /**
      * Sets up various helpers for both the list and grid
      */
@@ -365,32 +375,25 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         mList.setOnScrollListener(this);
     }
 
+
     private void initGrid() {
-        if (!(mList instanceof GridView))
-            return;
-        GridView mGridView = (GridView) mList;
-        if (ApolloUtils.isLandscape(requireContext())) {
-            if (isDetailedLayout()) {
-                mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(TWO);
+        if (mList instanceof GridView) {
+            GridView mGridView = (GridView) mList;
+            if (ApolloUtils.isLandscape(requireContext())) {
+                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    mGridView.setNumColumns(TWO);
+                } else {
+                    mGridView.setNumColumns(FOUR);
+                }
             } else {
-                mGridView.setNumColumns(FOUR);
-            }
-        } else {
-            if (isDetailedLayout()) {
-                mAdapter.setLoadExtraData(true);
-                mGridView.setNumColumns(ONE);
-            } else {
-                mGridView.setNumColumns(TWO);
+                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    mGridView.setNumColumns(ONE);
+                } else {
+                    mGridView.setNumColumns(TWO);
+                }
             }
         }
-    }
-
-    private boolean isSimpleLayout() {
-        return pref.isSimpleLayout(RECENT_LAYOUT);
-    }
-
-    private boolean isDetailedLayout() {
-        return pref.isDetailedLayout(RECENT_LAYOUT);
     }
 }

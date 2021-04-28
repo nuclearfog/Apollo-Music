@@ -51,8 +51,10 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
      * Empty constructor as per the {@link androidx.fragment.app.Fragment} documentation
      */
     public DeleteDialog(String title, String key, long[] ids) {
-        this.key = key;
-        this.title = title;
+        if (key != null)
+            this.key = key;
+        if (title != null)
+            this.title = title;
         mItemList = ids;
     }
 

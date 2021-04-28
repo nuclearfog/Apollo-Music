@@ -329,9 +329,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         return 0;
     }
 
-    /**
-     * Restarts the loader.
-     */
+
     @Override
     public void refresh() {
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);

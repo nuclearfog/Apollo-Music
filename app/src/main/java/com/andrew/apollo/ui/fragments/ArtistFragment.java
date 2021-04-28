@@ -94,6 +94,11 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     private TextView emptyHolder;
 
     /**
+     * app preferences
+     */
+    private PreferenceUtils prefs;
+
+    /**
      * Artist song list
      */
     private long[] mArtistList = {};
@@ -133,15 +138,14 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
-        int layout;
-        if (isSimpleLayout()) {
-            layout = R.layout.list_item_simple;
-        } else if (isDetailedLayout()) {
-            layout = R.layout.list_item_detailed;
+        prefs = PreferenceUtils.getInstance(requireContext());
+        if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_simple);
+        } else if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_detailed);
         } else {
-            layout = R.layout.grid_items_normal;
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.grid_items_normal);
         }
-        mAdapter = new ArtistAdapter(requireActivity(), layout);
     }
 
     /**
@@ -151,7 +155,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // initialize views
         View mRootView;
-        if (isSimpleLayout()) {
+        if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
             mList = mRootView.findViewById(R.id.list_base);
@@ -310,26 +314,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     }
 
     /**
-     * @return The position of an item in the list or grid based on the name of
-     * the currently playing artist.
-     */
-    private int getItemPositionByArtist() {
-        long artistId = MusicUtils.getCurrentArtistId();
-        if (mAdapter == null) {
-            return 0;
-        }
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Artist artist = mAdapter.getItem(i);
-            if (artist != null && artist.getId() == artistId) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    /**
      * Restarts the loader.
      */
+    @Override
     public void refresh() {
         // Wait a moment for the preference to change.
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
@@ -372,6 +359,24 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     }
 
     /**
+     * @return The position of an item in the list or grid based on the name of
+     * the currently playing artist.
+     */
+    private int getItemPositionByArtist() {
+        long artistId = MusicUtils.getCurrentArtistId();
+        if (mAdapter == null) {
+            return 0;
+        }
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            Artist artist = mAdapter.getItem(i);
+            if (artist != null && artist.getId() == artistId) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Sets up various helpers for both the list and grid
      */
     private void initAbsListView() {
@@ -391,28 +396,19 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             return;
         GridView grid = (GridView) mList;
         if (ApolloUtils.isLandscape(requireContext())) {
-            if (isDetailedLayout()) {
+            if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
                 mAdapter.setLoadExtraData(true);
                 grid.setNumColumns(TWO);
             } else {
                 grid.setNumColumns(FOUR);
             }
         } else {
-            if (isDetailedLayout()) {
+            if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
                 mAdapter.setLoadExtraData(true);
                 grid.setNumColumns(ONE);
             } else {
                 grid.setNumColumns(TWO);
             }
         }
-    }
-
-
-    private boolean isSimpleLayout() {
-        return PreferenceUtils.getInstance(requireContext()).isSimpleLayout(ARTIST_LAYOUT);
-    }
-
-    private boolean isDetailedLayout() {
-        return PreferenceUtils.getInstance(requireContext()).isDetailedLayout(ARTIST_LAYOUT);
     }
 }

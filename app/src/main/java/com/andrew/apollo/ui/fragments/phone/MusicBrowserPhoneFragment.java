@@ -327,6 +327,15 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     }
 
     /**
+     * reload all sub fragments
+     */
+    public void refresh() {
+        for (int i = 0; i < mPagerAdapter.getCount(); i++) {
+            getCallback(i).refresh();
+        }
+    }
+
+    /**
      * Callbacks to interact with fragments
      */
     public interface BrowserCallback {

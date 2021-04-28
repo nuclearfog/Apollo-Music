@@ -49,6 +49,7 @@ import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.AppCompatBase;
 import com.andrew.apollo.ui.activities.ProfileActivity;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -62,7 +63,7 @@ import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<Playlist>>,
-        OnItemClickListener, MusicStateListener {
+        OnItemClickListener, MusicStateListener, BrowserCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -286,6 +287,17 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void onMetaChanged() {
         // Nothing to do
+    }
+
+
+    @Override
+    public void refresh() {
+        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+    }
+
+
+    @Override
+    public void scrollToCurrent() {
     }
 
     /**

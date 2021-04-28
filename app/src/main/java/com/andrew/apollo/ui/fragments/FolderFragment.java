@@ -27,6 +27,7 @@ import com.andrew.apollo.adapters.FolderAdapter;
 import com.andrew.apollo.loaders.FolderLoader;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.io.File;
@@ -37,7 +38,8 @@ import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
 /**
  * decompiled from Apollo 1.6 APK
  */
-public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener {
+public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>,
+        OnItemClickListener, BrowserCallback {
 
     private static final int GROUP_ID = 6;
 
@@ -159,5 +161,16 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     @Override
     public void onLoaderReset(@NonNull Loader<List<File>> paramLoader) {
         mAdapter.clear();
+    }
+
+
+    @Override
+    public void refresh() {
+        LoaderManager.getInstance(this).restartLoader(0, null, this);
+    }
+
+
+    @Override
+    public void scrollToCurrent() {
     }
 }

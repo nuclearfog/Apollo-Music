@@ -452,7 +452,7 @@ public class CursorCreator {
     /**
      * Creates cursor to parse album table
      *
-     * @param album album name
+     * @param album  album name
      * @param artist artist name of the album
      * @return Cursor
      */

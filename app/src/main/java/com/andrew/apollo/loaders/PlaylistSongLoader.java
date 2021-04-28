@@ -31,7 +31,6 @@ import java.util.List;
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
 
-
     /**
      * The Id of the playlist the songs belong to.
      */

@@ -1279,7 +1279,7 @@ public final class MusicUtils {
      *
      * @param activity Activity used to access scoped storage. on old android version
      *                 otherwise its a context
-     * @param list    The item(s) to delete.
+     * @param list     The item(s) to delete.
      */
     public static void deleteTracks(Activity activity, long[] list) {
         markedTracks = list.length;

@@ -42,9 +42,9 @@ import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener, MusicStateListener {
+        OnItemClickListener, MusicStateListener, BrowserCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -290,17 +290,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     /**
-     * Scrolls the list to the currently playing song when the user touches the
-     * header in the {@link TitlePageIndicator}.
-     */
-    public void scrollToCurrentSong() {
-        int currentSongPosition = getItemPositionBySong();
-        if (currentSongPosition != 0) {
-            mListView.setSelection(currentSongPosition);
-        }
-    }
-
-    /**
      * @return The position of an item in the list based on the name of the
      * currently playing song.
      */
@@ -321,8 +310,18 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     /**
      * Restarts the loader.
      */
+    @Override
     public void refresh() {
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+    }
+
+
+    @Override
+    public void scrollToCurrent() {
+        int currentSongPosition = getItemPositionBySong();
+        if (currentSongPosition != 0) {
+            mListView.setSelection(currentSongPosition);
+        }
     }
 
     /**

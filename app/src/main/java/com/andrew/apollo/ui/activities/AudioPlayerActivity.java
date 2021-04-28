@@ -362,6 +362,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
             MusicUtils.onPostDelete(this);
+
         }
     }
 

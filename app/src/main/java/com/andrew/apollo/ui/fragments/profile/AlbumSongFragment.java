@@ -243,7 +243,6 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
                 case FragmentMenuItems.DELETE:
                     long[] id = {mSelectedId};
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
-                    refresh();
                     return true;
             }
         }

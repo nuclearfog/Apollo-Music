@@ -242,7 +242,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
 
                 case FragmentMenuItems.DELETE:
                     MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
-                    refresh();
                     return true;
             }
         }

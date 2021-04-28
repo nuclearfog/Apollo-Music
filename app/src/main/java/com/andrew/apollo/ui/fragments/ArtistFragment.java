@@ -45,11 +45,11 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.List;
 
@@ -61,7 +61,7 @@ import static com.andrew.apollo.utils.PreferenceUtils.ARTIST_LAYOUT;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>,
-        OnScrollListener, OnItemClickListener, MusicStateListener {
+        OnScrollListener, OnItemClickListener, MusicStateListener, BrowserCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -310,17 +310,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     }
 
     /**
-     * Scrolls the list to the currently playing artist when the user touches
-     * the header in the {@link TitlePageIndicator}.
-     */
-    public void scrollToCurrentArtist() {
-        int currentArtistPosition = getItemPositionByArtist();
-        if (currentArtistPosition != 0) {
-            mList.setSelection(currentArtistPosition);
-        }
-    }
-
-    /**
      * @return The position of an item in the list or grid based on the name of
      * the currently playing artist.
      */
@@ -344,6 +333,14 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void refresh() {
         // Wait a moment for the preference to change.
         LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+    }
+
+    @Override
+    public void scrollToCurrent() {
+        int currentArtistPosition = getItemPositionByArtist();
+        if (currentArtistPosition != 0) {
+            mList.setSelection(currentArtistPosition);
+        }
     }
 
     /**

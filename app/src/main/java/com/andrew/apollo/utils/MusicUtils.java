@@ -23,6 +23,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -40,7 +41,6 @@ import android.view.SubMenu;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.IApolloService;
@@ -60,6 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import static android.media.RingtoneManager.TYPE_RINGTONE;
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
 
@@ -893,7 +894,7 @@ public final class MusicUtils {
         resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
         String message = context.getResources().getQuantityString(
                 R.plurals.NNNtracksfromplaylist, 1, 1);
-        AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
+        AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
     }
 
     /**
@@ -907,7 +908,7 @@ public final class MusicUtils {
         try {
             mService.enqueue(list, MusicPlaybackService.LAST);
             String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
-            AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
+            AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
         } catch (RemoteException err) {
             err.printStackTrace();
         }
@@ -920,23 +921,38 @@ public final class MusicUtils {
     public static void setRingtone(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
         Uri uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id);
+        // Set ringtone
         try {
-            ContentValues values = new ContentValues(2);
-            values.put(AudioColumns.IS_RINGTONE, "1");
-            values.put(AudioColumns.IS_ALARM, "1");
-            resolver.update(uri, values, null, null);
-        } catch (UnsupportedOperationException err) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // check if app has write permission
+                boolean writePerm = Settings.System.canWrite(context);
+                if (writePerm) {
+                    // set ringtone
+                    RingtoneManager.setActualDefaultRingtoneUri(context, TYPE_RINGTONE, uri);
+                } else {
+                    // open settings so user can set write permissions
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                    context.startActivity(intent);
+                    return;
+                }
+            } else {
+                // set ringtone directly
+                ContentValues values = new ContentValues(1);
+                values.put(AudioColumns.IS_RINGTONE, true);
+                resolver.update(uri, values, null, null);
+            }
+        } catch (Exception err) {
             err.printStackTrace();
             return;
         }
+        // print message after success
         String[] args = {Long.toString(id)};
         Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, args, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-                String message = context.getString(R.string.set_as_ringtone,
-                        cursor.getString(2));
-                AppMsg.makeText((AppCompatActivity) context, message, AppMsg.STYLE_CONFIRM).show();
+                String message = context.getString(R.string.set_as_ringtone, cursor.getString(2));
+                AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
             }
             cursor.close();
         }

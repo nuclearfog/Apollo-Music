@@ -33,7 +33,9 @@
     <!-- Lower or raise the music based on the phone state -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Used to set the devices's ringtone -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        android:maxSdkVersion="28" />
     <!-- Used to create launcher shortcuts -->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!-- Allows Apollo to read from External Storage -->

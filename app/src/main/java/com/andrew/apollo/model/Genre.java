@@ -20,14 +20,26 @@ import android.text.TextUtils;
  */
 public class Genre extends Music {
 
+    private long[] ids;
+
     /**
      * Constructor of <code>Genre</code>
      *
-     * @param genreId   The Id of the genre
+     * @param ids       The Id of the genre
      * @param genreName The genre name
      */
-    public Genre(long genreId, String genreName) {
-        super(genreId, genreName);
+    public Genre(long[] ids, String genreName) {
+        super(ids[0], genreName);
+        this.ids = ids;
+    }
+
+    /**
+     * return a set of genre IDs for the same Genre name
+     *
+     * @return ID array
+     */
+    public long[] getGenreIds() {
+        return ids;
     }
 
     /**

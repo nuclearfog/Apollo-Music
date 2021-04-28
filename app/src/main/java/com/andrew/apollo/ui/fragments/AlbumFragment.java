@@ -233,7 +233,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(requireActivity(), mAlbum.getName());
+                    NavUtils.openArtistProfile(requireActivity(), mAlbum.getArtist());
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:

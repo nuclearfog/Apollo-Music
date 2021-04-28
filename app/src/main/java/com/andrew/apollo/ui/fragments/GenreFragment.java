@@ -79,11 +79,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     private long[] mGenreList = {};
 
     /**
-     * Represents a genre
-     */
-    private Genre mGenre;
-
-    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public GenreFragment() {
@@ -139,7 +134,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         if (menuInfo instanceof AdapterContextMenuInfo) {
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
             // Create a new genre
-            mGenre = mAdapter.getItem(info.position);
+            Genre mGenre = mAdapter.getItem(info.position);
             // Create a list of the genre's songs
             mGenreList = MusicUtils.getSongListForGenre(requireContext(), mGenre.getId());
             // Play the genre
@@ -173,7 +168,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mGenre = mAdapter.getItem(position);
+        Genre mGenre = mAdapter.getItem(position);
         // Create a new bundle to transfer the artist info
         Bundle bundle = new Bundle();
         bundle.putLong(Config.ID, mGenre.getId());

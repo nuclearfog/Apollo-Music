@@ -18,8 +18,10 @@ import android.provider.MediaStore.Audio.Genres;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.utils.CursorCreator;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Used to query {@link Genres#EXTERNAL_CONTENT_URI} and return
@@ -28,6 +30,8 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
+
+    private static final int MAX_GENRE_COUNT = 4;
 
     /**
      * Constructor of <code>GenreLoader</code>
@@ -49,25 +53,39 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
+                HashMap<String, long[]> group = new HashMap<>();
                 do {
-                    // Copy the genre id
+                    // get Column information
                     long id = mCursor.getLong(0);
-                    // Copy the genre name
                     String name = mCursor.getString(1);
-                    // Create a new genre
-                    // Genres separated by a semicolon will be separated into single genres
-                    int separator = name.indexOf(";");
-                    while (separator > 0) {
-                        String subGenre = name.substring(0, separator);
-                        name = name.substring(separator + 1);
-                        Genre genre = new Genre(id, subGenre);
-                        result.add(genre);
-                        separator = name.indexOf(";");
+
+                    // Split genre groups into single genre names
+                    String[] genres = name.split("\\s*;\\s*", MAX_GENRE_COUNT);
+
+                    // solve conflicts. add multiple genre IDs for the same genre name.
+                    for (String genre : genres) {
+                        long[] ids = group.get(genre);
+                        if (ids == null) {
+                            ids = new long[MAX_GENRE_COUNT];
+                            group.put(genre, ids);
+                        }
+                        // insert at empty place
+                        for (int i = 0; i < MAX_GENRE_COUNT; i++) {
+                            if (ids[i] == 0) {
+                                ids[i] = id;
+                                break;
+                            }
+                        }
                     }
-                    Genre genre = new Genre(id, name);
-                    // Add everything up
-                    result.add(genre);
                 } while (mCursor.moveToNext());
+
+                // finish result
+                for (Map.Entry<String, long[]> entry : group.entrySet()) {
+                    long[] ids = entry.getValue();
+                    String name = entry.getKey();
+                    Genre genre = new Genre(ids, name);
+                    result.add(genre);
+                }
             }
             mCursor.close();
         }

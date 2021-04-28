@@ -136,7 +136,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
             // Create a new genre
             Genre mGenre = mAdapter.getItem(info.position);
             // Create a list of the genre's songs
-            mGenreList = MusicUtils.getSongListForGenre(requireContext(), mGenre.getId());
+            mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
             // Play the genre
             menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             // Add the genre to the queue
@@ -171,7 +171,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         Genre mGenre = mAdapter.getItem(position);
         // Create a new bundle to transfer the artist info
         Bundle bundle = new Bundle();
-        bundle.putLong(Config.ID, mGenre.getId());
+        bundle.putLongArray(Config.IDS, mGenre.getGenreIds());
         bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
         bundle.putString(Config.NAME, mGenre.getName());
         // Create the intent to launch the profile activity

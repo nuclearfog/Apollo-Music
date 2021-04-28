@@ -277,7 +277,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        long genreId = args != null ? args.getLong(Config.ID) : 0;
+        long[] genreId = args != null ? args.getLongArray(Config.IDS) : new long[0];
         return new GenreSongLoader(requireContext(), genreId);
     }
 

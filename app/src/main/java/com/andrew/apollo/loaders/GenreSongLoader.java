@@ -18,6 +18,8 @@ import android.provider.MediaStore;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorCreator;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,18 +32,17 @@ import java.util.List;
  */
 public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-
     /**
-     * The Id of the genre the songs belong to.
+     * Genre IDs to get songs from
      */
-    private Long mGenreID;
+    private long[] mGenreID;
 
     /**
      * Constructor of <code>GenreSongHandler</code>
      *
      * @param context The {@link Context} to use.
      */
-    public GenreSongLoader(Context context, Long genreId) {
+    public GenreSongLoader(Context context, long[] genreId) {
         super(context);
         mGenreID = genreId;
     }
@@ -52,30 +53,39 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     @Override
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
-        // Create the Cursor
-        Cursor mCursor = CursorCreator.makeGenreSongCursor(getContext(), mGenreID);
-        // Gather the data
-        if (mCursor != null) {
-            if (mCursor.moveToFirst()) {
-                do {
-                    // Copy the song Id
-                    long id = mCursor.getLong(0);
-                    // Copy the song name
-                    String songName = mCursor.getString(1);
-                    // Copy the artist name
-                    String artist = mCursor.getString(2);
-                    // Copy the album name
-                    String album = mCursor.getString(3);
-                    // Copy the duration
-                    long duration = mCursor.getLong(4);
-                    // Create a new song
-                    Song song = new Song(id, songName, artist, album, duration);
-                    // Add everything up
-                    result.add(song);
-                } while (mCursor.moveToNext());
+        for (long genreId : mGenreID) {
+            // Create the Cursor
+            Cursor mCursor = CursorCreator.makeGenreSongCursor(getContext(), genreId);
+            // Gather the data
+            if (mCursor != null) {
+                if (mCursor.moveToFirst()) {
+                    do {
+                        // Copy the song Id
+                        long id = mCursor.getLong(0);
+                        // Copy the song name
+                        String songName = mCursor.getString(1);
+                        // Copy the artist name
+                        String artist = mCursor.getString(2);
+                        // Copy the album name
+                        String album = mCursor.getString(3);
+                        // Copy the duration
+                        long duration = mCursor.getLong(4);
+                        // Create a new song
+                        Song song = new Song(id, songName, artist, album, duration);
+                        // Add everything up
+                        result.add(song);
+                    } while (mCursor.moveToNext());
+                }
+                mCursor.close();
             }
-            mCursor.close();
         }
+        // sort tracks by song name
+        Collections.sort(result, new Comparator<Song>() {
+            @Override
+            public int compare(Song track1, Song track2) {
+                return track1.getName().compareTo(track2.getName());
+            }
+        });
         return result;
     }
 }

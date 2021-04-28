@@ -588,6 +588,25 @@ public final class MusicUtils {
         return EMPTY_LIST;
     }
 
+    public static long[] getSongListForGenres(Context context, long[] ids) {
+        long[][] data = new long[ids.length][];
+        for (int i = 0; i < ids.length; i++) {
+            data[i] = getSongListForGenre(context, ids[i]);
+        }
+        int pos = 0;
+        int size = 0;
+        for (long[] array : data) {
+            size += array.length;
+        }
+        long[] result = new long[size];
+        for (long[] array : data) {
+            for (long element : array) {
+                result[pos++] = element;
+            }
+        }
+        return result;
+    }
+
     /**
      * @param uri The source of the file
      */

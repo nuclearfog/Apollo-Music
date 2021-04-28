@@ -18,6 +18,8 @@ import android.provider.MediaStore.Audio.Genres;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.utils.CursorCreator;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +33,10 @@ import java.util.Map;
  */
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 
-    private static final int MAX_GENRE_COUNT = 4;
+    /**
+     * max count of genres separated by a semicolon. more genre names will be ignored.
+     */
+    private static final int MAX_GENRE_COUNT = 5;
 
     /**
      * Constructor of <code>GenreLoader</code>
@@ -89,6 +94,13 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
             }
             mCursor.close();
         }
+        // sort genres by name
+        Collections.sort(result, new Comparator<Genre>() {
+            @Override
+            public int compare(Genre genre1, Genre genre2) {
+                return genre1.getName().compareTo(genre2.getName());
+            }
+        });
         return result;
     }
 }

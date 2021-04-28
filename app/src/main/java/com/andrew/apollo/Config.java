@@ -32,6 +32,10 @@ public final class Config {
      */
     public static final String ID = "id";
     /**
+     * a group of IDs
+     */
+    public static final String IDS = "ids";
+    /**
      * The name of an artist, album, genre, or playlist passed to the profile
      * activity
      */

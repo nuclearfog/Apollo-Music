@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -72,7 +72,7 @@ public class Caller {
 
     private static final String PARAM_API_KEY = "api_key";
 
-    private static final String DEFAULT_API_ROOT = "http://ws.audioscrobbler.com/2.0/";
+    private static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
 
     private static Caller mInstance = null;
 
@@ -117,7 +117,7 @@ public class Caller {
         // fill parameter map with apiKey and session info
         params.put(PARAM_API_KEY, apiKey);
         try {
-            HttpURLConnection urlConnection = openPostConnection(method, params);
+            HttpsURLConnection urlConnection = openPostConnection(method, params);
             inputStream = getInputStreamFromConnection(urlConnection);
 
             if (inputStream == null) {
@@ -144,17 +144,17 @@ public class Caller {
     }
 
     /**
-     * Creates a new {@link HttpURLConnection}, sets the proxy, if available,
+     * Creates a new {@link HttpsURLConnection}, sets the proxy, if available,
      * and sets the User-Agent property.
      *
      * @param url URL to connect to
      * @return a new connection.
      * @throws IOException if an I/O exception occurs.
      */
-    public HttpURLConnection openConnection(String url) throws IOException {
+    public HttpsURLConnection openConnection(String url) throws IOException {
         URL u = new URL(url);
-        HttpURLConnection urlConnection;
-        urlConnection = (HttpURLConnection) u.openConnection();
+        HttpsURLConnection urlConnection;
+        urlConnection = (HttpsURLConnection) u.openConnection();
         String userAgent = "Apollo";
         urlConnection.setRequestProperty("User-Agent", userAgent);
         urlConnection.setUseCaches(true);
@@ -162,8 +162,8 @@ public class Caller {
     }
 
 
-    private HttpURLConnection openPostConnection(String method, Map<String, String> params) throws IOException {
-        HttpURLConnection urlConnection = openConnection(DEFAULT_API_ROOT);
+    private HttpsURLConnection openPostConnection(String method, Map<String, String> params) throws IOException {
+        HttpsURLConnection urlConnection = openConnection(DEFAULT_API_ROOT);
         urlConnection.setRequestMethod("POST");
         urlConnection.setDoOutput(true);
         urlConnection.setUseCaches(true);
@@ -176,12 +176,12 @@ public class Caller {
     }
 
 
-    private InputStream getInputStreamFromConnection(HttpURLConnection connection) throws IOException {
+    private InputStream getInputStreamFromConnection(HttpsURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
 
-        if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+        if (responseCode == HttpsURLConnection.HTTP_FORBIDDEN || responseCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
             return connection.getErrorStream();
-        } else if (responseCode == HttpURLConnection.HTTP_OK) {
+        } else if (responseCode == HttpsURLConnection.HTTP_OK) {
             return connection.getInputStream();
         }
         return null;

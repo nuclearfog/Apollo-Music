@@ -32,8 +32,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * A subclass of {@link ImageWorker} that fetches images from a URL.
@@ -73,7 +74,7 @@ public class ImageFetcher extends ImageWorker {
     }
 
     private static String getBestImage(MusicEntry e) {
-        ImageSize[] QUALITY = {ImageSize.EXTRALARGE, ImageSize.LARGE, ImageSize.MEDIUM,
+        ImageSize[] QUALITY = {ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE, ImageSize.MEDIUM,
                 ImageSize.SMALL, ImageSize.UNKNOWN};
         for (ImageSize q : QUALITY) {
             String url = e.getImageURL(q);
@@ -99,15 +100,15 @@ public class ImageFetcher extends ImageWorker {
             cacheDir.mkdir();
         }
 
-        HttpURLConnection urlConnection = null;
+        HttpsURLConnection urlConnection = null;
         BufferedOutputStream out = null;
 
         try {
             File tempFile = File.createTempFile("bitmap", null, cacheDir); //$NON-NLS-1$
 
             URL url = new URL(urlString);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            urlConnection = (HttpsURLConnection) url.openConnection();
+            if (urlConnection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
                 return null;
             }
             InputStream in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE_BYTES);

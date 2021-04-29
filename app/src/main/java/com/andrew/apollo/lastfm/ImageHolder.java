@@ -21,6 +21,8 @@
 
 package com.andrew.apollo.lastfm;
 
+import androidx.annotation.NonNull;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -36,12 +38,15 @@ public abstract class ImageHolder {
 
     protected Map<ImageSize, String> imageUrls = new HashMap<>();
 
+    /**
+     *
+     */
     protected static void loadImages(ImageHolder holder, DomElement element) {
         Collection<DomElement> images = element.getChildren("image");
         for (DomElement image : images) {
             String attribute = image.getAttribute("size");
             ImageSize size = null;
-            if (attribute == null) {
+            if (attribute == null || attribute.isEmpty()) {
                 size = ImageSize.UNKNOWN;
             } else {
                 try {
@@ -66,5 +71,12 @@ public abstract class ImageHolder {
      */
     public String getImageURL(ImageSize size) {
         return imageUrls.get(size);
+    }
+
+
+    @NonNull
+    @Override
+    public String toString() {
+        return imageUrls.toString();
     }
 }

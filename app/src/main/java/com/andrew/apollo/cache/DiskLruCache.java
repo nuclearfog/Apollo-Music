@@ -14,7 +14,6 @@ package com.andrew.apollo.cache;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.Closeable;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -199,19 +198,21 @@ public final class DiskLruCache implements Closeable {
      * Returns the ASCII characters up to but not including the next "\r\n", or
      * "\n".
      *
-     * @throws java.io.EOFException if the stream is exhausted before the next
-     *                              newline character.
+     * @throws java.io.EOFException if the stream is exhausted before the next newline character.
      */
     public static String readAsciiLine(InputStream in) throws IOException {
-        // TODO: support UTF-8 here instead
         StringBuilder result = new StringBuilder(80);
-        int c;
-        do {
-            c = in.read();
-            if (c != '\n' && c != '\r' && c != -1) {
-                result.append((char) c);
+
+        int c = in.read();
+        while (c != -1) {
+            char t = (char) c;
+            if (c != '\n' && c != '\r') {
+                result.append(t);
+                c = in.read();
+            } else {
+                break;
             }
-        } while (c != -1);
+        }
         return result.toString();
     }
 
@@ -309,14 +310,14 @@ public final class DiskLruCache implements Closeable {
                         + ", " + valueCountString + ", " + blank + "]");
             }
 
-            while (true) {
-                try {
-                    readJournalLine(readAsciiLine(in));
-                } catch (EOFException e) {
-                    e.printStackTrace();
+            String readLn;
+            do {
+                readLn = readAsciiLine(in);
+                if (readLn.isEmpty())
                     break;
-                }
-            }
+                readJournalLine(readLn);
+
+            } while (!readLn.isEmpty());
         } finally {
             closeQuietly(in);
         }
@@ -401,7 +402,6 @@ public final class DiskLruCache implements Closeable {
                 writer.write(CLEAN + ' ' + entry.key + entry.getLengths() + '\n');
             }
         }
-
         writer.close();
         journalFileTmp.renameTo(journalFile);
         journalWriter = new BufferedWriter(new FileWriter(journalFile, true), IO_BUFFER_SIZE);

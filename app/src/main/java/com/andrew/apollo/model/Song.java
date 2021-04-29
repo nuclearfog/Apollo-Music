@@ -63,7 +63,7 @@ public class Song extends Music {
     }
 
 
-    public int length() {
+    public int duration() {
         return mDuration;
     }
 

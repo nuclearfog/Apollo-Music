@@ -150,7 +150,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
                 // Song names (line one)
                 holder.mLineOne = song.getName();
                 // Song duration (line one, right)
-                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.length());
+                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.duration());
                 // Artist names (line two)
                 holder.mLineTwo = song.getArtist();
                 mData.add(holder);

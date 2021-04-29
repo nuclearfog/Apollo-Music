@@ -90,7 +90,8 @@ public class CursorCreator {
             FavoriteColumns.SONGNAME,
             FavoriteColumns.ALBUMNAME,
             FavoriteColumns.ARTISTNAME,
-            FavoriteColumns.PLAYCOUNT
+            FavoriteColumns.PLAYCOUNT,
+            FavoriteColumns.DURATION
     };
 
     /**

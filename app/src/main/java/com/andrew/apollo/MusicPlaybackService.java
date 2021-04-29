@@ -283,7 +283,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.ARTIST_ID
+            MediaStore.Audio.Media.ARTIST_ID,
+            MediaStore.Audio.Media.DURATION
     };
 
     /**
@@ -1194,11 +1195,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         if (what.equals(POSITION_CHANGED)) {
             return;
         }
+        long audioId = getAudioId();
+        long albumId = getAlbumId();
+        String albumName = getAlbumName();
+        String artistName = getArtistName();
+        String trackName = getTrackName();
+
         Intent intent = new Intent(what);
-        intent.putExtra("id", getAudioId());
-        intent.putExtra("artist", getArtistName());
-        intent.putExtra("album", getAlbumName());
-        intent.putExtra("track", getTrackName());
+        intent.putExtra("id", audioId);
+        intent.putExtra("artist", artistName);
+        intent.putExtra("album", albumName);
+        intent.putExtra("track", trackName);
         intent.putExtra("playing", isPlaying());
         intent.putExtra("isfavorite", isFavorite());
         sendBroadcast(intent);
@@ -1209,13 +1216,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
         if (what.equals(META_CHANGED)) {
             // Increase the play count for favorite songs.
-            if (mFavoritesCache.getSongId(getAudioId()) != null) {
-                mFavoritesCache.addSongId(getAudioId(), getTrackName(), getAlbumName(), getArtistName());
+            if (mFavoritesCache.getSongId(audioId) != null) {
+                mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDuration());
             }
             // Add the track to the recently played list.
-            mRecentsCache.addAlbumId(getAlbumId(), getAlbumName(), getArtistName(),
-                    MusicUtils.getSongCountForAlbum(this, getAlbumId()),
-                    MusicUtils.getReleaseDateForAlbum(this, getAlbumId()));
+            mRecentsCache.addAlbumId(albumId, albumName, artistName,
+                    MusicUtils.getSongCountForAlbum(this, albumId),
+                    MusicUtils.getReleaseDateForAlbum(this, albumId));
         } else if (what.equals(QUEUE_CHANGED)) {
             saveQueue(true);
             if (isPlaying()) {
@@ -1223,9 +1230,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             }
         } else {
             saveQueue(false);
-        }
-        if (what.equals(PLAYSTATE_CHANGED)) {
-            mNotificationHelper.updateNotification();
+            if (what.equals(PLAYSTATE_CHANGED)) {
+                mNotificationHelper.updateNotification();
+            }
         }
         // Update the app-widgets
         for (AppWidgetBase widget : widgets) {
@@ -1551,10 +1558,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getPath() {
         synchronized (this) {
-            if (mCursor == null) {
-                return null;
+            if (mCursor != null) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
+            return "";
         }
     }
 
@@ -1563,12 +1570,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return The current song album Name
      */
+    @SuppressLint("InlinedApi")
     public String getAlbumName() {
         synchronized (this) {
-            if (mCursor == null) {
-                return null;
+            if (mCursor != null) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow("album"));
+            return "";
         }
     }
 
@@ -1579,11 +1587,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getTrackName() {
         synchronized (this) {
-            if (mCursor == null) {
-                return null;
+            if (mCursor != null) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
         }
+        return "";
     }
 
     /**
@@ -1591,13 +1599,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return The current song artist name
      */
+    @SuppressLint("InlinedApi")
     public String getArtistName() {
         synchronized (this) {
-            if (mCursor == null) {
-                return null;
+            if (mCursor != null) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
             }
-            return mCursor.getString(mCursor.getColumnIndexOrThrow("artist"));
         }
+        return "";
     }
 
     /**
@@ -1607,11 +1616,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getAlbumArtistName() {
         synchronized (this) {
-            if (mAlbumCursor == null) {
-                return null;
+            if (mAlbumCursor != null) {
+                return mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
             }
-            return mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
         }
+        return "";
     }
 
     /**
@@ -1621,11 +1630,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public long getAlbumId() {
         synchronized (this) {
-            if (mCursor == null || !mCursor.moveToFirst()) {
-                return -1;
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
             }
-            return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
         }
+        return -1;
     }
 
     /**
@@ -1635,11 +1644,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public long getArtistId() {
         synchronized (this) {
-            if (mCursor == null) {
-                return -1;
+            if (mCursor != null) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
             }
-            return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
         }
+        return -1;
+    }
+
+
+    @SuppressLint("InlinedApi")
+    public long getDuration() {
+        synchronized (this) {
+            if (mCursor != null) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
+            }
+        }
+        return 0;
     }
 
     /**
@@ -1891,7 +1911,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public void toggleFavorite() {
         if (mFavoritesCache != null) {
             synchronized (this) {
-                mFavoritesCache.toggleSong(getAudioId(), getTrackName(), getAlbumName(), getArtistName());
+                mFavoritesCache.toggleSong(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDuration());
             }
         }
     }
@@ -2183,7 +2203,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
 
         /**
-         * @param interval The length the queue
+         * @param interval The duration the queue
          * @return The position of the next track to play
          */
         public int nextInt(int interval) {

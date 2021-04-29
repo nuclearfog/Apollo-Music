@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * space on a filesystem. Each cache entry has a string key and a fixed number
  * of values. Values are byte sequences, accessible as streams or files. Each
  * value must be between {@code 0} and {@code Integer.MAX_VALUE} bytes in
- * length.
+ * duration.
  * <p>
  * The cache stores its data in a directory on the filesystem. This directory
  * must be exclusive to the cache; the cache may delete or overwrite files from
@@ -310,14 +310,11 @@ public final class DiskLruCache implements Closeable {
                         + ", " + valueCountString + ", " + blank + "]");
             }
 
-            String readLn;
-            do {
-                readLn = readAsciiLine(in);
-                if (readLn.isEmpty())
-                    break;
+            String readLn = readAsciiLine(in);
+            while (!readLn.isEmpty()) {
                 readJournalLine(readLn);
-
-            } while (!readLn.isEmpty());
+                readLn = readAsciiLine(in);
+            }
         } finally {
             closeQuietly(in);
         }

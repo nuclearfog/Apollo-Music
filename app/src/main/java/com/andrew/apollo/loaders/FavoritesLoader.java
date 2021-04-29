@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ALBUMNAME;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ARTISTNAME;
+import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.DURATION;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ID;
 import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.SONGNAME;
 
@@ -63,8 +64,10 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(ARTISTNAME));
                     // Copy the album name
                     String album = mCursor.getString(mCursor.getColumnIndexOrThrow(ALBUMNAME));
+                    // Copy the duration value in milliseconds
+                    long duration = mCursor.getLong(mCursor.getColumnIndexOrThrow(DURATION));
                     // Create a new song
-                    Song song = new Song(id, songName, artist, album, -1);
+                    Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up
                     result.add(song);
                 } while (mCursor.moveToNext());

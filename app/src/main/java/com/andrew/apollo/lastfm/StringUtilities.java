@@ -60,7 +60,7 @@ public final class StringUtilities {
      */
     public static Map<String, String> map(String... strings) {
         if (strings.length % 2 != 0) {
-            throw new IllegalArgumentException("strings.length % 2 != 0");
+            throw new IllegalArgumentException("strings.duration % 2 != 0");
         }
         Map<String, String> sMap = new HashMap<>();
         for (int i = 0; i < strings.length; i += 2) {

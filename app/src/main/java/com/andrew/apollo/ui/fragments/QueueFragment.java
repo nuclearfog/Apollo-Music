@@ -99,6 +99,11 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     private String mSongName, mAlbumName, mArtistName;
 
     /**
+     * track duration in milliseconds
+     */
+    private long duration;
+
+    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public QueueFragment() {
@@ -190,6 +195,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             mSongName = mSong.getName();
             mAlbumName = mSong.getAlbum();
             mArtistName = mSong.getArtist();
+            duration = mSong.duration() * 1000;
         }
         // Play the song next
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
@@ -227,7 +233,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(requireActivity()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(requireActivity()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName, duration);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:

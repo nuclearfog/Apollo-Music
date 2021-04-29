@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -35,28 +36,36 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 import java.io.File;
 import java.util.List;
 
+import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_FAVORITES;
+import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_PLAYLIST;
+import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_QUEUE;
+import static com.andrew.apollo.menu.FragmentMenuItems.DELETE;
+import static com.andrew.apollo.menu.FragmentMenuItems.MORE_BY_ARTIST;
+import static com.andrew.apollo.menu.FragmentMenuItems.NEW_PLAYLIST;
+import static com.andrew.apollo.menu.FragmentMenuItems.PLAYLIST_SELECTED;
+import static com.andrew.apollo.menu.FragmentMenuItems.PLAY_NEXT;
+import static com.andrew.apollo.menu.FragmentMenuItems.PLAY_SELECTION;
+import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
+
+/**
+ * decompiled from Apollo 1.6 APK
+ */
 public class FolderSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>, AdapterView.OnItemClickListener {
 
+    private static final int GROUP_ID = 14;
+
     private ProfileSongAdapter mAdapter;
-
-    private String mAlbumName;
-
-    private String mArtistName;
 
     private ListView mListView;
 
     private ProfileTabCarousel mProfileTabCarousel;
 
-    private long mSelectedId;
+    /**
+     * track selected from contextmenu
+     */
+    @Nullable
+    private Song selectedSong;
 
-    private Song mSong;
-
-    private String mSongName;
-
-    private void refresh() {
-        mListView.setSelection(0);
-        LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle paramBundle) {
@@ -68,6 +77,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -75,57 +85,72 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         mProfileTabCarousel = activity.findViewById(R.id.acivity_profile_base_tab_carousel);
     }
 
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle paramBundle) {
+        Bundle bundle;
+        super.onSaveInstanceState(paramBundle);
+        if (getArguments() != null) {
+            bundle = getArguments();
+        } else {
+            bundle = new Bundle();
+        }
+        paramBundle.putAll(bundle);
+    }
+
+
     @Override
     public boolean onContextItemSelected(MenuItem paramMenuItem) {
-        if (paramMenuItem.getGroupId() == 14) {
-            long l;
+        if (paramMenuItem.getGroupId() == GROUP_ID && selectedSong != null) {
+            long[] ids = {selectedSong.getId()};
+
             switch (paramMenuItem.getItemId()) {
                 default:
                     return super.onContextItemSelected(paramMenuItem);
 
-                case 1:
-                    MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
+                case PLAY_SELECTION:
+                    MusicUtils.playAll(ids, 0, false);
                     return true;
 
-                case 16:
-                    MusicUtils.playNext(new long[]{mSelectedId});
+                case PLAY_NEXT:
+                    MusicUtils.playNext(ids);
                     return true;
 
-                case 2:
-                    MusicUtils.addToQueue(requireContext(), new long[]{this.mSelectedId});
+                case ADD_TO_QUEUE:
+                    MusicUtils.addToQueue(requireContext(), ids);
                     return true;
 
-                case 4:
-                    FavoritesStore.getInstance(requireContext()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
+                case ADD_TO_FAVORITES:
+                    FavoritesStore.getInstance(requireContext()).addSongId(selectedSong);
                     return true;
 
-                case 5:
-                    CreateNewPlaylist.getInstance(new long[]{this.mSelectedId}).show(getParentFragmentManager(), "CreatePlaylist");
+                case NEW_PLAYLIST:
+                    CreateNewPlaylist.getInstance(ids).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
 
-                case 7:
-                    l = paramMenuItem.getIntent().getLongExtra("playlist", 0L);
-                    MusicUtils.addToPlaylist(requireActivity(), new long[]{mSelectedId}, l);
+                case PLAYLIST_SELECTED:
+                    long playlistId = paramMenuItem.getIntent().getLongExtra("playlist", 0L);
+                    MusicUtils.addToPlaylist(requireActivity(), ids, playlistId);
                     return true;
 
-                case 8:
-                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
+                case MORE_BY_ARTIST:
+                    NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
                     return true;
 
-                case 12:
-                    MusicUtils.setRingtone(requireContext(), mSelectedId);
+                case USE_AS_RINGTONE:
+                    MusicUtils.setRingtone(requireContext(), selectedSong.getId());
                     return true;
 
-                case 9:
+                case DELETE:
                     break;
             }
-            long[] id = {mSelectedId};
-            MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
+            MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), ids);
             refresh();
             return true;
         }
         return false;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle paramBundle) {
@@ -133,26 +158,22 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         this.mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple, 1);
     }
 
+
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu paramContextMenu, @NonNull View paramView, ContextMenuInfo paramContextMenuInfo) {
         super.onCreateContextMenu(paramContextMenu, paramView, paramContextMenuInfo);
         int position = ((AdapterContextMenuInfo) paramContextMenuInfo).position - 1;
-        mSong = mAdapter.getItem(position);
-        if (mSong != null) {
-            mSelectedId = mSong.getId();
-            mSongName = mSong.getName();
-            mAlbumName = mSong.getAlbum();
-            mArtistName = mSong.getArtist();
-        }
-        paramContextMenu.add(14, 1, 0, R.string.context_menu_play_selection);
-        paramContextMenu.add(14, 16, 0, R.string.context_menu_play_next);
-        paramContextMenu.add(14, 2, 0, R.string.add_to_queue);
-        SubMenu subMenu = paramContextMenu.addSubMenu(14, 3, 0, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireActivity(), 14, subMenu, true);
-        paramContextMenu.add(14, 8, 0, R.string.context_menu_more_by_artist);
-        paramContextMenu.add(14, 12, 0, R.string.context_menu_use_as_ringtone);
-        paramContextMenu.add(14, 9, 0, R.string.context_menu_delete);
+        selectedSong = mAdapter.getItem(position);
+        paramContextMenu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+        paramContextMenu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+        paramContextMenu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+        paramContextMenu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+        paramContextMenu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+        paramContextMenu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
+        SubMenu subMenu = paramContextMenu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
     }
+
 
     @NonNull
     @Override
@@ -164,6 +185,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             foldername = "";
         return new FolderSongLoader(requireContext(), new File(foldername));
     }
+
 
     @Override
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
@@ -179,10 +201,12 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         return view;
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
         MusicUtils.playAllFromUserItemClick(mAdapter, paramInt);
     }
+
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> paramLoader, List<Song> paramList) {
@@ -194,20 +218,15 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
+
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> paramLoader) {
         mAdapter.clear();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle paramBundle) {
-        Bundle bundle;
-        super.onSaveInstanceState(paramBundle);
-        if (getArguments() != null) {
-            bundle = getArguments();
-        } else {
-            bundle = new Bundle();
-        }
-        paramBundle.putAll(bundle);
+
+    private void refresh() {
+        mListView.setSelection(0);
+        LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
     }
 }

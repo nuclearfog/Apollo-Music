@@ -27,6 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -78,17 +79,8 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     /**
      * Represents a song
      */
+    @Nullable
     private Song mSong;
-
-    /**
-     * Id of a context menu item
-     */
-    private long mSelectedId;
-
-    /**
-     * Song, album, and artist name used in the context menu
-     */
-    private String mSongName, mAlbumName, mArtistName;
 
     /**
      * Profile header
@@ -182,13 +174,6 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
-
-        if (mSong != null) {
-            mSelectedId = mSong.getId();
-            mSongName = mSong.getName();
-            mAlbumName = mSong.getAlbum();
-            mArtistName = mSong.getArtist();
-        }
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Play next
@@ -207,49 +192,41 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mSong != null) {
+            long[] trackId = {mSong.getId()};
+
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
+                    MusicUtils.playAll(trackId, 0, false);
                     return true;
 
                 case FragmentMenuItems.PLAY_NEXT:
-                    MusicUtils.playNext(new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.playNext(trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.addToQueue(requireContext(), trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(requireContext()).addSongId(
-                            mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(requireContext()).addSongId(mSong);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(new long[]{
-                            mSelectedId
-                    }).show(getParentFragmentManager(), "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireActivity(), new long[]{
-                            mSelectedId
-                    }, mPlaylistId);
+                    MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSelectedId);
+                    MusicUtils.setRingtone(requireContext(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    long[] id = {mSelectedId};
-                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
                     refresh();
                     return true;
             }
@@ -310,7 +287,6 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mListView.setSelection(0);
-        mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }
 }

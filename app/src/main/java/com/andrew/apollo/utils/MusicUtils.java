@@ -1255,7 +1255,7 @@ public final class MusicUtils {
     }
 
     /**
-     * @return The total length of the current track
+     * @return The total duration of the current track
      */
     public static long duration() {
         if (mService != null) {

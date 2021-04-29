@@ -218,10 +218,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 if (actionBar != null) {
                     // Action bar title = album name
                     actionBar.setTitle(mProfileName);
-                }
-                if (mArguments != null) {
-                    // Action bar subtitle = year released
-                    actionBar.setSubtitle(mArguments.getString(Config.ALBUM_YEAR));
+                    if (mArguments != null) {
+                        // Action bar subtitle = year released
+                        actionBar.setSubtitle(mArguments.getString(Config.ALBUM_YEAR));
+                    }
                 }
                 break;
 

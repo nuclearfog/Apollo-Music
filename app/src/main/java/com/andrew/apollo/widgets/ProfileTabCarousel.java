@@ -101,12 +101,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     private int mLastScrollPosition = Integer.MIN_VALUE;
 
     /**
-     * Allowed horizontal scroll length
+     * Allowed horizontal scroll duration
      */
     private int mAllowedHorizontalScrollLength = Integer.MIN_VALUE;
 
     /**
-     * Allowed vertical scroll length
+     * Allowed vertical scroll duration
      */
     private int mAllowedVerticalScrollLength = Integer.MIN_VALUE;
 

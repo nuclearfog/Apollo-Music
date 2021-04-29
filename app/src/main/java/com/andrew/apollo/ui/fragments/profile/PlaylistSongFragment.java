@@ -12,10 +12,11 @@
 package com.andrew.apollo.ui.fragments.profile;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Playlists.Members;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -78,17 +80,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     /**
      * Represents a song
      */
+    @Nullable
     private Song mSong;
-
-    /**
-     * Id of a context menu item
-     */
-    private long mSelectedId;
-
-    /**
-     * Song, album, and artist name used in the context menu
-     */
-    private String mSongName, mAlbumName, mArtistName;
 
     /**
      * The Id of the playlist the songs belong to
@@ -190,12 +183,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
-        if (mSong != null) {
-            mSelectedId = mSong.getId();
-            mSongName = mSong.getName();
-            mAlbumName = mSong.getAlbum();
-            mArtistName = mSong.getArtist();
-        }
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
         // Play next
@@ -215,46 +202,48 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
+
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        long[] id = {mSelectedId};
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mSong != null) {
+            long[] trackId = {mSong.getId()};
+
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(id, 0, false);
+                    MusicUtils.playAll(trackId, 0, false);
                     return true;
 
                 case FragmentMenuItems.PLAY_NEXT:
-                    MusicUtils.playNext(id);
+                    MusicUtils.playNext(trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), id);
+                    MusicUtils.addToQueue(requireContext(), trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(requireContext()).addSongId(mSelectedId, mSongName, mAlbumName, mArtistName);
+                    FavoritesStore.getInstance(requireContext()).addSongId(mSong);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(id).show(getParentFragmentManager(), "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long playlistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireActivity(), id, playlistId);
+                    MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSelectedId);
+                    MusicUtils.setRingtone(requireContext(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:
@@ -329,12 +318,14 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     @Override
     public void remove(int which) {
         mSong = mAdapter.getItem(which - 1);
-        mAdapter.remove(mSong);
-        mAdapter.notifyDataSetChanged();
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", mPlaylistId);
-        requireActivity().getContentResolver().delete(uri,
-                MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + mSong.getId(),
-                null);
+        if (mSong != null) {
+            ContentResolver resolver = requireActivity().getContentResolver();
+            Uri uri = Members.getContentUri("external", mPlaylistId);
+            resolver.delete(uri, Members.AUDIO_ID + "=" + mSong.getId(), null);
+
+            mAdapter.remove(mSong);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -352,7 +343,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         mAdapter.remove(mSong);
         mAdapter.insert(mSong, realTo);
         mAdapter.notifyDataSetChanged();
-        MediaStore.Audio.Playlists.Members.moveItem(requireActivity().getContentResolver(), mPlaylistId, realFrom, realTo);
+        Members.moveItem(requireActivity().getContentResolver(), mPlaylistId, realFrom, realTo);
     }
 
 

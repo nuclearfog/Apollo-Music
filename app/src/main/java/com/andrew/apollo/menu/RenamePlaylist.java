@@ -14,11 +14,12 @@ package com.andrew.apollo.menu;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Audio;
+import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
@@ -30,6 +31,10 @@ import com.andrew.apollo.utils.MusicUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class RenamePlaylist extends BasePlaylistDialog {
+
+    private static final String CONDITION = Playlists._ID + "=?";
+
+    private static final String[] PROJECTION = {Playlists.NAME};
 
     private long mRenameId;
 
@@ -66,8 +71,7 @@ public class RenamePlaylist extends BasePlaylistDialog {
         else if (getArguments() != null)
             mRenameId = getArguments().getLong("rename", -1);
         String mOriginalName = getPlaylistNameFromId(mRenameId);
-        mDefaultname = savedInstanceState != null ? savedInstanceState.getString("defaultname")
-                : mOriginalName;
+        mDefaultname = savedInstanceState != null ? savedInstanceState.getString("defaultname") : mOriginalName;
         if ((mRenameId < 0 || mOriginalName == null || mDefaultname == null) && getDialog() != null) {
             getDialog().dismiss();
             return;
@@ -82,14 +86,15 @@ public class RenamePlaylist extends BasePlaylistDialog {
     @Override
     public void onSaveClick() {
         String playlistName = mPlaylist.getText().toString();
-        if (playlistName.length() > 0) {
-            ContentResolver resolver = requireActivity().getContentResolver();
+        if (!playlistName.isEmpty()) {
+            // seting new name
             ContentValues values = new ContentValues(1);
-            values.put(Audio.Playlists.NAME, Capitalize.capitalize(playlistName));
-            resolver.update(Audio.Playlists.EXTERNAL_CONTENT_URI, values,
-                    MediaStore.Audio.Playlists._ID + "=?", new String[]{
-                            String.valueOf(mRenameId)
-                    });
+            values.put(Playlists.NAME, Capitalize.capitalize(playlistName));
+            // update old playlist
+            Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mRenameId);
+            ContentResolver resolver = requireActivity().getContentResolver();
+            resolver.update(uri, values, null, null);
+            // close keyboard after dialog end
             closeKeyboard();
             if (getDialog() != null) {
                 getDialog().dismiss();
@@ -121,21 +126,17 @@ public class RenamePlaylist extends BasePlaylistDialog {
      * @return The name of the playlist
      */
     private String getPlaylistNameFromId(long id) {
-        Cursor cursor = requireActivity().getContentResolver().query(
-                MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, new String[]{
-                        MediaStore.Audio.Playlists.NAME
-                }, MediaStore.Audio.Playlists._ID + "=?", new String[]{
-                        String.valueOf(id)
-                }, MediaStore.Audio.Playlists.NAME);
+        String[] param = {String.valueOf(id)};
+        ContentResolver resolver = requireActivity().getContentResolver();
+        Cursor cursor = resolver.query(Playlists.EXTERNAL_CONTENT_URI, PROJECTION, CONDITION, param, Playlists.NAME);
+
         String playlistName = null;
         if (cursor != null) {
-            cursor.moveToFirst();
-            if (!cursor.isAfterLast()) {
+            if (cursor.moveToFirst()) {
                 playlistName = cursor.getString(0);
             }
-        }
-        if (cursor != null)
             cursor.close();
+        }
         return playlistName;
     }
 }

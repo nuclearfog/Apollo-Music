@@ -18,7 +18,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Playlists;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -226,7 +226,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         } else if (mPlaylist != null) {
             // User created
             playlistName = mPlaylist.getName();
-            bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Playlists.CONTENT_TYPE);
+            bundle.putString(Config.MIME_TYPE, Playlists.CONTENT_TYPE);
             bundle.putLong(Config.ID, mPlaylist.getId());
         }
         bundle.putString(Config.NAME, playlistName);
@@ -311,7 +311,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Uri mUri = ContentUris.withAppendedId(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
+                        Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
                         requireActivity().getContentResolver().delete(mUri, null, null);
                         MusicUtils.refresh();
                     }

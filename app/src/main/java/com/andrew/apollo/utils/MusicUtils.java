@@ -588,20 +588,25 @@ public final class MusicUtils {
         return EMPTY_LIST;
     }
 
+    /**
+     * get list of songs from multiple genre IDs
+     *
+     * @param context The {@link Context} to use.
+     * @param ids     list of genre IDs
+     * @return song IDs from genres
+     */
     public static long[] getSongListForGenres(Context context, long[] ids) {
+        int size = 0;
         long[][] data = new long[ids.length][];
         for (int i = 0; i < ids.length; i++) {
             data[i] = getSongListForGenre(context, ids[i]);
+            size += data[i].length;
         }
-        int pos = 0;
-        int size = 0;
-        for (long[] array : data) {
-            size += array.length;
-        }
+        int index = 0;
         long[] result = new long[size];
         for (long[] array : data) {
             for (long element : array) {
-                result[pos++] = element;
+                result[index++] = element;
             }
         }
         return result;
@@ -846,16 +851,18 @@ public final class MusicUtils {
         if (name != null && name.length() > 0) {
             Cursor cursor = CursorCreator.makePlaylistCursor(context, name);
             // check if playlist exists
-            if (cursor != null && !cursor.moveToFirst()) {
+            if (cursor != null) {
                 // create only playlist if there isn't any conflict
-                ContentResolver resolver = context.getContentResolver();
-                ContentValues values = new ContentValues(1);
-                values.put(PLAYLIST_COLUMNS[1], name);
-                Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
-                cursor.close();
-                if (uri != null && uri.getLastPathSegment() != null) {
-                    return Long.parseLong(uri.getLastPathSegment());
+                if (!cursor.moveToFirst()) {
+                    ContentResolver resolver = context.getContentResolver();
+                    ContentValues values = new ContentValues(1);
+                    values.put(PLAYLIST_COLUMNS[1], name);
+                    Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
+                    if (uri != null && uri.getLastPathSegment() != null) {
+                        return Long.parseLong(uri.getLastPathSegment());
+                    }
                 }
+                cursor.close();
             }
         }
         return -1;
@@ -880,7 +887,7 @@ public final class MusicUtils {
     public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
         ContentResolver resolver = activity.getContentResolver();
-        String[] projection = new String[]{"count(*)"};
+        String[] projection = new String[]{"COUNT(" + Members.AUDIO_ID + ")"};
         Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistid);
         Cursor cursor = resolver.query(uri, projection, null, null, null);
         if (cursor != null) {

@@ -16,7 +16,7 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
@@ -30,8 +30,18 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class CreateNewPlaylist extends BasePlaylistDialog {
 
+    /**
+     * filter empty playlist name
+     */
+    private static final String SELECTION = Playlists.NAME + "!=''";
+
+    /**
+     * projection for playlist columns
+     */
+    private static final String[] PROJECTION = new String[]{Playlists.NAME};
+
     // The playlist list
-    private long[] mPlaylistList = new long[]{};
+    private long[] mPlaylistList = {};
 
     /**
      * @param list The list of tracks to add to the playlist
@@ -64,7 +74,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
         if (savedInstanceState != null)
             mDefaultname = savedInstanceState.getString("defaultname");
         else
-            makePlaylistName();
+            mDefaultname = makePlaylistName();
         if (mDefaultname == null && getDialog() != null) {
             getDialog().dismiss();
             return;
@@ -73,6 +83,9 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
         mPrompt = String.format(promptformat, mDefaultname);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onSaveClick() {
         String playlistName = mPlaylist.getText().toString();
@@ -115,33 +128,44 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
         }
     }
 
-    private void makePlaylistName() {
+    /**
+     * generate default playlist name without conflicting existing names
+     *
+     * @return generated playlist name
+     */
+    private String makePlaylistName() {
         String template = getString(R.string.new_playlist_name_template);
-        int num = 1;
-        String[] projection = new String[]{MediaStore.Audio.Playlists.NAME};
         ContentResolver resolver = requireActivity().getContentResolver();
-        String selection = MediaStore.Audio.Playlists.NAME + " != ''";
-        Cursor cursor = resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, projection,
-                selection, null, MediaStore.Audio.Playlists.NAME);
-        if (cursor == null) {
-            return;
-        }
+        Cursor cursor = resolver.query(Playlists.EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, Playlists.NAME);
+        if (cursor != null) {
 
-        String suggestedname;
-        suggestedname = String.format(template, num++);
-        boolean done = false;
-        while (!done) {
-            done = true;
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                String playlistname = cursor.getString(0);
-                if (playlistname.compareToIgnoreCase(suggestedname) == 0) {
-                    suggestedname = String.format(template, num++);
-                    done = false;
-                }
-                cursor.moveToNext();
+            // get all available playlist names
+            String[] playlists = {};
+            if (cursor.moveToFirst()) {
+                int index = 0;
+                playlists = new String[cursor.getCount()];
+                do {
+                    playlists[index++] = cursor.getString(0);
+                } while (cursor.moveToNext());
+                cursor.close();
             }
+
+            // search for conflicts and increase number suffix
+            int num = 1;
+            boolean conflict;
+            String suggestedname;
+            do {
+                conflict = false;
+                suggestedname = String.format(template, num++);
+                for (String playlist : playlists) {
+                    if (suggestedname.equals(playlist)) {
+                        conflict = true;
+                        break;
+                    }
+                }
+            } while (conflict);
+            return suggestedname;
         }
-        cursor.close();
+        return "";
     }
 }

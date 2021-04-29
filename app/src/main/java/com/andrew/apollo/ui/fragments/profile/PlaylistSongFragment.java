@@ -45,6 +45,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.VerticalScrollListener;
@@ -57,7 +58,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
+        OnItemClickListener, DropListener, RemoveListener, DragScrollProfile, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -216,20 +217,19 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
+        long[] id = {mSelectedId};
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
+                    MusicUtils.playAll(id, 0, false);
                     return true;
 
                 case FragmentMenuItems.PLAY_NEXT:
-                    MusicUtils.playNext(new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.playNext(id);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), new long[]{mSelectedId});
+                    MusicUtils.addToQueue(requireContext(), id);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
@@ -237,14 +237,12 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(new long[]{mSelectedId}).show(getParentFragmentManager(), "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(id).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long playlistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireActivity(), new long[]{
-                            mSelectedId
-                    }, playlistId);
+                    MusicUtils.addToPlaylist(requireActivity(), id, playlistId);
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
@@ -256,7 +254,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    long[] id = {mSelectedId};
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
                     return true;
 
@@ -356,5 +353,11 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         mAdapter.insert(mSong, realTo);
         mAdapter.notifyDataSetChanged();
         MediaStore.Audio.Playlists.Members.moveItem(requireActivity().getContentResolver(), mPlaylistId, realFrom, realTo);
+    }
+
+
+    @Override
+    public void refresh() {
+        LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }
 }

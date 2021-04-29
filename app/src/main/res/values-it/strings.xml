@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Interfaccia</string>
     <string name="settings_storage_category">Memoria</string>
     <string name="settings_data_category">Dati</string>
-    <string name="settings_about_category">Info</string>
     <string name="settings_author_title">Autore</string>
     <string name="settings_about_apollo">Info Apollo</string>
     <string name="settings_special_thanks">Ringraziamenti</string>

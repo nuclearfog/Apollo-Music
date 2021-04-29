@@ -96,7 +96,6 @@
     <string name="settings_ui_category">인터페이스</string>
     <string name="settings_storage_category">저장소</string>
     <string name="settings_data_category">데이터</string>
-    <string name="settings_about_category">정보</string>
     <string name="settings_author_title">만든이</string>
     <string name="settings_about_apollo">Apollo 정보</string>
     <string name="settings_special_thanks">도움 주신 분</string>

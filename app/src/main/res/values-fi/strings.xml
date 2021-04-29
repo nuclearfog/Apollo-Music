@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Käyttöliittymä</string>
     <string name="settings_storage_category">Tallennustila</string>
     <string name="settings_data_category">Tiedot</string>
-    <string name="settings_about_category">Tietoja</string>
     <string name="settings_author_title">Tekijä</string>
     <string name="settings_about_apollo">Tietoja Apollosta</string>
     <string name="settings_special_thanks">Erityiskiitokset</string>

@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Interfazea</string>
     <string name="settings_storage_category">Biltegiratzea</string>
     <string name="settings_data_category">Datuak</string>
-    <string name="settings_about_category">Honi buruz</string>
     <string name="settings_author_title">Autorea</string>
     <string name="settings_about_apollo">Apollo-ri buruz</string>
     <string name="settings_special_thanks">Eskerrak</string>

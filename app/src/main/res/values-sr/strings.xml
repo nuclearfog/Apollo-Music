@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Интерфејс</string>
     <string name="settings_storage_category">Складиште</string>
     <string name="settings_data_category">Податак</string>
-    <string name="settings_about_category">О програму</string>
     <string name="settings_author_title">Аутор</string>
     <string name="settings_about_apollo">О Apollo-у</string>
     <string name="settings_special_thanks">Специјална захвалност</string>

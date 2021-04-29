@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Διεπαφή</string>
     <string name="settings_storage_category">Αποθηκευτικός χώρος</string>
     <string name="settings_data_category">Δεδομένα</string>
-    <string name="settings_about_category">Σχετικά</string>
     <string name="settings_author_title">Δημιουργός</string>
     <string name="settings_about_apollo">Περί Apollo</string>
     <string name="settings_special_thanks">Θερμές ευχαριστίες</string>

@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
@@ -52,14 +52,14 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     /**
      * Constructor for <code>SearchAdapter</code>
      *
-     * @param context The {@link Context} to use.
+     * @param activity The {@link FragmentActivity} to use.
      */
-    public SearchAdapter(AppCompatActivity context) {
-        super(context, 0);
+    public SearchAdapter(FragmentActivity activity) {
+        super(activity, 0);
         // Initialize the cache & image fetcher
-        mImageFetcher = ApolloUtils.getImageFetcher(context);
+        mImageFetcher = ApolloUtils.getImageFetcher(activity);
         // Create the prefix highlighter
-        mHighlighter = new PrefixHighlighter(context);
+        mHighlighter = new PrefixHighlighter(activity);
     }
 
     /**

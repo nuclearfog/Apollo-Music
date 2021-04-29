@@ -230,11 +230,11 @@ public final class ApolloUtils {
      * @param displayName The shortcut name
      * @param id          The ID of the artist, album, playlist, or genre
      * @param mimeType    The MIME type of the shortcut
-     * @param context     The {@link Context} to use to
+     * @param activity    The {@link FragmentActivity} to use to
      */
-    public static void createShortcutIntent(String displayName, String artistName, Long id, String mimeType, AppCompatActivity context) {
+    public static void createShortcutIntent(String displayName, String artistName, Long id, String mimeType, FragmentActivity activity) {
         try {
-            ImageFetcher fetcher = getImageFetcher(context);
+            ImageFetcher fetcher = getImageFetcher(activity);
             Bitmap bitmap;
             if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
                 bitmap = fetcher.getCachedBitmap(ImageFetcher.generateAlbumCacheKey(displayName, artistName));
@@ -242,10 +242,10 @@ public final class ApolloUtils {
                 bitmap = fetcher.getCachedBitmap(displayName);
             }
             if (bitmap == null) {
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_artwork);
+                bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.default_artwork);
             }
             // Intent used when the icon is touched
-            Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
+            Intent shortcutIntent = new Intent(activity, ShortcutActivity.class);
             shortcutIntent.setAction(Intent.ACTION_VIEW);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -258,12 +258,12 @@ public final class ApolloUtils {
             intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
             intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
             intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            context.sendBroadcast(intent);
-            AppMsg.makeText(context, context.getString(R.string.pinned_to_home_screen, displayName), AppMsg.STYLE_CONFIRM).show();
+            activity.sendBroadcast(intent);
+            AppMsg.makeText(activity, activity.getString(R.string.pinned_to_home_screen, displayName), AppMsg.STYLE_CONFIRM).show();
         } catch (Exception e) {
             Log.e("ApolloUtils", "createShortcutIntent", e);
-            AppMsg.makeText(context,
-                    context.getString(R.string.could_not_be_pinned_to_home_screen, displayName),
+            AppMsg.makeText(activity,
+                    activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName),
                     AppMsg.STYLE_ALERT).show();
         }
     }

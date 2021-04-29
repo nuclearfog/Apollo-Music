@@ -119,7 +119,6 @@
     <string name="settings_ui_category">Interface</string>
     <string name="settings_storage_category">Storage</string>
     <string name="settings_data_category">Data</string>
-    <string name="settings_about_category">About</string>
     <string name="settings_author_title">Author</string>
     <string name="settings_remastered_title" translatable="false">Remastered by</string>
     <string name="settings_about_apollo">About Apollo</string>

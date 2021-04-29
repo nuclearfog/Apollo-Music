@@ -417,11 +417,11 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     /**
      * Sets the artist image header
      *
-     * @param context    The {@link AppCompatActivity} to use
+     * @param context    The {@link Context} to use
      * @param artistName The artist name used to find the cached artist image
      *                   and used to find the last album played by the artist
      */
-    public void setArtistProfileHeader(AppCompatActivity context, String artistName) {
+    public void setArtistProfileHeader(Context context, String artistName) {
         mFirstTab.setLabel(getResources().getString(R.string.page_songs));
         mSecondTab.setLabel(getResources().getString(R.string.page_albums));
         mFirstTab.setArtistPhoto(context, artistName);
@@ -432,11 +432,11 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     /**
      * Sets the album image header
      *
-     * @param context    The {@link AppCompatActivity} to use
+     * @param context    The {@link Context} to use
      * @param albumName  The key used to find the cached album art
      * @param artistName The artist name used to find the cached artist image
      */
-    public void setAlbumProfileHeader(AppCompatActivity context, String albumName, String artistName) {
+    public void setAlbumProfileHeader(Context context, String albumName, String artistName) {
         mFirstTab.setLabel(getResources().getString(R.string.page_songs));
         mFirstTab.setAlbumPhoto(context, albumName, artistName);
         mFirstTab.blurPhoto(artistName, albumName);
@@ -451,7 +451,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
      * @param profileName The key used to find the cached image for a playlist
      *                    or genre
      */
-    public void setPlaylistOrGenreProfileHeader(AppCompatActivity context, String profileName) {
+    public void setPlaylistOrGenreProfileHeader(Context context, String profileName) {
         mFirstTab.setDefault(context);
         mFirstTab.setLabel(getResources().getString(R.string.page_songs));
         mFirstTab.setPlaylistOrGenrePhoto(context, profileName);
@@ -466,7 +466,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
      * @param albumName  The name of the album in the profile the user is viewing.
      * @param artistName The name of the album artist in the profile the user is viewing.
      */
-    public void fetchAlbumPhoto(AppCompatActivity context, String albumName, String artistName) {
+    public void fetchAlbumPhoto(Context context, String albumName, String artistName) {
         mFirstTab.fetchAlbumPhoto(context, albumName, artistName);
     }
 

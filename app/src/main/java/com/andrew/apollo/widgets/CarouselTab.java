@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -88,7 +87,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context The {@link Context} to use.
      * @param artist  The name of the artist in the profile the user is viewing.
      */
-    public void setArtistPhoto(AppCompatActivity context, String artist) {
+    public void setArtistPhoto(Context context, String artist) {
         if (!TextUtils.isEmpty(artist)) {
             mFetcher.loadArtistImage(artist, mPhoto);
         } else {
@@ -194,7 +193,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      * @param context     The {@link Context} to use.
      * @param profileName The key used to fetch the image.
      */
-    public void setPlaylistOrGenrePhoto(AppCompatActivity context, String profileName) {
+    public void setPlaylistOrGenrePhoto(Context context, String profileName) {
         if (!TextUtils.isEmpty(profileName)) {
             Bitmap image = mFetcher.getCachedBitmap(profileName);
             if (image != null) {

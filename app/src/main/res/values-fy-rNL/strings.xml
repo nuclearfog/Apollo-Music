@@ -22,6 +22,5 @@
     <string name="save">Bewarje</string>
     <string name="cancel">Annulearje</string>
     <string name="context_menu_delete">Fuortsmite</string>
-    <string name="settings_about_category">Oer</string>
     <string name="settings_about_apollo">Oer Apollo</string>
 </resources>

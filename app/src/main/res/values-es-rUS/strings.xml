@@ -96,7 +96,6 @@
     <string name="settings_ui_category">Interfaz</string>
     <string name="settings_storage_category">Almacenamiento</string>
     <string name="settings_data_category">Datos</string>
-    <string name="settings_about_category">Acerca de</string>
     <string name="settings_author_title">Autor</string>
     <string name="settings_about_apollo">Acerca de Apollo</string>
     <string name="settings_special_thanks">Agradecimientos</string>

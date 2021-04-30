@@ -1217,7 +1217,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         if (what.equals(META_CHANGED)) {
             // Increase the play count for favorite songs.
             if (mFavoritesCache.getSongId(audioId) != null) {
-                mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDuration());
+                mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
             }
             // Add the track to the recently played list.
             mRecentsCache.addAlbumId(albumId, albumName, artistName,
@@ -1653,7 +1653,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 
     @SuppressLint("InlinedApi")
-    public long getDuration() {
+    public long getDurationMillis() {
         synchronized (this) {
             if (mCursor != null) {
                 return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
@@ -1911,7 +1911,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public void toggleFavorite() {
         if (mFavoritesCache != null) {
             synchronized (this) {
-                mFavoritesCache.toggleSong(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDuration());
+                long trackId = getAudioId();
+                // remove track if exists from the favorites
+                if (mFavoritesCache.exists(trackId)) {
+                    mFavoritesCache.removeItem(trackId);
+                } else {
+                    mFavoritesCache.addSongId(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDurationMillis());
+                }
             }
         }
     }

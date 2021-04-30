@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -82,24 +83,15 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     private TextView emptyText;
 
     /**
-     * Represents a song
-     */
-    private Song mSong;
-
-    /**
-     * Id of a context menu item
-     */
-    private long mSelectedId;
-
-    /**
-     * Artist name used in the context menu
-     */
-    private String mArtistName;
-
-    /**
      * Profile header
      */
     private ProfileTabCarousel mProfileTabCarousel;
+
+    /**
+     * Represents a song
+     */
+    @Nullable
+    private Song mSong;
 
     /**
      * Empty constructor as per the {@link Fragment} documentation
@@ -179,10 +171,6 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         int mSelectedPosition = info.position - 1;
         // Creat a new song
         mSong = mAdapter.getItem(mSelectedPosition);
-        if (mSong != null) {
-            mSelectedId = mSong.getId();
-            mArtistName = mSong.getArtist();
-        }
 
         // Play the song
         menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
@@ -212,53 +200,45 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mSong != null) {
+            long[] trackId = {mSong.getId()};
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(new long[]{mSelectedId}, 0, false);
+                    MusicUtils.playAll(trackId, 0, false);
                     return true;
 
                 case FragmentMenuItems.PLAY_NEXT:
-                    MusicUtils.playNext(new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.playNext(trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), new long[]{
-                            mSelectedId
-                    });
+                    MusicUtils.addToQueue(requireContext(), trackId);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
-                    CreateNewPlaylist.getInstance(new long[]{
-                            mSelectedId
-                    }).show(getParentFragmentManager(), "CreatePlaylist");
+                    CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), "CreatePlaylist");
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireActivity(), new long[]{
-                            mSelectedId
-                    }, mPlaylistId);
+                    MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(requireActivity(), mArtistName);
+                    NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSelectedId);
+                    MusicUtils.setRingtone(requireContext(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_FAVORITES:
-                    FavoritesStore.getInstance(requireContext()).removeItem(mSelectedId);
+                    FavoritesStore.getInstance(requireContext()).removeItem(mSong.getId());
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    long[] id = {mSelectedId};
-                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), id);
+                    MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
                     mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;

@@ -68,6 +68,13 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
 
 
     @Override
+    public void onCreate(@Nullable Bundle paramBundle) {
+        super.onCreate(paramBundle);
+        this.mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple, 1);
+    }
+
+
+    @Override
     public void onActivityCreated(@Nullable Bundle paramBundle) {
         super.onActivityCreated(paramBundle);
         setHasOptionsMenu(true);
@@ -96,6 +103,22 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             bundle = new Bundle();
         }
         paramBundle.putAll(bundle);
+    }
+
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu paramContextMenu, @NonNull View paramView, ContextMenuInfo paramContextMenuInfo) {
+        super.onCreateContextMenu(paramContextMenu, paramView, paramContextMenuInfo);
+        int position = ((AdapterContextMenuInfo) paramContextMenuInfo).position - 1;
+        selectedSong = mAdapter.getItem(position);
+        paramContextMenu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+        paramContextMenu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+        paramContextMenu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+        paramContextMenu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+        paramContextMenu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+        paramContextMenu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
+        SubMenu subMenu = paramContextMenu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
     }
 
 
@@ -149,29 +172,6 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             return true;
         }
         return false;
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle paramBundle) {
-        super.onCreate(paramBundle);
-        this.mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple, 1);
-    }
-
-
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu paramContextMenu, @NonNull View paramView, ContextMenuInfo paramContextMenuInfo) {
-        super.onCreateContextMenu(paramContextMenu, paramView, paramContextMenuInfo);
-        int position = ((AdapterContextMenuInfo) paramContextMenuInfo).position - 1;
-        selectedSong = mAdapter.getItem(position);
-        paramContextMenu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        paramContextMenu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-        paramContextMenu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        paramContextMenu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        paramContextMenu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-        paramContextMenu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
-        SubMenu subMenu = paramContextMenu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
     }
 
 

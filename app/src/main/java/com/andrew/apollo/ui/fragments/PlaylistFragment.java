@@ -32,6 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
@@ -83,6 +84,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     /**
      * Represents a playlist
      */
+    @Nullable
     private Playlist mPlaylist;
 
     /**
@@ -170,7 +172,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mPlaylist != null) {
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
@@ -306,8 +308,9 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      * @return A new {@link AlertDialog} used to delete playlists
      */
     private AlertDialog buildDeleteDialog() {
+        String name = mPlaylist != null ? mPlaylist.getName() : "";
         return new AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.delete_dialog_title, mPlaylist.getName()))
+                .setTitle(getString(R.string.delete_dialog_title, name))
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

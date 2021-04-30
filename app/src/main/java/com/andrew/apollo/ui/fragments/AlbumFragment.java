@@ -101,6 +101,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * Represents an album
      */
+    @Nullable
     private Album mAlbum;
 
     /**
@@ -197,19 +198,21 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             // Create a new album
             mAlbum = mAdapter.getItem(info.position);
         }
-        // Create a list of the album's songs
-        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
-        // Play the album
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Add the album to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the album to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
-        // View more content by the album artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        // Remove the album from the list
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (mAlbum != null) {
+            // Create a list of the album's songs
+            mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+            // Play the album
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Add the album to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the album to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
+            // View more content by the album artist
+            menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // Remove the album from the list
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        }
     }
 
     /**
@@ -218,7 +221,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         // Avoid leaking context menu selections
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mAlbum != null) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(mAlbumList, 0, false);
@@ -271,7 +274,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mAlbum = mAdapter.getItem(position);
-        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        if (mAlbum != null) {
+            NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        }
     }
 
     /**

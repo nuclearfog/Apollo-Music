@@ -30,6 +30,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -102,6 +103,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     /**
      * Represents an album
      */
+    @Nullable
     private Album mAlbum;
 
     /**
@@ -197,21 +199,23 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         // Create a new album
         mAlbum = mAdapter.getItem(info.position);
-        // Create a list of the album's songs
-        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
-        // Play the album
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Add the album to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the album to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
-        // View more content by the album artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        // Remove the album from the list
-        menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
-        // Delete the album
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (mAlbum != null) {
+            // Create a list of the album's songs
+            mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+            // Play the album
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Add the album to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the album to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
+            // View more content by the album artist
+            menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // Remove the album from the list
+            menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
+            // Delete the album
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        }
     }
 
     /**
@@ -220,7 +224,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         // Avoid leaking context menu selections
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mAlbum != null) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(mAlbumList, 0, false);
@@ -279,7 +283,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mAlbum = mAdapter.getItem(position);
-        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        if (mAlbum != null) {
+            NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        }
     }
 
     /**

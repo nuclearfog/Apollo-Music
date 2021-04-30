@@ -52,19 +52,40 @@ public class Song extends Music {
         mDuration = (int) length / 1000;
     }
 
-
+    /**
+     * get artist of this song
+     *
+     * @return artist name
+     */
     public String getArtist() {
         return mArtistName;
     }
 
-
+    /**
+     * album name of the track
+     *
+     * @return album name
+     */
     public String getAlbum() {
         return mAlbumName;
     }
 
-
+    /**
+     * track duration in seconds
+     *
+     * @return duration in seconds
+     */
     public int duration() {
         return mDuration;
+    }
+
+    /**
+     * track duration in milliseconds
+     *
+     * @return duration in milliseconds
+     */
+    public long durationMillis() {
+        return mDuration * 1000;
     }
 
     /**

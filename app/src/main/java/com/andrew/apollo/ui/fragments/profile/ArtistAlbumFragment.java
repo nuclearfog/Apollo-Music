@@ -101,6 +101,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * Represents an album
      */
+    @Nullable
     private Album mAlbum;
     /**
      * Profile header

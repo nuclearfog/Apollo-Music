@@ -24,18 +24,38 @@ import com.andrew.apollo.model.Song;
  */
 public class FavoritesStore extends SQLiteOpenHelper {
 
-    /* Name of database file */
+    private static final String FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME +
+            " (" + FavoriteColumns.ID + " LONG NOT NULL," + FavoriteColumns.SONGNAME + " TEXT NOT NULL," +
+            FavoriteColumns.ALBUMNAME + " TEXT NOT NULL," + FavoriteColumns.ARTISTNAME + " TEXT NOT NULL," +
+            FavoriteColumns.PLAYCOUNT + " LONG NOT NULL," + FavoriteColumns.DURATION + " LONG);";
+
+    /**
+     * condition to find track in favorite table
+     */
+    private static final String FAVORITE_SELECT = FavoriteColumns.ID + "=?";
+
+    /**
+     * database filename
+     */
     public static final String DATABASENAME = "favorites.db";
-    /* Version constant to increment when the database should be rebuilt */
+
+    /**
+     * database version
+     */
     private static final int VERSION = 1;
+
+    /**
+     * singleton isntance
+     */
     private static FavoritesStore sInstance = null;
+
 
     /**
      * Constructor of <code>FavoritesStore</code>
      *
      * @param context The {@link Context} to use
      */
-    public FavoritesStore(Context context) {
+    private FavoritesStore(Context context) {
         super(context, DATABASENAME, null, VERSION);
     }
 
@@ -45,6 +65,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
      */
     public static synchronized FavoritesStore getInstance(Context context) {
         if (sInstance == null) {
+            // use application context to avoid memory leak
             sInstance = new FavoritesStore(context.getApplicationContext());
         }
         return sInstance;
@@ -55,10 +76,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME + " (" + FavoriteColumns.ID
-                + " LONG NOT NULL," + FavoriteColumns.SONGNAME + " TEXT NOT NULL,"
-                + FavoriteColumns.ALBUMNAME + " TEXT NOT NULL," + FavoriteColumns.ARTISTNAME
-                + " TEXT NOT NULL," + FavoriteColumns.PLAYCOUNT + " LONG NOT NULL," + FavoriteColumns.DURATION + " LONG);");
+        db.execSQL(FAVORITE_TABLE);
     }
 
     /**
@@ -76,7 +94,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
      * @param mSong song instance
      */
     public void addSongId(Song mSong) {
-        addSongId(mSong.getId(), mSong.getName(), mSong.getAlbum(), mSong.getArtist(), mSong.duration() * 1000);
+        addSongId(mSong.getId(), mSong.getName(), mSong.getAlbum(), mSong.getArtist(), mSong.durationMillis());
     }
 
     /**
@@ -169,26 +187,37 @@ public class FavoritesStore extends SQLiteOpenHelper {
     }
 
     /**
-     * Toggle the current song as favorite
+     * check if track exists in favorite table
+     *
+     * @param trackId ID of the track
+     * @return true if track is favorite
      */
-    public void toggleSong(Long songId, String songName, String albumName, String artistName, long duration) {
-        if (getSongId(songId) == null) {
-            addSongId(songId, songName, albumName, artistName, duration);
-        } else {
-            removeItem(songId);
+    public boolean exists(long trackId) {
+        String[] args = {String.valueOf(trackId)};
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(FavoriteColumns.NAME, null, FAVORITE_SELECT, args, null, null, null, "1");
+        boolean result = false;
+        if (cursor != null) {
+            result = cursor.moveToFirst();
+            cursor.close();
         }
+        return result;
     }
 
     /**
+     * remove song from favorits
      *
+     * @param songId track ID
      */
     public void removeItem(Long songId) {
+        String[] args = {String.valueOf(songId)};
         SQLiteDatabase database = getReadableDatabase();
-        database.delete(FavoriteColumns.NAME, FavoriteColumns.ID + " = ?", new String[]{String.valueOf(songId)});
-
+        database.delete(FavoriteColumns.NAME, FAVORITE_SELECT, args);
     }
 
-
+    /**
+     * columns of the favorite table
+     */
     public interface FavoriteColumns {
 
         /* Table name */

@@ -106,6 +106,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * Represents an artist
      */
+    @Nullable
     private Artist mArtist;
 
     /**
@@ -203,17 +204,19 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         // Creat a new model
         mArtist = mAdapter.getItem(info.position);
-        // Create a list of the artist's songs
-        mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
-        // Play the artist
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Add the artist to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the artist to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
-        // Delete the artist
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (mArtist != null) {
+            // Create a list of the artist's songs
+            mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
+            // Play the artist
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Add the artist to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the artist to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
+            // Delete the artist
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        }
     }
 
     /**
@@ -222,7 +225,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         // Avoid leaking context menu selections
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && mArtist != null) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(mArtistList, 0, true);
@@ -272,7 +275,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mArtist = mAdapter.getItem(position);
-        NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
+        if (mArtist != null) {
+            NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
+        }
     }
 
     /**

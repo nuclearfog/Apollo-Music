@@ -75,6 +75,7 @@
                         android:singleLine="true"
                         android:textSize="@dimen/text_size_medium"
                         app:themeResource="@color/audio_player_line_one" />
+
                 </LinearLayout>
 
                 <FrameLayout
@@ -97,13 +98,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:visibility="invisible" />
+
                 </FrameLayout>
 
             </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_above="@android:id/progress"
                 android:layout_below="@+id/audio_player_header"
                 android:layout_alignParentLeft="true"
@@ -118,18 +120,11 @@
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/audio_player_album_art"
-                    android:layout_alignParentBottom="true" />
-
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/audio_player_pager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_alignBottom="@+id/audio_player_album_art" />
+                    android:layout_height="match_parent"
+                    android:visibility="invisible" />
 
             </RelativeLayout>
 

@@ -26,7 +26,7 @@
         android:layout_width="@dimen/notification_expanded_height"
         android:layout_height="@dimen/notification_expanded_height"
         android:background="@drawable/default_artwork"
-        android:scaleType="fitXY" />
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:id="@+id/app_widget_large_info_container"

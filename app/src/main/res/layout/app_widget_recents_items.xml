@@ -25,7 +25,7 @@
         android:id="@+id/app_widget_recents_base_image"
         android:layout_width="@dimen/item_normal_height"
         android:layout_height="@dimen/item_normal_height"
-        android:scaleType="fitXY" />
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:layout_width="0dp"

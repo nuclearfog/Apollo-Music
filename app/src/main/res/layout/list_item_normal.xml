@@ -28,7 +28,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:layout_alignParentStart="true" />
 
     <RelativeLayout

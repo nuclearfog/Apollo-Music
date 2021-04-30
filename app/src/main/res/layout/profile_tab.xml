@@ -40,7 +40,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:contentDescription="@null"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:visibility="gone"
             android:layout_alignParentStart="true" />
 

@@ -12,6 +12,7 @@
 package com.andrew.apollo.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +101,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
                 int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
                 holder.mBackground.setBackgroundColor(backgroundColor);
             } else {
-                holder.mBackground.setBackgroundColor(0x0);
+                holder.mBackground.setBackgroundColor(Color.TRANSPARENT);
             }
         }
         return convertView;

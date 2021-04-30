@@ -48,17 +48,17 @@ public class RecycleHolder implements RecyclerListener {
 
         // Release mLineOne's reference
         if (holder.mLineOne != null) {
-            holder.mLineOne.setText(null);
+            holder.mLineOne.setText("");
         }
 
         // Release mLineTwo's reference
         if (holder.mLineTwo != null) {
-            holder.mLineTwo.setText(null);
+            holder.mLineTwo.setText("");
         }
 
         // Release mLineThree's reference
         if (holder.mLineThree != null) {
-            holder.mLineThree.setText(null);
+            holder.mLineThree.setText("");
         }
     }
 }

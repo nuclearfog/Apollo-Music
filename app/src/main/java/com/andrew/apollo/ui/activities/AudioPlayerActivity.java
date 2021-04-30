@@ -117,8 +117,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     private TimeHandler mTimeHandler;
     // Pager adpater
     private PagerAdapter mPagerAdapter;
-    // ViewPager container
-    private FrameLayout mPageContainer;
+    // ViewPager
+    private ViewPager mViewPager;
     // Header
     private LinearLayout mAudioPlayerHeader;
     // Image cache
@@ -461,7 +461,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             long albumId = MusicUtils.getCurrentAlbumId();
             NavUtils.openAlbumProfile(this, albumname, artistname, albumId);
         } else if (v.getId() == R.id.audio_player_switch) {
-            if (mPageContainer.getVisibility() == View.VISIBLE) {
+            if (mViewPager.getVisibility() == View.VISIBLE) {
                 // Show the artwork, hide the queue
                 showAlbumArt();
             } else {
@@ -487,10 +487,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Initializes the items in the now playing screen
      */
     private void initPlaybackControls() {
-        // ViewPager container
-        mPageContainer = findViewById(R.id.audio_player_pager_container);
-        // Theme the pager container background
-        mPageContainer.setBackgroundResource(R.drawable.audio_player_pager_container);//mResources.getDrawable("audio_player_pager_container"));
         // Now playing header
         mAudioPlayerHeader = findViewById(R.id.audio_player_header);
         // Opens the currently playing album profile
@@ -504,7 +500,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mPagerAdapter.add(QueueFragment.class, null);
         // Initialize the ViewPager
         // View pager
-        ViewPager mViewPager = findViewById(R.id.audio_player_pager);
+        mViewPager = findViewById(R.id.audio_player_pager);
         // Attch the adapter
         mViewPager.setAdapter(mPagerAdapter);
         // Offscreen pager loading limit
@@ -810,11 +806,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Called to show the album art and hide the queue
      */
     private void showAlbumArt() {
-        mPageContainer.setVisibility(View.INVISIBLE);
+        mViewPager.setVisibility(View.INVISIBLE);
         mAlbumArtSmall.setVisibility(View.GONE);
         mQueueSwitch.setVisibility(View.VISIBLE);
         // Fade out the pager container
-        fade(mPageContainer, 0f);
+        fade(mViewPager, 0f);
         // Fade in the album art
         fade(mAlbumArt, 1f);
     }
@@ -823,13 +819,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Called to hide the album art and show the queue
      */
     public void hideAlbumArt() {
-        mPageContainer.setVisibility(View.VISIBLE);
+        mViewPager.setVisibility(View.VISIBLE);
         mQueueSwitch.setVisibility(View.GONE);
         mAlbumArtSmall.setVisibility(View.VISIBLE);
         // Fade out the artwork
         fade(mAlbumArt, 0f);
         // Fade in the pager container
-        fade(mPageContainer, 1f);
+        fade(mViewPager, 1f);
     }
 
     /**

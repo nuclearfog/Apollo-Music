@@ -39,6 +39,7 @@
 
         <RelativeLayout
             android:id="@+id/image_background"
+            android:background="@color/list_item_background"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

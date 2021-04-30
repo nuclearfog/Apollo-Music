@@ -15,7 +15,6 @@
 -->
 <com.andrew.apollo.widgets.theme.ThemeableFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -45,31 +44,18 @@
                 android:contentDescription="@null"
                 android:src="@drawable/right_shadow"
                 android:layout_alignEnd="@+id/audio_player_album_art" />
+
         </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/audio_player_pager_container"
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/audio_player_pager"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignRight="@+id/audio_player_large_album_frame"
             android:layout_alignParentLeft="true"
-            android:visibility="invisible"
             android:layout_alignEnd="@+id/audio_player_large_album_frame"
-            android:layout_alignParentStart="true">
-
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/audio_player_pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <ImageView
-                android:layout_width="@dimen/shadow_height"
-                android:layout_height="match_parent"
-                android:layout_gravity="right"
-                android:contentDescription="@null"
-                android:src="@drawable/right_shadow"
-                tools:ignore="RtlHardcoded" />
-        </FrameLayout>
+            android:layout_alignParentStart="true"
+            android:visibility="invisible" />
 
         <View
             android:layout_width="wrap_content"

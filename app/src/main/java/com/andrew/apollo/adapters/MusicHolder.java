@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
 
@@ -32,45 +33,46 @@ public class MusicHolder {
      * This is the overlay ontop of the background artist, playlist, or genre
      * image
      */
-    public RelativeLayout mOverlay;
+    public final RelativeLayout mOverlay;
 
     /**
      * This is the background artist, playlist, or genre image
      */
-    public ImageView mBackground;
+    @Nullable
+    public final ImageView mBackground;
 
     /**
      * This is the artist or album image
      */
-    public ImageView mImage;
+    public final ImageView mImage;
 
     /**
      * This is the first line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public TextView mLineOne;
+    public final TextView mLineOne;
 
     /**
      * This is displayed on the right side of the first line in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public TextView mLineOneRight;
+    public final TextView mLineOneRight;
 
     /**
      * This is the second line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public TextView mLineTwo;
+    public final TextView mLineTwo;
 
     /**
      * This is the third line displayed in the list or grid
      * <p>
      * {@code #getView()} of a specific adapter for more detailed info
      */
-    public TextView mLineThree;
+    public final TextView mLineThree;
 
     /**
      * Constructor of <code>ViewHolder</code>

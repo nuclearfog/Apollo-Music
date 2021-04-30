@@ -52,11 +52,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     private final ImageFetcher mImageFetcher;
 
     /**
-     * Semi-transparent overlay
-     */
-    private int mOverlay;
-
-    /**
      * Used to cache the artist info
      */
     private ArrayList<DataHolder> mData = new ArrayList<>();
@@ -78,8 +73,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
-        // Cache the transparent overlay
-        mOverlay = context.getResources().getColor(R.color.list_item_background);
     }
 
     /**
@@ -106,8 +99,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         // Asynchronously load the artist image into the adapter
         mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mImage);
         if (mLoadExtraData) {
-            // Make sure the background layer gets set
-            holder.mOverlay.setBackgroundColor(mOverlay);
             // Set the number of songs (line three)
             holder.mLineThree.setText(dataHolder.mLineThree);
             // Set the background image

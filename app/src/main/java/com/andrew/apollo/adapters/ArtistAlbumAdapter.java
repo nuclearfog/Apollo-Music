@@ -12,6 +12,7 @@
 package com.andrew.apollo.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -103,7 +104,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
             convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Remove the background layer
-            holder.mOverlay.setBackgroundColor(0);
+            holder.mOverlay.setBackgroundColor(Color.TRANSPARENT);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();

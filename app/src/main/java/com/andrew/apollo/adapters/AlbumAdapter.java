@@ -56,11 +56,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     private ImageFetcher mImageFetcher;
 
     /**
-     * Semi-transparent overlay
-     */
-    private int mOverlay;
-
-    /**
      * Determines if the grid or list should be the default style
      */
     private boolean mLoadExtraData = false;
@@ -88,8 +83,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
-        // Cache the transparent overlay
-        mOverlay = context.getResources().getColor(R.color.list_item_background);
     }
 
     /**
@@ -117,8 +110,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         mImageFetcher.loadAlbumImage(dataHolder.mLineTwo, dataHolder.mLineOne, dataHolder.mItemId, holder.mImage);
         // List view only items
         if (mLoadExtraData) {
-            // Make sure the background layer gets set
-            holder.mOverlay.setBackgroundColor(mOverlay);
             // Set the number of songs (line three)
             holder.mLineThree.setText(dataHolder.mLineThree);
             // Asynchronously load the artist image on the background view

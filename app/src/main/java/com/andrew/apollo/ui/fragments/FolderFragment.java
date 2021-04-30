@@ -41,25 +41,29 @@ import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>,
         OnItemClickListener, BrowserCallback {
 
+    /**
+     * context menu group ID
+     */
     private static final int GROUP_ID = 6;
 
+    /**
+     * context menu item
+     */
     private static final int ADD_QUEUE = 1;
 
-    private static final int SELECTION = 2;
-
-    private FolderAdapter mAdapter;
-
     /**
-     * current folder to search for tracks
+     * context menu item
      */
-    private File mFolder;
+    private static final int SELECTION = 2;
 
     /**
      * IDs of all tracks of the folder
      */
-    private long[] mSongList = {};
+    private long[] selectedFolderSongs = {};
 
+    private FolderAdapter mAdapter;
     private TextView emptyholder;
+
 
     @Override
     public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
@@ -90,11 +94,11 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         if (paramMenuItem.getGroupId() == GROUP_ID) {
             switch (paramMenuItem.getItemId()) {
                 case SELECTION:
-                    MusicUtils.playAll(mSongList, 0, false);
+                    MusicUtils.playAll(selectedFolderSongs, 0, false);
 
                     // fallthrough
                 case ADD_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), mSongList);
+                    MusicUtils.addToQueue(requireContext(), selectedFolderSongs);
                     return true;
             }
         }
@@ -114,8 +118,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         super.onCreateContextMenu(paramContextMenu, paramView, paramContextMenuInfo);
         if (paramContextMenuInfo instanceof AdapterContextMenuInfo) {
             AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) paramContextMenuInfo;
-            mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
-            mSongList = MusicUtils.getSongListForFolder(requireContext(), mFolder);
+            File mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
+            selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder);
             paramContextMenu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             paramContextMenu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
         }
@@ -131,7 +135,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
-        mFolder = mAdapter.getItem(paramInt);
+        File mFolder = mAdapter.getItem(paramInt);
         Bundle bundle = new Bundle();
         bundle.putLong("id", 0L);
         bundle.putString("name", mFolder.getName());

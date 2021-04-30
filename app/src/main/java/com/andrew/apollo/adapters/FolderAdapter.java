@@ -77,6 +77,7 @@ public class FolderAdapter extends ArrayAdapter<File> {
 
 
     public void buildCache() {
+        mData.clear();
         mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             File file = getItem(i);

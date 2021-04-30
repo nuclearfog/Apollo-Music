@@ -124,6 +124,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
      * called.
      */
     public void buildCache() {
+        mData.clear();
         mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the artist

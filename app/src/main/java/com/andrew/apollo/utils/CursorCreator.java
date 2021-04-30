@@ -6,13 +6,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Genres;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.Audio.Playlists.Members;
+
+import androidx.annotation.NonNull;
 
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
@@ -21,7 +22,6 @@ import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
 import java.io.File;
 
-import static android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
 import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
@@ -245,19 +245,21 @@ public class CursorCreator {
 
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get all songs
      *
-     * @return The {@link Cursor} used to run the song query.
+     * @return cursor with song information
      */
     public static Cursor makeTrackCursor(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+
         String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
-        return context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, null, sort);
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, null, sort);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get album history information
      *
-     * @return The {@link Cursor} used to run the album query.
+     * @return cursor with album informatiom
      */
     public static Cursor makeRecentCursor(Context context) {
         SQLiteDatabase database = RecentStore.getInstance(context).getReadableDatabase();
@@ -265,25 +267,28 @@ public class CursorCreator {
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get all tracks of a playlist
      *
      * @param id playlist ID
-     * @return The {@link Cursor} used to run the song query.
+     * @return cursor with tracks of a playlist
      */
     @SuppressLint("InlinedApi")
     public static Cursor makePlaylistSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
+
         Uri content = Members.getContentUri(VOLUME_EXTERNAL, id);
         return resolver.query(content, PLAYLIST_TRACK_COLUMNS, null, null, PLAYLIST_TRACK_ORDER);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get all playlists
      *
-     * @return The {@link Cursor} used to run the playlist query.
+     * @return cursor with playlist information
      */
     public static Cursor makePlaylistCursor(Context context) {
-        return context.getContentResolver().query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, null, null, PLAYLIST_ORDER);
+        ContentResolver resolver = context.getContentResolver();
+
+        return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, null, null, PLAYLIST_ORDER);
     }
 
     /**
@@ -292,22 +297,25 @@ public class CursorCreator {
      * @param name name of the playlist
      * @return cursor
      */
-    public static Cursor makePlaylistCursor(Context context, String name) {
-        String[] args = {name};
+    public static Cursor makePlaylistCursor(Context context, @NonNull String name) {
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_SELECT, args, null);
+
+        String[] args = {name};
+        return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_SELECT, args, null);
     }
 
     /**
-     * create cursor to get artist information
+     * create an array of three cursors to search for artist, song and album information.
      *
-     * @return cursor
+     * @param search search string matching a name
+     * @return cursor array of three cursors
      */
     @SuppressLint("Recycle")
-    public static Cursor[] SearchCursor(Context context, String search) {
-        Cursor[] cursors = new Cursor[3];
+    public static Cursor[] SearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
+
         String[] args = {search};
+        Cursor[] cursors = new Cursor[3];
         cursors[0] = resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_MATCH, args, null);
         cursors[1] = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_MATCH, args, null);
         cursors[2] = resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_MATCH, args, null);
@@ -315,59 +323,70 @@ public class CursorCreator {
     }
 
     /**
-     * @return The {@link Cursor} used to run the song query.
+     * create a cursor to get last added songs
+     *
+     * @return Cursor with song information
      */
     public static Cursor makeLastAddedCursor(Context context) {
-        String[] select = {Long.toString(System.currentTimeMillis() / 1000 - 2419200)};
-
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(EXTERNAL_CONTENT_URI, TRACK_COLUMNS, LAST_ADDED_SELECT, select, ORDER_TIME);
+
+        String[] select = {Long.toString(System.currentTimeMillis() / 1000 - 2419200)};
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, LAST_ADDED_SELECT, select, ORDER_TIME);
     }
 
     /**
-     * @return The {@link Cursor} used to run the query.
+     * create a cursor to get all songs of a genre
+     *
+     * @param id genre ID
+     * @return cursor with song information
      */
     public static Cursor makeGenreSongCursor(Context context, long id) {
-        // Match the songs up with the genre
-        Uri media = MediaStore.Audio.Genres.Members.getContentUri("external", id);
         ContentResolver resolver = context.getContentResolver();
+
+        Uri media = Members.getContentUri("external", id);
         return resolver.query(media, TRACK_COLUMNS, TRACK_SELECT, null, GENRE_TRACK_ORDER);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to parse all genre types
      *
-     * @return The {@link Cursor} used to run the genre query.
+     * @return cursor with genre information
      */
     public static Cursor makeGenreCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
+
         return resolver.query(Genres.EXTERNAL_CONTENT_URI, GENRE_COLUMNS, GENRE_SELECT, null, GENRE_ORDER);
     }
 
     /**
-     * create cursor to pare all music files
+     * create cursor to pare a specific folder with tracks
      *
-     * @return cursor
+     * @param folder folder where to search tracks. Tracks in Sub-Folders should be ignored
+     * @return cursor with track information matching the path
      */
     public static Cursor makeFolderSongCursor(Context context, File folder) {
         ContentResolver contentResolver = context.getContentResolver();
+
         String[] args = {folder.toString() + "%"};
         return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, FOLER_TRACKS_ORDER);
     }
 
     /**
-     * create cursor to get data from
+     * create cursor to get all audio files and their paths
      *
-     * @return cursor
+     * @return cursor with all songs
      */
     public static Cursor makeFolderCursor(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
+
         String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
         return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_PROJECTION, TRACK_SELECT, null, sortOrder);
     }
 
     /**
-     * @return The {@link Cursor} used to run the favorites query.
+     * create a cursor to parse a table with favorite lists
+     *
+     * @return cursor with favorite list information
      */
     public static Cursor makeFavoritesCursor(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
@@ -375,92 +394,109 @@ public class CursorCreator {
     }
 
     /**
-     * @return The {@link Cursor} used to run the query.
-     */
-    public static Cursor makeArtistSongCursor(Context context, long id) {
-        ContentResolver resolver = context.getContentResolver();
-        String order = PreferenceUtils.getInstance(context).getArtistSongSortOrder();
-        String[] args = {Long.toString(id)};
-        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ARTIST_SONG_SELECT, args, order);
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to parse artist table
      *
-     * @return The {@link Cursor} used to run the artist query.
+     * @return cursor with artist information
      */
     public static Cursor makeArtistCursor(Context context) {
-        String order = PreferenceUtils.getInstance(context).getArtistSortOrder();
         ContentResolver resolver = context.getContentResolver();
+
+        String order = PreferenceUtils.getInstance(context).getArtistSortOrder();
         return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, null, null, order);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor for an artist row
      *
-     * @return The {@link Cursor} used to run the artist query.
+     * @param name name of the artist
+     * @return cursor with artist information
      */
-    public static Cursor makeArtistCursor(Context context, String name) {
-        String[] args = {name};
+    public static Cursor makeArtistCursor(Context context, @NonNull String name) {
         ContentResolver resolver = context.getContentResolver();
+
+        String[] args = {name};
         return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_SELECT, args, null);
     }
 
     /**
-     * Create cursor
+     * create a cursor to get a table with all albums from an artist
      *
-     * @return sql cursor
+     * @param id ID of the artist
+     * @return cursor with album information
      */
     public static Cursor makeArtistAlbumCursor(Context context, long id) {
+        ContentResolver resolver = context.getContentResolver();
+
         String[] args = {Long.toString(id)};
         String order = PreferenceUtils.getInstance(context).getArtistAlbumSortOrder();
-        return context.getContentResolver().query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ARTIST_ALBUM_SELECT, args, order);
+        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ARTIST_ALBUM_SELECT, args, order);
     }
 
     /**
-     * @return The {@link Cursor} used to run the query.
-     */
-    public static Cursor makeAlbumSongCursor(Context context, long id) {
-        String[] args = {Long.toString(id)};
-        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSongSortOrder();
-        ContentResolver resolver = context.getContentResolver();
-        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ALBUM_SONG_SELECT, args, sortOrder);
-    }
-
-    /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get all songs from an artist
      *
-     * @return The {@link Cursor} used to run the album query.
+     * @return cursor with song information
+     */
+    public static Cursor makeArtistSongCursor(Context context, long id) {
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] args = {Long.toString(id)};
+        String order = PreferenceUtils.getInstance(context).getArtistSongSortOrder();
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ARTIST_SONG_SELECT, args, order);
+    }
+
+    /**
+     * create a cursor to get all albums
+     *
+     * @return cursor with album table
      */
     public static Cursor makeAlbumCursor(Context context) {
-        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         ContentResolver resolver = context.getContentResolver();
+
+        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, null, null, sortOrder);
     }
 
     /**
-     * Creates the {@link Cursor} used to run the query.
+     * create a cursor to get all song information from an album
      *
-     * @return The {@link Cursor} used to run the album query.
+     * @param id Album ID
+     * @return cursor with song information
+     */
+    public static Cursor makeAlbumSongCursor(Context context, long id) {
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] args = {Long.toString(id)};
+        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSongSortOrder();
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ALBUM_SONG_SELECT, args, sortOrder);
+    }
+
+    /**
+     * create a cursor with a single album item
+     *
+     * @param id album ID
+     * @return cursor with an item
      */
     public static Cursor makeAlbumCursor(Context context, long id) {
-        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         ContentResolver resolver = context.getContentResolver();
+
         String[] args = {Long.toString(id)};
+        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_ID_SELECT, args, sortOrder);
     }
 
     /**
-     * Creates cursor to parse album table
+     * Creates cursor to search for albums
      *
      * @param album  album name
      * @param artist artist name of the album
-     * @return Cursor
+     * @return Cursor with matching albums
      */
-    public static Cursor makeAlbumCursor(Context context, String album, String artist) {
-        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
+    public static Cursor makeAlbumCursor(Context context, @NonNull String album, @NonNull String artist) {
         ContentResolver resolver = context.getContentResolver();
+
         String[] args = {album, artist};
+        String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_NAME_SELECT, args, sortOrder);
     }
 }

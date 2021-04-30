@@ -149,6 +149,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      * called.
      */
     public void buildCache() {
+        mData.clear();
         mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the artist

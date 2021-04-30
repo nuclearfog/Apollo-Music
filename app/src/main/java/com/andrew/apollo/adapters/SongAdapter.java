@@ -93,7 +93,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
         // Set the album name (line two)
         holder.mLineTwo.setText(dataHolder.mLineTwo);
 
-
         if (holder.mBackground != null) {
             // set background of the current track
             if (dataHolder.mItemId == nowplayingId) {
@@ -138,6 +137,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * called.
      */
     public void buildCache() {
+        mData.clear();
         mData.ensureCapacity(getCount());
         for (int i = 0; i < getCount(); i++) {
             // Build the song

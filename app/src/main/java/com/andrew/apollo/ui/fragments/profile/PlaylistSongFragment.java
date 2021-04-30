@@ -73,6 +73,11 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     private static final int LOADER = 0;
 
     /**
+     * selection to remove track with given ID
+     */
+    private static final String DELETE_SELECT = Members.AUDIO_ID + "=?";
+
+    /**
      * The adapter for the list
      */
     private ProfileSongAdapter mAdapter;
@@ -321,7 +326,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         if (mSong != null) {
             ContentResolver resolver = requireActivity().getContentResolver();
             Uri uri = Members.getContentUri("external", mPlaylistId);
-            resolver.delete(uri, Members.AUDIO_ID + "=" + mSong.getId(), null);
+            String[] args = {Long.toString(mSong.getId())};
+            resolver.delete(uri, DELETE_SELECT, args);
 
             mAdapter.remove(mSong);
             mAdapter.notifyDataSetChanged();
@@ -343,7 +349,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         mAdapter.remove(mSong);
         mAdapter.insert(mSong, realTo);
         mAdapter.notifyDataSetChanged();
-        Members.moveItem(requireActivity().getContentResolver(), mPlaylistId, realFrom, realTo);
+        ContentResolver resolver = requireActivity().getContentResolver();
+        Members.moveItem(resolver, mPlaylistId, realFrom, realTo);
     }
 
 

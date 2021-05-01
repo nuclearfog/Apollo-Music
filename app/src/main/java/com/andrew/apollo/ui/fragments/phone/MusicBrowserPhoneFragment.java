@@ -35,6 +35,14 @@ import com.andrew.apollo.utils.ThemeUtils;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitlePageIndicator.OnCenterItemClickListener;
 
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUM;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTIST;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDER;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRE;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLIST;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.RECENT;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.SONG;
+
 /**
  * This class is used to hold the {@link ViewPager} used for swiping between the
  * playlists, recent, artists, albums, songs, and genre {@link Fragment}
@@ -51,22 +59,35 @@ import com.viewpagerindicator.TitlePageIndicator.OnCenterItemClickListener;
 public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener {
 
     /**
-     * index of {@link com.andrew.apollo.ui.fragments.RecentFragment}
+     * fragment types for the pages
+     */
+    private static final MusicFragments[] PAGES = {
+            PLAYLIST,
+            RECENT,
+            ARTIST,
+            ALBUM,
+            SONG,
+            GENRE,
+            FOLDER
+    };
+
+    /**
+     * index of {@link MusicFragments#RECENT}
      */
     private static final int RECENT_INDEX = 1;
 
     /**
-     * index of {@link com.andrew.apollo.ui.fragments.ArtistFragment}
+     * index of {@link MusicFragments#ARTIST}
      */
     private static final int ARTIST_INDEX = 2;
 
     /**
-     * index of {@link com.andrew.apollo.ui.fragments.SongFragment}
+     * index of {@link MusicFragments#SONG}
      */
     private static final int TRACKS_INDEX = 3;
 
     /**
-     * index of {@link com.andrew.apollo.ui.fragments.AlbumFragment}
+     * index of {@link MusicFragments#ALBUM}
      */
     private static final int ALBUMS_INDEX = 4;
 
@@ -112,8 +133,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
         // Initialize the adapter
         mPagerAdapter = new PagerAdapter(requireActivity());
-        for (MusicFragments mFragment : MusicFragments.values()) {
-            mPagerAdapter.add(mFragment.getFragmentClass(), null);
+        // Initialize pages
+        for (MusicFragments page : PAGES) {
+            mPagerAdapter.add(page, null);
         }
         // Initialize the ViewPager
         mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);

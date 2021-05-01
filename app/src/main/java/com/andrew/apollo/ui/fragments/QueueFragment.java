@@ -45,6 +45,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.viewpagerindicator.TitlePageIndicator;
@@ -56,7 +57,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>,
+public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, BrowserCallback,
         OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
 
     /**
@@ -206,12 +207,12 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     queue.removeItem(mSelectedPosition);
                     queue.close();
                     MusicUtils.playNext(trackId);
-                    refreshQueue();
+                    refresh();
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_QUEUE:
                     MusicUtils.removeTrack(mSong.getId());
-                    refreshQueue();
+                    refresh();
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
@@ -333,11 +334,19 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         mAdapter.buildCache();
     }
 
+
+    @Override
+    public void refresh() {
+        if (isAdded()) {
+            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        }
+    }
+
     /**
      * Scrolls the list to the currently playing song when the user touches the
      * header in the {@link TitlePageIndicator}.
      */
-    public void scrollToCurrentSong() {
+    public void scrollToCurrent() {
         int currentSongPosition = getItemPositionBySong();
         if (currentSongPosition != 0) {
             mListView.setSelection(currentSongPosition);
@@ -370,14 +379,5 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             }
         }
         return 0;
-    }
-
-    /**
-     * Called to restart the loader callbacks
-     */
-    public void refreshQueue() {
-        if (isAdded()) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
-        }
     }
 }

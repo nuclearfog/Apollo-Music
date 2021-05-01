@@ -46,9 +46,7 @@ import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
 import com.andrew.apollo.ui.fragments.profile.FavoriteFragment;
 import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
-import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
-import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -57,6 +55,14 @@ import com.andrew.apollo.utils.SortOrder;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 /**
@@ -214,7 +220,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
                 // Album profile fragments
-                mPagerAdapter.add(AlbumSongFragment.class, mArguments);
+                mPagerAdapter.add(ALBUMSONG, mArguments);
                 if (actionBar != null) {
                     // Action bar title = album name
                     actionBar.setTitle(mProfileName);
@@ -229,7 +235,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Genre profile fragments
-                mPagerAdapter.add(GenreSongFragment.class, mArguments);
+                mPagerAdapter.add(GENRESONG, mArguments);
                 // Action bar title = playlist name
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -240,8 +246,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setArtistProfileHeader(this, mArtistName);
                 // Artist profile fragments
-                mPagerAdapter.add(ArtistSongFragment.class, mArguments);
-                mPagerAdapter.add(ArtistAlbumFragment.class, mArguments);
+                mPagerAdapter.add(ARTISTSONG, mArguments);
+                mPagerAdapter.add(ARTISTALBUM, mArguments);
                 if (actionBar != null) {
                     actionBar.setDisplayHomeAsUpEnabled(true);
                     actionBar.setTitle(mArtistName);
@@ -250,7 +256,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
 
             case FOLDER:
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-                mPagerAdapter.add(FolderSongFragment.class, mArguments);
+                mPagerAdapter.add(FOLDERSONG, mArguments);
                 if (actionBar != null) {
                     actionBar.setTitle(this.mProfileName);
                 }
@@ -260,7 +266,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Favorite fragment
-                mPagerAdapter.add(FavoriteFragment.class, null);
+                mPagerAdapter.add(FAVORITE, null);
                 // Action bar title = Favorites
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -271,7 +277,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Playlist profile fragments
-                mPagerAdapter.add(PlaylistSongFragment.class, mArguments);
+                mPagerAdapter.add(PLAYLISTSONG, mArguments);
                 // Action bar title = playlist name
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -282,7 +288,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Last added fragment
-                mPagerAdapter.add(LastAddedFragment.class, null);
+                mPagerAdapter.add(LASTADDED, null);
                 // Action bar title = Last added
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -413,66 +419,66 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-                    refresh(ARTIST_SONG);
+                    refreshFragment(ARTIST_SONG);
                 } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
                     mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-                    refresh(ARTIST_ALBUM);
+                    refreshFragment(ARTIST_ALBUM);
                 } else {
                     mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
-                    refresh(ALBUM_SONG);
+                    refreshFragment(ALBUM_SONG);
                 }
             }
         } else if (itemId == R.id.menu_sort_by_za) {
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-                    refresh(ARTIST_SONG);
+                    refreshFragment(ARTIST_SONG);
                 } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
                     mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-                    refresh(ARTIST_ALBUM);
+                    refreshFragment(ARTIST_ALBUM);
                 } else {
                     mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-                    refresh(ALBUM_SONG);
+                    refreshFragment(ALBUM_SONG);
                 }
             }
         } else if (itemId == R.id.menu_sort_by_album) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
-                refresh(ARTIST_SONG);
+                refreshFragment(ARTIST_SONG);
             }
         } else if (itemId == R.id.menu_sort_by_year) {
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
-                    refresh(ARTIST_SONG);
+                    refreshFragment(ARTIST_SONG);
                 } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
                     mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
-                    refresh(ARTIST_ALBUM);
+                    refreshFragment(ARTIST_ALBUM);
                 }
             }
         } else if (itemId == R.id.menu_sort_by_duration) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-                refresh(ARTIST_SONG);
+                refreshFragment(ARTIST_SONG);
             } else {
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-                refresh(ALBUM_SONG);
+                refreshFragment(ALBUM_SONG);
             }
         } else if (itemId == R.id.menu_sort_by_date_added) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
-                refresh(ARTIST_SONG);
+                refreshFragment(ARTIST_SONG);
             }
         } else if (itemId == R.id.menu_sort_by_track_list) {
             mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
-            refresh(ALBUM_SONG);
+            refreshFragment(ALBUM_SONG);
         } else if (itemId == R.id.menu_sort_by_filename) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-                refresh(ARTIST_SONG);
+                refreshFragment(ARTIST_SONG);
             } else {
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-                refresh();
+                refreshAll();
             }
         } else {
             return super.onOptionsItemSelected(item);
@@ -595,7 +601,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             }
         } else if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
             MusicUtils.onPostDelete(this);
-            refresh();
+            refreshAll();
         }
     }
 
@@ -705,35 +711,27 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     }
 
     /**
-     * get fragment callback at specific position
-     *
-     * @param index position of the fragment
-     * @return callback
-     */
-    private FragmentCallback getFragment(int index) {
-        return (FragmentCallback) mPagerAdapter.getFragment(index);
-    }
-
-    /**
-     * refresh fragment at index
+     * refresh single fragment
      *
      * @param index index of the fragment
      */
-    private void refresh(int index) {
-        getFragment(index).refresh();
+    private void refreshFragment(int index) {
+        if (mPagerAdapter.getFragment(index) instanceof FragmentCallback) {
+            ((FragmentCallback) mPagerAdapter.getFragment(index)).refresh();
+        }
     }
 
     /**
      * refresh all fragments
      */
-    private void refresh() {
+    private void refreshAll() {
         for (int i = 0; i < mPagerAdapter.getCount(); i++) {
-            refresh(i);
+            refreshFragment(i);
         }
     }
 
     /**
-     * callback for sub fragments to refresh
+     * callback for sub fragments to refreshAll
      */
     public interface FragmentCallback {
 

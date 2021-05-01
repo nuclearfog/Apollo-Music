@@ -40,9 +40,19 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
  */
 public class HomeActivity extends AppCompatBase {
 
-    private static final int REQ_CHECK_PERM = 1;
+    /**
+     * request code for permission result
+     */
+    private static final int REQ_CHECK_PERM = 0xABA75ED6;
+
+    /**
+     * permissions needed for this app
+     */
     private static final String[] PERMISSIONS;
 
+    /**
+     * audio
+     */
     private MusicBrowserPhoneFragment fragment;
 
     static {

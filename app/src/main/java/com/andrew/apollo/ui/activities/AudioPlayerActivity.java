@@ -59,7 +59,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
-import com.andrew.apollo.ui.fragments.QueueFragment;
+import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
@@ -74,6 +74,7 @@ import com.andrew.apollo.widgets.ShuffleButton;
 
 import java.lang.ref.WeakReference;
 
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 import static com.andrew.apollo.utils.MusicUtils.mService;
 
@@ -318,42 +319,35 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         if (vId == android.R.id.home) {
             // Go back to the home activity
             NavUtils.goHome(this);
-            return true;
         } else if (vId == R.id.menu_shuffle) {
             // Shuffle all the songs
             MusicUtils.shuffleAll(this);
             // Refresh the queue
-            getFragment().refreshQueue();
-            return true;
+            getFragment().refresh();
         } else if (vId == R.id.menu_favorite) {
-            // Toggle the current track as a favorite and update the menu
-            // item
+            // Toggle the current track as a favorite and update the menu item
             MusicUtils.toggleFavorite();
             invalidateOptionsMenu();
-            return true;
         } else if (vId == R.id.menu_audio_player_ringtone) {
             // Set the current track as a ringtone
             MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
-            return true;
         } else if (vId == R.id.menu_audio_player_share) {
             // Share the current meta data
             shareCurrentTrack();
-            return true;
         } else if (vId == R.id.menu_audio_player_equalizer) {
             // Sound effects
             NavUtils.openEffectsPanel(this);
-            return true;
         } else if (vId == R.id.menu_settings) {
             // Settings
             NavUtils.openSettings(this);
-            return true;
         } else if (vId == R.id.menu_audio_player_delete) {
             // Delete current song
             long[] ids = {MusicUtils.getCurrentAudioId()};
             MusicUtils.openDeleteDialog(this, MusicUtils.getTrackName(), ids);
-            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
 
@@ -369,7 +363,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
     @Override
     public void onDelete() {
-        getFragment().refreshQueue();
+        getFragment().refresh();
         if (MusicUtils.getQueue().length == 0) {
             NavUtils.goHome(this);
         }
@@ -395,7 +389,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Current info
         updateNowPlayingInfo();
         // Refresh the queue
-        getFragment().refreshQueue();
+        getFragment().refresh();
     }
 
     /**
@@ -467,7 +461,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             } else {
                 // Scroll to the current track
                 mAudioPlayerHeader.setOnClickListener(this);
-                getFragment().scrollToCurrentSong();
+                getFragment().scrollToCurrent();
                 // Show the queue, hide the artwork
                 hideAlbumArt();
             }
@@ -497,7 +491,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Initialize the pager adapter
         mPagerAdapter = new PagerAdapter(this);
         // Queue
-        mPagerAdapter.add(QueueFragment.class, null);
+        mPagerAdapter.add(QUEUE, null);
         // Initialize the ViewPager
         // View pager
         mViewPager = findViewById(R.id.audio_player_pager);
@@ -566,7 +560,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
         // Update the current time
         queueNextRefresh(1);
-        getFragment().setCurrentTrack();
+        // jumpt to current track
+        getFragment().scrollToCurrent();
     }
 
 
@@ -626,7 +621,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             // Make sure to process intent only once
             setIntent(new Intent());
             // Refresh the queue
-            getFragment().refreshQueue();
+            getFragment().refresh();
         }
     }
 
@@ -845,8 +840,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     /**
      * @return Queue Fragment
      */
-    private QueueFragment getFragment() {
-        return ((QueueFragment) mPagerAdapter.getFragment(0));
+    private BrowserCallback getFragment() {
+        return (BrowserCallback) mPagerAdapter.getFragment(0);
     }
 
     /**

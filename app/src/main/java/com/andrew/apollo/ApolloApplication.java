@@ -35,7 +35,9 @@ public class ApolloApplication extends Application {
     public void onCreate() {
         super.onCreate();
         // Enable strict mode logging
-        //enableStrictMode();
+        if (BuildConfig.DEBUG) {
+            enableStrictMode();
+        }
         // Turn off logging for jaudiotagger.
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
     }
@@ -49,13 +51,14 @@ public class ApolloApplication extends Application {
         super.onLowMemory();
     }
 
+    /**
+     *
+     */
     private void enableStrictMode() {
-        if (BuildConfig.DEBUG) {
-            StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
-            StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
-            threadPolicyBuilder.penaltyFlashScreen();
-            StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-            StrictMode.setVmPolicy(vmPolicyBuilder.build());
-        }
+        StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
+        StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
+        threadPolicyBuilder.penaltyFlashScreen();
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+        StrictMode.setVmPolicy(vmPolicyBuilder.build());
     }
 }

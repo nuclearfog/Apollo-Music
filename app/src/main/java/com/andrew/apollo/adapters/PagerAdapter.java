@@ -27,8 +27,17 @@ import com.andrew.apollo.ui.fragments.ArtistFragment;
 import com.andrew.apollo.ui.fragments.FolderFragment;
 import com.andrew.apollo.ui.fragments.GenreFragment;
 import com.andrew.apollo.ui.fragments.PlaylistFragment;
+import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.RecentFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
+import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
+import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
+import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
+import com.andrew.apollo.ui.fragments.profile.FavoriteFragment;
+import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
+import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
+import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
+import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -61,13 +70,13 @@ public class PagerAdapter extends FragmentPagerAdapter {
      * Method that adds a new fragment class to the viewer (the fragment is
      * internally instantiate)
      *
-     * @param className The full qualified name of fragment class.
-     * @param params    The instantiate params.
+     * @param fragment The full qualified name of fragment class.
+     * @param params   The instantiate params.
      */
     @SuppressWarnings("synthetic-access")
-    public void add(Class<? extends Fragment> className, Bundle params) {
+    public void add(MusicFragments fragment, Bundle params) {
         Holder mHolder = new Holder();
-        mHolder.mClassName = className.getName();
+        mHolder.mClassName = fragment.getClassName();
         mHolder.mParams = params;
         mHolderList.add(mHolder);
         notifyDataSetChanged();
@@ -177,7 +186,25 @@ public class PagerAdapter extends FragmentPagerAdapter {
         /**
          * The folder fragment
          */
-        FOLDER(FolderFragment.class);
+        FOLDER(FolderFragment.class),
+
+        ALBUMSONG(AlbumSongFragment.class),
+
+        GENRESONG(GenreSongFragment.class),
+
+        ARTISTSONG(ArtistSongFragment.class),
+
+        ARTISTALBUM(ArtistAlbumFragment.class),
+
+        FOLDERSONG(FolderSongFragment.class),
+
+        PLAYLISTSONG(PlaylistSongFragment.class),
+
+        FAVORITE(FavoriteFragment.class),
+
+        LASTADDED(LastAddedFragment.class),
+
+        QUEUE(QueueFragment.class);
 
         private Class<? extends Fragment> mFragmentClass;
 
@@ -191,22 +218,26 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
 
         /**
-         * Method that returns the fragment class.
+         * returns class name if the fragment
          *
-         * @return Class<? extends Fragment> The fragment class.
+         * @return name ofthe fragment class
          */
-        public Class<? extends Fragment> getFragmentClass() {
-            return mFragmentClass;
+        public String getClassName() {
+            return mFragmentClass.getName();
         }
-
     }
 
     /**
      * A private class with information about fragment initialization
      */
     private static final class Holder {
+        /**
+         * name of the fragment class
+         */
         String mClassName;
-
+        /**
+         * information for the fragment
+         */
         Bundle mParams;
     }
 }

@@ -44,17 +44,17 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     /**
      * context menu group ID
      */
-    private static final int GROUP_ID = 6;
+    private static final int GROUP_ID = 0x1E42C9C7;
 
     /**
      * context menu item
      */
-    private static final int ADD_QUEUE = 1;
+    private static final int ADD_QUEUE = 0x67A7B3EB;
 
     /**
      * context menu item
      */
-    private static final int SELECTION = 2;
+    private static final int SELECTION = 0x718EDAAE;
 
     /**
      * IDs of all tracks of the folder

@@ -54,7 +54,12 @@ import static android.content.Intent.CATEGORY_DEFAULT;
  */
 public class ThemeFragment extends Fragment implements OnItemClickListener {
 
-    private static final int OPEN_IN_PLAY_STORE = 0;
+    /**
+     * context menu ID
+     */
+    private static final int OPEN_IN_PLAY_STORE = 0x5E31DA11;
+
+    private static final int GROUP_ID = 0x500FC67C;
 
     private GridView mGridView;
 
@@ -148,7 +153,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         if (info.position > 0) {
             // Open to the theme's Play Store page
-            menu.add(Menu.NONE, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
+            menu.add(GROUP_ID, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
         }
         super.onCreateContextMenu(menu, v, menuInfo);
     }
@@ -158,10 +163,12 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        if (item.getItemId() == OPEN_IN_PLAY_STORE) {
-            ThemeUtils.openAppPage(requireContext(), mValues[info.position]);
-            return true;
+        if (item.getGroupId() == GROUP_ID) {
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+            if (item.getItemId() == OPEN_IN_PLAY_STORE) {
+                ThemeUtils.openAppPage(requireContext(), mValues[info.position]);
+                return true;
+            }
         }
         return super.onContextItemSelected(item);
     }

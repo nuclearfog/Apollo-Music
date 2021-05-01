@@ -59,12 +59,12 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 12;
+    private static final int GROUP_ID = 0x55B60E85;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x4D99556D;
 
     /**
      * The adapter for the list

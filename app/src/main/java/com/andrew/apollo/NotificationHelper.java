@@ -35,7 +35,7 @@ public class NotificationHelper {
     /**
      * Notification ID
      */
-    private static final int APOLLO_MUSIC_SERVICE = 100;
+    private static final int APOLLO_MUSIC_SERVICE = 0x28E61796;
 
     /**
      * Service context

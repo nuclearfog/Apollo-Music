@@ -62,12 +62,12 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 13;
+    private static final int GROUP_ID = 0x4B079F4E;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x3C6F54AB;
 
     /**
      * The adapter for the list

@@ -60,12 +60,12 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 4;
+    private static final int GROUP_ID = 0x26153793;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x70B1F21F;
 
     /**
      * The adapter for the list

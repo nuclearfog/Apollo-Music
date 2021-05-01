@@ -59,12 +59,12 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 9;
+    private static final int GROUP_ID = 0x23CB1BD2;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x67F9045C;
 
     /**
      * The adapter for the list

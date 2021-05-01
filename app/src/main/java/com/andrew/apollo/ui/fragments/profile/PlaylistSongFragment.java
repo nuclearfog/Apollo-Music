@@ -65,12 +65,12 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 8;
+    private static final int GROUP_ID = 0x37B5704;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x61AF9DC4;
 
     /**
      * selection to remove track with given ID

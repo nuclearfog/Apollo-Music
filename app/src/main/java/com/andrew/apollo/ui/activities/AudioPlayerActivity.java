@@ -86,7 +86,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         OnQueryTextListener, DeleteDialogCallback, OnClickListener, RepeatListener, PlayStatusListener {
 
     // Message to refresh the time
-    private static final int REFRESH_TIME = 1;
+    private static final int REFRESH_TIME = 0x65059CC4;
     // The service token
     private ServiceToken mToken;
     // Play and pause button

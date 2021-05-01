@@ -52,7 +52,10 @@ import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
  */
 public class FolderSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>, AdapterView.OnItemClickListener {
 
-    private static final int GROUP_ID = 14;
+    /**
+     * context menu ID
+     */
+    private static final int GROUP_ID = 0x1CABF982;
 
     private ProfileSongAdapter mAdapter;
 

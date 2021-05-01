@@ -66,17 +66,17 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 2;
+    private static final int GROUP_ID = 0x793F54E4;
+
+    /**
+     * LoaderCallbacks identifier
+     */
+    private static final int LOADER = 0x1137083;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
      */
     private static final int ONE = 1, TWO = 2, FOUR = 4;
-
-    /**
-     * LoaderCallbacks identifier
-     */
-    private static final int LOADER = 0;
 
     /**
      * The adapter for the grid

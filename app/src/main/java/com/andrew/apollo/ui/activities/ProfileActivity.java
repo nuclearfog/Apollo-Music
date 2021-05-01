@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     /**
      * request code to load new photo
      */
-    private static final int NEW_PHOTO = 1;
+    private static final int NEW_PHOTO = 0x487B;
     /**
      * page index of the {@link ArtistSongFragment} if {@link Type#ARTIST} is set
      */
@@ -610,7 +610,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.acivity_profile_base_tab_carousel) {
+        if (v.getId() == R.id.profile_tab_photo) {
             ProfileType profileType;
             String name;
             if (type == Type.ARTIST) {

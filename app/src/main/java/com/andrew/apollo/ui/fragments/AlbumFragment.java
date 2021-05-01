@@ -66,17 +66,17 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 3;
+    private static final int GROUP_ID = 0x515A2A6B;
+
+    /**
+     * LoaderCallbacks identifier
+     */
+    private static final int LOADER = 0x4DCB855B;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
      */
     private static final int ONE = 1, TWO = 2, FOUR = 4;
-
-    /**
-     * LoaderCallbacks identifier
-     */
-    private static final int LOADER = 0;
 
     /**
      * The adapter for the grid

@@ -50,6 +50,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true" />
+
             </RelativeLayout>
 
             <include layout="@layout/bottom_action_bar" />

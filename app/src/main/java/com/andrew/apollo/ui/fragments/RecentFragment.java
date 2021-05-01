@@ -68,17 +68,17 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 1;
-
-    /**
-     * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
-     */
-    private static final int ONE = 1, TWO = 2, FOUR = 4;
+    private static final int GROUP_ID = 0x4FFF2B51;
 
     /**
      * LoaderCallbacks identifier
      */
     private static final int LOADER = 0;
+
+    /**
+     * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
+     */
+    private static final int ONE = 1, TWO = 2, FOUR = 4;
 
     /**
      * The adapter for the grid

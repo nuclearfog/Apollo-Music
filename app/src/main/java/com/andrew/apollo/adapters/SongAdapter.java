@@ -146,6 +146,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
             insert(mSong, to);
             if (nowplayingPos == from) {
                 nowplayingPos = to;
+            } else {
+                if (from < nowplayingPos && to >= nowplayingPos)
+                    nowplayingPos--;
+                else if (from > nowplayingPos && to <= nowplayingPos)
+                    nowplayingPos++;
             }
             notifyDataSetChanged();
             buildCache();

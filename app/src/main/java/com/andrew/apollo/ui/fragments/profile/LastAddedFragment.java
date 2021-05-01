@@ -60,12 +60,12 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 7;
+    private static final int GROUP_ID = 0x461834C5;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x4D492A47;
 
     /**
      * The adapter for the list

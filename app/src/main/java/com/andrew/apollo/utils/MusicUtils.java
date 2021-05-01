@@ -103,7 +103,7 @@ public final class MusicUtils {
      * code to request file deleting
      * only for scoped storage
      */
-    public static final int REQUEST_DELETE_FILES = 5;
+    public static final int REQUEST_DELETE_FILES = 0x8DA3;
 
     /**
      * emty ID list

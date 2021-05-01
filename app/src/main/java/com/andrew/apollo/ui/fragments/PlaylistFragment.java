@@ -69,12 +69,12 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     /**
      * Used to keep context menu items from bleeding into other fragments
      */
-    private static final int GROUP_ID = 0;
+    private static final int GROUP_ID = 0x727BFA75;
 
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x1FF07B83;
 
     /**
      * The adapter for the list

@@ -30,6 +30,7 @@
         android:layout_height="match_parent"
         android:clickable="false"
         android:focusable="false"
+        android:src="@drawable/threedots"
         tools:ignore="ContentDescription" />
 
     <include

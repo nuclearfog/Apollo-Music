@@ -312,7 +312,7 @@ public class CursorCreator {
     public static Cursor makeTrackSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {search};
+        String[] args = {'%' + search + '%'};
         return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_MATCH, args, null);
     }
 
@@ -325,7 +325,7 @@ public class CursorCreator {
     public static Cursor makeAlbumSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {search};
+        String[] args = {'%' + search + '%'};
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_MATCH, args, null);
     }
 
@@ -338,7 +338,7 @@ public class CursorCreator {
     public static Cursor makeArtistSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {search};
+        String[] args = {'%' + search + '%'};
         return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_MATCH, args, null);
     }
 

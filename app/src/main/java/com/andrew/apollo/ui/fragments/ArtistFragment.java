@@ -328,7 +328,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     }
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
         int currentArtistPosition = getItemPositionByArtist();
         if (currentArtistPosition != 0) {
             mList.setSelection(currentArtistPosition);

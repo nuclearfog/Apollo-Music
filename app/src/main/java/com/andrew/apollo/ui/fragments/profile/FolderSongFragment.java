@@ -140,7 +140,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), ids);
+                    MusicUtils.addToQueue(requireActivity(), ids);
                     return true;
 
                 case ADD_TO_FAVORITES:
@@ -161,7 +161,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), selectedSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
                     return true;
 
                 case DELETE:

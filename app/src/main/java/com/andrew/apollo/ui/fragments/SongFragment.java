@@ -193,7 +193,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), trackIds);
+                    MusicUtils.addToQueue(requireActivity(), trackIds);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
@@ -214,7 +214,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -275,24 +275,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     /**
-     * @return The position of an item in the list based on the name of the
-     * currently playing song.
-     */
-    private int getItemPositionBySong() {
-        long trackId = MusicUtils.getCurrentAudioId();
-        if (mAdapter == null) {
-            return 0;
-        }
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Song song = mAdapter.getItem(i);
-            if (song != null && song.getId() == trackId) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    /**
      * Restarts the loader.
      */
     @Override
@@ -302,8 +284,15 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 
 
     @Override
-    public void scrollToCurrent() {
-        int currentSongPosition = getItemPositionBySong();
+    public void setCurrentTrack() {
+        int currentSongPosition = 0;
+        long trackId = MusicUtils.getCurrentAudioId();
+        for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+            if (mAdapter.getItemId(pos) == trackId) {
+                currentSongPosition = pos;
+                break;
+            }
+        }
         if (currentSongPosition != 0) {
             mListView.setSelection(currentSongPosition);
         }

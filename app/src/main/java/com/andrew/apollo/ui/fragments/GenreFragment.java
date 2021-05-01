@@ -156,7 +156,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), mGenreList);
+                    MusicUtils.addToQueue(requireActivity(), mGenreList);
                     return true;
             }
         }
@@ -227,6 +227,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
     }
 }

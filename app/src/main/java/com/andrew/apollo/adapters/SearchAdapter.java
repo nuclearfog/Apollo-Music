@@ -95,7 +95,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             mHighlighter.setText(holder.mLineOne, artist.getName(), mPrefix);
         } else if (music instanceof Album) {
             Album album = (Album) music;
-            holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            holder.mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // Get the album name
             holder.mLineOne.setText(album.getName());
             // Get the artist name
@@ -108,7 +108,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
         } else if (music instanceof Song) {
             Song song = (Song) music;
-            holder.mImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            holder.mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             holder.mImage.setImageResource(R.drawable.header_temp);
             // Get the track name
             holder.mLineOne.setText(song.getName());

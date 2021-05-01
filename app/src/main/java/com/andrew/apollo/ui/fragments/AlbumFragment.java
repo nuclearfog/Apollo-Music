@@ -228,7 +228,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), mAlbumList);
+                    MusicUtils.addToQueue(requireActivity(), mAlbumList);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -342,7 +342,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
         int currentAlbumPosition = getItemPositionByAlbum();
         if (currentAlbumPosition != 0) {
             mList.setSelection(currentAlbumPosition);

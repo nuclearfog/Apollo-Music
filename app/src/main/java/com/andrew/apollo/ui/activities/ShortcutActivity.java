@@ -27,7 +27,6 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.Config;
-import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
 import com.andrew.apollo.loaders.AsyncHandler;
@@ -41,7 +40,6 @@ import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
-import static com.andrew.apollo.utils.MusicUtils.mService;
 
 /**
  * This class is opened when the user touches a Home screen shortcut or album
@@ -187,11 +185,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         final Context context = getApplicationContext();
-        mService = IApolloService.Stub.asInterface(service);
+        MusicUtils.connectService(service);
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
             LoaderManager.getInstance(this).initLoader(0, null, mSongAlbumArtistQuery);
-        } else if (mService != null) {
+        } else if (MusicUtils.isConnected()) {
             AsyncHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -253,7 +251,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        mService = null;
+        MusicUtils.disconnectService();
     }
 
     /**
@@ -263,7 +261,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     protected void onDestroy() {
         super.onDestroy();
         // Unbind from the service
-        if (mService != null) {
+        if (MusicUtils.isConnected()) {
             MusicUtils.unbindFromService(mToken);
             mToken = null;
         }

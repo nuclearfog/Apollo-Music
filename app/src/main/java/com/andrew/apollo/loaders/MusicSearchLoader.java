@@ -38,11 +38,8 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
     @Override
     public List<Music> loadInBackground() {
         List<Music> result = new LinkedList<>();
-
-        // Search for Tracks
-        Cursor[] cursors = CursorCreator.SearchCursor(getContext(), search);
-
-        Cursor cursor = cursors[0];
+        //
+        Cursor cursor = CursorCreator.makeArtistSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -57,7 +54,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
             cursor.close();
         }
         // search for Albums
-        cursor = cursors[1];
+        cursor = CursorCreator.makeAlbumSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -73,7 +70,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
             cursor.close();
         }
         // Search for tracks
-        cursor = cursors[2];
+        cursor = CursorCreator.makeTrackSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

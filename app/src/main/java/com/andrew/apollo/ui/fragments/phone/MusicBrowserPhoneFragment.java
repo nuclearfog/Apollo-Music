@@ -335,7 +335,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
      */
     @Override
     public void onCenterItemClick(int position) {
-        getCallback(position).scrollToCurrent();
+        getCallback(position).setCurrentTrack();
     }
 
     /**
@@ -370,6 +370,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         /**
          * scroll to current item
          */
-        void scrollToCurrent();
+        void setCurrentTrack();
     }
 }

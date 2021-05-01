@@ -24,24 +24,20 @@
         android:layout_height="match_parent"
         tools:ignore="ContentDescription" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/edit_track_list_item_handle"
         android:layout_width="@dimen/drag_and_drop_handle"
         android:layout_height="match_parent"
         android:clickable="false"
         android:focusable="false"
-        style="?android:attr/actionOverflowButtonStyle"
         tools:ignore="ContentDescription" />
 
-    <FrameLayout
+    <include
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_normal_height"
         android:layout_toRightOf="@+id/edit_track_list_item_handle"
         android:gravity="center_vertical"
-        android:layout_toEndOf="@+id/edit_track_list_item_handle">
-
-        <include layout="@layout/list_item_simple" />
-
-    </FrameLayout>
+        android:layout_toEndOf="@+id/edit_track_list_item_handle"
+        layout="@layout/list_item_simple" />
 
 </RelativeLayout>

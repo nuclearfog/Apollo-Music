@@ -35,7 +35,6 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
-import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SearchAdapter;
 import com.andrew.apollo.loaders.MusicSearchLoader;
@@ -51,8 +50,6 @@ import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.ThemeUtils;
 
 import java.util.List;
-
-import static com.andrew.apollo.utils.MusicUtils.mService;
 
 /**
  * Provides the search interface for Apollo.
@@ -175,7 +172,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
     protected void onDestroy() {
         super.onDestroy();
         // Unbind from the service
-        if (mService != null) {
+        if (MusicUtils.isConnected()) {
             MusicUtils.unbindFromService(mToken);
             mToken = null;
         }
@@ -292,7 +289,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        mService = IApolloService.Stub.asInterface(service);
+        MusicUtils.connectService(service);
     }
 
     /**
@@ -300,7 +297,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        mService = null;
+        MusicUtils.disconnectService();
     }
 
     /**

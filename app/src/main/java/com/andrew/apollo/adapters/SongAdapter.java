@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -54,7 +55,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
      */
     private ArrayList<DataHolder> mData = new ArrayList<>();
 
-    private long nowplayingId = -1;
+    private int nowplayingPos = -1;
 
     /**
      * Constructor of <code>SongAdapter</code>
@@ -96,7 +97,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
 
         if (holder.mBackground != null) {
             // set background of the current track
-            if (dataHolder.mItemId == nowplayingId) {
+            if (position == nowplayingPos) {
                 PreferenceUtils prefs = new PreferenceUtils(parent.getContext());
                 int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
                 holder.mBackground.setBackgroundColor(backgroundColor);
@@ -105,6 +106,15 @@ public class SongAdapter extends ArrayAdapter<Song> {
             }
         }
         return convertView;
+    }
+
+
+    @Override
+    public long getItemId(int position) {
+        Song song = getItem(position);
+        if (song != null)
+            return song.getId();
+        return position;
     }
 
     /**
@@ -123,13 +133,32 @@ public class SongAdapter extends ArrayAdapter<Song> {
     }
 
     /**
+     * moves the track item to another position
+     *
+     * @param from index where the track is located
+     * @param to   index where the track should be moved
+     */
+    @MainThread
+    public void moveTrack(int from, int to) {
+        if (from != to) {
+            Song mSong = getItem(from);
+            remove(mSong);
+            insert(mSong, to);
+            if (nowplayingPos == from) {
+                nowplayingPos = to;
+            }
+            notifyDataSetChanged();
+            buildCache();
+        }
+    }
+
+    /**
      * set current track ID
      *
-     * @param id position of the current track
+     * @param pos position of the current track
      */
-    public void setCurrentTrackId(long id) {
-        nowplayingId = id;
-        notifyDataSetChanged();
+    public void setCurrentTrackPos(int pos) {
+        nowplayingPos = pos;
     }
 
     /**

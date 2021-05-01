@@ -205,7 +205,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), trackId);
+                    MusicUtils.addToQueue(requireActivity(), trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:
@@ -222,7 +222,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.DELETE:

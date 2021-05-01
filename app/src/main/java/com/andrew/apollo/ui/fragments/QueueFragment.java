@@ -48,7 +48,6 @@ import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.util.List;
 
@@ -136,8 +135,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         setHasOptionsMenu(true);
         // Start the loader
         LoaderManager.getInstance(this).initLoader(LOADER, null, this);
-        // Mark current track
-        setCurrentTrack();
     }
 
     /**
@@ -233,7 +230,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.DELETE:
@@ -308,7 +305,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      */
     @Override
     public void remove(int which) {
-        mSong = mAdapter.getItem(which);
+        Song mSong = mAdapter.getItem(which);
         if (mSong != null) {
             mAdapter.remove(mSong);
             mAdapter.notifyDataSetChanged();
@@ -325,13 +322,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public void drop(int from, int to) {
         if (from != to) {
             MusicUtils.moveQueueItem(from, to);
-            mSong = mAdapter.getItem(from);
-            mAdapter.remove(mSong);
-            mAdapter.insert(mSong, to);
+            mAdapter.moveTrack(from, to);
         }
-        // Build the cache
-        mAdapter.notifyDataSetChanged();
-        mAdapter.buildCache();
     }
 
 
@@ -342,42 +334,14 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         }
     }
 
-    /**
-     * Scrolls the list to the currently playing song when the user touches the
-     * header in the {@link TitlePageIndicator}.
-     */
-    public void scrollToCurrent() {
-        int currentSongPosition = getItemPositionBySong();
-        if (currentSongPosition != 0) {
-            mListView.setSelection(currentSongPosition);
-        }
-    }
 
-    /**
-     * mark current track in the list
-     */
+    @Override
     public void setCurrentTrack() {
-        long trackId = MusicUtils.getCurrentAudioId();
-        if (mAdapter != null && trackId >= 0) {
-            mAdapter.setCurrentTrackId(trackId);
+        int pos = MusicUtils.getQueuePosition();
+        if (mListView != null && pos >= 0) {
+            mListView.smoothScrollToPosition(pos);
+            mAdapter.setCurrentTrackPos(pos);
+            mAdapter.notifyDataSetChanged();
         }
-    }
-
-    /**
-     * @return The position of an item in the list based on the name of the
-     * currently playing song.
-     */
-    private int getItemPositionBySong() {
-        long trackId = MusicUtils.getCurrentAudioId();
-        if (mAdapter == null) {
-            return 0;
-        }
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Song song = mAdapter.getItem(i);
-            if (song != null && song.getId() == trackId) {
-                return i;
-            }
-        }
-        return 0;
     }
 }

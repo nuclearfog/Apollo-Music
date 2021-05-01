@@ -212,7 +212,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), trackId);
+                    MusicUtils.addToQueue(requireActivity(), trackId);
                     return true;
 
                 case FragmentMenuItems.NEW_PLAYLIST:
@@ -229,7 +229,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
                     return true;
 
                 case FragmentMenuItems.USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireContext(), mSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_FAVORITES:

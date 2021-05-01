@@ -194,7 +194,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                     } else {
                         list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.getId());
                     }
-                    MusicUtils.addToQueue(requireContext(), list);
+                    MusicUtils.addToQueue(requireActivity(), list);
                     return true;
 
                 case FragmentMenuItems.RENAME_PLAYLIST:
@@ -299,7 +299,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
     }
 
     /**

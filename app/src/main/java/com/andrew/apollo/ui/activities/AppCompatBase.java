@@ -36,7 +36,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 
-import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.MusicStateListener;
 import com.andrew.apollo.R;
@@ -52,8 +51,6 @@ import com.andrew.apollo.widgets.ShuffleButton;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.andrew.apollo.utils.MusicUtils.mService;
 
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and
@@ -140,7 +137,7 @@ public abstract class AppCompatBase extends AppCompatActivity
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        mService = IApolloService.Stub.asInterface(service);
+        MusicUtils.connectService(service);
         // Set the playback drawables
         updatePlaybackControls();
         // Current info
@@ -154,7 +151,7 @@ public abstract class AppCompatBase extends AppCompatActivity
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        mService = null;
+        MusicUtils.disconnectService();
     }
 
     /**

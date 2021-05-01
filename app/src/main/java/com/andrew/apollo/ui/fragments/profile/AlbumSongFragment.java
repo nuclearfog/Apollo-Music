@@ -200,7 +200,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), trackId);
+                    MusicUtils.addToQueue(requireActivity(), trackId);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:

@@ -4,15 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
 
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.Arrays;
-
-import static com.andrew.apollo.utils.MusicUtils.mService;
 
 /**
  * A custom {@link Cursor} used to return the queue and allow for easy dragging
@@ -257,10 +254,7 @@ public class NowPlayingCursor extends AbstractCursor {
      * @param which The position to remove
      */
     public void removeItem(int which) {
-        try {
-            if (mService.removeTracks(which, which) == 0) {
-                return;
-            }
+        if (MusicUtils.removeTracks(which)) {
             int i = which;
             mSize--;
             while (i < mSize) {
@@ -268,8 +262,6 @@ public class NowPlayingCursor extends AbstractCursor {
                 i++;
             }
             onMove(-1, mCurPos);
-        } catch (RemoteException e) {
-            e.printStackTrace();
         }
     }
 }

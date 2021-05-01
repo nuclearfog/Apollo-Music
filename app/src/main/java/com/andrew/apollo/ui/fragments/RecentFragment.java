@@ -363,7 +363,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
         mList.smoothScrollToPosition(0);
     }
 

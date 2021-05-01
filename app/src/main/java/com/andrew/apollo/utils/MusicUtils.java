@@ -112,15 +112,44 @@ public final class MusicUtils {
 
 
     private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>();
-    public static IApolloService mService = null;
+
+    /**
+     * weak reference to the service to avoid memory leaks
+     */
+    private static IApolloService mService;
+
+    private static ContentValues[] mContentValuesCache;
+
     private static int sForegroundActivities = 0;
-    private static ContentValues[] mContentValuesCache = null;
 
     private static int markedTracks = 0;
 
 
     /* This class is never initiated */
     private MusicUtils() {
+    }
+
+    /**
+     * creates a weak reference to {@link MusicPlaybackService}
+     *
+     * @param binder binder to the service
+     */
+    public static void connectService(IBinder binder) {
+        mService = IApolloService.Stub.asInterface(binder);
+    }
+
+    /**
+     * releaes the weak reference to {@link MusicPlaybackService}
+     */
+    public static void disconnectService() {
+        mService = null;
+    }
+
+    /**
+     * check if service is connected
+     */
+    public static boolean isConnected() {
+        return mService != null;
     }
 
     /**
@@ -495,6 +524,24 @@ public final class MusicUtils {
     }
 
     /**
+     * remove current tracks from service
+     *
+     * @param which track ID
+     * @return true if track was removed
+     */
+    public static boolean removeTracks(int which) {
+        try {
+            IApolloService service = mService;
+            if (service != null && service.removeTracks(which, which) == 0) {
+                return true;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * @param cursor The {@link Cursor} used to perform our query.
      * @return The song list for a MIME type.
      */
@@ -616,26 +663,23 @@ public final class MusicUtils {
      * @param uri The source of the file
      */
     public static void playFile(Uri uri) {
-        if (uri == null || mService == null) {
-            return;
-        }
-
-        // If this is a file:// URI, just use the path directly instead
-        // of going through the open-from-filedescriptor codepath.
-        String filename;
-        String scheme = uri.getScheme();
-        if ("file".equals(scheme)) {
-            filename = uri.getPath();
-        } else {
-            filename = uri.toString();
-        }
-
-        try {
-            mService.stop();
-            mService.openFile(filename);
-            mService.play();
-        } catch (RemoteException err) {
-            err.printStackTrace();
+        IApolloService service = mService;
+        if (uri != null && service != null) {
+            // If this is a file:// URI, just use the path directly instead
+            // of going through the open-from-filedescriptor codepath.
+            String filename;
+            if ("file".equals(uri.getScheme())) {
+                filename = uri.getPath();
+            } else {
+                filename = uri.toString();
+            }
+            try {
+                service.stop();
+                service.openFile(filename);
+                service.play();
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
         }
     }
 
@@ -645,31 +689,31 @@ public final class MusicUtils {
      * @param forceShuffle True to force a shuffle, false otherwise.
      */
     public static void playAll(long[] list, int position, boolean forceShuffle) {
-        if (list.length == 0 || mService == null) {
-            return;
-        }
-        try {
-            if (forceShuffle) {
-                mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-            } else {
-                mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
-            }
-            long currentId = mService.getAudioId();
-            int currentQueuePosition = getQueuePosition();
-            if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
-                long[] playlist = getQueue();
-                if (Arrays.equals(list, playlist)) {
-                    mService.play();
-                    return;
+        IApolloService service = mService;
+        if (list.length > 0 && service != null) {
+            try {
+                if (forceShuffle) {
+                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+                } else {
+                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                 }
+                long currentId = service.getAudioId();
+                int currentQueuePosition = getQueuePosition();
+                if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
+                    long[] playlist = getQueue();
+                    if (Arrays.equals(list, playlist)) {
+                        service.play();
+                        return;
+                    }
+                }
+                if (position < 0) {
+                    position = 0;
+                }
+                service.open(list, forceShuffle ? 0 : position);
+                service.play();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-            if (position < 0) {
-                position = 0;
-            }
-            mService.open(list, forceShuffle ? 0 : position);
-            mService.play();
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -677,13 +721,13 @@ public final class MusicUtils {
      * @param list The list to enqueue.
      */
     public static void playNext(long[] list) {
-        if (mService == null) {
-            return;
-        }
-        try {
-            mService.enqueue(list, MusicPlaybackService.NEXT);
-        } catch (RemoteException err) {
-            err.printStackTrace();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.enqueue(list, MusicPlaybackService.NEXT);
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
         }
     }
 
@@ -693,20 +737,21 @@ public final class MusicUtils {
     public static void shuffleAll(Context context) {
         Cursor cursor = CursorCreator.makeTrackCursor(context);
         long[] mTrackList = getSongListForCursor(cursor);
-        if (mTrackList.length > 0 && mService != null) {
+        IApolloService service = mService;
+        if (mTrackList.length > 0 && service != null) {
             try {
-                mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-                long mCurrentId = mService.getAudioId();
+                service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+                long mCurrentId = service.getAudioId();
                 int mCurrentQueuePosition = getQueuePosition();
                 if (mCurrentQueuePosition == 0 && mCurrentId == mTrackList[0]) {
                     long[] mPlaylist = getQueue();
                     if (Arrays.equals(mTrackList, mPlaylist)) {
-                        mService.play();
+                        service.play();
                         return;
                     }
                 }
-                mService.open(mTrackList, 0);
-                mService.play();
+                service.open(mTrackList, 0);
+                service.play();
                 cursor.close();
             } catch (RemoteException err) {
                 err.printStackTrace();
@@ -924,41 +969,38 @@ public final class MusicUtils {
     }
 
     /**
-     * @param context The {@link Context} to use.
-     * @param list    The list to enqueue.
+     * @param list The list to enqueue.
      */
-    public static void addToQueue(Context context, long[] list) {
-        if (mService == null) {
-            return;
-        }
-        try {
-            mService.enqueue(list, MusicPlaybackService.LAST);
-            String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
-            AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
-        } catch (RemoteException err) {
-            err.printStackTrace();
+    public static void addToQueue(Activity activity, long[] list) {
+        if (mService != null) {
+            try {
+                mService.enqueue(list, MusicPlaybackService.LAST);
+                String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
+                AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
         }
     }
 
     /**
-     * @param context The {@link Context} to use
-     * @param id      The song ID.
+     * @param id The song ID.
      */
-    public static void setRingtone(Context context, long id) {
-        ContentResolver resolver = context.getContentResolver();
+    public static void setRingtone(Activity activity, long id) {
+        ContentResolver resolver = activity.getContentResolver();
         Uri uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id);
         // Set ringtone
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // check if app has write permission
-                boolean writePerm = Settings.System.canWrite(context);
+                boolean writePerm = Settings.System.canWrite(activity);
                 if (writePerm) {
                     // set ringtone
-                    RingtoneManager.setActualDefaultRingtoneUri(context, TYPE_RINGTONE, uri);
+                    RingtoneManager.setActualDefaultRingtoneUri(activity, TYPE_RINGTONE, uri);
                 } else {
                     // open settings so user can set write permissions
                     Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                    context.startActivity(intent);
+                    activity.startActivity(intent);
                     return;
                 }
             } else {
@@ -977,8 +1019,8 @@ public final class MusicUtils {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-                String message = context.getString(R.string.set_as_ringtone, cursor.getString(2));
-                AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
+                String message = activity.getString(R.string.set_as_ringtone, cursor.getString(2));
+                AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
             }
             cursor.close();
         }
@@ -1368,12 +1410,12 @@ public final class MusicUtils {
         if (adapter.getViewTypeCount() > 1 && position == 0) {
             return;
         }
-        long[] list = MusicUtils.getSongListForAdapter(adapter);
+        long[] list = getSongListForAdapter(adapter);
         int pos = adapter.getViewTypeCount() > 1 ? position - 1 : position;
         if (list.length == 0) {
             pos = 0;
         }
-        MusicUtils.playAll(list, pos, false);
+        playAll(list, pos, false);
     }
 
     /**
@@ -1494,7 +1536,7 @@ public final class MusicUtils {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            mService = IApolloService.Stub.asInterface(service);
+            MusicUtils.connectService(service);
             if (mCallback != null) {
                 mCallback.onServiceConnected(className, service);
             }
@@ -1505,7 +1547,7 @@ public final class MusicUtils {
             if (mCallback != null) {
                 mCallback.onServiceDisconnected(className);
             }
-            mService = null;
+            MusicUtils.disconnectService();
         }
     }
 

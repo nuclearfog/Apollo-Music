@@ -304,21 +304,42 @@ public class CursorCreator {
     }
 
     /**
-     * create an array of three cursors to search for artist, song and album information.
+     * create a cursor to search for tracks
      *
      * @param search search string matching a name
-     * @return cursor array of three cursors
+     * @return cursor with track information matching the search string
      */
-    @SuppressLint("Recycle")
-    public static Cursor[] SearchCursor(Context context, @NonNull String search) {
+    public static Cursor makeTrackSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
         String[] args = {search};
-        Cursor[] cursors = new Cursor[3];
-        cursors[0] = resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_MATCH, args, null);
-        cursors[1] = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_MATCH, args, null);
-        cursors[2] = resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_MATCH, args, null);
-        return cursors;
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_MATCH, args, null);
+    }
+
+    /**
+     * creates a cursor to search for albums
+     *
+     * @param search search string matching a name
+     * @return cursor with albums matching the search string
+     */
+    public static Cursor makeAlbumSearchCursor(Context context, @NonNull String search) {
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] args = {search};
+        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_MATCH, args, null);
+    }
+
+    /**
+     * creates a cursor to search for artists
+     *
+     * @param search search string
+     * @return cursor with artits matching the search string
+     */
+    public static Cursor makeArtistSearchCursor(Context context, @NonNull String search) {
+        ContentResolver resolver = context.getContentResolver();
+
+        String[] args = {search};
+        return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_MATCH, args, null);
     }
 
     /**

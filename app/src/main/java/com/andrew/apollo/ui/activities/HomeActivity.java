@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatBase {
     /**
      * request code for permission result
      */
-    private static final int REQ_CHECK_PERM = 0xABA75ED6;
+    private static final int REQ_CHECK_PERM = 0x1139398F;
 
     /**
      * permissions needed for this app

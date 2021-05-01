@@ -98,7 +98,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
                     // fallthrough
                 case ADD_QUEUE:
-                    MusicUtils.addToQueue(requireContext(), selectedFolderSongs);
+                    MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
                     return true;
             }
         }
@@ -175,6 +175,6 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void scrollToCurrent() {
+    public void setCurrentTrack() {
     }
 }

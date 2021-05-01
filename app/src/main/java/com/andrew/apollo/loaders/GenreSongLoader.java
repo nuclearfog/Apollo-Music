@@ -55,6 +55,8 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
         List<Song> result = new LinkedList<>();
         for (long genreId : mGenreID) {
             // Create the Cursor
+            if (genreId == 0)
+                continue;
             Cursor mCursor = CursorCreator.makeGenreSongCursor(getContext(), genreId);
             // Gather the data
             if (mCursor != null) {

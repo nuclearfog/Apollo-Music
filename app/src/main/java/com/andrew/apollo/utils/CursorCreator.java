@@ -11,7 +11,6 @@ import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Genres;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
-import android.provider.MediaStore.Audio.Playlists.Members;
 
 import androidx.annotation.NonNull;
 
@@ -105,11 +104,11 @@ public class CursorCreator {
 
     @SuppressLint("InlinedApi")
     public static final String[] PLAYLIST_TRACK_COLUMNS = {
-            Members.AUDIO_ID,
-            Members.TITLE,
-            Members.ARTIST,
-            Members.ALBUM,
-            Members.DURATION
+            Playlists.Members.AUDIO_ID,
+            Playlists.Members.TITLE,
+            Playlists.Members.ARTIST,
+            Playlists.Members.ALBUM,
+            Playlists.Members.DURATION
     };
 
     /**
@@ -202,7 +201,7 @@ public class CursorCreator {
     /**
      *
      */
-    private static final String PLAYLIST_TRACK_ORDER = Members.PLAY_ORDER;
+    private static final String PLAYLIST_TRACK_ORDER = Playlists.Members.PLAY_ORDER;
 
     /**
      *
@@ -276,7 +275,7 @@ public class CursorCreator {
     public static Cursor makePlaylistSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
 
-        Uri content = Members.getContentUri(VOLUME_EXTERNAL, id);
+        Uri content = Genres.Members.getContentUri(VOLUME_EXTERNAL, id);
         return resolver.query(content, PLAYLIST_TRACK_COLUMNS, null, null, PLAYLIST_TRACK_ORDER);
     }
 
@@ -343,7 +342,7 @@ public class CursorCreator {
     public static Cursor makeGenreSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
 
-        Uri media = Members.getContentUri("external", id);
+        Uri media = Genres.Members.getContentUri("external", id);
         return resolver.query(media, TRACK_COLUMNS, TRACK_SELECT, null, GENRE_TRACK_ORDER);
     }
 

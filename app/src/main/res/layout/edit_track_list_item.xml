@@ -21,14 +21,16 @@
     <ImageView
         android:id="@+id/list_item_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:ignore="ContentDescription" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/edit_track_list_item_handle"
         android:layout_width="@dimen/drag_and_drop_handle"
-        android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:src="@drawable/playlist_tile_normal"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        style="?android:attr/actionOverflowButtonStyle"
         tools:ignore="ContentDescription" />
 
     <FrameLayout

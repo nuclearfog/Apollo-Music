@@ -275,7 +275,7 @@ public class CursorCreator {
     public static Cursor makePlaylistSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
 
-        Uri content = Genres.Members.getContentUri(VOLUME_EXTERNAL, id);
+        Uri content = Playlists.Members.getContentUri(VOLUME_EXTERNAL, id);
         return resolver.query(content, PLAYLIST_TRACK_COLUMNS, null, null, PLAYLIST_TRACK_ORDER);
     }
 

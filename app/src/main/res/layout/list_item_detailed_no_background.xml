@@ -16,7 +16,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_vertical">
 
     <com.andrew.apollo.widgets.LayoutSuppressingImageView
@@ -30,7 +30,6 @@
         android:layout_width="@dimen/list_item_detailed_height"
         android:layout_height="@dimen/list_item_detailed_height"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
         android:scaleType="centerCrop"
         android:layout_alignParentStart="true" />
 

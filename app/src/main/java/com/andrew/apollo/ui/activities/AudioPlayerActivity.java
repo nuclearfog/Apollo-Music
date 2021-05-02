@@ -531,7 +531,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Attch the adapter
         mViewPager.setAdapter(mPagerAdapter);
         // Offscreen pager loading limit
-        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount() - 1);
+        mViewPager.setOffscreenPageLimit(1);
         // Play and pause button
         mPlayPauseButton = findViewById(R.id.action_button_play);
         // Shuffle button

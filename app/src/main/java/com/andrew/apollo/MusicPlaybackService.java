@@ -44,9 +44,11 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AlbumColumns;
+import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.AudioColumns;
+import android.provider.MediaStore.Audio.Media;
+import android.provider.MediaStore.Files;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -73,6 +75,7 @@ import java.util.TreeSet;
 
 import static android.app.NotificationManager.IMPORTANCE_LOW;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -90,8 +93,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public static final String PLAYSTATE_CHANGED = APOLLO_PACKAGE_NAME + ".playstatechanged";
     /**
-     * Indicates that music playback position within
-     * a title was changed
+     * Indicates that music playback position within a title was changed
      */
     public static final String POSITION_CHANGED = APOLLO_PACKAGE_NAME + ".positionchanged";
     /**
@@ -110,7 +112,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Indicates the shuffle mode chaned
      */
     public static final String SHUFFLEMODE_CHANGED = APOLLO_PACKAGE_NAME + ".shufflemodechanged";
-
+    /**
+     *
+     */
     public static final String MUSIC_PACKAGE_NAME = "com.android.music";
     /**
      * Called to indicate a general service commmand. Used in
@@ -149,60 +153,107 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Called to update the service about the foreground state of Apollo's activities
      */
     public static final String FOREGROUND_STATE_CHANGED = APOLLO_PACKAGE_NAME + ".fgstatechanged";
+    /**
+     *
+     */
     public static final String NOW_IN_FOREGROUND = "nowinforeground";
+    /**
+     *
+     */
     public static final String FROM_MEDIA_BUTTON = "frommediabutton";
     /**
-     * Used to easily notify a list that it should refresh. i.e. A playlist
-     * changes
+     * Used to easily notify a list that it should refresh. i.e. A playlist changes
      */
     public static final String REFRESH = APOLLO_PACKAGE_NAME + ".refresh";
-
+    /**
+     *
+     */
     public static final String CMDNAME = "command";
+    /**
+     *
+     */
     public static final String CMDTOGGLEPAUSE = "togglepause";
+    /**
+     *
+     */
     public static final String CMDSTOP = "stop";
+    /**
+     *
+     */
     public static final String CMDPAUSE = "pause";
+    /**
+     *
+     */
     public static final String CMDPLAY = "play";
+    /**
+     *
+     */
     public static final String CMDPREVIOUS = "previous";
+    /**
+     *
+     */
     public static final String CMDNEXT = "next";
-
+    /**
+     *
+     */
     private static final String HANDLER_NAME = "MusicPlayerHandler";
+    /**
+     * Track selection
+     */
+    private static final String TRACK_SELECTION = Media.IS_MUSIC + "=1";
+    /**
+     *
+     */
+    private static final String TRACK_SELECT_ID = Media._ID + "=?";
+    /**
+     *
+     */
+    private static final String TRACK_SELECT_PATH = Media.DATA + "=?";
+    /**
+     *
+     */
+    private static final String ALBUM_SELECT_ID = Albums._ID + "=?";
+    /**
+     * Media projection
+     */
+    private static final String[] ID_PROJECTION = {Media._ID};
     /**
      * Moves a list to the front of the queue
      */
-    public static final int NOW = 1;
+    public static final int NOW = 0x34C4DD47;
     /**
      * Moves a list to the next position in the queue
      */
-    public static final int NEXT = 2;
+    public static final int NEXT = 0xAE960453;
     /**
      * Moves a list to the last position in the queue
      */
-    public static final int LAST = 3;
+    public static final int LAST = 0xB03ED8F4;
 
     /**
      * Shuffles no songs, turns shuffling off
      */
-    public static final int SHUFFLE_NONE = 0;
+    public static final int SHUFFLE_NONE = 0xD47F8582;
     /**
      * Shuffles all songs
      */
-    public static final int SHUFFLE_NORMAL = 1;
+    public static final int SHUFFLE_NORMAL = 0xC5F90214;
     /**
      * Party shuffle
      */
-    public static final int SHUFFLE_AUTO = 2;
+    public static final int SHUFFLE_AUTO = 0x45EBC386;
     /**
      * Turns repeat off
      */
-    public static final int REPEAT_NONE = 0;
+    public static final int REPEAT_NONE = 0x28AEE9F7;
     /**
      * Repeats the current track in a list
      */
-    public static final int REPEAT_CURRENT = 1;
+    public static final int REPEAT_CURRENT = 0x4478C4B2;
     /**
      * Repeats all the tracks in a list
      */
-    public static final int REPEAT_ALL = 2;
+    public static final int REPEAT_ALL = 0xEE3F9E0B;
     /**
      *
      */
@@ -223,49 +274,44 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Used by the alarm intent to shutdown the service after being idle
      */
     private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
+    /**
+     *
+     */
     private static final int IDCOLIDX = 0;
     /**
      * Indicates when the track ends
      */
-    private static final int TRACK_ENDED = 1;
-
+    private static final int TRACK_ENDED = 0xF7E68B1A;
     /**
      * Indicates that the current track was changed the next track
      */
-    private static final int TRACK_WENT_TO_NEXT = 2;
-
+    private static final int TRACK_WENT_TO_NEXT = 0xB4C13964;
     /**
      * Indicates the player died
      */
-    private static final int SERVER_DIED = 4;
-
+    private static final int SERVER_DIED = 0xA2F4FFEE;
     /**
      * Indicates some sort of focus change, maybe a phone call
      */
-    private static final int FOCUSCHANGE = 5;
-
+    private static final int FOCUSCHANGE = 0xDB9F6A3B;
     /**
      * Indicates to fade the volume down
      */
-    private static final int FADEDOWN = 6;
-
+    private static final int FADEDOWN = 0x9745AB2B;
     /**
      * Indicates to fade the volume back up
      */
-    private static final int FADEUP = 7;
-
+    private static final int FADEUP = 0x2A72CF59;
     /**
      * Idle time before stopping the foreground notfication (1 minute)
      */
     private static final int IDLE_DELAY = 60000;
-
     /**
      * Song play time used as threshold for rewinding to the beginning of the
      * track instead of skipping to the previous track when getting the PREVIOUS
      * command
      */
     private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000;
-
     /**
      * The max size allowed for the track history
      */
@@ -276,23 +322,24 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     @SuppressLint("InlinedApi")
     private static final String[] PROJECTION = {
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.MIME_TYPE,
-            MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.ARTIST_ID,
-            MediaStore.Audio.Media.DURATION
+            Media._ID,
+            Media.ARTIST,
+            Media.ALBUM,
+            Media.TITLE,
+            Media.DATA,
+            Media.MIME_TYPE,
+            Media.ALBUM_ID,
+            Media.ARTIST_ID,
+            Media.DURATION
     };
 
     /**
      * The columns used to retrieve any info from the current album
      */
-    private static final String[] ALBUM_PROJECTION = new String[]{
-            MediaStore.Audio.Albums.ALBUM, MediaStore.Audio.Albums.ARTIST,
-            MediaStore.Audio.Albums.LAST_YEAR
+    private static final String[] ALBUM_PROJECTION = {
+            Albums.ALBUM,
+            Albums.ARTIST,
+            Albums.LAST_YEAR
     };
 
     /**
@@ -895,7 +942,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param trackId The track ID
      */
     private void updateCursor(long trackId) {
-        updateCursor("_id=" + trackId, null);
+        String[] args = {Long.toString(trackId)};
+        updateCursor(TRACK_SELECT_ID, args);
     }
 
     /**
@@ -904,7 +952,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void updateCursor(String selection, String[] selectionArgs) {
         synchronized (this) {
             closeCursor();
-            mCursor = openCursorAndGoToFirst(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection, selectionArgs);
+            mCursor = openCursorAndGoToFirst(Media.EXTERNAL_CONTENT_URI, PROJECTION, selection, selectionArgs);
         }
         updateAlbumCursor();
     }
@@ -926,7 +974,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void updateAlbumCursor() {
         long albumId = getAlbumId();
         if (albumId >= 0) {
-            mAlbumCursor = openCursorAndGoToFirst(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, ALBUM_PROJECTION, "_id=" + albumId, null);
+            String[] args = {Long.toString(albumId)};
+            mAlbumCursor = openCursorAndGoToFirst(Albums.EXTERNAL_CONTENT_URI, ALBUM_PROJECTION, ALBUM_SELECT_ID, args);
         } else {
             mAlbumCursor = null;
         }
@@ -983,7 +1032,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             updateCursor(mPlayList.get(mPlayPos));
             boolean fileOpenFailed;
             if (mCursor != null) {
-                String path = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX);
+                String path = Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX);
                 fileOpenFailed = !openFile(path);
             } else {
                 fileOpenFailed = true;
@@ -1024,9 +1073,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @return The next position to play.
      */
     private int getNextPosition(boolean force) {
+        // return current play position
         if (!force && mRepeatMode == REPEAT_CURRENT) {
             return Math.max(mPlayPos, 0);
-        } else if (mShuffleMode == SHUFFLE_NORMAL) {
+        }
+        // suffle all songs
+        else if (mShuffleMode == SHUFFLE_NORMAL) {
             if (mPlayPos >= 0) {
                 mHistory.add(mPlayPos);
             }
@@ -1062,7 +1114,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 skip = mShuffler.nextInt(numUnplayed);
             }
 
-            int count = 0;
+            int count = -1;
             for (int i : tracks) {
                 count++;
                 if (i < 0) {
@@ -1073,7 +1125,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 }
             }
             return count;
-        } else if (mShuffleMode == SHUFFLE_AUTO) {
+        }
+        // party shuffle
+        else if (mShuffleMode == SHUFFLE_AUTO) {
             doAutoShuffleUpdate();
             return mPlayPos + 1;
         } else {
@@ -1097,7 +1151,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         mNextPlayPos = getNextPosition(false);
         if (mNextPlayPos >= 0) {
             long id = mPlayList.get(mNextPlayPos);
-            mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
+            mPlayer.setNextDataSource(Media.EXTERNAL_CONTENT_URI + "/" + id);
         } else {
             mPlayer.setNextDataSource(null);
         }
@@ -1109,8 +1163,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private boolean makeAutoShuffleList() {
         Cursor cursor = null;
         try {
-            cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    new String[]{MediaStore.Audio.Media._ID}, MediaStore.Audio.Media.IS_MUSIC + "=1", null, null);
+            cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, ID_PROJECTION,
+                    TRACK_SELECTION, null, null);
             if (cursor == null || cursor.getCount() == 0) {
                 return false;
             }
@@ -1379,15 +1433,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 } catch (NumberFormatException ex) {
                     ex.printStackTrace();
                 }
-                if (id != -1 && path.startsWith(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString())) {
+                if (id != -1 && path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
                     updateCursor(uri);
-
-                } else if (id != -1 && path.startsWith(MediaStore.Files.getContentUri("external").toString())) {
+                } else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
                     updateCursor(id);
                 } else {
-                    String where = MediaStore.Audio.Media.DATA + "=?";
                     String[] selectionArgs = new String[]{path};
-                    updateCursor(where, selectionArgs);
+                    updateCursor(TRACK_SELECT_PATH, selectionArgs);
                 }
                 if (mCursor != null && mCursor.moveToFirst()) {
                     mPlayList.add(0, mCursor.getLong(IDCOLIDX));

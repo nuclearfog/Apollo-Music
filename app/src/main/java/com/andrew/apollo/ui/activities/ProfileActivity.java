@@ -19,7 +19,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Audio;
+import android.provider.MediaStore.Images;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -115,13 +116,13 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
 
         public static Type getEnum(String s) {
             switch (s) {
-                case MediaStore.Audio.Artists.CONTENT_TYPE:
+                case Audio.Artists.CONTENT_TYPE:
                     return ARTIST;
-                case MediaStore.Audio.Albums.CONTENT_TYPE:
+                case Audio.Albums.CONTENT_TYPE:
                     return ALBUM;
-                case MediaStore.Audio.Genres.CONTENT_TYPE:
+                case Audio.Genres.CONTENT_TYPE:
                     return GENRE;
-                case MediaStore.Audio.Playlists.CONTENT_TYPE:
+                case Audio.Playlists.CONTENT_TYPE:
                     return PLAYLIST;
                 case PAGE_FOLDERS:
                     return FOLDER;
@@ -299,7 +300,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         // Attch the adapter
         mViewPager.setAdapter(mPagerAdapter);
         // Offscreen limit
-        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount() - 1);
+        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
         // Attach the page change listener
         mViewPager.addOnPageChangeListener(this);
         // Attach the carousel listener
@@ -573,7 +574,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode == RESULT_OK) {
             if (requestCode == NEW_PHOTO && intent != null && intent.getData() != null) {
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                String[] filePathColumn = {Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(intent.getData(), filePathColumn, null, null, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {

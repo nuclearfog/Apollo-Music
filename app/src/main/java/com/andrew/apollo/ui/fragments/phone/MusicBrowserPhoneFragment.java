@@ -142,7 +142,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         // Attach the adapter
         mViewPager.setAdapter(mPagerAdapter);
         // Offscreen pager loading limit
-        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount() - 1);
+        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
         // Start on the last page the user was on
         mViewPager.setCurrentItem(mPreferences.getStartPage());
         // Initialize the TPI

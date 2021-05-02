@@ -313,6 +313,10 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             mAdapter.remove(mSong);
             // Build the cache
             mAdapter.buildCache();
+            // check if queue is empty
+            if (mAdapter.isEmpty()) {
+                NavUtils.goHome(requireActivity());
+            }
         }
     }
 

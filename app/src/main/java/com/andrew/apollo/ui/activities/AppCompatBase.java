@@ -13,10 +13,8 @@ package com.andrew.apollo.ui.activities;
 
 import android.app.SearchManager;
 import android.app.SearchableInfo;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
@@ -43,12 +41,13 @@ import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
+import com.andrew.apollo.utils.PlaybackStatus;
+import com.andrew.apollo.utils.PlaybackStatus.PlayStatusListener;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.PlayPauseButton;
 import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.ShuffleButton;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,8 +59,8 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class AppCompatBase extends AppCompatActivity
-        implements ServiceConnection, OnClickListener, OnQueryTextListener {
+public abstract class AppCompatBase extends AppCompatActivity implements ServiceConnection,
+        OnClickListener, OnQueryTextListener, PlayStatusListener {
 
     /**
      * Playstate and meta change listener
@@ -282,6 +281,48 @@ public abstract class AppCompatBase extends AppCompatActivity
         return false;
     }
 
+
+    @Override
+    public final void onMetaChange() {
+        // Current info
+        updateBottomActionBarInfo();
+        // Update the favorites icon
+        invalidateOptionsMenu();
+        // Let the listener know to the meta changed
+        for (MusicStateListener listener : mMusicStateListener) {
+            if (listener != null) {
+                listener.onMetaChanged();
+            }
+        }
+    }
+
+
+    @Override
+    public final void onStateChange() {
+        // Set the play and pause image
+        mPlayPauseButton.updateState();
+    }
+
+
+    @Override
+    public final void onModeChange() {
+        // Set the repeat image
+        mRepeatButton.updateRepeatState();
+        // Set the shuffle image
+        mShuffleButton.updateShuffleState();
+    }
+
+
+    @Override
+    public final void refresh() {
+        // Let the listener know to update a list
+        for (MusicStateListener listener : mMusicStateListener) {
+            if (listener != null) {
+                listener.restartLoader();
+            }
+        }
+    }
+
     /**
      * Initializes the items in the bottom action bar.
      */
@@ -344,64 +385,4 @@ public abstract class AppCompatBase extends AppCompatActivity
      * @return The resource ID to be inflated.
      */
     public abstract View getContentView();
-
-    /**
-     * Used to monitor the state of playback
-     */
-    private final static class PlaybackStatus extends BroadcastReceiver {
-
-        private WeakReference<AppCompatBase> mReference;
-
-        /**
-         * Constructor of <code>PlaybackStatus</code>
-         */
-        public PlaybackStatus(AppCompatBase activity) {
-            mReference = new WeakReference<>(activity);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            AppCompatBase activity = mReference.get();
-            if (action != null && activity != null)
-                switch (action) {
-                    case MusicPlaybackService.META_CHANGED:
-                        // Current info
-                        activity.updateBottomActionBarInfo();
-                        // Update the favorites icon
-                        activity.invalidateOptionsMenu();
-                        // Let the listener know to the meta changed
-                        for (MusicStateListener listener : activity.mMusicStateListener) {
-                            if (listener != null) {
-                                listener.onMetaChanged();
-                            }
-                        }
-                        break;
-                    case MusicPlaybackService.PLAYSTATE_CHANGED:
-                        // Set the play and pause image
-                        activity.mPlayPauseButton.updateState();
-                        break;
-
-                    case MusicPlaybackService.REPEATMODE_CHANGED:
-                    case MusicPlaybackService.SHUFFLEMODE_CHANGED:
-                        // Set the repeat image
-                        activity.mRepeatButton.updateRepeatState();
-                        // Set the shuffle image
-                        activity.mShuffleButton.updateShuffleState();
-                        break;
-
-                    case MusicPlaybackService.REFRESH:
-                        // Let the listener know to update a list
-                        for (MusicStateListener listener : activity.mMusicStateListener) {
-                            if (listener != null) {
-                                listener.restartLoader();
-                            }
-                        }
-                        break;
-                }
-        }
-    }
 }

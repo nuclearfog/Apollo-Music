@@ -34,7 +34,7 @@ public class PlaybackStatus extends BroadcastReceiver {
         String action = intent.getAction();
         PlayStatusListener callback = mReference.get();
 
-        if (action != null && callback != null)
+        if (action != null && callback != null) {
             switch (action) {
                 case MusicPlaybackService.META_CHANGED:
                     callback.onMetaChange();
@@ -48,7 +48,12 @@ public class PlaybackStatus extends BroadcastReceiver {
                 case MusicPlaybackService.SHUFFLEMODE_CHANGED:
                     callback.onModeChange();
                     break;
+
+                case MusicPlaybackService.REFRESH:
+                    callback.refresh();
+                    break;
             }
+        }
     }
 
     /**
@@ -70,5 +75,10 @@ public class PlaybackStatus extends BroadcastReceiver {
          * called when mode changes between repeat and shuffle
          */
         void onModeChange();
+
+        /**
+         *
+         */
+        void refresh();
     }
 }

@@ -505,6 +505,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mShuffleButton.updateShuffleState();
     }
 
+
+    @Override
+    public void refresh() {
+    }
+
     /**
      * Initializes the items in the now playing screen
      */
@@ -612,42 +617,48 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void startPlayback() {
         Intent intent = getIntent();
-        if (intent == null || MusicUtils.isConnected()) {
-            return;
-        }
-        Uri uri = intent.getData();
-        String mimeType = intent.getType();
-        boolean handled = false;
-
-        if (uri != null && uri.toString().length() > 0) {
-            MusicUtils.playFile(uri);
-            handled = true;
-        } else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "playlistId", "playlist");
-            if (id >= 0) {
-                MusicUtils.playPlaylist(this, id);
+        if (intent != null && MusicUtils.isConnected()) {
+            Uri uri = intent.getData();
+            String mimeType = intent.getType();
+            boolean handled = false;
+            // open file
+            if (uri != null && uri.toString().length() > 0) {
+                MusicUtils.playFile(uri);
                 handled = true;
             }
-        } else if (Albums.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "albumId", "album");
-            if (id >= 0) {
-                int position = intent.getIntExtra("position", 0);
-                MusicUtils.playAlbum(this, id, position);
-                handled = true;
+            // open playlist
+            else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
+                long id = parseIdFromIntent(intent, "playlistId", "playlist");
+                if (id >= 0) {
+                    MusicUtils.playPlaylist(this, id);
+                    handled = true;
+                }
             }
-        } else if (Artists.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "artistId", "artist");
-            if (id >= 0) {
-                int position = intent.getIntExtra("position", 0);
-                MusicUtils.playArtist(this, id, position);
-                handled = true;
+            // open album
+            else if (Albums.CONTENT_TYPE.equals(mimeType)) {
+                long id = parseIdFromIntent(intent, "albumId", "album");
+                if (id >= 0) {
+                    int position = intent.getIntExtra("position", 0);
+                    MusicUtils.playAlbum(this, id, position);
+                    handled = true;
+                }
             }
-        }
-        if (handled) {
-            // Make sure to process intent only once
-            setIntent(new Intent());
-            // Refresh the queue
-            getFragment().refresh();
+            // open artist
+            else if (Artists.CONTENT_TYPE.equals(mimeType)) {
+                long id = parseIdFromIntent(intent, "artistId", "artist");
+                if (id >= 0) {
+                    int position = intent.getIntExtra("position", 0);
+                    MusicUtils.playArtist(this, id, position);
+                    handled = true;
+                }
+            }
+            // clear intent
+            if (handled) {
+                // Make sure to process intent only once
+                setIntent(new Intent());
+                // Refresh the queue
+                getFragment().refresh();
+            }
         }
     }
 

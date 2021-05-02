@@ -307,9 +307,10 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public void remove(int which) {
         Song mSong = mAdapter.getItem(which);
         if (mSong != null) {
-            mAdapter.remove(mSong);
-            mAdapter.notifyDataSetChanged();
+            // remove track from queue
             MusicUtils.removeTrack(mSong.getId());
+            // remove track from list
+            mAdapter.remove(mSong);
             // Build the cache
             mAdapter.buildCache();
         }
@@ -323,6 +324,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         if (from != to) {
             MusicUtils.moveQueueItem(from, to);
             mAdapter.moveTrack(from, to);
+        } else {
+            mAdapter.notifyDataSetChanged();
         }
     }
 

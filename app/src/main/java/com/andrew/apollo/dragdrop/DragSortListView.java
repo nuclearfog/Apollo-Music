@@ -896,7 +896,6 @@ public class DragSortListView extends ListView {
     }
 
     private void dropFloatView(boolean removeSrcItem) {
-
         mDragScroller.stopScrolling(true);
         if (removeSrcItem) {
             if (mRemoveListener != null) {
@@ -904,8 +903,9 @@ public class DragSortListView extends ListView {
             }
         } else {
             if (mDropListener != null && mFloatPos >= 0 && mFloatPos < getCount()) {
-                int numHeaders = getHeaderViewsCount();
-                mDropListener.drop(mSrcPos - numHeaders, mFloatPos - numHeaders);
+                int from = mSrcPos - getHeaderViewsCount();
+                int to = mFloatPos - getHeaderViewsCount();
+                mDropListener.drop(from, to);
             }
             int firstPos = getFirstVisiblePosition();
             if (mSrcPos < firstPos) {

@@ -341,16 +341,16 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     public void drop(int from, int to) {
         if (from == 0 || to == 0) {
             mAdapter.notifyDataSetChanged();
-            return;
+        } else if (from != to) {
+            // calculate relative index
+            from = from - 1;
+            to = to - 1;
+            ContentResolver resolver = requireActivity().getContentResolver();
+            Members.moveItem(resolver, mPlaylistId, from, to);
+            mAdapter.moveTrack(from, to);
+        } else {
+            mAdapter.notifyDataSetChanged();
         }
-        int realFrom = from - 1;
-        int realTo = to - 1;
-        mSong = mAdapter.getItem(realFrom);
-        mAdapter.remove(mSong);
-        mAdapter.insert(mSong, realTo);
-        mAdapter.notifyDataSetChanged();
-        ContentResolver resolver = requireActivity().getContentResolver();
-        Members.moveItem(resolver, mPlaylistId, realFrom, realTo);
     }
 
 

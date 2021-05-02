@@ -214,4 +214,17 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         }
         return ITEM_VIEW_TYPE_MUSIC;
     }
+
+    /**
+     * move track to another position
+     *
+     * @param from position of the track
+     * @param to   new position of the track
+     */
+    public void moveTrack(int from, int to) {
+        Song mSong = getItem(from);
+        remove(mSong);
+        insert(mSong, to);
+        notifyDataSetChanged();
+    }
 }

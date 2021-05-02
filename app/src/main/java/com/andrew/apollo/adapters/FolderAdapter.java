@@ -41,12 +41,14 @@ public class FolderAdapter extends ArrayAdapter<File> {
         MusicHolder holder;
         if (paramView == null) {
             paramView = LayoutInflater.from(getContext()).inflate(mLayoutId, paramViewGroup, false);
+            float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
             holder = new MusicHolder(paramView);
             holder.mImage.setVisibility(GONE);
             holder.mLineTwo.setVisibility(GONE);
             holder.mLineThree.setVisibility(GONE);
-            holder.mBackground.setVisibility(GONE);
-            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
+            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            if (holder.mBackground != null)
+                holder.mBackground.setVisibility(GONE);
             paramView.setTag(holder);
         } else {
             holder = (MusicHolder) paramView.getTag();

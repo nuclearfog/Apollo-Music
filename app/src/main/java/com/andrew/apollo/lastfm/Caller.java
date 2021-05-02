@@ -24,6 +24,7 @@ package com.andrew.apollo.lastfm;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.andrew.apollo.Config;
 import com.andrew.apollo.lastfm.Result.Status;
 
 import org.apache.http.HttpStatus;
@@ -51,6 +52,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import io.michaelrocks.paranoid.Obfuscate;
+
+import static com.andrew.apollo.Config.USER_AGENT;
 import static com.andrew.apollo.lastfm.StringUtilities.encode;
 import static com.andrew.apollo.lastfm.StringUtilities.map;
 
@@ -66,6 +70,7 @@ import static com.andrew.apollo.lastfm.StringUtilities.map;
  *
  * @author Janni Kovacs
  */
+@Obfuscate
 public class Caller {
 
     private static final String TAG = "LastFm.Caller";
@@ -91,8 +96,8 @@ public class Caller {
     }
 
 
-    public Result call(String method, String apiKey, String... params) {
-        return call(method, apiKey, map(params));
+    public Result call(String method, String... params) {
+        return call(method, map(params));
     }
 
     /**
@@ -103,11 +108,11 @@ public class Caller {
      * session is passed to this method.
      *
      * @param method The method to call
-     * @param apiKey A Last.fm API key
      * @param params Parameters
      * @return the result of the operation
      */
-    public Result call(String method, String apiKey, Map<String, String> params) {
+    public Result call(String method, Map<String, String> params) {
+        String apiKey = Config.LASTFM_API_KEY;
         params = new WeakHashMap<>(params);
         InputStream inputStream;
 
@@ -155,8 +160,7 @@ public class Caller {
         URL u = new URL(url);
         HttpsURLConnection urlConnection;
         urlConnection = (HttpsURLConnection) u.openConnection();
-        String userAgent = "Apollo";
-        urlConnection.setRequestProperty("User-Agent", userAgent);
+        urlConnection.setRequestProperty("User-Agent", USER_AGENT);
         urlConnection.setUseCaches(true);
         return urlConnection;
     }
@@ -178,7 +182,6 @@ public class Caller {
 
     private InputStream getInputStreamFromConnection(HttpsURLConnection connection) throws IOException {
         int responseCode = connection.getResponseCode();
-
         if (responseCode == HttpsURLConnection.HTTP_FORBIDDEN || responseCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
             return connection.getErrorStream();
         } else if (responseCode == HttpsURLConnection.HTTP_OK) {

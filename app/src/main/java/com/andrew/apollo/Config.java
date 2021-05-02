@@ -27,8 +27,7 @@ public final class Config {
      */
     public static final String ALBUM_ART_SUFFIX = "album";
     /**
-     * The ID of an artist, album, genre, or playlist passed to the profile
-     * activity
+     * The ID of an artist, album, genre, or playlist passed to the profile activity
      */
     public static final String ID = "id";
     /**
@@ -36,8 +35,7 @@ public final class Config {
      */
     public static final String IDS = "ids";
     /**
-     * The name of an artist, album, genre, or playlist passed to the profile
-     * activity
+     * The name of an artist, album, genre, or playlist passed to the profile activity
      */
     public static final String NAME = "name";
     /**
@@ -56,6 +54,10 @@ public final class Config {
      * Play from search intent
      */
     public static final String PLAY_FROM_SEARCH = "android.media.action.MEDIA_PLAY_FROM_SEARCH";
+    /**
+     * user aent for Last FM
+     */
+    public static final String USER_AGENT = "Apollo";
 
     /* This class is never initiated. */
     private Config() {

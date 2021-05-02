@@ -17,7 +17,6 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
@@ -570,13 +569,12 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * {@inheritDoc}
      */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (data != null && requestCode == NEW_PHOTO) {
-            Uri selectedImage = data.getData();
-            if (resultCode == RESULT_OK && selectedImage != null) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == NEW_PHOTO && intent != null && intent.getData() != null) {
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                Cursor cursor = getContentResolver().query(intent.getData(), filePathColumn, null, null, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
                         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
@@ -595,13 +593,13 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                         }
                     }
                     cursor.close();
+                } else {
+                    selectOldPhoto();
                 }
-            } else {
-                selectOldPhoto();
+            } else if (requestCode == REQUEST_DELETE_FILES) {
+                MusicUtils.onPostDelete(this);
+                refreshAll();
             }
-        } else if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
-            MusicUtils.onPostDelete(this);
-            refreshAll();
         }
     }
 

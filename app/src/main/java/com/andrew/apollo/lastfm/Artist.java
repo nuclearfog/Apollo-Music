@@ -21,8 +21,6 @@
 
 package com.andrew.apollo.lastfm;
 
-import com.andrew.apollo.Config;
-
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -50,7 +48,7 @@ public class Artist extends MusicEntry {
      * @return detailed artist info
      */
     public static Artist getInfo(String artistOrMbid) {
-        return getInfo(artistOrMbid, Locale.getDefault(), Config.LASTFM_API_KEY);
+        return getInfo(artistOrMbid, Locale.getDefault());
     }
 
     /**
@@ -58,16 +56,15 @@ public class Artist extends MusicEntry {
      *
      * @param artistOrMbid Name of the artist or an mbid
      * @param locale       The language to fetch info in, or <code>null</code>
-     * @param apiKey       The API key
      * @return detailed artist info
      */
-    public static Artist getInfo(String artistOrMbid, Locale locale, String apiKey) {
+    public static Artist getInfo(String artistOrMbid, Locale locale) {
         Map<String, String> mParams = new WeakHashMap<>();
         mParams.put("artist", artistOrMbid);
         if (locale != null && locale.getLanguage().length() != 0) {
             mParams.put("lang", locale.getLanguage());
         }
-        Result mResult = Caller.getInstance().call("artist.getInfo", apiKey, mParams);
+        Result mResult = Caller.getInstance().call("artist.getInfo", mParams);
         return ResponseBuilder.buildItem(mResult, Artist.class);
     }
 
@@ -83,8 +80,7 @@ public class Artist extends MusicEntry {
     public static Artist getCorrection(String artist) {
         Result result;
         try {
-            result = Caller.getInstance().call("artist.getCorrection",
-                    Config.LASTFM_API_KEY, "artist", artist);
+            result = Caller.getInstance().call("artist.getCorrection", "artist", artist);
             if (!result.isSuccessful()) {
                 return null;
             }

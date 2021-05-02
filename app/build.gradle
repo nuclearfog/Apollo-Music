@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.michaelrocks.paranoid'
 
 android {
     compileSdkVersion 30
@@ -24,6 +25,10 @@ android {
             minifyEnabled true
             shrinkResources true
         }
+    }
+
+    paranoid {
+        enabled true
     }
 }
 

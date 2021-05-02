@@ -57,7 +57,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistAlbumFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Album>>,
-        OnItemClickListener, FragmentCallback {
+        OnItemClickListener, FragmentCallback, ScrollableHeader {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -73,23 +73,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * The adapter for the grid
      */
     private ArtistAlbumAdapter mAdapter;
-    // Pause disk cache access to ensure smoother scrolling
-    private ScrollableHeader mScrollableHeader = new ScrollableHeader() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onScrollStateChanged(int scrollState) {
-            if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-                    || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                mAdapter.setPauseDiskCache(true);
-            } else {
-                mAdapter.setPauseDiskCache(false);
-                mAdapter.notifyDataSetChanged();
-            }
-        }
-    };
     /**
      * The list view
      */
@@ -97,6 +80,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * Album song list
      */
+    @Nullable
     private long[] mAlbumList;
     /**
      * Represents an album
@@ -152,8 +136,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Show the songs from the selected album
         mListView.setOnItemClickListener(this);
         // To help make scrolling smooth
-        mListView.setOnScrollListener(new VerticalScrollListener(mScrollableHeader,
-                mProfileTabCarousel, 1));
+        mListView.setOnScrollListener(new VerticalScrollListener(this, mProfileTabCarousel, 1));
         // Remove the scrollbars and padding for the fast scroll
         mListView.setVerticalScrollBarEnabled(false);
         mListView.setFastScrollEnabled(false);
@@ -205,16 +188,18 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Create a new album
         mAlbum = mAdapter.getItem(info.position - 1);
         // Create a list of the album's songs
-        mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
-        // Play the album
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Add the album to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the album to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
-        // Delete the album
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (mAlbum != null) {
+            mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+            // Play the album
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Add the album to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the album to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
+            // Delete the album
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        }
     }
 
     /**
@@ -226,7 +211,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(mAlbumList, 0, false);
+                    if (mAlbumList != null)
+                        MusicUtils.playAll(mAlbumList, 0, false);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
@@ -238,12 +224,15 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    long id = item.getIntent().getLongExtra("playlist", 0);
-                    MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+                    if (mAlbumList != null) {
+                        long id = item.getIntent().getLongExtra("playlist", 0);
+                        MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+                    }
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
+                    if (mAlbum != null)
+                        MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
                     return true;
             }
         }
@@ -255,12 +244,13 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position == 0) {
-            return;
+        if (position > 0) {
+            Album album = mAdapter.getItem(position - 1);
+            if (album != null) {
+                NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
+                requireActivity().finish();
+            }
         }
-        mAlbum = mAdapter.getItem(position - 1);
-        NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
-        requireActivity().finish();
     }
 
     /**
@@ -310,5 +300,19 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         mListView.setSelection(0);
         mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onScrollStateChanged(int scrollState) {
+        if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
+                || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+            mAdapter.setPauseDiskCache(true);
+        } else {
+            mAdapter.setPauseDiskCache(false);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }

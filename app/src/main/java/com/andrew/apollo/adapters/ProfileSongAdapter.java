@@ -43,17 +43,17 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * Default display setting: title/album
      */
-    public static final int DISPLAY_DEFAULT_SETTING = 0;
+    public static final int DISPLAY_DEFAULT_SETTING = 0x709121EE;
 
     /**
      * Playlist display setting: title/artist-album
      */
-    public static final int DISPLAY_PLAYLIST_SETTING = 1;
+    public static final int DISPLAY_PLAYLIST_SETTING = 0x57909C67;
 
     /**
      * Album display setting: title/duration
      */
-    public static final int DISPLAY_ALBUM_SETTING = 2;
+    public static final int DISPLAY_ALBUM_SETTING = 0xCCCED4CB;
 
     /**
      * The header view

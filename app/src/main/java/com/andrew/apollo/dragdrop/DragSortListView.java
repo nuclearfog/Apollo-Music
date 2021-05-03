@@ -67,15 +67,15 @@ public class DragSortListView extends ListView {
     /**
      * Drag state enum.
      */
-    private final static int IDLE = 0;
-    private final static int STOPPED = 1;
-    private final static int DRAGGING = 2;
+    private final static int IDLE = 0x690DF8E8;
+    private final static int STOPPED = 0x695CFF61;
+    private final static int DRAGGING = 0x86B75FE;
     /**
      * Enum telling where to cancel the ListView action when a drag-sort begins
      */
-    private static final int NO_CANCEL = 0;
-    private static final int ON_TOUCH_EVENT = 1;
-    private static final int ON_INTERCEPT_TOUCH_EVENT = 2;
+    private static final int NO_CANCEL = 0xCF12F49;
+    private static final int ON_TOUCH_EVENT = 0xA462CF1D;
+    private static final int ON_INTERCEPT_TOUCH_EVENT = 0x9B5F98B2;
     /**
      * A proposed float View location based on touch location and given deltaX
      * and deltaY.

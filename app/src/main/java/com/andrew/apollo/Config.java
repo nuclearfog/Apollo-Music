@@ -11,6 +11,8 @@
 
 package com.andrew.apollo;
 
+import androidx.annotation.Keep;
+
 /**
  * App-wide constants.
  *
@@ -21,6 +23,7 @@ public final class Config {
     /**
      * LAST FM Key used to download track informations
      */
+    @Keep
     public static final String LASTFM_API_KEY = "";
     /**
      * Used to distinguish album art from artist images
@@ -50,6 +53,8 @@ public final class Config {
      * The MIME type passed to a the profile activity
      */
     public static final String MIME_TYPE = "mime_type";
+
+    public static final String FOLDER = "folder_path";
     /**
      * Play from search intent
      */

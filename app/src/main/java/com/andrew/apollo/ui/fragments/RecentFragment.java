@@ -73,7 +73,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0;
+    private static final int LOADER = 0x178EB63F;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -364,7 +364,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 
     @Override
     public void setCurrentTrack() {
-        mList.smoothScrollToPosition(0);
+        if (!mAdapter.isEmpty()) {
+            mList.smoothScrollToPosition(0);
+        }
     }
 
     /**

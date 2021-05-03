@@ -86,6 +86,10 @@ import static android.provider.MediaStore.VOLUME_EXTERNAL;
 public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
 
     /**
+     *
+     */
+    private static final String TAG = "MusicPlaybackService";
+    /**
      * For backwards compatibility reasons, also provide sticky
      * broadcasts under the music package
      */
@@ -257,30 +261,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public static final int REPEAT_ALL = 0xEE3F9E0B;
     /**
-     *
-     */
-    private static final String TAG = "MusicPlaybackService";
-    /**
-     *
-     */
-    private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
-    /**
-     * Notification channel ID
-     */
-    public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
-    /**
-     * Notification name
-     */
-    private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
-    /**
-     * Used by the alarm intent to shutdown the service after being idle
-     */
-    private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
-    /**
-     *
-     */
-    private static final int IDCOLIDX = 0;
-    /**
      * Indicates when the track ends
      */
     private static final int TRACK_ENDED = 0xF7E68B1A;
@@ -304,6 +284,26 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Indicates to fade the volume back up
      */
     private static final int FADEUP = 0x2A72CF59;
+    /**
+     *
+     */
+    private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
+    /**
+     * Notification channel ID
+     */
+    public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
+    /**
+     * Notification name
+     */
+    private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
+    /**
+     * Used by the alarm intent to shutdown the service after being idle
+     */
+    private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
+    /**
+     *
+     */
+    private static final int IDCOLIDX = 0;
     /**
      * Idle time before stopping the foreground notfication (1 minute)
      */

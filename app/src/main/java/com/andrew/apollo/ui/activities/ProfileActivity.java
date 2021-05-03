@@ -55,6 +55,10 @@ import com.andrew.apollo.utils.SortOrder;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
+import java.io.File;
+import java.util.Random;
+
+import static com.andrew.apollo.Config.FOLDER;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
@@ -410,6 +414,17 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
 
                 case LAST_ADDED:
                     MusicUtils.playLastAdded(this);
+                    break;
+
+                case FOLDER:
+                    File folder = new File(mArguments.getString(FOLDER));
+                    if (folder.exists())
+                        list = MusicUtils.getSongListForFolder(this, folder);
+                    if (list.length > 0) {
+                        // play list at random position
+                        Random r = new Random();
+                        MusicUtils.playAll(list, r.nextInt(list.length), true);
+                    }
                     break;
             }
             if (list.length > 0) {

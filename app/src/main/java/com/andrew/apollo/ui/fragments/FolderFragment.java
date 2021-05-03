@@ -33,6 +33,10 @@ import com.andrew.apollo.utils.MusicUtils;
 import java.io.File;
 import java.util.List;
 
+import static com.andrew.apollo.Config.FOLDER;
+import static com.andrew.apollo.Config.ID;
+import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.Config.NAME;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
 
 /**
@@ -137,10 +141,10 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
         File mFolder = mAdapter.getItem(paramInt);
         Bundle bundle = new Bundle();
-        bundle.putLong("id", 0L);
-        bundle.putString("name", mFolder.getName());
-        bundle.putString("mime_type", PAGE_FOLDERS);
-        bundle.putString("folder_path", mFolder.toString());
+        bundle.putLong(ID, 0L);
+        bundle.putString(NAME, mFolder.getName());
+        bundle.putString(MIME_TYPE, PAGE_FOLDERS);
+        bundle.putString(FOLDER, mFolder.toString());
         Intent intent = new Intent(requireContext(), ProfileActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);

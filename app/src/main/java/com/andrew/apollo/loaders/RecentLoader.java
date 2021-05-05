@@ -51,6 +51,9 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
                 do {
                     // Copy the album id
                     long id = mCursor.getLong(0);
+                    // filter invalid albums
+                    if (id < 0)
+                        continue;
                     // Copy the album name
                     String albumName = mCursor.getString(1);
                     // Copy the artist name

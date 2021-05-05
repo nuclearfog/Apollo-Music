@@ -68,7 +68,7 @@ public class NotificationHelper {
     /**
      * Constructor of <code>NotificationHelper</code>
      *
-     * @param service The {@link Context} to use
+     * @param service callback to the service
      */
     public NotificationHelper(MusicPlaybackService service) {
         mService = service;

@@ -208,7 +208,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
             // Add the album to a playlist
             SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-            MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
             // View more content by the album artist
             menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
             // Remove the album from the list

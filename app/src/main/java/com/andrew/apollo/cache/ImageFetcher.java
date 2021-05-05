@@ -17,6 +17,8 @@ import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.andrew.apollo.Config;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.lastfm.Album;
@@ -47,6 +49,8 @@ public class ImageFetcher extends ImageWorker {
 
     private static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
 
+    private static final int NOTIFICATION_SIZE = 300;
+
     private static final String DEFAULT_HTTP_CACHE_DIR = "http"; //$NON-NLS-1$
 
     private static ImageFetcher sInstance = null;
@@ -56,7 +60,7 @@ public class ImageFetcher extends ImageWorker {
      *
      * @param context The {@link Context} to use.
      */
-    public ImageFetcher(Context context) {
+    private ImageFetcher(Context context) {
         super(context);
     }
 
@@ -358,20 +362,26 @@ public class ImageFetcher extends ImageWorker {
      *                   missing artwork
      * @return The album art as an {@link Bitmap}
      */
+    @Nullable
     public Bitmap getArtwork(String albumName, long albumId, String artistName) {
         // Check the disk cache
         Bitmap artwork = null;
-
-        if (albumName != null && mImageCache != null) {
-            artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(albumName, artistName));
+        if (mImageCache != null) {
+            if (albumName != null) {
+                artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(albumName, artistName));
+            }
+            if (artwork == null && albumId >= 0) {
+                // Check for local artwork
+                artwork = mImageCache.getArtworkFromFile(mContext, albumId);
+            }
         }
-        if (artwork == null && albumId >= 0 && mImageCache != null) {
-            // Check for local artwork
-            artwork = mImageCache.getArtworkFromFile(mContext, albumId);
+        if (artwork == null) {
+            artwork = getDefaultArtwork();
         }
-        if (artwork != null) {
-            return artwork;
+        if (artwork == null) {
+            return null;
         }
-        return getDefaultArtwork();
+        // scale down image
+        return Bitmap.createScaledBitmap(artwork, NOTIFICATION_SIZE, NOTIFICATION_SIZE, false);
     }
 }

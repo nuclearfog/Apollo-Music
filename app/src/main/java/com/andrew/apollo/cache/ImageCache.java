@@ -100,7 +100,7 @@ public final class ImageCache {
      *
      * @param context The {@link Context} to use
      */
-    public ImageCache(Context context) {
+    private ImageCache(Context context) {
         init(context);
     }
 
@@ -112,7 +112,7 @@ public final class ImageCache {
      */
     public static ImageCache getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new ImageCache(context);
+            sInstance = new ImageCache(context.getApplicationContext());
         }
         return sInstance;
     }
@@ -172,20 +172,10 @@ public final class ImageCache {
      */
     public static File getDiskCacheDir(Context context, String uniqueName) {
         // getExternalCacheDir(context) returns null if external storage is not ready
-        String cachePath = getExternalCacheDir(context) != null
-                ? getExternalCacheDir(context).getPath()
-                : context.getCacheDir().getPath();
-        return new File(cachePath, uniqueName);
-    }
-
-    /**
-     * Get the external app cache directory
-     *
-     * @param context The {@link Context} to use
-     * @return The external cache directory
-     */
-    public static File getExternalCacheDir(Context context) {
-        return context.getExternalCacheDir();
+        File folder = context.getExternalCacheDir();
+        if (folder == null)
+            folder = context.getCacheDir();
+        return new File(folder, uniqueName);
     }
 
     /**
@@ -194,7 +184,7 @@ public final class ImageCache {
      * @param path The path to check
      * @return The space available in bytes
      */
-    public static long getUsableSpace(File path) {
+    private static long getUsableSpace(File path) {
         return path.getUsableSpace();
     }
 
@@ -241,13 +231,18 @@ public final class ImageCache {
      *
      * @param context The {@link Context} to use
      */
-    private void init(final Context context) {
+    private void init(Context context) {
+        File cacheFolder = context.getExternalCacheDir();
+        if (cacheFolder == null)
+            cacheFolder = context.getCacheDir();
+        final File folder = new File(cacheFolder, TAG);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     // Initialize the disk cache in a background thread
-                    initDiskCache(context);
+                    initDiskCache(folder);
                 } catch (Exception err) {
                     err.printStackTrace();
                 }
@@ -262,19 +257,16 @@ public final class ImageCache {
      * should not be executed on the main/UI thread. By default an ImageCache
      * does not initialize the disk cache when it is created, instead you should
      * call initDiskCache() to initialize it on a background thread.
-     *
-     * @param context The {@link Context} to use
      */
-    private synchronized void initDiskCache(Context context) {
+    private synchronized void initDiskCache(File cacheFolder) {
         // Set up disk cache
         if (mDiskCache == null || mDiskCache.isClosed()) {
-            File diskCacheDir = getDiskCacheDir(context, TAG);
-            if (!diskCacheDir.exists()) {
-                diskCacheDir.mkdirs();
+            if (!cacheFolder.exists()) {
+                cacheFolder.mkdirs();
             }
-            if (getUsableSpace(diskCacheDir) > DISK_CACHE_SIZE) {
+            if (getUsableSpace(cacheFolder) > DISK_CACHE_SIZE) {
                 try {
-                    mDiskCache = DiskLruCache.open(diskCacheDir, 1, 1, DISK_CACHE_SIZE);
+                    mDiskCache = DiskLruCache.open(cacheFolder, 1, 1, DISK_CACHE_SIZE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

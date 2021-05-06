@@ -733,9 +733,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // Make sure the service will shut down on its own if it was
         // just started but not bound to and nothing is playing
         scheduleDelayedShutdown();
-        if (intent != null && intent.getBooleanExtra(FROM_MEDIA_BUTTON, false)) {
-            MediaButtonIntentReceiver.completeWakefulIntent(intent);
-        }
         return START_STICKY;
     }
 

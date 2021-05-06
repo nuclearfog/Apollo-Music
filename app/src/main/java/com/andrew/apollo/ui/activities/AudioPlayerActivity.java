@@ -85,46 +85,87 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 public class AudioPlayerActivity extends AppCompatActivity implements ServiceConnection, OnSeekBarChangeListener,
         OnQueryTextListener, DeleteDialogCallback, OnClickListener, RepeatListener, PlayStatusListener {
 
-    // Message to refresh the time
-    private static final int REFRESH_TIME = 0x65059CC4;
-    // The service token
+    /**
+     * Message to refresh the time
+     */
+    private static final int MSG_ID = 0x65059CC4;
+    /**
+     * The service token
+     */
     private ServiceToken mToken;
-    // Play and pause button
+    /**
+     * Play and pause button
+     */
     private PlayPauseButton mPlayPauseButton;
-    // Repeat button
+    /**
+     * Repeat button
+     */
     private RepeatButton mRepeatButton;
-    // Shuffle button
+    /**
+     * Shuffle button
+     */
     private ShuffleButton mShuffleButton;
-    // Track name
+    /**
+     * Track name
+     */
     private TextView mTrackName;
-    // Artist name
+    /**
+     * Artist name
+     */
     private TextView mArtistName;
-    // Album art
+    /**
+     * Album art
+     */
     private ImageView mAlbumArt;
-    // Tiny artwork
+    /**
+     * Tiny artwork
+     */
     private ImageView mAlbumArtSmall;
-    // Current time
+    /**
+     * Current time
+     */
     private TextView mCurrentTime;
-    // Total time
+    /**
+     * Total time
+     */
     private TextView mTotalTime;
-    // Queue switch
+    /**
+     * Queue switch
+     */
     private ImageView mQueueSwitch;
-    // Progess
+    /**
+     * Progess
+     */
     private SeekBar mProgress;
-    // Broadcast receiver
+    /**
+     * Broadcast receiver
+     */
     private PlaybackStatus mPlaybackStatus;
-    // Handler used to update the current time
+    /**
+     * Handler used to update the current time
+     */
     private TimeHandler mTimeHandler;
-    // Pager adpater
+    /**
+     * Pager adpater
+     */
     private PagerAdapter mPagerAdapter;
-    // ViewPager
+    /**
+     * ViewPager
+     */
     private ViewPager mViewPager;
-    // Header
+    /**
+     * Header
+     */
     private LinearLayout mAudioPlayerHeader;
-    // Image cache
+    /**
+     * Image cache
+     */
     private ImageFetcher mImageFetcher;
-    // Theme resources
+    /**
+     * Theme resources
+     */
     private ThemeUtils mResources;
+
     private int themeColor;
     private long mPosOverride = -1;
     private long mStartSeekPos = 0;
@@ -418,7 +459,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     protected void onDestroy() {
         super.onDestroy();
         mIsPaused = false;
-        mTimeHandler.removeMessages(REFRESH_TIME);
+        mTimeHandler.removeMessages(MSG_ID);
         // Unbind from the service
         if (MusicUtils.isConnected()) {
             MusicUtils.unbindFromService(mToken);
@@ -679,8 +720,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void queueNextRefresh(long delay) {
         if (!mIsPaused) {
-            Message message = mTimeHandler.obtainMessage(REFRESH_TIME);
-            mTimeHandler.removeMessages(REFRESH_TIME);
+            Message message = mTimeHandler.obtainMessage(MSG_ID);
+            mTimeHandler.removeMessages(MSG_ID);
             mTimeHandler.sendMessageDelayed(message, delay);
         }
     }
@@ -896,11 +937,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             mAudioPlayer = new WeakReference<>(player);
         }
 
+
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == REFRESH_TIME && mAudioPlayer.get() != null) {
-                long next = mAudioPlayer.get().refreshCurrentTime();
-                mAudioPlayer.get().queueNextRefresh(next);
+            AudioPlayerActivity activity = mAudioPlayer.get();
+            if (msg.what == MSG_ID && activity != null) {
+                long next = activity.refreshCurrentTime();
+                activity.queueNextRefresh(next);
             }
         }
     }

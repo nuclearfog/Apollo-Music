@@ -16,10 +16,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -234,8 +237,8 @@ public final class ApolloUtils {
      */
     public static void createShortcutIntent(String displayName, String artistName, Long id, String mimeType, FragmentActivity activity) {
         try {
-            ImageFetcher fetcher = getImageFetcher(activity);
             Bitmap bitmap;
+            ImageFetcher fetcher = getImageFetcher(activity);
             if (mimeType.equals(MediaStore.Audio.Albums.CONTENT_TYPE)) {
                 bitmap = fetcher.getCachedBitmap(ImageFetcher.generateAlbumCacheKey(displayName, artistName));
             } else {
@@ -252,19 +255,32 @@ public final class ApolloUtils {
             shortcutIntent.putExtra(Config.ID, id);
             shortcutIntent.putExtra(Config.NAME, displayName);
             shortcutIntent.putExtra(Config.MIME_TYPE, mimeType);
-            // Intent that actually sets the shortcut
-            Intent intent = new Intent();
-            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapUtils.resizeAndCropCenter(bitmap, 96));
-            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
-            intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-            activity.sendBroadcast(intent);
-            AppMsg.makeText(activity, activity.getString(R.string.pinned_to_home_screen, displayName), AppMsg.STYLE_CONFIRM).show();
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                // Intent that actually sets the shortcut
+                Intent intent = new Intent();
+                intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, BitmapUtils.resizeAndCropCenter(bitmap, 96));
+                intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+                intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, displayName);
+                intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+                activity.sendBroadcast(intent);
+                String resultMsg = activity.getString(R.string.pinned_to_home_screen, displayName);
+                AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
+            } else {
+                // use shortcut manager to install shortcut
+                ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
+                if (sManager.isRequestPinShortcutSupported()) {
+                    Icon icon = Icon.createWithBitmap(bitmap);
+                    String shortcutId = displayName + "|" + artistName + "|" + id;
+                    ShortcutInfo sInfo = new ShortcutInfo.Builder(activity, shortcutId).setIcon(icon)
+                            .setIntent(shortcutIntent).setShortLabel(displayName).build();
+                    sManager.requestPinShortcut(sInfo, null);
+                }
+            }
         } catch (Exception e) {
             Log.e("ApolloUtils", "createShortcutIntent", e);
-            AppMsg.makeText(activity,
-                    activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName),
-                    AppMsg.STYLE_ALERT).show();
+            String resultMsg = activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName);
+            AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
         }
     }
 

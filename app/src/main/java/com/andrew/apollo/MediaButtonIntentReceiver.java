@@ -11,12 +11,10 @@
 
 package com.andrew.apollo;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -24,11 +22,18 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.view.KeyEvent;
 
-import androidx.legacy.content.WakefulBroadcastReceiver;
-
 import com.andrew.apollo.ui.activities.HomeActivity;
 
 import static androidx.legacy.content.WakefulBroadcastReceiver.startWakefulService;
+import static com.andrew.apollo.MusicPlaybackService.CMDNAME;
+import static com.andrew.apollo.MusicPlaybackService.CMDNEXT;
+import static com.andrew.apollo.MusicPlaybackService.CMDPAUSE;
+import static com.andrew.apollo.MusicPlaybackService.CMDPLAY;
+import static com.andrew.apollo.MusicPlaybackService.CMDPREVIOUS;
+import static com.andrew.apollo.MusicPlaybackService.CMDSTOP;
+import static com.andrew.apollo.MusicPlaybackService.CMDTOGGLEPAUSE;
+import static com.andrew.apollo.MusicPlaybackService.FROM_MEDIA_BUTTON;
+import static com.andrew.apollo.MusicPlaybackService.SERVICECMD;
 
 /**
  * Used to control headset playback.
@@ -38,10 +43,26 @@ import static androidx.legacy.content.WakefulBroadcastReceiver.startWakefulServi
  * Long press: voice search
  */
 public class MediaButtonIntentReceiver extends BroadcastReceiver {
-    private static final int MSG_LONGPRESS_TIMEOUT = 1;
-    private static final int MSG_HEADSET_DOUBLE_CLICK_TIMEOUT = 2;
 
+    /**
+     *
+     */
+    private static final String TAG = "com.andrew.apollo:mediabutton";
+    /**
+     *
+     */
+    private static final int MSG_LONGPRESS_ID = 0xBFE276C1;
+    /**
+     *
+     */
+    private static final int MSG_HEADSET_DOUBLE_CLICK_ID = 0x97A885C8;
+    /**
+     *
+     */
     private static final int LONG_PRESS_DELAY = 1000;
+    /**
+     *
+     */
     private static final int DOUBLE_CLICK = 800;
 
     private static WakeLock mWakeLock = null;
@@ -53,19 +74,18 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
     private static void startService(Context context, String command) {
         Intent i = new Intent(context, MusicPlaybackService.class);
-        i.setAction(MusicPlaybackService.SERVICECMD);
-        i.putExtra(MusicPlaybackService.CMDNAME, command);
-        i.putExtra(MusicPlaybackService.FROM_MEDIA_BUTTON, true);
+        i.setAction(SERVICECMD);
+        i.putExtra(CMDNAME, command);
+        i.putExtra(FROM_MEDIA_BUTTON, true);
         startWakefulService(context, i);
     }
 
 
-    @SuppressLint("InvalidWakeLockTag")
     private static void acquireWakeLockAndSendMessage(Context context, Message msg, long delay) {
         if (mWakeLock == null) {
             Context appContext = context.getApplicationContext();
             PowerManager pm = (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
-            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Apollo headset button");
+            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
             mWakeLock.setReferenceCounted(false);
         }
         // Make sure we don't indefinitely hold the wake lock under any circumstances
@@ -75,20 +95,13 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
 
     private static void releaseWakeLockIfHandlerIdle() {
-        if (MessageHandler.mHandler.hasMessages(MSG_LONGPRESS_TIMEOUT)
-                || MessageHandler.mHandler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT)) {
+        if (MessageHandler.mHandler.hasMessages(MSG_LONGPRESS_ID)
+                || MessageHandler.mHandler.hasMessages(MSG_HEADSET_DOUBLE_CLICK_ID)) {
             return;
         }
         if (mWakeLock != null) {
             mWakeLock.release();
             mWakeLock = null;
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    public static void completeWakefulIntent(Intent i) { // TODO replace it
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            WakefulBroadcastReceiver.completeWakefulIntent(i);
         }
     }
 
@@ -99,7 +112,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String intentAction = intent.getAction();
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intentAction)) {
-            startService(context, MusicPlaybackService.CMDPAUSE);
+            startService(context, CMDPAUSE);
         } else if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
             KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             if (event == null) {
@@ -113,37 +126,36 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
             String command = null;
             switch (keycode) {
                 case KeyEvent.KEYCODE_MEDIA_STOP:
-                    command = MusicPlaybackService.CMDSTOP;
+                    command = CMDSTOP;
                     break;
 
                 case KeyEvent.KEYCODE_HEADSETHOOK:
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    command = MusicPlaybackService.CMDTOGGLEPAUSE;
+                    command = CMDTOGGLEPAUSE;
                     break;
 
                 case KeyEvent.KEYCODE_MEDIA_NEXT:
-                    command = MusicPlaybackService.CMDNEXT;
+                    command = CMDNEXT;
                     break;
 
                 case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                    command = MusicPlaybackService.CMDPREVIOUS;
+                    command = CMDPREVIOUS;
                     break;
 
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                    command = MusicPlaybackService.CMDPAUSE;
+                    command = CMDPAUSE;
                     break;
 
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
-                    command = MusicPlaybackService.CMDPLAY;
+                    command = CMDPLAY;
                     break;
             }
             if (command != null) {
                 if (action == KeyEvent.ACTION_DOWN) {
                     if (mDown) {
-                        if (MusicPlaybackService.CMDTOGGLEPAUSE.equals(command)
-                                || MusicPlaybackService.CMDPLAY.equals(command)) {
+                        if (CMDTOGGLEPAUSE.equals(command) || CMDPLAY.equals(command)) {
                             if (mLastClickTime != 0 && eventtime - mLastClickTime > LONG_PRESS_DELAY) {
-                                acquireWakeLockAndSendMessage(context, MessageHandler.mHandler.obtainMessage(MSG_LONGPRESS_TIMEOUT, context), 0);
+                                acquireWakeLockAndSendMessage(context, MessageHandler.mHandler.obtainMessage(MSG_LONGPRESS_ID, context), 0);
                             }
                         }
                     } else if (event.getRepeatCount() == 0) {
@@ -159,8 +171,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                                 mClickCounter = 0;
                             }
                             mClickCounter++;
-                            MessageHandler.mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT);
-                            Message msg = MessageHandler.mHandler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_TIMEOUT, mClickCounter, 0, context);
+                            MessageHandler.mHandler.removeMessages(MSG_HEADSET_DOUBLE_CLICK_ID);
+                            Message msg = MessageHandler.mHandler.obtainMessage(MSG_HEADSET_DOUBLE_CLICK_ID, mClickCounter, 0, context);
 
                             long delay = mClickCounter < 3 ? DOUBLE_CLICK : 0;
                             if (mClickCounter >= 3) {
@@ -175,7 +187,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                         mDown = true;
                     }
                 } else {
-                    MessageHandler.mHandler.removeMessages(MSG_LONGPRESS_TIMEOUT);
+                    MessageHandler.mHandler.removeMessages(MSG_LONGPRESS_ID);
                     mDown = false;
                 }
                 if (isOrderedBroadcast()) {
@@ -207,7 +219,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_LONGPRESS_TIMEOUT:
+                case MSG_LONGPRESS_ID:
                     if (!mLaunched) {
                         Context context = (Context) msg.obj;
                         Intent i = new Intent();
@@ -218,18 +230,18 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
                     }
                     break;
 
-                case MSG_HEADSET_DOUBLE_CLICK_TIMEOUT:
+                case MSG_HEADSET_DOUBLE_CLICK_ID:
                     int clickCount = msg.arg1;
                     String command;
                     switch (clickCount) {
                         case 1:
-                            command = MusicPlaybackService.CMDTOGGLEPAUSE;
+                            command = CMDTOGGLEPAUSE;
                             break;
                         case 2:
-                            command = MusicPlaybackService.CMDNEXT;
+                            command = CMDNEXT;
                             break;
                         case 3:
-                            command = MusicPlaybackService.CMDPREVIOUS;
+                            command = CMDPREVIOUS;
                             break;
                         default:
                             command = null;

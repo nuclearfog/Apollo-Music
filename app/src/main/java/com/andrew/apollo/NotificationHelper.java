@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import static com.andrew.apollo.MusicPlaybackService.NOTIFICAITON_ID;
@@ -45,6 +46,7 @@ public class NotificationHelper {
     /**
      * manage and update notification
      */
+    @Nullable
     private NotificationManager mNotificationManager;
 
     /**

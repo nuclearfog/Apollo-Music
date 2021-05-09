@@ -42,15 +42,25 @@ import javax.net.ssl.HttpsURLConnection;
  * A subclass of {@link ImageWorker} that fetches images from a URL.
  */
 public class ImageFetcher extends ImageWorker {
-
+    /**
+     *
+     */
     public static final int IO_BUFFER_SIZE_BYTES = 1024;
-
+    /**
+     *
+     */
     private static final int DEFAULT_MAX_IMAGE_HEIGHT = 1024;
-
+    /**
+     *
+     */
     private static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
-
-    private static final int NOTIFICATION_SIZE = 300;
-
+    /**
+     * size of the artist/album art of the notification image
+     */
+    private static final int NOTIFICATION_SIZE = 200;
+    /**
+     * location folder name of the image cache
+     */
     private static final String DEFAULT_HTTP_CACHE_DIR = "http"; //$NON-NLS-1$
 
     private static ImageFetcher sInstance = null;

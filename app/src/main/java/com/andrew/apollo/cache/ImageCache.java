@@ -27,6 +27,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -93,6 +94,7 @@ public final class ImageCache {
     /**
      * Disk LRU cache
      */
+    @Nullable
     private DiskLruCache mDiskCache;
 
     /**

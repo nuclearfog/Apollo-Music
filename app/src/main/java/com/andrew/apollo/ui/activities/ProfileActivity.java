@@ -12,6 +12,7 @@
 package com.andrew.apollo.ui.activities;
 
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -20,7 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio;
-import android.provider.MediaStore.Images;
+import android.provider.MediaStore.MediaColumns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -107,6 +108,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     public static final String PAGE_LAST_ADDED = "playlist";
 
     /**
+     *
+     */
+    private static final String[] GET_MEDIA = {MediaColumns.DATA};
+
+    /**
      * constants defining fragment type
      */
     private enum Type {
@@ -150,7 +156,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     private ViewPager mViewPager;
 
     /**
-     * Pager adpater
+     * Pager adapter
      */
     private PagerAdapter mPagerAdapter;
 
@@ -589,11 +595,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode == RESULT_OK) {
             if (requestCode == NEW_PHOTO && intent != null && intent.getData() != null) {
-                String[] filePathColumn = {Images.Media.DATA};
-                Cursor cursor = getContentResolver().query(intent.getData(), filePathColumn, null, null, null);
+                Cursor cursor = getContentResolver().query(intent.getData(), GET_MEDIA, null, null, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
-                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        int columnIndex = cursor.getColumnIndex(GET_MEDIA[0]);
                         String picturePath = cursor.getString(columnIndex);
                         Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromFile(picturePath);
                         if (type == Type.ARTIST) {
@@ -651,7 +656,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         // First remove the old image
         removeFromCache();
         // Now open the gallery
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+        Intent intent = new Intent(Intent.ACTION_PICK, null);
         intent.setType("image/*");
         startActivityForResult(intent, NEW_PHOTO);
     }
@@ -699,7 +704,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         }
         Intent googleSearch = new Intent(Intent.ACTION_WEB_SEARCH);
         googleSearch.putExtra(SearchManager.QUERY, query);
-        startActivity(googleSearch);
+        try {
+            startActivity(googleSearch);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

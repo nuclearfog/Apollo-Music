@@ -38,7 +38,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
     /**
      * projection for playlist columns
      */
-    private static final String[] PROJECTION = new String[]{Playlists.NAME};
+    private static final String[] PROJECTION = {Playlists.NAME};
 
     // The playlist list
     private long[] mPlaylistList = {};

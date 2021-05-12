@@ -18,7 +18,7 @@ import java.util.Arrays;
 @SuppressLint("NewApi")
 public class NowPlayingCursor extends AbstractCursor {
 
-    private static final String[] PROJECTION = new String[]{
+    private static final String[] PROJECTION = {
             /* 0 */
             AudioColumns._ID,
             /* 1 */

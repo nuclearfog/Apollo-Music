@@ -90,6 +90,13 @@ public final class MusicUtils {
     };
 
     /**
+     * column selection of get playlist count
+     */
+    private static final String[] PLAYLIST_COLUMN = {
+            "COUNT(" + Members.AUDIO_ID + ")"
+    };
+
+    /**
      * select track matching an audio ID
      */
     private static final String TRACK_SELECT = MediaColumns._ID + "=?";
@@ -932,9 +939,8 @@ public final class MusicUtils {
     public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
         ContentResolver resolver = activity.getContentResolver();
-        String[] projection = new String[]{"COUNT(" + Members.AUDIO_ID + ")"};
         Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistid);
-        Cursor cursor = resolver.query(uri, projection, null, null, null);
+        Cursor cursor = resolver.query(uri, PLAYLIST_COLUMN, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 int base = cursor.getInt(0);

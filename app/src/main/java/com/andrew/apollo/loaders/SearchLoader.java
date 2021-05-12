@@ -11,16 +11,15 @@
 
 package com.andrew.apollo.loaders;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Media;
 import android.text.TextUtils;
 
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.CursorCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,17 +28,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
-    @SuppressLint("InlinedApi")
-    private static final String[] PROJECTION = {
-            Media._ID,
-            Media.MIME_TYPE,
-            Media.ARTIST,
-            Media.ALBUM,
-            Media.TITLE,
-            "data1",
-            "data2"
-    };
 
     private String query;
 
@@ -62,7 +50,7 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Gather the data
-        Cursor mCursor = makeSearchCursor(query);
+        Cursor mCursor = CursorCreator.makeSearchCursor(getContext(), query);
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {
@@ -95,16 +83,5 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
             mCursor.close();
         }
         return result;
-    }
-
-    /**
-     * * @param context The {@link Context} to use.
-     *
-     * @param query The user's query.
-     * @return The {@link Cursor} used to perform the search.
-     */
-    private Cursor makeSearchCursor(String query) {
-        Uri media = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query));
-        return getContext().getContentResolver().query(media, PROJECTION, null, null, null);
     }
 }

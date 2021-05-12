@@ -14,8 +14,8 @@ android {
         applicationId "com.andrew.apollo"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 3
-        versionName '1.0'
+        versionCode 4
+        versionName '1.0.1'
     }
 
     buildTypes {
@@ -24,6 +24,9 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
+        }
+        debug {
+            applicationIdSuffix ".debug"
         }
     }
 

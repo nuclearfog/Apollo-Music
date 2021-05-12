@@ -137,7 +137,7 @@ public class RecentStore extends SQLiteOpenHelper {
     public String getAlbumName(String key) {
         if (!TextUtils.isEmpty(key)) {
             SQLiteDatabase database = getReadableDatabase();
-            String[] having = new String[]{key};
+            String[] having = {key};
             Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME,
                     having, null, null, RECENT_ORDER);
             if (cursor != null) {

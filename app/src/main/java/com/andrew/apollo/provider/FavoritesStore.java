@@ -24,6 +24,20 @@ import com.andrew.apollo.model.Song;
  */
 public class FavoritesStore extends SQLiteOpenHelper {
 
+    /**
+     * column projection of favorite table
+     */
+    private static final String[] FAV_COLUMNS = {
+            FavoriteColumns.ID,
+            FavoriteColumns.SONGNAME,
+            FavoriteColumns.ALBUMNAME,
+            FavoriteColumns.ARTISTNAME,
+            FavoriteColumns.PLAYCOUNT
+    };
+
+    /**
+     * query to create favorite table
+     */
     private static final String FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME +
             " (" + FavoriteColumns.ID + " LONG NOT NULL," + FavoriteColumns.SONGNAME + " TEXT NOT NULL," +
             FavoriteColumns.ALBUMNAME + " TEXT NOT NULL," + FavoriteColumns.ARTISTNAME + " TEXT NOT NULL," +
@@ -37,7 +51,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
     /**
      * database filename
      */
-    public static final String DATABASENAME = "favorites.db";
+    public static final String DB_NAME = "favorites.db";
 
     /**
      * database version
@@ -45,7 +59,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
     private static final int VERSION = 1;
 
     /**
-     * singleton isntance
+     * singleton instance
      */
     private static FavoritesStore sInstance = null;
 
@@ -56,7 +70,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
      * @param context The {@link Context} to use
      */
     private FavoritesStore(Context context) {
-        super(context, DATABASENAME, null, VERSION);
+        super(context, DB_NAME, null, VERSION);
     }
 
     /**
@@ -122,7 +136,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
         values.put(FavoriteColumns.PLAYCOUNT, playCount != 0 ? playCount + 1 : 1);
         values.put(FavoriteColumns.DURATION, duration);
 
-        database.delete(FavoriteColumns.NAME, FavoriteColumns.ID + " = ?", new String[]{String.valueOf(songId)});
+        database.delete(FavoriteColumns.NAME, FavoriteColumns.ID + "=" + songId, null);
         database.insert(FavoriteColumns.NAME, null, values);
         database.setTransactionSuccessful();
         database.endTransaction();
@@ -138,14 +152,9 @@ public class FavoritesStore extends SQLiteOpenHelper {
         if (songId <= -1) {
             return null;
         }
+        String[] having = {String.valueOf(songId)};
         SQLiteDatabase database = getReadableDatabase();
-        String[] projection = new String[]{
-                FavoriteColumns.ID, FavoriteColumns.SONGNAME, FavoriteColumns.ALBUMNAME,
-                FavoriteColumns.ARTISTNAME, FavoriteColumns.PLAYCOUNT
-        };
-        String selection = FavoriteColumns.ID + "=?";
-        String[] having = new String[]{String.valueOf(songId)};
-        Cursor cursor = database.query(FavoriteColumns.NAME, projection, selection, having, null, null, null, null);
+        Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Long id = cursor.getLong(cursor.getColumnIndexOrThrow(FavoriteColumns.ID));
@@ -167,14 +176,9 @@ public class FavoritesStore extends SQLiteOpenHelper {
         if (songId <= -1) {
             return null;
         }
+        String[] having = {String.valueOf(songId)};
         SQLiteDatabase database = getReadableDatabase();
-        String[] projection = new String[]{
-                FavoriteColumns.ID, FavoriteColumns.SONGNAME, FavoriteColumns.ALBUMNAME,
-                FavoriteColumns.ARTISTNAME, FavoriteColumns.PLAYCOUNT
-        };
-        String selection = FavoriteColumns.ID + "=?";
-        String[] having = new String[]{String.valueOf(songId)};
-        Cursor cursor = database.query(FavoriteColumns.NAME, projection, selection, having, null, null, null, null);
+        Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Long playCount = cursor.getLong(cursor.getColumnIndexOrThrow(FavoriteColumns.PLAYCOUNT));

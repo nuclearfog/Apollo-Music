@@ -119,6 +119,17 @@ public class CursorCreator {
             Genres.NAME
     };
 
+    @SuppressLint("InlinedApi")
+    private static final String[] SEARCH_COLUMNS = {
+            Media._ID,
+            Media.MIME_TYPE,
+            Media.ARTIST,
+            Media.ALBUM,
+            Media.TITLE,
+            "data1",
+            "data2"
+    };
+
     /**
      * projection for music folder
      */
@@ -518,5 +529,18 @@ public class CursorCreator {
         String[] args = {album, artist};
         String sortOrder = PreferenceUtils.getInstance(context).getAlbumSortOrder();
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ALBUM_NAME_SELECT, args, sortOrder);
+    }
+
+    /**
+     * * @param context The {@link Context} to use.
+     *
+     * @param query The user's query.
+     * @return The {@link Cursor} used to perform the search.
+     */
+    public static Cursor makeSearchCursor(Context context, String query) {
+        ContentResolver resolver = context.getContentResolver();
+
+        Uri media = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query));
+        return resolver.query(media, SEARCH_COLUMNS, null, null, null);
     }
 }

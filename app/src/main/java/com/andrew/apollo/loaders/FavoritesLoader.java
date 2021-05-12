@@ -55,17 +55,22 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
+                int idxId = mCursor.getColumnIndexOrThrow(ID);
+                int nameIdx = mCursor.getColumnIndexOrThrow(SONGNAME);
+                int artistIdx = mCursor.getColumnIndexOrThrow(ARTISTNAME);
+                int albumIdx = mCursor.getColumnIndexOrThrow(ALBUMNAME);
+                int durIdx = mCursor.getColumnIndexOrThrow(DURATION);
                 do {
                     // Copy the song Id
-                    long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(ID));
+                    long id = mCursor.getLong(idxId);
                     // Copy the song name
-                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(SONGNAME));
+                    String songName = mCursor.getString(nameIdx);
                     // Copy the artist name
-                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(ARTISTNAME));
+                    String artist = mCursor.getString(artistIdx);
                     // Copy the album name
-                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(ALBUMNAME));
+                    String album = mCursor.getString(albumIdx);
                     // Copy the duration value in milliseconds
-                    long duration = mCursor.getLong(mCursor.getColumnIndexOrThrow(DURATION));
+                    long duration = mCursor.getLong(durIdx);
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up

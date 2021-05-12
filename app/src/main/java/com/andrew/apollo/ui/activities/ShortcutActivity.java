@@ -172,7 +172,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         // Bind Apollo's service
         mToken = MusicUtils.bindToService(this, this);
-        // Intiialize the intent
+        // Initialize the intent
         mIntent = getIntent();
         // Get the voice search query
         mVoiceQuery = Capitalize.capitalize(mIntent.getStringExtra(SearchManager.QUERY));

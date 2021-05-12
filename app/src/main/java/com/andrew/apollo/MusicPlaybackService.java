@@ -1434,7 +1434,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 } else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
                     updateCursor(id);
                 } else {
-                    String[] selectionArgs = new String[]{path};
+                    String[] selectionArgs = {path};
                     updateCursor(TRACK_SELECT_PATH, selectionArgs);
                 }
                 if (mCursor != null && mCursor.moveToFirst()) {

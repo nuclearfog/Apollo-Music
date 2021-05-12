@@ -14,6 +14,7 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="@dimen/color_scheme_dialog_row_padding">
@@ -156,7 +157,8 @@
                 android:inputType="textFilter"
                 android:maxLength="8"
                 android:singleLine="true"
-                android:typeface="monospace" />
+                android:typeface="monospace"
+                tools:ignore="LabelFor" />
         </LinearLayout>
     </LinearLayout>
 

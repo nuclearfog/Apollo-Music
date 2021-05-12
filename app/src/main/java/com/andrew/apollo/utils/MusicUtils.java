@@ -1145,15 +1145,14 @@ public final class MusicUtils {
         int len = cursor.getCount();
         long[] list = new long[len];
         cursor.moveToFirst();
-        int colidx = -1;
         try {
-            colidx = cursor.getColumnIndexOrThrow(FavoriteColumns.ID);
+            int colIdx = cursor.getColumnIndexOrThrow(FavoriteColumns.ID);
+            for (int i = 0; i < len; i++) {
+                list[i] = cursor.getLong(colIdx);
+                cursor.moveToNext();
+            }
         } catch (Exception err) {
             err.printStackTrace();
-        }
-        for (int i = 0; i < len; i++) {
-            list[i] = cursor.getLong(colidx);
-            cursor.moveToNext();
         }
         cursor.close();
         return list;

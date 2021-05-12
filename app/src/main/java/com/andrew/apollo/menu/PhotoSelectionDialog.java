@@ -13,6 +13,7 @@ package com.andrew.apollo.menu;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -36,21 +37,21 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PhotoSelectionDialog extends DialogFragment {
+public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
-    private static final int NEW_PHOTO = 0;
+    private static final int IDX_NEW = 0;
 
-    private static final int OLD_PHOTO = 1;
+    private static final int IDX_OLD = 1;
 
-    private static final int GOOGLE_SEARCH = 2;
+    private static final int IDX_SEARCH = 2;
 
-    private static final int FETCH_IMAGE = 3;
+    private static final int IDX_FETCH = 3;
 
     private static ProfileType mProfileType;
 
     private List<String> mChoices = new ArrayList<>(5);
 
-    public PhotoSelectionDialog() {
+    private PhotoSelectionDialog() {
     }
 
     /**
@@ -72,88 +73,62 @@ public class PhotoSelectionDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         switch (mProfileType) {
             case ARTIST:
-                setArtistChoices();
+                // Select a photo from the gallery
+                mChoices.add(IDX_NEW, getString(R.string.new_photo));
+                if (ApolloUtils.isOnline(requireContext())) {
+                    // Option to fetch the old artist image
+                    mChoices.add(IDX_OLD, getString(R.string.context_menu_fetch_artist_image));
+                    // Search Google for the artist name
+                    mChoices.add(IDX_SEARCH, getString(R.string.google_search));
+                }
                 break;
+
             case ALBUM:
-                setAlbumChoices();
+                // Select a photo from the gallery
+                mChoices.add(IDX_NEW, getString(R.string.new_photo));
+                // Option to fetch the old album image
+                mChoices.add(IDX_OLD, getString(R.string.old_photo));
+                if (ApolloUtils.isOnline(requireContext())) {
+                    // Search Google for the album name
+                    mChoices.add(IDX_SEARCH, getString(R.string.google_search));
+                    // Option to fetch the album image
+                    mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_album_art));
+                }
                 break;
+
             case OTHER:
-                setOtherChoices();
-                break;
-            default:
+                // Select a photo from the gallery
+                mChoices.add(IDX_NEW, getString(R.string.new_photo));
+                // Option to use the default image
+                mChoices.add(IDX_OLD, getString(R.string.use_default));
                 break;
         }
         // Dialog item Adapter
-
-        final ProfileActivity PROFILE_ACTIVITY = (ProfileActivity) requireActivity();
         String title = getArguments() != null ? getArguments().getString(Config.NAME) : "";
-        ListAdapter adapter = new ArrayAdapter<>(PROFILE_ACTIVITY, android.R.layout.select_dialog_item, mChoices);
-        return new AlertDialog.Builder(PROFILE_ACTIVITY).setTitle(title)
-                .setAdapter(adapter, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case NEW_PHOTO:
-                                PROFILE_ACTIVITY.selectNewPhoto();
-                                break;
-                            case OLD_PHOTO:
-                                PROFILE_ACTIVITY.selectOldPhoto();
-                                break;
-                            case FETCH_IMAGE:
-                                PROFILE_ACTIVITY.fetchAlbumArt();
-                                break;
-                            case GOOGLE_SEARCH:
-                                PROFILE_ACTIVITY.googleSearch();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }).create();
+        ListAdapter adapter = new ArrayAdapter<>(requireContext(), android.R.layout.select_dialog_item, mChoices);
+        return new AlertDialog.Builder(requireContext()).setTitle(title).setAdapter(adapter, this).create();
     }
 
-    /**
-     * Adds the choices for the artist profile image.
-     */
-    private void setArtistChoices() {
-        // Select a photo from the gallery
-        mChoices.add(NEW_PHOTO, getString(R.string.new_photo));
-        if (ApolloUtils.isOnline(requireContext())) {
-            // Option to fetch the old artist image
-            mChoices.add(OLD_PHOTO, getString(R.string.context_menu_fetch_artist_image));
-            // Search Google for the artist name
-            mChoices.add(GOOGLE_SEARCH, getString(R.string.google_search));
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        ProfileActivity activity = (ProfileActivity) requireActivity();
+        switch (which) {
+            case IDX_NEW:
+                activity.selectNewPhoto();
+                break;
+            case IDX_OLD:
+                activity.selectOldPhoto();
+                break;
+            case IDX_FETCH:
+                activity.fetchAlbumArt();
+                break;
+            case IDX_SEARCH:
+                activity.googleSearch();
+                break;
         }
-    }
-
-    /**
-     * Adds the choices for the album profile image.
-     */
-    private void setAlbumChoices() {
-        // Select a photo from the gallery
-        mChoices.add(NEW_PHOTO, getString(R.string.new_photo));
-        // Option to fetch the old album image
-        mChoices.add(OLD_PHOTO, getString(R.string.old_photo));
-        if (ApolloUtils.isOnline(requireContext())) {
-            // Search Google for the album name
-            mChoices.add(GOOGLE_SEARCH, getString(R.string.google_search));
-            // Option to fetch the album image
-            mChoices.add(FETCH_IMAGE, getString(R.string.context_menu_fetch_album_art));
-        }
-    }
-
-    /**
-     * Adds the choices for the genre and playlist images.
-     */
-    private void setOtherChoices() {
-        // Select a photo from the gallery
-        mChoices.add(NEW_PHOTO, getString(R.string.new_photo));
-        // Option to use the default image
-        mChoices.add(OLD_PHOTO, getString(R.string.use_default));
     }
 
     /**

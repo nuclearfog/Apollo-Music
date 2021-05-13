@@ -98,7 +98,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
         if (holder.mBackground != null) {
             // set background of the current track
             if (position == nowplayingPos) {
-                PreferenceUtils prefs = new PreferenceUtils(parent.getContext());
+                PreferenceUtils prefs = PreferenceUtils.getInstance(parent.getContext());
                 int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
                 holder.mBackground.setBackgroundColor(backgroundColor);
             } else {

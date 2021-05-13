@@ -20,6 +20,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -44,9 +46,9 @@ public class ShowHideMasterLayout extends ViewGroup implements Animator.Animator
 
     /**
      * A flag for {@link #showMaster(boolean, int)} indicating that the change
-     * in visiblity should not be animated.
+     * in visibility should not be animated.
      */
-    public final static int FLAG_IMMEDIATE = 0x1;
+    public static final int FLAG_IMMEDIATE = 0x1;
 
     private View sMasterView;
 
@@ -64,7 +66,9 @@ public class ShowHideMasterLayout extends ViewGroup implements Animator.Animator
 
     /* The last measured master width, including its margins */
     private int mTranslateAmount;
-    private final GestureDetector.OnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
+
+    private OnGestureListener mGestureListener = new SimpleOnGestureListener() {
+
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
@@ -117,7 +121,7 @@ public class ShowHideMasterLayout extends ViewGroup implements Animator.Animator
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int mCount = getChildCount();
+        int mCount = getChildCount();
 
         /* Measure once to find the maximum child size */
         int sMaxHeight = 0;

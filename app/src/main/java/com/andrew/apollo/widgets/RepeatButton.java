@@ -47,7 +47,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public RepeatButton(final Context context, final AttributeSet attrs) {
+    public RepeatButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Set the selector
         setBackground(new HoloSelector(context));
@@ -61,7 +61,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
      * {@inheritDoc}
      */
     @Override
-    public void onClick(final View v) {
+    public void onClick(View v) {
         MusicUtils.cycleRepeat();
         updateRepeatState();
     }
@@ -70,7 +70,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
      * {@inheritDoc}
      */
     @Override
-    public boolean onLongClick(final View view) {
+    public boolean onLongClick(View view) {
         if (TextUtils.isEmpty(view.getContentDescription())) {
             return false;
         } else {

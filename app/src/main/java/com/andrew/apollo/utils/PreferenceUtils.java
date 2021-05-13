@@ -94,7 +94,7 @@ public final class PreferenceUtils {
      *
      * @param context The {@link Context} to use.
      */
-    public PreferenceUtils(Context context) {
+    private PreferenceUtils(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
     }

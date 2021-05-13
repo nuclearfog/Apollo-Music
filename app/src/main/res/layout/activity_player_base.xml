@@ -152,11 +152,11 @@
                 android:textSize="@dimen/text_size_micro"
                 app:themeResource="@color/audio_player_total_time" />
 
-            <com.andrew.apollo.widgets.theme.ThemeableSeekBar
+            <SeekBar
                 android:id="@android:id/progress"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/audioplayer_seekbar_height"
-                android:layout_above="@+id/audio_player_controlss"
+                android:layout_above="@+id/audio_player_controls"
                 android:layout_marginBottom="@dimen/audio_player_seek_bar_margin_bottom"
                 android:layout_toStartOf="@+id/audio_player_total_time"
                 android:layout_toLeftOf="@+id/audio_player_total_time"
@@ -166,7 +166,7 @@
                 android:thumb="@null" />
 
             <LinearLayout
-                android:id="@+id/audio_player_controlss"
+                android:id="@+id/audio_player_controls"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"

@@ -256,7 +256,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         if (!data.isEmpty()) {
             // Start fresh
             mAdapter.clear();
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Playlist playlist : data) {
                 mAdapter.add(playlist);
             }

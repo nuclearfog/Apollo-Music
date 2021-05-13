@@ -219,8 +219,10 @@ public final class MusicUtils {
      * @return Duration of a track that's properly formatted.
      */
     public static String makeTimeString(Context context, long secs) {
+        if (secs <= 0) {
+            return "--:--";
+        }
         long hours, mins;
-
         hours = secs / 3600;
         secs -= hours * 3600;
         mins = secs / 60;

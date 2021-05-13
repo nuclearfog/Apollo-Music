@@ -33,6 +33,11 @@ import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAY
 public class CursorCreator {
 
     /**
+     * default sort order
+     */
+    private static final String DEF_SORT = " DESC";
+
+    /**
      * SQL Projection of an album row
      */
     @SuppressLint("InlinedApi")
@@ -146,7 +151,14 @@ public class CursorCreator {
     /**
      * Selection to filter songs with empty name
      */
+    @SuppressLint("InlinedApi")
     public static final String TRACK_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
+
+    /**
+     * selection for albums of an artist
+     */
+    @SuppressLint("InlinedApi")
+    private static final String ARTIST_ALBUM_SELECT = Albums.ARTIST_ID + "=?";
 
     /**
      *
@@ -162,12 +174,6 @@ public class CursorCreator {
      * SQL selection
      */
     private static final String ARTIST_SONG_SELECT = TRACK_SELECT + " AND " + Media.ARTIST_ID + "=?";
-
-    /**
-     * selection for albums of an artist
-     */
-    @SuppressLint("InlinedApi")
-    private static final String ARTIST_ALBUM_SELECT = Albums.ARTIST_ID + "=?";
 
     /**
      * SQL Query
@@ -195,32 +201,32 @@ public class CursorCreator {
     private static final String PLAYLIST_SELECT = Playlists.NAME + "=?";
 
     /**
-     * selection to find artists matchin search
+     * selection to find artist name matching search
      */
     private static final String ARTIST_MATCH = Artists.ARTIST + " LIKE ?";
 
     /**
-     * selection to find albums matching search
+     * selection to find album name matching search
      */
     private static final String ALBUM_MATCH = Albums.ALBUM + " LIKE ?";
 
     /**
-     * selection to find title matching search
+     * selection to find track title matching search
      */
     private static final String TRACK_MATCH = Media.TITLE + " LIKE ?";
 
     /**
-     *
+     * default order of playlist tracks
      */
     private static final String PLAYLIST_TRACK_ORDER = Playlists.Members.PLAY_ORDER;
 
     /**
-     *
+     * default order of playlists
      */
     private static final String PLAYLIST_ORDER = Playlists.NAME;
 
     /**
-     * order by
+     * default track order of a genre
      */
     private static final String GENRE_TRACK_ORDER = Media.DEFAULT_SORT_ORDER;
 
@@ -232,22 +238,22 @@ public class CursorCreator {
     /**
      * sort recent played audio tracks
      */
-    private static final String RECENT_ORDER = TIMEPLAYED + " DESC";
+    private static final String RECENT_ORDER = TIMEPLAYED + DEF_SORT;
 
     /**
      * sort folder tracks
      */
-    private static final String FOLER_TRACKS_ORDER = Media.DEFAULT_SORT_ORDER;
+    private static final String FOLDER_TRACKS_ORDER = Media.TRACK;
 
     /**
-     * sort folder
+     * default order to sort last added tracks
      */
-    public static final String ORDER_TIME = Media.DATE_ADDED + " DESC";
+    public static final String ORDER_TIME = Media.DATE_ADDED + DEF_SORT;
 
     /**
      * SQLite sport order
      */
-    public static final String ORDER = FavoriteColumns.PLAYCOUNT + " DESC";
+    public static final String ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
 
 
     private CursorCreator() {
@@ -399,7 +405,7 @@ public class CursorCreator {
         ContentResolver contentResolver = context.getContentResolver();
 
         String[] args = {folder.toString() + "%"};
-        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, FOLER_TRACKS_ORDER);
+        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, FOLDER_TRACKS_ORDER);
     }
 
     /**

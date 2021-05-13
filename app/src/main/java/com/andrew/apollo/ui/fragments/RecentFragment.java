@@ -91,11 +91,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     private AbsListView mList;
 
     /**
-     * Empty list placeholder
-     */
-    private TextView emptyInfo;
-
-    /**
      * Album song list
      */
     private long[] mAlbumList = {};
@@ -151,6 +146,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View mRootView;
+        TextView emptyInfo;
         if (pref.isSimpleLayout(RECENT_LAYOUT)) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
@@ -162,6 +158,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             mList = mRootView.findViewById(R.id.grid_base);
             initGrid();
         }
+        // sets the empty view
+        mList.setEmptyView(emptyInfo);
         // Set the data behind the list
         mList.setAdapter(mAdapter);
         initAbsListView();
@@ -301,20 +299,19 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
+    public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
         // Start fresh
         mAdapter.clear();
         if (data.isEmpty()) {
             // Set the empty text
-            mList.setEmptyView(emptyInfo);
-            emptyInfo.setVisibility(View.VISIBLE);
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Album album : data)
                 mAdapter.add(album);
             // Build the cache
             mAdapter.buildCache();
-            emptyInfo.setVisibility(View.INVISIBLE);
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 

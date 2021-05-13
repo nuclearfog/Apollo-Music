@@ -89,11 +89,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     private boolean mShouldRefresh = false;
 
     /**
-     * empty list info
-     */
-    private TextView emptyText;
-
-    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public SongFragment() {
@@ -128,10 +123,11 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View mRootView = inflater.inflate(R.layout.list_base, container, false);
-        emptyText = mRootView.findViewById(R.id.list_base_empty_info);
+        TextView emptyText = mRootView.findViewById(R.id.list_base_empty_info);
         // setup the list view
         mListView = mRootView.findViewById(R.id.list_base);
         mListView.setAdapter(mAdapter);
+        mListView.setEmptyView(emptyText);
         mListView.setRecyclerListener(new RecycleHolder());
         mListView.setOnCreateContextMenuListener(this);
         mListView.setOnItemClickListener(this);
@@ -253,15 +249,14 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            mListView.setEmptyView(emptyText);
-            emptyText.setVisibility(View.VISIBLE);
+            mListView.getEmptyView().setVisibility(View.VISIBLE);
         } else {
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Song song : data)
                 mAdapter.add(song);
             // Build the cache
             mAdapter.buildCache();
-            emptyText.setVisibility(View.INVISIBLE);
+            mListView.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 

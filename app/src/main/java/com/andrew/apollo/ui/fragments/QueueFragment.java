@@ -270,7 +270,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         if (!data.isEmpty()) {
             // Start fresh
             mAdapter.clear();
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Song song : data) {
                 mAdapter.add(song);
             }

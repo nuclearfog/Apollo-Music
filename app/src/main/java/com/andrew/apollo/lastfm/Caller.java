@@ -41,7 +41,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Proxy;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -193,7 +192,7 @@ public class Caller {
 
     @SuppressLint("NewApi")
     private Result createResultFromInputStream(InputStream inputStream) throws SAXException, IOException {
-        InputSource input = new InputSource(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        InputSource input = new InputSource(new InputStreamReader(inputStream));
         Document document = newDocumentBuilder().parse(input);
         Element root = document.getDocumentElement(); // lfm element
         String statusString = root.getAttribute("status");

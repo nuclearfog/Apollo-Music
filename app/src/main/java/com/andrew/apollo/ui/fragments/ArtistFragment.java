@@ -89,11 +89,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     private AbsListView mList;
 
     /**
-     * text to show if list is empty
-     */
-    private TextView emptyHolder;
-
-    /**
      * app preferences
      */
     private PreferenceUtils prefs;
@@ -138,7 +133,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create the adpater
+        // Create the adapter
         prefs = PreferenceUtils.getInstance(requireContext());
         if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
             mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_simple);
@@ -156,6 +151,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // initialize views
         View mRootView;
+        TextView emptyHolder;
         if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
@@ -202,7 +198,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         super.onCreateContextMenu(menu, v, menuInfo);
         // Get the position of the selected item
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        // Creat a new model
+        // Create a new model
         mArtist = mAdapter.getItem(info.position);
         if (mArtist != null) {
             // Create a list of the artist's songs
@@ -298,14 +294,14 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
-            emptyHolder.setVisibility(View.VISIBLE);
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
             // Add the data to the adapter
             for (Artist artist : data)
                 mAdapter.add(artist);
             // Build the cache
             mAdapter.buildCache();
-            emptyHolder.setVisibility(View.INVISIBLE);
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 

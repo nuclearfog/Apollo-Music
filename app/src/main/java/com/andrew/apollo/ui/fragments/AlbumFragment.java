@@ -89,11 +89,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     private AbsListView mList;
 
     /**
-     * Information if a list is empty
-     */
-    private TextView emptyInfo;
-
-    /**
      * Album song list
      */
     private long[] mAlbumList = {};
@@ -145,6 +140,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // initialize views
         View mRootView;
+        TextView emptyInfo;
         if (isSimpleLayout()) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             mList = mRootView.findViewById(R.id.list_base);
@@ -297,14 +293,14 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
-            emptyInfo.setVisibility(View.VISIBLE);
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
-            // Add the data to the adpater
+            // Add the data to the adapter
             for (Album album : data)
                 mAdapter.add(album);
             // Build the cache
             mAdapter.buildCache();
-            emptyInfo.setVisibility(View.INVISIBLE);
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 

@@ -30,7 +30,7 @@ import com.andrew.apollo.R;
 public class MusicHolder {
 
     /**
-     * This is the overlay ontop of the background artist, playlist, or genre
+     * This is the overlay on top of the background artist, playlist, or genre
      * image
      */
     public final RelativeLayout mOverlay;

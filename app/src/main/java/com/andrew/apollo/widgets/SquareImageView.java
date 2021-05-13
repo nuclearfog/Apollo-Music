@@ -15,13 +15,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatImageView;
+
 /**
  * A custom {@link ImageView} that is sized to be a perfect square, otherwise
  * functions like a typical {@link ImageView}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SquareImageView extends LayoutSuppressingImageView {
+public class SquareImageView extends AppCompatImageView {
 
     /**
      * @param context The {@link Context} to use

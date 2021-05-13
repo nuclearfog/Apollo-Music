@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,7 +81,6 @@ public class SearchAdapter extends ArrayAdapter<Music> {
         if (music instanceof Artist) {
             Context context = parent.getContext();
             Artist artist = (Artist) music;
-            holder.mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // Get the artist name
             holder.mLineOne.setText(artist.getName());
             // Get the album count
@@ -95,7 +93,6 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             mHighlighter.setText(holder.mLineOne, artist.getName(), mPrefix);
         } else if (music instanceof Album) {
             Album album = (Album) music;
-            holder.mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             // Get the album name
             holder.mLineOne.setText(album.getName());
             // Get the artist name
@@ -108,7 +105,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
         } else if (music instanceof Song) {
             Song song = (Song) music;
-            holder.mImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            // set image
             holder.mImage.setImageResource(R.drawable.header_temp);
             // Get the track name
             holder.mLineOne.setText(song.getName());

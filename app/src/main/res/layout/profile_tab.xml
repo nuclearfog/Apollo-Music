@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.andrew.apollo.widgets.LayoutSuppressingImageView
+        <ImageView
             android:id="@+id/profile_tab_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

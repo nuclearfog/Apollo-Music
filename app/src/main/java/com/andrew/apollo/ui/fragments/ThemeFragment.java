@@ -11,10 +11,8 @@
 
 package com.andrew.apollo.ui.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -29,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
@@ -38,7 +35,8 @@ import androidx.fragment.app.Fragment;
 
 import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder;
+import com.andrew.apollo.adapters.ThemesAdapter;
+import com.andrew.apollo.adapters.ThemesAdapter.ThemeHolder;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.devspark.appmsg.AppMsg;
@@ -55,22 +53,28 @@ import static android.content.Intent.CATEGORY_DEFAULT;
 public class ThemeFragment extends Fragment implements OnItemClickListener {
 
     /**
-     * context menu ID
+     * context menu item ID
      */
     private static final int OPEN_IN_PLAY_STORE = 0x5E31DA11;
 
+    /**
+     * context menu ID
+     */
     private static final int GROUP_ID = 0x500FC67C;
 
-    private GridView mGridView;
+    /**
+     *
+     */
+    private static final String THEME_PREVIEW = "theme_preview";
 
-    private String[] mEntries;
+    /**
+     * grid list adapter to show themes
+     */
+    private ThemesAdapter mAdapter;
 
-    private String[] mValues;
-
-    private Drawable[] mThemePreview;
-
-    private Resources mThemeResources;
-
+    /**
+     * utils to setup theme
+     */
     private ThemeUtils mTheme;
 
     /**
@@ -86,12 +90,14 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.grid_base, container, false);
-        mGridView = rootView.findViewById(R.id.grid_base);
-
+        GridView mGridView = rootView.findViewById(R.id.grid_base);
+        // init adapter
+        mAdapter = new ThemesAdapter(requireContext());
         // Release any reference to the recycled Views
         mGridView.setRecyclerListener(new RecycleHolder());
         mGridView.setOnItemClickListener(this);
         mGridView.setOnCreateContextMenuListener(this);
+        mGridView.setAdapter(mAdapter);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Limit the columns to one in portrait mode
             mGridView.setNumColumns(1);
@@ -110,39 +116,40 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
         super.onActivityCreated(savedInstanceState);
         Intent apolloThemeIntent = new Intent(BuildConfig.APPLICATION_ID + ".THEMES");
         apolloThemeIntent.addCategory(CATEGORY_DEFAULT);
+        mTheme = new ThemeUtils(requireContext());
 
+        // get all compatible themes
         PackageManager mPackageManager = requireActivity().getPackageManager();
         List<ResolveInfo> mThemes = mPackageManager.queryIntentActivities(apolloThemeIntent, 0);
-        mEntries = new String[mThemes.size() + 1];
-        mValues = new String[mThemes.size() + 1];
-        mThemePreview = new Drawable[mThemes.size() + 1];
 
-        // Default items
-        mEntries[0] = getString(R.string.app_name);
-        mThemePreview[0] = ResourcesCompat.getDrawable(getResources(), R.drawable.theme_preview, null);
+        // Default theme
+        String defName = getString(R.string.app_name);
+        String defPack = BuildConfig.APPLICATION_ID;
+        Drawable defPrev = ResourcesCompat.getDrawable(getResources(), R.drawable.theme_preview, null);
+        ThemeHolder defTheme = new ThemeHolder(defPack, defName, defPrev);
+        mAdapter.add(defTheme);
 
         for (int i = 0; i < mThemes.size(); i++) {
-            String mThemePackageName = mThemes.get(i).activityInfo.packageName;
-            String mThemeName = mThemes.get(i).loadLabel(mPackageManager).toString();
-            mEntries[i + 1] = mThemeName;
-            mValues[i + 1] = mThemePackageName;
-            // Theme resources
             try {
-                mThemeResources = mPackageManager.getResourcesForApplication(mThemePackageName);
-            } catch (NameNotFoundException ignored) {
+                Drawable prev = null;
+                String tPackage = mThemes.get(i).activityInfo.packageName;
+                Resources mThemeResources = mPackageManager.getResourcesForApplication(tPackage);
+                String name = mThemes.get(i).loadLabel(mPackageManager).toString();
+
+                // get preview
+                int previewId = mThemeResources.getIdentifier(THEME_PREVIEW, "drawable", tPackage);
+                if (previewId > 0) {
+                    prev = ResourcesCompat.getDrawable(mThemeResources, previewId, null);
+                }
+
+                // add to adapter
+                ThemeHolder holder = new ThemeHolder(tPackage, name, prev);
+                mAdapter.add(holder);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            // Theme preview
-            int previewId = mThemeResources.getIdentifier("theme_preview", "drawable", mThemePackageName);
-            if (previewId != 0) {
-                mThemePreview[i + 1] = ResourcesCompat.getDrawable(mThemeResources, previewId, null);
-            }
+
         }
-        // Initialize the Adapter
-        ThemesAdapter mAdapter = new ThemesAdapter(requireContext(), R.layout.fragment_themes_base);
-        // Bind the data
-        mGridView.setAdapter(mAdapter);
-        // Get the theme utils
-        mTheme = new ThemeUtils(requireContext());
     }
 
     /**
@@ -163,12 +170,13 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
+        if (item.getGroupId() == GROUP_ID && item.getItemId() == OPEN_IN_PLAY_STORE) {
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            if (item.getItemId() == OPEN_IN_PLAY_STORE) {
-                ThemeUtils.openAppPage(requireContext(), mValues[info.position]);
-                return true;
+            ThemeHolder holder = mAdapter.getItem(info.position);
+            if (holder != null) {
+                ThemeUtils.openAppPage(requireContext(), holder.mName);
             }
+            return true;
         }
         return super.onContextItemSelected(item);
     }
@@ -178,121 +186,11 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mTheme.setThemePackageName(mValues[position]);
-        AppMsg.makeText(requireActivity(), getString(R.string.theme_set, mEntries[position]), AppMsg.STYLE_CONFIRM).show();
-    }
-
-    public final static class DataHolder {
-
-        public String mName;
-
-        public Drawable mPreview;
-
-        /**
-         * Constructor of <code>DataHolder</code>
-         */
-        public DataHolder() {
-            super();
-        }
-    }
-
-    /**
-     * Populates the {@link GridView} with the available themes
-     */
-    private class ThemesAdapter extends ArrayAdapter<ResolveInfo> {
-
-        /**
-         * Number of views (ImageView and TextView)
-         */
-        private static final int VIEW_TYPE_COUNT = 2;
-
-        /**
-         * The resource ID of the layout to inflate
-         */
-        private final int mLayoutID;
-
-        /**
-         * Used to cache the theme info
-         */
-        private DataHolder[] mData;
-
-        /**
-         * Constructor of <code>ThemesAdapter</code>
-         *
-         * @param context  The {@link Context} to use.
-         * @param layoutID The resource ID of the view to inflate.
-         */
-        public ThemesAdapter(Context context, int layoutID) {
-            super(context, 0);
-            // Get the layout ID
-            mLayoutID = layoutID;
-            // Build the cache
-            buildCache();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int getCount() {
-            return mEntries.length;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            /* Recycle ViewHolder's items */
-            MusicHolder holder;
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(mLayoutID, parent, false);
-                holder = new MusicHolder(convertView);
-                convertView.setTag(holder);
-            } else {
-                holder = (MusicHolder) convertView.getTag();
-            }
-            // Retrieve the data holder
-            DataHolder dataHolder = mData[position];
-            // Set the theme preview
-            holder.mImage.setImageDrawable(dataHolder.mPreview);
-            // Set the theme name
-            holder.mLineOne.setText(dataHolder.mName);
-            return convertView;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_TYPE_COUNT;
-        }
-
-        /**
-         * Method used to cache the data used to populate the list or grid. The
-         * idea is to cache everything before
-         * {@code #getView(int, View, ViewGroup)} is called.
-         */
-        private void buildCache() {
-            mData = new DataHolder[getCount()];
-            for (int i = 0; i < getCount(); i++) {
-                // Build the data holder
-                mData[i] = new DataHolder();
-                // Theme names (line one)
-                mData[i].mName = mEntries[i];
-                // Theme preview
-                mData[i].mPreview = mThemePreview[i];
-            }
+        ThemeHolder holder = mAdapter.getItem(position);
+        if (holder != null) {
+            String name = getString(R.string.theme_set, holder.mName);
+            mTheme.setThemePackageName(holder.mPackage);
+            AppMsg.makeText(requireActivity(), name, AppMsg.STYLE_CONFIRM).show();
         }
     }
 }

@@ -140,7 +140,7 @@ public class MusicHolder {
         public String mLineThree;
 
         /**
-         * Constructor of <code>DataHolder</code>
+         * Constructor of <code>ThemeHolder</code>
          */
         public DataHolder() {
             super();

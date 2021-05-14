@@ -187,18 +187,19 @@ public final class MusicUtils {
      * @param secs    The track in seconds.
      * @return Duration of a track that's properly formatted.
      */
-    public static String makeTimeString(Context context, long secs) {
-        if (secs <= 0) {
+    public static String makeTimeString(Context context, int secs) {
+        if (secs < 0) {
+            // invalid time
             return "--:--";
         }
-        long hours, mins;
-        hours = secs / 3600;
-        secs -= hours * 3600;
-        mins = secs / 60;
-        secs -= mins * 60;
-
-        String durationFormat = context.getResources().getString(hours == 0 ? R.string.durationformatshort : R.string.durationformatlong);
-        return String.format(durationFormat, hours, mins, secs);
+        if (secs == 0) {
+            // no need to calculate
+            return "00:00";
+        }
+        int min = secs / 60;
+        int hour = min / 60;
+        String durationFormat = context.getString(hour == 0 ? R.string.durationformatshort : R.string.durationformatlong);
+        return String.format(durationFormat, hour, min % 60, secs % 60);
     }
 
     /**

@@ -32,7 +32,7 @@ public class Song extends Music {
     /**
      * The song duration in seconds
      */
-    private int mDuration;
+    private int mDuration = -1;
 
     /**
      * Constructor of <code>Song</code>
@@ -49,7 +49,8 @@ public class Song extends Music {
             mArtistName = artistName;
         if (albumName != null)
             mAlbumName = albumName;
-        mDuration = (int) length / 1000;
+        if (length > 0)
+            mDuration = (int) length / 1000;
     }
 
     /**
@@ -85,7 +86,9 @@ public class Song extends Music {
      * @return duration in milliseconds
      */
     public long durationMillis() {
-        return mDuration * 1000;
+        if (mDuration > 0)
+            return mDuration * 1000;
+        return -1;
     }
 
     /**

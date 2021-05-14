@@ -9,7 +9,7 @@ import com.andrew.apollo.model.Album;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.model.Music;
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
     public List<Music> loadInBackground() {
         List<Music> result = new LinkedList<>();
         //
-        Cursor cursor = CursorCreator.makeArtistSearchCursor(getContext(), search);
+        Cursor cursor = CursorFactory.makeArtistSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -54,7 +54,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
             cursor.close();
         }
         // search for Albums
-        cursor = CursorCreator.makeAlbumSearchCursor(getContext(), search);
+        cursor = CursorFactory.makeAlbumSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -70,7 +70,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
             cursor.close();
         }
         // Search for tracks
-        cursor = CursorCreator.makeTrackSearchCursor(getContext(), search);
+        cursor = CursorFactory.makeTrackSearchCursor(getContext(), search);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

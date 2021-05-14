@@ -3,7 +3,7 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.io.File;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     @Override
     public List<File> loadInBackground() {
         HashSet<File> hashSet = new HashSet<>();
-        Cursor cursor = CursorCreator.makeFolderCursor(getContext());
+        Cursor cursor = CursorFactory.makeFolderCursor(getContext());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

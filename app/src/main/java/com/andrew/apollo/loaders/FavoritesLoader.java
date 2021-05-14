@@ -16,7 +16,7 @@ import android.database.Cursor;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = CursorCreator.makeFavoritesCursor(getContext());
+        Cursor mCursor = CursorFactory.makeFavoritesCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {

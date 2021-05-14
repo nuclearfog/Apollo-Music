@@ -33,7 +33,6 @@ import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.Audio.Playlists.Members;
-import android.provider.MediaStore.MediaColumns;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -62,7 +61,7 @@ import java.util.WeakHashMap;
 
 import static android.media.RingtoneManager.TYPE_RINGTONE;
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
+import static com.andrew.apollo.utils.CursorFactory.PLAYLIST_COLUMNS;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -70,36 +69,6 @@ import static com.andrew.apollo.utils.CursorCreator.PLAYLIST_COLUMNS;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class MusicUtils {
-
-    /**
-     * column selection for track rows
-     */
-    private static final String[] TRACK_COLUMNS = {
-            MediaColumns._ID,
-            MediaColumns.DATA,
-            MediaColumns.TITLE
-    };
-
-    /**
-     * column selection for audio rows
-     */
-    private static final String[] AUDIO_COLUMNS = {
-            AudioColumns._ID,
-            AudioColumns.DATA,
-            AudioColumns.ALBUM_ID
-    };
-
-    /**
-     * column selection of get playlist count
-     */
-    private static final String[] PLAYLIST_COLUMN = {
-            "COUNT(" + Members.AUDIO_ID + ")"
-    };
-
-    /**
-     * select track matching an audio ID
-     */
-    private static final String TRACK_SELECT = MediaColumns._ID + "=?";
 
     /**
      * select tracks to delete matching audio ID
@@ -583,7 +552,7 @@ public final class MusicUtils {
      */
     @NonNull
     public static long[] getSongListForArtist(Context context, long id) {
-        Cursor cursor = CursorCreator.makeArtistSongCursor(context, id);
+        Cursor cursor = CursorFactory.makeArtistSongCursor(context, id);
         if (cursor != null) {
             long[] mList = getSongListForCursor(cursor);
             cursor.close();
@@ -599,7 +568,7 @@ public final class MusicUtils {
      */
     @NonNull
     public static long[] getSongListForAlbum(Context context, long id) {
-        Cursor cursor = CursorCreator.makeAlbumSongCursor(context, id);
+        Cursor cursor = CursorFactory.makeAlbumSongCursor(context, id);
         long[] result = EMPTY_LIST;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -635,7 +604,7 @@ public final class MusicUtils {
      */
     @NonNull
     public static long[] getSongListForGenre(Context context, long id) {
-        Cursor cursor = CursorCreator.makeGenreSongCursor(context, id);
+        Cursor cursor = CursorFactory.makeGenreSongCursor(context, id);
         if (cursor != null) {
             long[] mList = getSongListForCursor(cursor);
             cursor.close();
@@ -744,7 +713,7 @@ public final class MusicUtils {
      * @param context The {@link Context} to use.
      */
     public static void shuffleAll(Context context) {
-        Cursor cursor = CursorCreator.makeTrackCursor(context);
+        Cursor cursor = CursorFactory.makeTrackCursor(context);
         long[] mTrackList = getSongListForCursor(cursor);
         IApolloService service = mService;
         if (mTrackList.length > 0 && service != null) {
@@ -776,7 +745,7 @@ public final class MusicUtils {
      * @return The ID for a playlist.
      */
     public static long getIdForPlaylist(Context context, String name) {
-        Cursor cursor = CursorCreator.makePlaylistCursor(context);
+        Cursor cursor = CursorFactory.makePlaylistCursor(context);
         long playlistId = -1;
         if (cursor != null) {
             if (cursor.moveToFirst() && name != null) {
@@ -801,7 +770,7 @@ public final class MusicUtils {
      * @return The ID for an artist.
      */
     public static long getIdForArtist(Context context, String name) {
-        Cursor cursor = CursorCreator.makeArtistCursor(context, name);
+        Cursor cursor = CursorFactory.makeArtistCursor(context, name);
         long id = -1;
         if (cursor != null) {
             cursor.moveToFirst();
@@ -821,7 +790,7 @@ public final class MusicUtils {
      * @return array of track IDs
      */
     public static long[] getSongListForFolder(Context context, File folder) {
-        Cursor cursor = CursorCreator.makeFolderSongCursor(context, folder);
+        Cursor cursor = CursorFactory.makeFolderSongCursor(context, folder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 // use dynamic array because the result size differs from cursor size
@@ -854,7 +823,7 @@ public final class MusicUtils {
      * @return The ID for an album.
      */
     public static long getIdForAlbum(Context context, String albumName, String artistName) {
-        Cursor cursor = CursorCreator.makeAlbumCursor(context, albumName, artistName);
+        Cursor cursor = CursorFactory.makeAlbumCursor(context, albumName, artistName);
         int id = -1;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -879,7 +848,9 @@ public final class MusicUtils {
         }
     }
 
-    /*  */
+    /**
+     *
+     */
     public static void makeInsertItems(long[] ids, int offset, int len, int base) {
         if (offset + len > ids.length) {
             len = ids.length - offset;
@@ -903,7 +874,7 @@ public final class MusicUtils {
      */
     public static long createPlaylist(Context context, String name) {
         if (name != null && name.length() > 0) {
-            Cursor cursor = CursorCreator.makePlaylistCursor(context, name);
+            Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
             // check if playlist exists
             if (cursor != null) {
                 // create only playlist if there isn't any conflict
@@ -941,8 +912,8 @@ public final class MusicUtils {
     public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
         ContentResolver resolver = activity.getContentResolver();
-        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistid);
-        Cursor cursor = resolver.query(uri, PLAYLIST_COLUMN, null, null, null);
+        Uri uri = Playlists.Members.getContentUri(VOLUME_EXTERNAL, playlistid);
+        Cursor cursor = CursorFactory.makePlaylistCursor(resolver, uri);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 int base = cursor.getInt(0);
@@ -1008,6 +979,7 @@ public final class MusicUtils {
                 } else {
                     // open settings so user can set write permissions
                     Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                    intent.setData(Uri.parse("package:" + activity.getPackageName()));
                     activity.startActivity(intent);
                     return;
                 }
@@ -1021,9 +993,7 @@ public final class MusicUtils {
             err.printStackTrace();
             return;
         }
-        // print message after success
-        String[] args = {Long.toString(id)};
-        Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, args, null);
+        Cursor cursor = CursorFactory.makeTrackCursor(activity, id);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
@@ -1042,7 +1012,7 @@ public final class MusicUtils {
     public static String getSongCountForAlbum(Context context, long id) {
         String count = "";
         if (id >= 0) {
-            Cursor cursor = CursorCreator.makeAlbumCursor(context, id);
+            Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     count = cursor.getString(0);
@@ -1061,7 +1031,7 @@ public final class MusicUtils {
     public static String getReleaseDateForAlbum(Context context, long id) {
         String releaseDate = "";
         if (id >= 0) {
-            Cursor cursor = CursorCreator.makeAlbumCursor(context, id);
+            Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     releaseDate = cursor.getString(4);
@@ -1119,7 +1089,7 @@ public final class MusicUtils {
      * @return The track list for a playlist
      */
     public static long[] getSongListForPlaylist(Context context, long playlistId) {
-        Cursor cursor = CursorCreator.makePlaylistSongCursor(context, playlistId);
+        Cursor cursor = CursorFactory.makePlaylistSongCursor(context, playlistId);
         if (cursor != null) {
             long[] list = getSongListForCursor(cursor);
             cursor.close();
@@ -1171,7 +1141,7 @@ public final class MusicUtils {
      * @return The song list from our favorites database
      */
     public static long[] getSongListForFavorites(Context context) {
-        Cursor cursor = CursorCreator.makeFavoritesCursor(context);
+        Cursor cursor = CursorFactory.makeFavoritesCursor(context);
         if (cursor != null) {
             try {
                 return getSongListForFavoritesCursor(cursor);
@@ -1196,7 +1166,7 @@ public final class MusicUtils {
      * @return The song list for the last added playlist
      */
     public static long[] getSongListForLastAdded(Context context) {
-        Cursor cursor = CursorCreator.makeLastAddedCursor(context);
+        Cursor cursor = CursorFactory.makeLastAddedCursor(context);
         if (cursor != null) {
             long[] list = new long[cursor.getCount()];
             for (int i = 0; i < list.length; i++) {
@@ -1234,7 +1204,7 @@ public final class MusicUtils {
             subMenu.add(groupId, FragmentMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
         }
         subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
-        Cursor cursor = CursorCreator.makePlaylistCursor(context);
+        Cursor cursor = CursorFactory.makePlaylistCursor(context);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -1465,19 +1435,11 @@ public final class MusicUtils {
      * @return path to removed entries
      */
     private static String[] removeTracksFromDatabase(Context context, long[] ids) {
-        ContentResolver resolver = context.getContentResolver();
-        StringBuilder builder = new StringBuilder();
-        builder.append(AudioColumns._ID + " IN (");
-        for (int i = 0; i < ids.length; i++) {
-            builder.append(ids[i]);
-            if (i < ids.length - 1) {
-                builder.append(",");
-            }
-        }
-        builder.append(")");
-        String selection = builder.toString();
-        Cursor cursor = resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection, null, null);
         String[] result = {};
+        // query IDs to sql
+        String selection = MusicUtils.queryIds(ids);
+        // get cursor to fetch track information
+        Cursor cursor = CursorFactory.makeTrackListCursor(context, selection);
 
         // Step 1: Remove selected tracks from the current playlist, as well
         // as from the album art cache
@@ -1524,6 +1486,25 @@ public final class MusicUtils {
             }
         }
         return list;
+    }
+
+    /**
+     * creates a sql query with IDs
+     *
+     * @param ids IDs to query
+     * @return query string
+     */
+    private static String queryIds(long[] ids) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(MediaStore.Audio.AudioColumns._ID + " IN (");
+        for (int i = 0; i < ids.length; i++) {
+            builder.append(ids[i]);
+            if (i < ids.length - 1) {
+                builder.append(",");
+            }
+        }
+        builder.append(")");
+        return builder.toString();
     }
 
     /**

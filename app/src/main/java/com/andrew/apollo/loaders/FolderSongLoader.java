@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     @Override
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
-        Cursor cursor = CursorCreator.makeFolderSongCursor(getContext(), mFolder);
+        Cursor cursor = CursorFactory.makeFolderSongCursor(getContext(), mFolder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

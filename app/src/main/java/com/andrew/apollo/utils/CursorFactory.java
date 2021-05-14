@@ -8,9 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
+import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Genres;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
+import android.provider.MediaStore.MediaColumns;
 
 import androidx.annotation.NonNull;
 
@@ -30,7 +32,7 @@ import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAY
  *
  * @author nuclearfog
  */
-public class CursorCreator {
+public class CursorFactory {
 
     /**
      * default sort order
@@ -136,6 +138,31 @@ public class CursorCreator {
     };
 
     /**
+     * column selection for track rows
+     */
+    private static final String[] MEDIA_COLUMNS = {
+            MediaColumns._ID,
+            MediaColumns.DATA,
+            MediaColumns.TITLE
+    };
+
+    /**
+     * column selection for audio rows
+     */
+    private static final String[] AUDIO_COLUMNS = {
+            AudioColumns._ID,
+            AudioColumns.DATA,
+            AudioColumns.ALBUM_ID
+    };
+
+    /**
+     * column selection of get playlist count
+     */
+    private static final String[] PLAYLIST_COUNT = {
+            "COUNT(" + Playlists.Members.AUDIO_ID + ")"
+    };
+
+    /**
      * projection for music folder
      */
     private static final String[] FOLDER_PROJECTION = {
@@ -184,6 +211,11 @@ public class CursorCreator {
      * select specific album matching artist and name
      */
     private static final String ALBUM_NAME_SELECT = Albums.ALBUM + "=? AND " + Albums.ARTIST + "=?";
+
+    /**
+     * select track matching an audio ID
+     */
+    private static final String RINGTONE_SELECT = MediaColumns._ID + "=?";
 
     /**
      * select specific album matching artist and name
@@ -256,7 +288,7 @@ public class CursorCreator {
     public static final String ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
 
 
-    private CursorCreator() {
+    private CursorFactory() {
     }
 
 
@@ -538,7 +570,7 @@ public class CursorCreator {
     }
 
     /**
-     * * @param context The {@link Context} to use.
+     * creates cursor to search for tracks
      *
      * @param query The user's query.
      * @return The {@link Cursor} used to perform the search.
@@ -548,5 +580,38 @@ public class CursorCreator {
 
         Uri media = Uri.parse("content://media/external/audio/search/fancy/" + Uri.encode(query));
         return resolver.query(media, SEARCH_COLUMNS, null, null, null);
+    }
+
+    /**
+     * creates a playlist cursor
+     *
+     * @return cursor with playlist information
+     */
+    public static Cursor makePlaylistCursor(ContentResolver resolver, Uri uri) {
+        return resolver.query(uri, PLAYLIST_COUNT, null, null, null);
+    }
+
+    /**
+     * creates cursor to search for a single track information
+     *
+     * @param id audio ID
+     * @return cursor with track information
+     */
+    public static Cursor makeTrackCursor(Context context, long id) {
+        // print message after success
+        String[] args = {Long.toString(id)};
+        ContentResolver resolver = context.getContentResolver();
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, MEDIA_COLUMNS, RINGTONE_SELECT, args, null);
+    }
+
+    /**
+     * creates a cursor to seach for track information
+     *
+     * @param selection query with track IDs
+     * @return cursor with track information
+     */
+    public static Cursor makeTrackListCursor(Context context, String selection) {
+        ContentResolver resolver = context.getContentResolver();
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection, null, null);
     }
 }

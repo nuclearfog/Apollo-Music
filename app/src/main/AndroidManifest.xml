@@ -34,7 +34,7 @@
     <!-- Used to set the devices's ringtone -->
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
-        android:maxSdkVersion="22" />
+        tools:ignore="ProtectedPermissions" />
     <!-- Used to create launcher shortcuts -->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!-- Allows Apollo to read from External Storage -->

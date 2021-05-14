@@ -18,7 +18,7 @@ import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Playlist;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         // Add the default playlists to the adapter
         makeDefaultPlaylists(result);
         // Create the Cursor
-        Cursor mCursor = CursorCreator.makePlaylistCursor(getContext());
+        Cursor mCursor = CursorFactory.makePlaylistCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {

@@ -16,7 +16,7 @@ import android.database.Cursor;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
     public List<Album> loadInBackground() {
         List<Album> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = CursorCreator.makeRecentCursor(getContext());
+        Cursor mCursor = CursorFactory.makeRecentCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {

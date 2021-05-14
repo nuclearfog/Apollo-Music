@@ -16,7 +16,7 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = CursorCreator.makeArtistSongCursor(getContext(), mArtistID);
+        Cursor mCursor = CursorFactory.makeArtistSongCursor(getContext(), mArtistID);
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {

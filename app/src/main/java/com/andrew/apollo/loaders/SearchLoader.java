@@ -19,7 +19,7 @@ import android.provider.MediaStore.Audio.Media;
 import android.text.TextUtils;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Gather the data
-        Cursor mCursor = CursorCreator.makeSearchCursor(getContext(), query);
+        Cursor mCursor = CursorFactory.makeSearchCursor(getContext(), query);
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
                 do {

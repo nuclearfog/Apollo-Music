@@ -16,7 +16,7 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.utils.CursorCreator;
+import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +57,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
             // Create the Cursor
             if (genreId == 0)
                 continue;
-            Cursor mCursor = CursorCreator.makeGenreSongCursor(getContext(), genreId);
+            Cursor mCursor = CursorFactory.makeGenreSongCursor(getContext(), genreId);
             // Gather the data
             if (mCursor != null) {
                 if (mCursor.moveToFirst()) {

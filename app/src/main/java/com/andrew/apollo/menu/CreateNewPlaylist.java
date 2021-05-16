@@ -13,13 +13,13 @@ package com.andrew.apollo.menu;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore.Audio.Playlists;
+import android.provider.MediaStore;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
+import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
 /**
@@ -29,16 +29,6 @@ import com.andrew.apollo.utils.MusicUtils;
  * or not.
  */
 public class CreateNewPlaylist extends BasePlaylistDialog {
-
-    /**
-     * filter empty playlist name
-     */
-    private static final String SELECTION = Playlists.NAME + "!=''";
-
-    /**
-     * projection for playlist columns
-     */
-    private static final String[] PROJECTION = {Playlists.NAME};
 
     // The playlist list
     private long[] mPlaylistList = {};
@@ -134,26 +124,24 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
      * @return generated playlist name
      */
     private String makePlaylistName() {
-        String template = getString(R.string.new_playlist_name_template);
-        ContentResolver resolver = requireActivity().getContentResolver();
-        Cursor cursor = resolver.query(Playlists.EXTERNAL_CONTENT_URI, PROJECTION, SELECTION, null, Playlists.NAME);
+        Cursor cursor = CursorFactory.makePlaylistCursor(requireContext());
         if (cursor != null) {
-
             // get all available playlist names
             String[] playlists = {};
             if (cursor.moveToFirst()) {
-                int index = 0;
+                int pos = 0;
+                int index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME);
                 playlists = new String[cursor.getCount()];
                 do {
-                    playlists[index++] = cursor.getString(0);
-                } while (cursor.moveToNext());
+                    playlists[pos++] = cursor.getString(index);
+                } while (cursor.moveToNext() && pos < playlists.length);
                 cursor.close();
             }
-
             // search for conflicts and increase number suffix
             int num = 1;
             boolean conflict;
             String suggestedname;
+            String template = getString(R.string.new_playlist_name_template);
             do {
                 conflict = false;
                 suggestedname = String.format(template, num++);

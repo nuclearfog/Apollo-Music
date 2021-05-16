@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.andrew.apollo"
+        applicationId 'com.andrew.apollo'
         minSdkVersion 16
         targetSdkVersion 30
         versionCode 4
@@ -26,7 +26,8 @@ android {
             shrinkResources true
         }
         debug {
-            applicationIdSuffix ".debug"
+            applicationIdSuffix '.debug'
+            versionNameSuffix 'd'
         }
     }
 

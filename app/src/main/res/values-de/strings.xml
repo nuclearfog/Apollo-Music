@@ -121,4 +121,5 @@
     <string name="empty_music">Verwenden Sie ein USB-Kabel, um Musik von Ihrem Computer auf das Gerät zu übertragen.</string>
     <string name="empty_search">Keine Suchergebnisse gefunden</string>
     <string name="page_folders">Musikordner</string>
+    <string name="error_permission_denied">Die App benötigt Berechtigungen zum Abspielen der Musikdateien!</string>
 </resources>

@@ -99,11 +99,11 @@ public class NotificationHelper {
         // Control playback from the notification
         initPlaybackActions(mService.isPlaying());
         // Set up the content view
-        initCollapsedLayout();
+        updateCollapsedLayout();
         // Control playback from the notification
         initExpandedPlaybackActions(mService.isPlaying());
         // Set up the expanded content view
-        initExpandedLayout();
+        updateExpandedLayout();
         // start notification
         mService.startForeground(APOLLO_MUSIC_SERVICE, mNotification);
         // Enable notification update
@@ -118,8 +118,8 @@ public class NotificationHelper {
             int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
             mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
             mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-            initExpandedLayout();
-            initCollapsedLayout();
+            updateExpandedLayout();
+            updateCollapsedLayout();
             // Update notification
             mNotificationManager.notify(APOLLO_MUSIC_SERVICE, mNotification);
         }
@@ -206,7 +206,7 @@ public class NotificationHelper {
     /**
      * Sets the track name, artist name, and album art in the normal layout
      */
-    private void initCollapsedLayout() {
+    private void updateCollapsedLayout() {
         // Track name (line one)
         mSmallContent.setTextViewText(R.id.notification_base_line_one, mService.getTrackName());
         // Artist name (line two)
@@ -219,7 +219,7 @@ public class NotificationHelper {
      * Sets the track name, album name, artist name, and album art in the
      * expanded layout
      */
-    private void initExpandedLayout() {
+    private void updateExpandedLayout() {
         // Track name (line one)
         mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, mService.getTrackName());
         // Album name (line two)

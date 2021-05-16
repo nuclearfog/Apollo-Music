@@ -12,7 +12,6 @@
 package com.andrew.apollo.menu;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -30,51 +29,34 @@ import androidx.fragment.app.DialogFragment;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.MusicUtils;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 /**
  * A simple base class for the playlist dialogs.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class BasePlaylistDialog extends DialogFragment {
+public abstract class BasePlaylistDialog extends DialogFragment implements TextWatcher, OnClickListener {
 
     /**
-     * Simple {@link TextWatcher}
+     * The actual dialog
      */
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            onTextChangedListener();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void afterTextChanged(Editable s) {
-            /* Nothing to do */
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            /* Nothing to do */
-        }
-    };
-    /* The actual dialog */
     protected AlertDialog mPlaylistDialog;
-    /* Used to make new playlist names */
+    /**
+     * Used to make new playlist names
+     */
     protected EditText mPlaylist;
-    /* The dialog save button */
+    /**
+     * The dialog save button
+     */
     protected Button mSaveButton;
-    /* The dialog prompt */
+    /**
+     * The dialog prompt
+     */
     protected String mPrompt = "";
-    /* The default edit text text */
+    /**
+     * The default edit text text
+     */
     protected String mDefaultname = "";
 
     /**
@@ -93,27 +75,9 @@ public abstract class BasePlaylistDialog extends DialogFragment {
         mPlaylist.setInputType(mPlaylist.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                 | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         // Set the save button action
-        mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save),
-                new OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onSaveClick();
-                        MusicUtils.refresh();
-                        dialog.dismiss();
-                    }
-                });
+        mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
         // Set the cancel button action
-        mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel),
-                new OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        closeKeyboard();
-                        MusicUtils.refresh();
-                        dialog.dismiss();
-                    }
-                });
+        mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel), this);
 
         mPlaylist.post(new Runnable() {
 
@@ -133,9 +97,51 @@ public abstract class BasePlaylistDialog extends DialogFragment {
         mPlaylistDialog.setView(mPlaylist);
         mPlaylist.setText(mDefaultname);
         mPlaylist.setSelection(mDefaultname.length());
-        mPlaylist.addTextChangedListener(mTextWatcher);
+        mPlaylist.addTextChangedListener(this);
         mPlaylistDialog.show();
         return mPlaylistDialog;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void onClick(DialogInterface dialog, int which) {
+        if (dialog == mPlaylistDialog) {
+            if (which == Dialog.BUTTON_POSITIVE) {
+                onSaveClick();
+                MusicUtils.refresh();
+                dialog.dismiss();
+            } else if (which == Dialog.BUTTON_NEGATIVE) {
+                closeKeyboard();
+                MusicUtils.refresh();
+                dialog.dismiss();
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void onTextChanged(CharSequence s, int start, int before, int count) {
+        onTextChangedListener();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void afterTextChanged(Editable s) {
+        /* Nothing to do */
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        /* Nothing to do */
     }
 
     /**
@@ -143,7 +149,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
      */
     protected void openKeyboard() {
         InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                .getSystemService(INPUT_METHOD_SERVICE);
         mInputMethodManager.toggleSoftInputFromWindow(mPlaylist.getApplicationWindowToken(),
                 InputMethodManager.SHOW_FORCED, 0);
     }
@@ -152,8 +158,10 @@ public abstract class BasePlaylistDialog extends DialogFragment {
      * Closes the soft keyboard
      */
     protected void closeKeyboard() {
-        InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        mInputMethodManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
+        InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
+        if (iManager != null) {
+            iManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
+        }
     }
 
     /**

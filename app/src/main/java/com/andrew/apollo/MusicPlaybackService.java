@@ -44,7 +44,6 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -64,6 +63,7 @@ import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 
@@ -84,7 +84,6 @@ import static android.provider.MediaStore.VOLUME_EXTERNAL;
  * and when the user moves Apollo into the background.
  */
 public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
-
     /**
      *
      */
@@ -204,26 +203,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private static final String HANDLER_NAME = "MusicPlayerHandler";
     /**
-     * select only music tracks
-     */
-    private static final String TRACK_SELECTION = Media.IS_MUSIC + "=1";
-    /**
-     * select media with matching ID
-     */
-    private static final String TRACK_SELECT_ID = Media._ID + "=?";
-    /**
-     * select media located at given path
-     */
-    private static final String TRACK_SELECT_PATH = Media.DATA + "=?";
-    /**
-     * select songs with matching Album ID
-     */
-    private static final String ALBUM_SELECT_ID = Albums._ID + "=?";
-    /**
-     * Media projection
-     */
-    private static final String[] ID_PROJECTION = {Media._ID};
-    /**
      * Moves a list to the front of the queue
      */
     public static final int NOW = 0x34C4DD47;
@@ -235,7 +214,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Moves a list to the last position in the queue
      */
     public static final int LAST = 0xB03ED8F4;
-
     /**
      * Shuffles no songs, turns shuffling off
      */
@@ -285,10 +263,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private static final int FADEUP = 0x2A72CF59;
     /**
-     *
-     */
-    private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
-    /**
      * Notification channel ID
      */
     public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
@@ -300,10 +274,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Used by the alarm intent to shutdown the service after being idle
      */
     private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
-    /**
-     *
-     */
-    private static final int IDCOLIDX = 0;
     /**
      * Idle time before stopping the foreground notfication (1 minute)
      */
@@ -318,58 +288,27 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * The max size allowed for the track history
      */
     private static final int MAX_HISTORY_SIZE = 100;
-
-    /**
-     * The columns used to retrieve any info from the current track
-     */
-    @SuppressLint("InlinedApi")
-    private static final String[] PROJECTION = {
-            Media._ID,
-            Media.ARTIST,
-            Media.ALBUM,
-            Media.TITLE,
-            Media.DATA,
-            Media.MIME_TYPE,
-            Media.ALBUM_ID,
-            Media.ARTIST_ID,
-            Media.DURATION
-    };
-
-    /**
-     * The columns used to retrieve any info from the current album
-     */
-    private static final String[] ALBUM_PROJECTION = {
-            Albums.ALBUM,
-            Albums.ARTIST,
-            Albums.LAST_YEAR
-    };
-
     /**
      * Used to shuffle the tracks
      */
     private static Shuffler mShuffler = new Shuffler();
-
     /**
      * Keeps a mapping of the track history
      */
     private static List<Integer> mHistory = new LinkedList<>();
-
     /**
      * current playlist containing track ID's
      */
     private List<Long> mPlayList = new LinkedList<>();
-
     /**
      * the values of this list points on indexes of {@link #mPlayList} which are randomly shuffled.
      * after finishing this list, the values will be shuffled again.
      */
     private ArrayList<Integer> mNormalShuffleList = new ArrayList<>();
-
     /**
      * current shuffle list contaning track ID's
      */
     private List<Long> mAutoShuffleList = new LinkedList<>();
-
     /**
      * Service stub
      */
@@ -796,8 +735,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private void getCardId() {
         try {
-            ContentResolver resolver = getContentResolver();
-            Cursor cursor = resolver.query(CARD_URI, null, null, null, null);
+            Cursor cursor = CursorFactory.makeCardCursor(this);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     mCardId = cursor.getInt(0);
@@ -949,17 +887,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param trackId The track ID
      */
     private void updateCursor(long trackId) {
-        String[] args = {Long.toString(trackId)};
-        updateCursor(TRACK_SELECT_ID, args);
+        synchronized (this) {
+            closeCursor();
+            mCursor = CursorFactory.makeTrackCursor(this, trackId);
+        }
+        updateAlbumCursor();
     }
 
     /**
+     * update track cursor
      *
+     * @param path music file path
      */
-    private void updateCursor(String selection, String[] selectionArgs) {
+    private void updateCursor(String path) {
         synchronized (this) {
             closeCursor();
-            mCursor = openCursorAndGoToFirst(Media.EXTERNAL_CONTENT_URI, PROJECTION, selection, selectionArgs);
+            mCursor = CursorFactory.makeTrackCursor(this, path);
         }
         updateAlbumCursor();
     }
@@ -970,7 +913,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void updateCursor(Uri uri) {
         synchronized (this) {
             closeCursor();
-            mCursor = openCursorAndGoToFirst(uri, PROJECTION, null, null);
+            mCursor = CursorFactory.makeTrackCursor(this, uri);
         }
         updateAlbumCursor();
     }
@@ -981,26 +924,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void updateAlbumCursor() {
         long albumId = getAlbumId();
         if (albumId >= 0) {
-            String[] args = {Long.toString(albumId)};
-            mAlbumCursor = openCursorAndGoToFirst(Albums.EXTERNAL_CONTENT_URI, ALBUM_PROJECTION, ALBUM_SELECT_ID, args);
+            mAlbumCursor = CursorFactory.makeAlbumCursor(this, albumId);
         } else {
             mAlbumCursor = null;
         }
-    }
-
-    /**
-     *
-     */
-    private Cursor openCursorAndGoToFirst(Uri uri, String[] projection, String selection, String[] selectionArgs) {
-        Cursor c = getContentResolver().query(uri, projection, selection, selectionArgs, null, null);
-        if (c == null) {
-            return null;
-        }
-        if (!c.moveToFirst()) {
-            c.close();
-            return null;
-        }
-        return c;
     }
 
     /**
@@ -1038,8 +965,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             stop(false);
             updateCursor(mPlayList.get(mPlayPos));
             boolean fileOpenFailed;
-            if (mCursor != null) {
-                String path = Media.EXTERNAL_CONTENT_URI + "/" + mCursor.getLong(IDCOLIDX);
+            if (mCursor != null && mCursor.moveToFirst()) {
+                long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
+                String path = Media.EXTERNAL_CONTENT_URI + "/" + id;
                 fileOpenFailed = !openFile(path);
             } else {
                 fileOpenFailed = true;
@@ -1147,13 +1075,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     private boolean makeAutoShuffleList() {
         try {
-            Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, ID_PROJECTION,
-                    TRACK_SELECTION, null, null);
+            Cursor cursor = CursorFactory.makeTrackCursor(this);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
+                    int idx = cursor.getColumnIndexOrThrow(Media._ID);
                     mAutoShuffleList.clear();
                     do {
-                        long id = cursor.getLong(0);
+                        long id = cursor.getLong(idx);
                         mAutoShuffleList.add(id);
                     } while (cursor.moveToNext());
                     return true;
@@ -1434,11 +1362,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 } else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
                     updateCursor(id);
                 } else {
-                    String[] selectionArgs = {path};
-                    updateCursor(TRACK_SELECT_PATH, selectionArgs);
+                    updateCursor(path);
                 }
                 if (mCursor != null && mCursor.moveToFirst()) {
-                    mPlayList.add(0, mCursor.getLong(IDCOLIDX));
+                    id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
+                    mPlayList.add(0, id);
                     mPlayPos = 0;
                 }
             }
@@ -1620,7 +1548,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getPath() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
             }
             return "";
@@ -1635,7 +1563,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     @SuppressLint("InlinedApi")
     public String getAlbumName() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
             }
             return "";
@@ -1649,7 +1577,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getTrackName() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
             }
         }
@@ -1664,7 +1592,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     @SuppressLint("InlinedApi")
     public String getArtistName() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
             }
         }
@@ -1678,8 +1606,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public String getAlbumArtistName() {
         synchronized (this) {
-            if (mAlbumCursor != null) {
-                return mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
+            if (mAlbumCursor != null && mAlbumCursor.moveToFirst()) {
+                return mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(Albums.ARTIST));
             }
         }
         return "";
@@ -1693,7 +1621,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public long getAlbumId() {
         synchronized (this) {
             if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(Media.ALBUM_ID));
             }
         }
         return -1;
@@ -1706,7 +1634,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public long getArtistId() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
             }
         }
@@ -1717,11 +1645,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     @SuppressLint("InlinedApi")
     public long getDurationMillis() {
         synchronized (this) {
-            if (mCursor != null) {
+            if (mCursor != null && mCursor.moveToFirst()) {
                 return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
             }
         }
-        return 0;
+        return -1;
     }
 
     /**

@@ -138,15 +138,6 @@ public class CursorFactory {
     };
 
     /**
-     * column selection for track rows
-     */
-    private static final String[] MEDIA_COLUMNS = {
-            MediaColumns._ID,
-            MediaColumns.DATA,
-            MediaColumns.TITLE
-    };
-
-    /**
      * column selection for audio rows
      */
     private static final String[] AUDIO_COLUMNS = {
@@ -179,7 +170,7 @@ public class CursorFactory {
      * Selection to filter songs with empty name
      */
     @SuppressLint("InlinedApi")
-    public static final String TRACK_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
+    public static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
 
     /**
      * selection for albums of an artist
@@ -190,22 +181,22 @@ public class CursorFactory {
     /**
      *
      */
-    public static final String LAST_ADDED_SELECT = TRACK_SELECT + " AND " + Media.DATE_ADDED + ">?";
+    public static final String LAST_ADDED_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATE_ADDED + ">?";
 
     /**
      * folder track selection
      */
-    private static final String FOLDER_TRACK_SELECT = TRACK_SELECT + " AND " + Media.DATA + " LIKE ?";
+    private static final String FOLDER_TRACK_SELECT = TRACK_FILTER_SELECT + " AND " + Media.DATA + " LIKE ?";
 
     /**
      * SQL selection
      */
-    private static final String ARTIST_SONG_SELECT = TRACK_SELECT + " AND " + Media.ARTIST_ID + "=?";
+    private static final String ARTIST_SONG_SELECT = TRACK_FILTER_SELECT + " AND " + Media.ARTIST_ID + "=?";
 
     /**
      * SQL Query
      */
-    private static final String ALBUM_SONG_SELECT = TRACK_SELECT + " AND " + Media.ALBUM_ID + "=?";
+    private static final String ALBUM_SONG_SELECT = TRACK_FILTER_SELECT + " AND " + Media.ALBUM_ID + "=?";
 
     /**
      * select specific album matching artist and name
@@ -215,7 +206,12 @@ public class CursorFactory {
     /**
      * select track matching an audio ID
      */
-    private static final String RINGTONE_SELECT = MediaColumns._ID + "=?";
+    private static final String TRACK_ID_SELECT = MediaColumns._ID + "=?";
+
+    /**
+     * select track matching an audio ID
+     */
+    private static final String TRACK_PATH_SELECT = Media.DATA + "=?";
 
     /**
      * select specific album matching artist and name
@@ -275,7 +271,7 @@ public class CursorFactory {
     /**
      * sort folder tracks
      */
-    private static final String FOLDER_TRACKS_ORDER = Media.TRACK;
+    private static final String FOLDER_TRACKS_ORDER = Media.TRACK + "," + Media.TITLE;
 
     /**
      * default order to sort last added tracks
@@ -285,7 +281,12 @@ public class CursorFactory {
     /**
      * SQLite sport order
      */
-    public static final String ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
+    public static final String FAV_ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
+
+    /**
+     *
+     */
+    private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
 
 
     private CursorFactory() {
@@ -301,7 +302,7 @@ public class CursorFactory {
         ContentResolver resolver = context.getContentResolver();
 
         String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
-        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_SELECT, null, sort);
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sort);
     }
 
     /**
@@ -413,7 +414,7 @@ public class CursorFactory {
         ContentResolver resolver = context.getContentResolver();
 
         Uri media = Genres.Members.getContentUri("external", id);
-        return resolver.query(media, TRACK_COLUMNS, TRACK_SELECT, null, GENRE_TRACK_ORDER);
+        return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, GENRE_TRACK_ORDER);
     }
 
     /**
@@ -449,7 +450,7 @@ public class CursorFactory {
         ContentResolver contentResolver = context.getContentResolver();
 
         String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
-        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_PROJECTION, TRACK_SELECT, null, sortOrder);
+        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_PROJECTION, TRACK_FILTER_SELECT, null, sortOrder);
     }
 
     /**
@@ -459,7 +460,7 @@ public class CursorFactory {
      */
     public static Cursor makeFavoritesCursor(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
-        return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, ORDER);
+        return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
     }
 
     /**
@@ -598,10 +599,35 @@ public class CursorFactory {
      * @return cursor with track information
      */
     public static Cursor makeTrackCursor(Context context, long id) {
-        // print message after success
         String[] args = {Long.toString(id)};
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(Media.EXTERNAL_CONTENT_URI, MEDIA_COLUMNS, RINGTONE_SELECT, args, null);
+
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_ID_SELECT, args, null);
+    }
+
+    /**
+     * creates cursor to search for a single track information
+     *
+     * @param path path to the audio file
+     * @return cursor with track information
+     */
+    public static Cursor makeTrackCursor(Context context, String path) {
+        String[] args = {path};
+        ContentResolver resolver = context.getContentResolver();
+
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_PATH_SELECT, args, null);
+    }
+
+    /**
+     * creates cursor to search for a single track information
+     *
+     * @param path path to the audio file
+     * @return cursor with track information
+     */
+    public static Cursor makeTrackCursor(Context context, Uri path) {
+        ContentResolver resolver = context.getContentResolver();
+
+        return resolver.query(path, null, TRACK_PATH_SELECT, null, null);
     }
 
     /**
@@ -613,5 +639,13 @@ public class CursorFactory {
     public static Cursor makeTrackListCursor(Context context, String selection) {
         ContentResolver resolver = context.getContentResolver();
         return resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection, null, null);
+    }
+
+    /**
+     *
+     */
+    public static Cursor makeCardCursor(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        return resolver.query(CARD_URI, null, null, null, null);
     }
 }

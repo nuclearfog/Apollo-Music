@@ -60,6 +60,28 @@
         android:taskAffinity="com.andrew.apollo.task"
         android:theme="@style/Apollo.Theme.Dark">
 
+        <!-- provider to share music files -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.andrew.apollo"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <!-- same provider for the debug version -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.andrew.apollo.debug"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <!-- Searchable -->
         <meta-data
             android:name="android.app.default_searchable"

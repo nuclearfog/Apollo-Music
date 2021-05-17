@@ -50,8 +50,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
@@ -72,6 +74,7 @@ import com.andrew.apollo.widgets.RepeatingImageButton;
 import com.andrew.apollo.widgets.RepeatingImageButton.RepeatListener;
 import com.andrew.apollo.widgets.ShuffleButton;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
@@ -902,16 +905,24 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
     /**
-     * /** Used to shared what the user is currently listening to
+     * Used to shared what the user is currently listening to
      */
     private void shareCurrentTrack() {
         String path = MusicUtils.getPlaybackFilePath();
         if (path != null) {
-            Intent shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.setType("text/*");
-            shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
-            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
+            try {
+                File file = new File(path);
+                Uri fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);
+
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.setType("audio/*");
+                shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
         }
     }
 

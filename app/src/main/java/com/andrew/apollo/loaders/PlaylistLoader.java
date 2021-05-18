@@ -14,7 +14,6 @@ package com.andrew.apollo.loaders;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Playlists;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.model.Playlist;
@@ -24,8 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to query {@link Playlists#EXTERNAL_CONTENT_URI} and
- * return the playlists on a user's device.
+ * Used to return the playlists on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Genres;
 
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.utils.CursorFactory;
@@ -26,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Used to query {@link Genres#EXTERNAL_CONTENT_URI} and return
- * the genres on a user's device.
+ * Used to return the genres on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

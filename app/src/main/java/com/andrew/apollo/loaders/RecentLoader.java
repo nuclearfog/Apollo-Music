@@ -15,14 +15,13 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to query {@link RecentStore} and return the last listened to albums.
+ * Used to return the last listened to albums.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Media;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
@@ -23,8 +22,7 @@ import java.util.List;
 
 
 /**
- * Used to query {@link Media#EXTERNAL_CONTENT_URI} and return
- * the songs on a user's device.
+ * Used to return the songs on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

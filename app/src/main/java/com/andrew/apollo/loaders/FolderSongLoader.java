@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Used to get all songs of a music folder
  * decompiled from Apollo.APK version 1.6
  */
 public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {

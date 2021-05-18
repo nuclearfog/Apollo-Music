@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Artists;
 
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.utils.CursorFactory;
@@ -22,8 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to query {@link Artists#EXTERNAL_CONTENT_URI} and
- * return the artists on a user's device.
+ * Used to return the artists on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

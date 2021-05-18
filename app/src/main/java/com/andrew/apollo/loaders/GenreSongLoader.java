@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
@@ -23,10 +22,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-
 /**
- * Used to query {@link MediaStore.Audio.Genres.Members#EXTERNAL_CONTENT_URI}
- * and return the songs for a particular genre.
+ * Used to return the songs for a particular genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

@@ -34,6 +34,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
@@ -748,8 +749,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * @param index index of the fragment
      */
     private void refreshFragment(int index) {
-        if (mPagerAdapter.getFragment(index) instanceof FragmentCallback) {
-            ((FragmentCallback) mPagerAdapter.getFragment(index)).refresh();
+        Fragment fragment = mPagerAdapter.getFragment(index);
+        if (fragment instanceof FragmentCallback) {
+            ((FragmentCallback) fragment).refresh();
         }
     }
 

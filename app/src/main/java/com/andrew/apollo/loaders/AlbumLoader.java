@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Albums;
 
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.utils.CursorFactory;
@@ -22,8 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to query {@link Albums#EXTERNAL_CONTENT_URI} and return
- * the albums on a user's device.
+ * Used to return the albums on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

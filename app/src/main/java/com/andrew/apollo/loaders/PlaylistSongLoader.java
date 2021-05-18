@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
@@ -21,10 +20,8 @@ import com.andrew.apollo.utils.CursorFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-
 /**
- * Used to query {@link MediaStore.Audio.Playlists#EXTERNAL_CONTENT_URI} and
- * return the songs for a particular playlist.
+ * Used to return the songs for a particular playlist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

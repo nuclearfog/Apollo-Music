@@ -13,7 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
@@ -22,13 +21,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to query {@link MediaStore.Audio.Media#EXTERNAL_CONTENT_URI} and return
- * the Song the user added over the past four of weeks.
+ * Used to return the Song the user added over the past four of weeks.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class LastAddedLoader extends WrappedAsyncTaskLoader<List<Song>> {
-
 
     /**
      * Constructor of <code>LastAddedHandler</code>

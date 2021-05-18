@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -40,6 +41,7 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
+import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.menu.PhotoSelectionDialog;
 import com.andrew.apollo.menu.PhotoSelectionDialog.ProfileType;
 import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
@@ -76,7 +78,7 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends AppCompatBase implements OnPageChangeListener, Listener, OnClickListener {
+public class ProfileActivity extends AppCompatBase implements OnPageChangeListener, Listener, OnClickListener, DeleteDialogCallback {
 
     /**
      * request code to load new photo
@@ -195,6 +197,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     /**
      * {@inheritDoc}
      */
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -598,7 +601,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 Cursor cursor = getContentResolver().query(intent.getData(), GET_MEDIA, null, null, null);
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
-                        int columnIndex = cursor.getColumnIndex(GET_MEDIA[0]);
+                        int columnIndex = cursor.getColumnIndexOrThrow(GET_MEDIA[0]);
                         String picturePath = cursor.getString(columnIndex);
                         Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromFile(picturePath);
                         if (type == Type.ARTIST) {
@@ -647,6 +650,12 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         } else {
             super.onClick(v);
         }
+    }
+
+
+    @Override
+    public void onDelete() {
+        refreshAll();
     }
 
     /**

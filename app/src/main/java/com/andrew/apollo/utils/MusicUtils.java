@@ -75,6 +75,8 @@ public final class MusicUtils {
      */
     private static final String PLAYLIST_REMOVE_TRACK = Playlists.Members.AUDIO_ID + "=?";
 
+    private static final String DATABASE_REMOVE_TRACK = MediaStore.Audio.AudioColumns._ID + "=?";
+
     /**
      * code to request file deleting
      * only for scoped storage
@@ -1437,35 +1439,37 @@ public final class MusicUtils {
      */
     private static String[] removeTracksFromDatabase(Context context, long[] ids) {
         String[] result = {};
-        // query IDs to sql
-        String selection = MusicUtils.queryIds(ids);
         // get cursor to fetch track information
-        Cursor cursor = CursorFactory.makeTrackListCursor(context, selection);
+        Cursor cursor = CursorFactory.makeTrackListCursor(context, ids);
 
         // Step 1: Remove selected tracks from the current playlist, as well
         // as from the album art cache
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 result = new String[cursor.getCount()];
-                for (int i = 0; i < ids.length && cursor.moveToNext(); i++) {
+                FavoritesStore favStore = FavoritesStore.getInstance(context);
+                RecentStore recents = RecentStore.getInstance(context);
+                ContentResolver resolver = context.getContentResolver();
+                for (int i = 0; i < ids.length; i++) {
                     // Remove from current playlist
                     long trackId = cursor.getLong(0);
                     result[i] = cursor.getString(1);
                     long albumId = cursor.getLong(2);
+                    String[] idStr = {Long.toString(trackId)};
                     //
                     removeTrack(trackId);
                     // Remove from the favorites playlist
-                    FavoritesStore.getInstance(context).removeItem(trackId);
+                    favStore.removeItem(trackId);
                     // Remove any items in the recents database
-                    RecentStore.getInstance(context).removeItem(albumId);
+                    recents.removeItem(albumId);
+                    // remove track from database
+                    resolver.delete(Media.EXTERNAL_CONTENT_URI, DATABASE_REMOVE_TRACK, idStr);
+                    // move to next track
+                    cursor.moveToNext();
                 }
             }
             cursor.close();
         }
-
-        // Step 2: Remove selected tracks from the database
-        context.getContentResolver().delete(Media.EXTERNAL_CONTENT_URI, selection, null);
-
         // return path to the files
         return result;
     }
@@ -1487,25 +1491,6 @@ public final class MusicUtils {
             }
         }
         return list;
-    }
-
-    /**
-     * creates a sql query with IDs
-     *
-     * @param ids IDs to query
-     * @return query string
-     */
-    private static String queryIds(long[] ids) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(MediaStore.Audio.AudioColumns._ID + " IN (");
-        for (int i = 0; i < ids.length; i++) {
-            builder.append(ids[i]);
-            if (i < ids.length - 1) {
-                builder.append(",");
-            }
-        }
-        builder.append(")");
-        return builder.toString();
     }
 
     /**

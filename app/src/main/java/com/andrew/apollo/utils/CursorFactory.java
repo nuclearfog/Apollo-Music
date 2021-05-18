@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -22,6 +23,7 @@ import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
 import java.io.File;
+import java.util.List;
 
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
@@ -144,6 +146,18 @@ public class CursorFactory {
             AudioColumns._ID,
             AudioColumns.DATA,
             AudioColumns.ALBUM_ID
+    };
+
+    /**
+     *
+     */
+    @SuppressLint("InlinedApi")
+    public static final String[] NP_COLUMNS = {
+            AudioColumns._ID,
+            AudioColumns.TITLE,
+            AudioColumns.ARTIST,
+            AudioColumns.ALBUM,
+            AudioColumns.DURATION
     };
 
     /**
@@ -633,12 +647,40 @@ public class CursorFactory {
     /**
      * creates a cursor to seach for track information
      *
-     * @param selection query with track IDs
+     * @param ids query with track IDs
      * @return cursor with track information
      */
-    public static Cursor makeTrackListCursor(Context context, String selection) {
+    public static Cursor makeTrackListCursor(Context context, long[] ids) {
+        StringBuilder selection = new StringBuilder();
+        selection.append(MediaStore.Audio.Media._ID + " IN (");
+        for (int i = 0; i < ids.length; i++) {
+            selection.append(ids[i]);
+            if (i < ids.length - 1) {
+                selection.append(",");
+            }
+        }
+        selection.append(")");
         ContentResolver resolver = context.getContentResolver();
-        return resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection, null, null);
+        return resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection.toString(), null, null);
+    }
+
+    /**
+     * creates a cursor to get current track queue
+     *
+     * @param ids query with track IDs
+     * @return cursor with track information
+     */
+    public static Cursor makeNowPlayingCursor(Context context, List<Long> ids) {
+        StringBuilder selection = new StringBuilder();
+        selection.append(MediaStore.Audio.Media._ID + " IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            selection.append(ids.get(i));
+            if (i < ids.size() - 1) {
+                selection.append(",");
+            }
+        }
+        selection.append(")");
+        return context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI, NP_COLUMNS, selection.toString(), null, Media._ID);
     }
 
     /**

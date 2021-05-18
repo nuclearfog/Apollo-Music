@@ -41,6 +41,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
@@ -49,13 +50,12 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 import java.util.List;
 
 /**
- * This class is used to display all of the songs in {@link FavoritesStore
- * }.
+ * This class is used to display all of the songs in {@link FavoritesStore}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener {
+        OnItemClickListener, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -198,6 +198,7 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
+
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
@@ -291,5 +292,11 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
         mAdapter.clear();
+    }
+
+
+    @Override
+    public void refresh() {
+        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
     }
 }

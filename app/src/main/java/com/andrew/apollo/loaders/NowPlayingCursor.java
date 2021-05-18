@@ -5,11 +5,15 @@ import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Audio.AudioColumns;
 
+import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.andrew.apollo.utils.CursorFactory.NP_COLUMNS;
 
 /**
  * A custom {@link Cursor} used to return the queue and allow for easy dragging
@@ -18,26 +22,11 @@ import java.util.Arrays;
 @SuppressLint("NewApi")
 public class NowPlayingCursor extends AbstractCursor {
 
-    private static final String[] PROJECTION = {
-            /* 0 */
-            AudioColumns._ID,
-            /* 1 */
-            AudioColumns.TITLE,
-            /* 2 */
-            AudioColumns.ARTIST,
-            /* 3 */
-            AudioColumns.ALBUM,
-            /* 4 */
-            AudioColumns.DURATION
-    };
-
     private Context mContext;
 
-    private long[] mNowPlaying;
+    private final ArrayList<Long> mNowPlaying = new ArrayList<>();
 
-    private long[] mCursorIndexes;
-
-    private int mSize;
+    private final List<Long> mCursorIndexes = new LinkedList<>();
 
     private int mCurPos;
 
@@ -58,7 +47,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public int getCount() {
-        return mSize;
+        return mNowPlaying.size();
     }
 
     /**
@@ -69,11 +58,13 @@ public class NowPlayingCursor extends AbstractCursor {
         if (oldPosition == newPosition) {
             return true;
         }
-        if (mNowPlaying == null || mCursorIndexes == null || newPosition >= mNowPlaying.length) {
+        if (mNowPlaying.isEmpty() || mCursorIndexes.isEmpty() || newPosition >= mNowPlaying.size()) {
             return false;
         }
-        long id = mNowPlaying[newPosition];
-        int cursorIndex = Arrays.binarySearch(mCursorIndexes, id);
+        long id = mNowPlaying.get(newPosition);
+        int cursorIndex = mCursorIndexes.indexOf(id);
+        if (cursorIndex < 0)
+            return false;
         mQueueCursor.moveToPosition(cursorIndex);
         mCurPos = newPosition;
         return true;
@@ -163,7 +154,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public String[] getColumnNames() {
-        return PROJECTION;
+        return NP_COLUMNS;
     }
 
     /**
@@ -202,50 +193,33 @@ public class NowPlayingCursor extends AbstractCursor {
      * Actually makes the queue
      */
     private void makeNowPlayingCursor() {
-        mQueueCursor = null;
-        mNowPlaying = MusicUtils.getQueue();
-        mSize = mNowPlaying.length;
-        if (mSize == 0) {
+        getQueue();
+        if (mNowPlaying.isEmpty()) {
+            mQueueCursor = null;
             return;
         }
-        StringBuilder selection = new StringBuilder();
-        selection.append(MediaStore.Audio.Media._ID + " IN (");
-        for (int i = 0; i < mSize; i++) {
-            selection.append(mNowPlaying[i]);
-            if (i < mSize - 1) {
-                selection.append(",");
-            }
-        }
-        selection.append(")");
-        mQueueCursor = mContext.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection.toString(), null, MediaStore.Audio.Media._ID);
-        if (mQueueCursor == null) {
-            mSize = 0;
+        mQueueCursor = CursorFactory.makeNowPlayingCursor(mContext, mNowPlaying);
+        if (mQueueCursor == null || !mQueueCursor.moveToFirst()) {
             return;
         }
-        int playlistSize = mQueueCursor.getCount();
-        mCursorIndexes = new long[playlistSize];
-        mQueueCursor.moveToFirst();
+        mCursorIndexes.clear();
         int columnIndex = mQueueCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
-        for (int i = 0; i < playlistSize; i++) {
-            mCursorIndexes[i] = mQueueCursor.getLong(columnIndex);
-            mQueueCursor.moveToNext();
-        }
-        mQueueCursor.moveToFirst();
+        do {
+            mCursorIndexes.add(mQueueCursor.getLong(columnIndex));
+        } while (mQueueCursor.moveToNext());
+
         mCurPos = -1;
         int removed = 0;
-        for (int i = mNowPlaying.length - 1; i >= 0; i--) {
-            long trackId = mNowPlaying[i];
-            int cursorIndex = Arrays.binarySearch(mCursorIndexes, trackId);
+        for (long trackId : mNowPlaying) {
+            int cursorIndex = mCursorIndexes.indexOf(trackId);
             if (cursorIndex < 0) {
                 removed += MusicUtils.removeTrack(trackId);
             }
         }
         if (removed > 0) {
-            mNowPlaying = MusicUtils.getQueue();
-            mSize = mNowPlaying.length;
-            if (mSize == 0) {
-                mCursorIndexes = null;
+            getQueue();
+            if (mNowPlaying.isEmpty()) {
+                mCursorIndexes.clear();
             }
         }
     }
@@ -255,13 +229,20 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     public void removeItem(int which) {
         if (MusicUtils.removeTracks(which)) {
-            int i = which;
-            mSize--;
-            while (i < mSize) {
-                mNowPlaying[i] = mNowPlaying[i + 1];
-                i++;
-            }
+            mNowPlaying.remove(which);
             onMove(-1, mCurPos);
+        }
+    }
+
+    /**
+     * get queue from MusicUtils
+     */
+    private void getQueue() {
+        long[] ids = MusicUtils.getQueue();
+        mNowPlaying.clear();
+        mNowPlaying.ensureCapacity(ids.length);
+        for (long id : ids) {
+            mNowPlaying.add(id);
         }
     }
 }

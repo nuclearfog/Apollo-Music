@@ -28,6 +28,7 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
@@ -50,7 +51,8 @@ import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
 /**
  * decompiled from Apollo 1.6 APK
  */
-public class FolderSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>, AdapterView.OnItemClickListener {
+public class FolderSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
+        AdapterView.OnItemClickListener, FragmentCallback {
 
     /**
      * context menu ID
@@ -228,7 +230,8 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
     }
 
 
-    private void refresh() {
+    @Override
+    public void refresh() {
         mListView.setSelection(0);
         LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
     }

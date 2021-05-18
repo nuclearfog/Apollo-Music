@@ -42,6 +42,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
@@ -54,7 +55,8 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<Song>>, OnItemClickListener {
+public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<Song>>,
+        OnItemClickListener, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments

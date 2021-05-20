@@ -44,7 +44,6 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files;
@@ -1078,10 +1077,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             Cursor cursor = CursorFactory.makeTrackCursor(this);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    int idx = cursor.getColumnIndexOrThrow(Media._ID);
                     mAutoShuffleList.clear();
                     do {
-                        long id = cursor.getLong(idx);
+                        long id = cursor.getLong(0);
                         mAutoShuffleList.add(id);
                     } while (cursor.moveToNext());
                     return true;
@@ -1607,7 +1605,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public String getAlbumArtistName() {
         synchronized (this) {
             if (mAlbumCursor != null && mAlbumCursor.moveToFirst()) {
-                return mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(Albums.ARTIST));
+                return mAlbumCursor.getString(2);
             }
         }
         return "";

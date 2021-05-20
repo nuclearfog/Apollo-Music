@@ -49,7 +49,6 @@ import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
 import com.andrew.apollo.provider.RecentStore;
 import com.devspark.appmsg.AppMsg;
 
@@ -71,10 +70,13 @@ import static com.andrew.apollo.utils.CursorFactory.PLAYLIST_COLUMNS;
 public final class MusicUtils {
 
     /**
-     * select tracks to delete matching audio ID
+     * selection to remove track from playlist
      */
     private static final String PLAYLIST_REMOVE_TRACK = Playlists.Members.AUDIO_ID + "=?";
 
+    /**
+     * selection to remove track from database
+     */
     private static final String DATABASE_REMOVE_TRACK = MediaStore.Audio.AudioColumns._ID + "=?";
 
     /**
@@ -196,7 +198,7 @@ public final class MusicUtils {
         }
         if (secs == 0) {
             // no need to calculate
-            return "00:00";
+            return "0:00";
         }
         int min = secs / 60;
         int hour = min / 60;
@@ -527,7 +529,7 @@ public final class MusicUtils {
      * @return The song list for a MIME type.
      */
     @NonNull
-    public static long[] getSongListForCursor(Cursor cursor) {
+    public static long[] getSongListForCursor(Cursor cursor) {// todo remove
         if (cursor != null) {
             int len = cursor.getCount();
             long[] list = new long[len];
@@ -557,9 +559,15 @@ public final class MusicUtils {
     public static long[] getSongListForArtist(Context context, long id) {
         Cursor cursor = CursorFactory.makeArtistSongCursor(context, id);
         if (cursor != null) {
-            long[] mList = getSongListForCursor(cursor);
-            cursor.close();
-            return mList;
+            if (cursor.moveToFirst()) {
+                long[] mList = new long[cursor.getCount()];
+                for (int i = 0; i < mList.length; i++) {
+                    mList[i] = cursor.getLong(0);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return mList;
+            }
         }
         return EMPTY_LIST;
     }
@@ -609,9 +617,14 @@ public final class MusicUtils {
     public static long[] getSongListForGenre(Context context, long id) {
         Cursor cursor = CursorFactory.makeGenreSongCursor(context, id);
         if (cursor != null) {
-            long[] mList = getSongListForCursor(cursor);
+            cursor.moveToFirst();
+            long[] ids = new long[cursor.getCount()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = cursor.getLong(0);
+                cursor.moveToNext();
+            }
             cursor.close();
-            return mList;
+            return ids;
         }
         return EMPTY_LIST;
     }
@@ -716,10 +729,18 @@ public final class MusicUtils {
      * @param context The {@link Context} to use.
      */
     public static void shuffleAll(Context context) {
-        Cursor cursor = CursorFactory.makeTrackCursor(context);
-        long[] mTrackList = getSongListForCursor(cursor);
         IApolloService service = mService;
-        if (mTrackList.length > 0 && service != null) {
+        Cursor cursor = CursorFactory.makeTrackCursor(context);
+        if (service != null && cursor != null) {
+            cursor.moveToFirst();
+            long[] mTrackList = new long[cursor.getCount()];
+            for (int i = 0; i < mTrackList.length; i++) {
+                mTrackList[i] = cursor.getLong(0);
+                cursor.moveToNext();
+            }
+            if (mTrackList.length == 0) {
+                return;
+            }
             try {
                 service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
                 long mCurrentId = service.getAudioId();
@@ -1018,7 +1039,7 @@ public final class MusicUtils {
             Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    count = cursor.getString(0);
+                    count = cursor.getString(3);
                 }
                 cursor.close();
             }
@@ -1094,9 +1115,14 @@ public final class MusicUtils {
     public static long[] getSongListForPlaylist(Context context, long playlistId) {
         Cursor cursor = CursorFactory.makePlaylistSongCursor(context, playlistId);
         if (cursor != null) {
-            long[] list = getSongListForCursor(cursor);
+            cursor.moveToFirst();
+            long[] ids = new long[cursor.getCount()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = cursor.getLong(0);
+                cursor.moveToNext();
+            }
             cursor.close();
-            return list;
+            return ids;
         }
         return EMPTY_LIST;
     }
@@ -1115,42 +1141,21 @@ public final class MusicUtils {
     }
 
     /**
-     * @param cursor The {@link Cursor} used to gather the list in our favorites
-     *               database
-     * @return The song list for the favorite playlist
-     */
-    public static long[] getSongListForFavoritesCursor(Cursor cursor) {
-        if (cursor == null) {
-            return EMPTY_LIST;
-        }
-        int len = cursor.getCount();
-        long[] list = new long[len];
-        cursor.moveToFirst();
-        try {
-            int colIdx = cursor.getColumnIndexOrThrow(FavoriteColumns.ID);
-            for (int i = 0; i < len; i++) {
-                list[i] = cursor.getLong(colIdx);
-                cursor.moveToNext();
-            }
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-        cursor.close();
-        return list;
-    }
-
-    /**
      * @param context The {@link Context} to use
      * @return The song list from our favorites database
      */
     public static long[] getSongListForFavorites(Context context) {
         Cursor cursor = CursorFactory.makeFavoritesCursor(context);
         if (cursor != null) {
-            try {
-                return getSongListForFavoritesCursor(cursor);
-            } finally {
-                cursor.close();
+            long[] ids = new long[cursor.getCount()];
+            if (cursor.moveToFirst()) {
+                for (int i = 0; i < ids.length; i++) {
+                    ids[i] = cursor.getLong(0);
+                    cursor.moveToNext();
+                }
             }
+            cursor.close();
+            return ids;
         }
         return EMPTY_LIST;
     }

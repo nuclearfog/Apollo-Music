@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
@@ -30,7 +29,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
     private int mCurPos;
 
-    private Cursor mQueueCursor;
+    private Cursor cursor;
 
     /**
      * Constructor of <code>NowPlayingCursor</code>
@@ -65,7 +64,7 @@ public class NowPlayingCursor extends AbstractCursor {
         int cursorIndex = mCursorIndexes.indexOf(id);
         if (cursorIndex < 0)
             return false;
-        mQueueCursor.moveToPosition(cursorIndex);
+        cursor.moveToPosition(cursorIndex);
         mCurPos = newPosition;
         return true;
     }
@@ -76,7 +75,7 @@ public class NowPlayingCursor extends AbstractCursor {
     @Override
     public String getString(int column) {
         try {
-            return mQueueCursor.getString(column);
+            return cursor.getString(column);
         } catch (Exception ignored) {
             onChange(true);
             return "";
@@ -88,7 +87,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public short getShort(int column) {
-        return mQueueCursor.getShort(column);
+        return cursor.getShort(column);
     }
 
     /**
@@ -97,7 +96,7 @@ public class NowPlayingCursor extends AbstractCursor {
     @Override
     public int getInt(int column) {
         try {
-            return mQueueCursor.getInt(column);
+            return cursor.getInt(column);
         } catch (Exception ignored) {
             onChange(true);
             return 0;
@@ -110,7 +109,7 @@ public class NowPlayingCursor extends AbstractCursor {
     @Override
     public long getLong(int column) {
         try {
-            return mQueueCursor.getLong(column);
+            return cursor.getLong(column);
         } catch (Exception ignored) {
             onChange(true);
             return 0;
@@ -122,7 +121,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public float getFloat(int column) {
-        return mQueueCursor.getFloat(column);
+        return cursor.getFloat(column);
     }
 
     /**
@@ -130,7 +129,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public double getDouble(int column) {
-        return mQueueCursor.getDouble(column);
+        return cursor.getDouble(column);
     }
 
     /**
@@ -138,7 +137,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public int getType(int column) {
-        return mQueueCursor.getType(column);
+        return cursor.getType(column);
     }
 
     /**
@@ -146,7 +145,7 @@ public class NowPlayingCursor extends AbstractCursor {
      */
     @Override
     public boolean isNull(int column) {
-        return mQueueCursor.isNull(column);
+        return cursor.isNull(column);
     }
 
     /**
@@ -179,9 +178,9 @@ public class NowPlayingCursor extends AbstractCursor {
     @Override
     public void close() {
         try {
-            if (mQueueCursor != null) {
-                mQueueCursor.close();
-                mQueueCursor = null;
+            if (cursor != null) {
+                cursor.close();
+                cursor = null;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -195,19 +194,17 @@ public class NowPlayingCursor extends AbstractCursor {
     private void makeNowPlayingCursor() {
         getQueue();
         if (mNowPlaying.isEmpty()) {
-            mQueueCursor = null;
-            return;
-        }
-        mQueueCursor = CursorFactory.makeNowPlayingCursor(mContext, mNowPlaying);
-        if (mQueueCursor == null || !mQueueCursor.moveToFirst()) {
+            cursor = null;
             return;
         }
         mCursorIndexes.clear();
-        int columnIndex = mQueueCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
-        do {
-            mCursorIndexes.add(mQueueCursor.getLong(columnIndex));
-        } while (mQueueCursor.moveToNext());
-
+        cursor = CursorFactory.makeNowPlayingCursor(mContext, mNowPlaying);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(0);
+                mCursorIndexes.add(id);
+            } while (cursor.moveToNext());
+        }
         mCurPos = -1;
         int removed = 0;
         for (long trackId : mNowPlaying) {

@@ -128,15 +128,16 @@ public class CursorFactory {
             Genres.NAME
     };
 
+    /**
+     * projection for track search
+     */
     @SuppressLint("InlinedApi")
     private static final String[] SEARCH_COLUMNS = {
             Media._ID,
-            Media.MIME_TYPE,
             Media.ARTIST,
             Media.ALBUM,
             Media.TITLE,
-            "data1",
-            "data2"
+            Media.DURATION
     };
 
     /**
@@ -170,7 +171,7 @@ public class CursorFactory {
     /**
      * projection for music folder
      */
-    private static final String[] FOLDER_PROJECTION = {
+    private static final String[] FOLDER_COLUMNS = {
             Media.DATA
     };
 
@@ -308,7 +309,8 @@ public class CursorFactory {
 
 
     /**
-     * create a cursor to get all songs
+     * create a cursor to get all songs with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
      * @return cursor with song information
      */
@@ -320,7 +322,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get album history information
+     * create a cursor to get album history information with fixed column order
+     * {@link #RECENT_COLUMNS}
      *
      * @return cursor with album informatiom
      */
@@ -330,7 +333,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get all tracks of a playlist
+     * create a cursor to get all tracks of a playlist with fixed column order
+     * {@link #PLAYLIST_TRACK_COLUMNS}
      *
      * @param id playlist ID
      * @return cursor with tracks of a playlist
@@ -344,7 +348,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get all playlists
+     * create a cursor to get all playlists with fixed column order
+     * {@link #PLAYLIST_COLUMNS}
      *
      * @return cursor with playlist information
      */
@@ -355,10 +360,11 @@ public class CursorFactory {
     }
 
     /**
-     * create cursor for a playlist item
+     * create cursor for a playlist item with fixed column order
+     * {@link #PLAYLIST_COLUMNS}
      *
      * @param name name of the playlist
-     * @return cursor
+     * @return cursor with playlist information
      */
     public static Cursor makePlaylistCursor(Context context, @NonNull String name) {
         ContentResolver resolver = context.getContentResolver();
@@ -368,7 +374,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to search for tracks
+     * create a cursor to search for tracks with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
      * @param search search string matching a name
      * @return cursor with track information matching the search string
@@ -381,7 +388,8 @@ public class CursorFactory {
     }
 
     /**
-     * creates a cursor to search for albums
+     * creates a cursor to search for albums with fixed column order
+     * {@link #ALBUM_COLUMN}
      *
      * @param search search string matching a name
      * @return cursor with albums matching the search string
@@ -394,7 +402,8 @@ public class CursorFactory {
     }
 
     /**
-     * creates a cursor to search for artists
+     * creates a cursor to search for artists with fixed column order
+     * {@link #ARTIST_COLUMNS}
      *
      * @param search search string
      * @return cursor with artits matching the search string
@@ -407,7 +416,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get last added songs
+     * create a cursor to get last added songs with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
      * @return Cursor with song information
      */
@@ -419,20 +429,22 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get all songs of a genre
+     * create a cursor to get all songs of a genre with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
-     * @param id genre ID
+     * @param genreId genre ID
      * @return cursor with song information
      */
-    public static Cursor makeGenreSongCursor(Context context, long id) {
+    public static Cursor makeGenreSongCursor(Context context, long genreId) {
         ContentResolver resolver = context.getContentResolver();
 
-        Uri media = Genres.Members.getContentUri("external", id);
+        Uri media = Genres.Members.getContentUri("external", genreId);
         return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, GENRE_TRACK_ORDER);
     }
 
     /**
-     * create a cursor to parse all genre types
+     * create a cursor to parse all genre types with fixed column order
+     * {@link #GENRE_COLUMNS}
      *
      * @return cursor with genre information
      */
@@ -443,7 +455,8 @@ public class CursorFactory {
     }
 
     /**
-     * create cursor to pare a specific folder with tracks
+     * create cursor to pare a specific folder with tracks with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
      * @param folder folder where to search tracks. Tracks in Sub-Folders should be ignored
      * @return cursor with track information matching the path
@@ -456,7 +469,8 @@ public class CursorFactory {
     }
 
     /**
-     * create cursor to get all audio files and their paths
+     * create cursor to get all audio files and their paths with fixed column order
+     * {@link #FOLDER_COLUMNS}
      *
      * @return cursor with all songs
      */
@@ -464,11 +478,12 @@ public class CursorFactory {
         ContentResolver contentResolver = context.getContentResolver();
 
         String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
-        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_PROJECTION, TRACK_FILTER_SELECT, null, sortOrder);
+        return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
     }
 
     /**
-     * create a cursor to parse a table with favorite lists
+     * create a cursor to parse a table with favorite lists with fixed column order
+     * {@link #FAVORITE_COLUMNS}
      *
      * @return cursor with favorite list information
      */
@@ -478,7 +493,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to parse artist table
+     * create a cursor to parse artist table with fixed column order
+     * {@link #ARTIST_COLUMNS}
      *
      * @return cursor with artist information
      */
@@ -490,47 +506,52 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor for an artist row
+     * create a cursor for an artist row with fixed column order
+     * {@link #ARTIST_COLUMNS}
      *
-     * @param name name of the artist
+     * @param artistName name of the artist
      * @return cursor with artist information
      */
-    public static Cursor makeArtistCursor(Context context, @NonNull String name) {
+    public static Cursor makeArtistCursor(Context context, @NonNull String artistName) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {name};
+        String[] args = {artistName};
         return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_SELECT, args, null);
     }
 
     /**
-     * create a cursor to get a table with all albums from an artist
+     * create a cursor to get a table with all albums from an artist with fixed column order
+     * {@link #ALBUM_COLUMN}
      *
-     * @param id ID of the artist
+     * @param artistId ID of the artist
      * @return cursor with album information
      */
-    public static Cursor makeArtistAlbumCursor(Context context, long id) {
+    public static Cursor makeArtistAlbumCursor(Context context, long artistId) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {Long.toString(id)};
+        String[] args = {Long.toString(artistId)};
         String order = PreferenceUtils.getInstance(context).getArtistAlbumSortOrder();
         return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ARTIST_ALBUM_SELECT, args, order);
     }
 
     /**
-     * create a cursor to get all songs from an artist
+     * create a cursor to get all songs from an artist with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
+     * @param   artistId ID of the artist
      * @return cursor with song information
      */
-    public static Cursor makeArtistSongCursor(Context context, long id) {
+    public static Cursor makeArtistSongCursor(Context context, long artistId) {
         ContentResolver resolver = context.getContentResolver();
 
-        String[] args = {Long.toString(id)};
+        String[] args = {Long.toString(artistId)};
         String order = PreferenceUtils.getInstance(context).getArtistSongSortOrder();
         return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, ARTIST_SONG_SELECT, args, order);
     }
 
     /**
-     * create a cursor to get all albums
+     * create a cursor to get all albums with fixed column order
+     * {@link #ALBUM_COLUMN}
      *
      * @return cursor with album table
      */
@@ -542,7 +563,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor to get all song information from an album
+     * create a cursor to get all song information from an album with fixed column order
+     * {@link #TRACK_COLUMNS}
      *
      * @param id Album ID
      * @return cursor with song information
@@ -556,7 +578,8 @@ public class CursorFactory {
     }
 
     /**
-     * create a cursor with a single album item
+     * create a cursor with a single album item with fixed column order
+     * {@link #ALBUM_COLUMN}
      *
      * @param id album ID
      * @return cursor with an item
@@ -570,7 +593,8 @@ public class CursorFactory {
     }
 
     /**
-     * Creates cursor to search for albums
+     * Creates cursor to search for albums with fixed column order
+     * {@link #ALBUM_COLUMN}
      *
      * @param album  album name
      * @param artist artist name of the album
@@ -585,7 +609,8 @@ public class CursorFactory {
     }
 
     /**
-     * creates cursor to search for tracks
+     * creates cursor to search for tracks with fixed column order
+     * {@link #SEARCH_COLUMNS}
      *
      * @param query The user's query.
      * @return The {@link Cursor} used to perform the search.
@@ -598,7 +623,8 @@ public class CursorFactory {
     }
 
     /**
-     * creates a playlist cursor
+     * creates a playlist cursor with fixed columns
+     * {@link #PLAYLIST_COUNT}
      *
      * @return cursor with playlist information
      */
@@ -609,11 +635,11 @@ public class CursorFactory {
     /**
      * creates cursor to search for a single track information
      *
-     * @param id audio ID
+     * @param trackId audio ID
      * @return cursor with track information
      */
-    public static Cursor makeTrackCursor(Context context, long id) {
-        String[] args = {Long.toString(id)};
+    public static Cursor makeTrackCursor(Context context, long trackId) {
+        String[] args = {Long.toString(trackId)};
         ContentResolver resolver = context.getContentResolver();
 
         return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_ID_SELECT, args, null);
@@ -645,17 +671,18 @@ public class CursorFactory {
     }
 
     /**
-     * creates a cursor to seach for track information
+     * creates a cursor to seach for track information with fixed columns
+     * {@link #AUDIO_COLUMNS}
      *
-     * @param ids query with track IDs
+     * @param trackIds query with track IDs
      * @return cursor with track information
      */
-    public static Cursor makeTrackListCursor(Context context, long[] ids) {
+    public static Cursor makeTrackListCursor(Context context, long[] trackIds) {
         StringBuilder selection = new StringBuilder();
-        selection.append(MediaStore.Audio.Media._ID + " IN (");
-        for (int i = 0; i < ids.length; i++) {
-            selection.append(ids[i]);
-            if (i < ids.length - 1) {
+        selection.append(Media._ID + " IN (");
+        for (int i = 0; i < trackIds.length; i++) {
+            selection.append(trackIds[i]);
+            if (i < trackIds.length - 1) {
                 selection.append(",");
             }
         }
@@ -665,7 +692,8 @@ public class CursorFactory {
     }
 
     /**
-     * creates a cursor to get current track queue
+     * creates a cursor to get current track queue with fixed columns
+     * {@link #NP_COLUMNS}
      *
      * @param ids query with track IDs
      * @return cursor with track information

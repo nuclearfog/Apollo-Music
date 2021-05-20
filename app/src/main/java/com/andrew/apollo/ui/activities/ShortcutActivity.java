@@ -49,7 +49,7 @@ import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ShortcutActivity extends AppCompatActivity implements ServiceConnection {
+public class ShortcutActivity extends AppCompatActivity implements ServiceConnection, LoaderCallbacks<List<Song>> {
 
     /**
      * If true, this class will begin playback and open
@@ -73,7 +73,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     /**
      * The list of songs to play
      */
-    private long[] mList;
+    private long[] mList = {};
     /**
      * Used to shuffle the tracks or play them in order
      */
@@ -82,85 +82,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      * Search query from a voice action
      */
     private String mVoiceQuery;
-    /**
-     * Uses the query from a voice search to try and play a song, then album,
-     * then artist. If all of those fail, it checks for playlists and genres via
-     * a  #mPlaylistGenreQuery.
-     */
-    private LoaderCallbacks<List<Song>> mSongAlbumArtistQuery = new LoaderCallbacks<List<Song>>() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-            return new SearchLoader(ShortcutActivity.this, mVoiceQuery);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
-            // If the user searched for a playlist or genre, this list will
-            // return empty
-            if (data.isEmpty()) {
-                // Before running the playlist loader, try to play the
-                // "Favorites" playlist
-                if (isFavorite()) {
-                    MusicUtils.playFavorites(ShortcutActivity.this);
-                }
-                // Finish up
-                allDone();
-                return;
-            }
-
-            // Start fresh
-            mSong.clear();
-            // Add the data to the adpater
-            mSong.addAll(data);
-
-            // What's about to happen is similar to the above process. Apollo
-            // runs a
-            // series of checks to see if anything comes up. When it does, it
-            // assumes (pretty accurately) that it should begin to play that
-            // thing.
-            // The fancy search query used in {@link SearchLoader} is the key to
-            // this. It allows the user to perform very specific queries. i.e.
-            // "Listen to Ethio
-
-            String song = mSong.get(0).getName();
-            String album = mSong.get(0).getAlbum();
-            String artist = mSong.get(0).getArtist();
-            // This tripes as the song, album, and artist Id
-            long id = mSong.get(0).getId();
-            // First, try to play a song
-            if (mList == null && song != null) {
-                mList = new long[]{
-                        id
-                };
-            } else
-                // Second, try to play an album
-                if (mList == null && album != null) {
-                    mList = MusicUtils.getSongListForAlbum(ShortcutActivity.this, id);
-                } else
-                    // Third, try to play an artist
-                    if (mList == null && artist != null) {
-                        mList = MusicUtils.getSongListForArtist(ShortcutActivity.this, id);
-                    }
-            // Finish up
-            allDone();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-            // Clear the data
-            mSong.clear();
-        }
-    };
 
     /**
      * {@inheritDoc}
@@ -174,9 +95,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         mToken = MusicUtils.bindToService(this, this);
         // Initialize the intent
         mIntent = getIntent();
-        // Get the voice search query
-        mVoiceQuery = Capitalize.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
-
     }
 
     /**
@@ -188,7 +106,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         MusicUtils.connectService(service);
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
-            LoaderManager.getInstance(this).initLoader(0, null, mSongAlbumArtistQuery);
+            LoaderManager.getInstance(this).initLoader(0, null, this);
         } else if (MusicUtils.isConnected()) {
             AsyncHandler.post(new Runnable() {
                 @Override
@@ -268,13 +186,86 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
+        // Get the voice search query
+        mVoiceQuery = Capitalize.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
+        return new SearchLoader(ShortcutActivity.this, mVoiceQuery);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
+        // If the user searched for a playlist or genre, this list will
+        // return empty
+        if (data.isEmpty()) {
+            // Before running the playlist loader, try to play the
+            // "Favorites" playlist
+            if (isFavorite()) {
+                MusicUtils.playFavorites(ShortcutActivity.this);
+            }
+            // Finish up
+            allDone();
+            return;
+        }
+        // Start fresh
+        mSong.clear();
+        // Add the data to the adpater
+        mSong.addAll(data);
+
+        // What's about to happen is similar to the above process. Apollo
+        // runs a
+        // series of checks to see if anything comes up. When it does, it
+        // assumes (pretty accurately) that it should begin to play that
+        // thing.
+        // The fancy search query used in {@link SearchLoader} is the key to
+        // this. It allows the user to perform very specific queries. i.e.
+        // "Listen to Ethio
+
+        String song = mSong.get(0).getName();
+        String album = mSong.get(0).getAlbum();
+        String artist = mSong.get(0).getArtist();
+        // This tripes as the song, album, and artist Id
+        long id = mSong.get(0).getId();
+        // First, try to play a song
+        if (song != null) {
+            mList = new long[]{id};
+        } else {
+            if (album != null) {
+                // Second, try to play an album
+                mList = MusicUtils.getSongListForAlbum(ShortcutActivity.this, id);
+            } else if (artist != null) {
+                // Third, try to play an artist
+                mList = MusicUtils.getSongListForArtist(ShortcutActivity.this, id);
+            }
+        }
+        // Finish up
+        allDone();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
+        // Clear the data
+        mSong.clear();
+    }
+
+    /**
      * Used to find the Id supplied
      *
      * @return The Id passed into the activity
      */
     private long getId() {
-        if (mIntent.getExtras() != null)
-            return mIntent.getExtras().getLong(Config.ID);
+        Bundle param = mIntent.getExtras();
+        if (param != null)
+            return param.getLong(Config.ID);
         return -1;
     }
 
@@ -287,7 +278,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         }
         // Check to see if the user spoke the word "Favorite"
         String favorite = getString(R.string.playlist_favorite);
-        return mVoiceQuery.equals(favorite);
+        return favorite.equals(mVoiceQuery);
     }
 
     /**
@@ -296,10 +287,9 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     private void allDone() {
         boolean shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
         // Play the list
-        if (mList != null && mList.length > 0) {
+        if (mList.length > 0) {
             MusicUtils.playAll(mList, 0, mShouldShuffle);
         }
-
         // Open the now playing screen
         if (shouldOpenAudioPlayer) {
             Intent intent = new Intent(this, AudioPlayerActivity.class);

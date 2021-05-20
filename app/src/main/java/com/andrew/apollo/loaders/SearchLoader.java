@@ -13,10 +13,6 @@ package com.andrew.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.MediaStore.Audio.Albums;
-import android.provider.MediaStore.Audio.Artists;
-import android.provider.MediaStore.Audio.Media;
-import android.text.TextUtils;
 
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
@@ -55,27 +51,17 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
             if (mCursor.moveToFirst()) {
                 do {
                     // Copy the song Id
-                    long id = -1;
-                    // Copy the song name
-                    String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(Media.TITLE));
-                    // Check for a song Id
-                    if (!TextUtils.isEmpty(songName)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
-                    }
-                    // Copy the album name
-                    String album = mCursor.getString(mCursor.getColumnIndexOrThrow(Albums.ALBUM));
-                    // Check for a album Id
-                    if (id < 0 && !TextUtils.isEmpty(album)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Albums._ID));
-                    }
+                    long id = mCursor.getLong(0);
                     // Copy the artist name
-                    String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(Artists.ARTIST));
-                    // check for a artist Id
-                    if (id < 0 && !TextUtils.isEmpty(artist)) {
-                        id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Artists._ID));
-                    }
+                    String artist = mCursor.getString(1);
+                    // Copy the album name
+                    String album = mCursor.getString(2);
+                    // Copy the song name
+                    String songName = mCursor.getString(3);
+                    // Copy duration
+                    long duration = mCursor.getLong(4);
                     // Create a new song
-                    Song song = new Song(id, songName, artist, album, -1);
+                    Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up
                     result.add(song);
                 } while (mCursor.moveToNext());

@@ -15,7 +15,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
@@ -130,10 +129,9 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
             String[] playlists = {};
             if (cursor.moveToFirst()) {
                 int pos = 0;
-                int index = cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists.NAME);
                 playlists = new String[cursor.getCount()];
                 do {
-                    playlists[pos++] = cursor.getString(index);
+                    playlists[pos++] = cursor.getString(2);
                 } while (cursor.moveToNext() && pos < playlists.length);
                 cursor.close();
             }

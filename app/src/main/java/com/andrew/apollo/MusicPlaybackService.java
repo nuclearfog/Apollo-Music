@@ -619,7 +619,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // Remove any sound effects
         Intent audioEffectsIntent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
         audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-        audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, getPackageName());
+        audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
         sendBroadcast(audioEffectsIntent);
         // remove any pending alarms
         mAlarmManager.cancel(mShutdownIntent);
@@ -2289,7 +2289,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 player.setOnErrorListener(this);
                 Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
                 intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, musicService.getPackageName());
+                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
                 musicService.sendBroadcast(intent);
                 return true;
             }

@@ -76,9 +76,9 @@ public class NotificationHelper {
         mService = service;
         mNotificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
         // Default notfication layout
-        mSmallContent = new RemoteViews(mService.getPackageName(), R.layout.notification_template_base);
+        mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_base);
         // Expanded notification layout
-        mExpandedView = new RemoteViews(mService.getPackageName(), R.layout.notification_template_expanded_base);
+        mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
         initCallbacks();
     }
 

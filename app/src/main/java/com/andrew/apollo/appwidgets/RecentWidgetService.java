@@ -14,18 +14,18 @@ package com.andrew.apollo.appwidgets;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
+import com.andrew.apollo.utils.CursorFactory;
 
 /**
  * This class is used to build the recently listened list for the
@@ -51,22 +51,12 @@ public class RecentWidgetService extends RemoteViewsService {
         /**
          * Number of views (ImageView and TextView)
          */
-        private static final int VIEW_TYPE_COUNT = 2;
-
-        /**
-         * The context to use
-         */
-        private final Context mContext;
+        private static final int VIEW_TYPE_COUNT = 1;
 
         /**
          * Image cache
          */
-        private final ImageFetcher mFetcher;
-
-        /**
-         * Recent db
-         */
-        private final RecentStore mRecentStore;
+        private ImageFetcher mFetcher;
 
         /**
          * Cursor to use
@@ -74,18 +64,20 @@ public class RecentWidgetService extends RemoteViewsService {
         private Cursor mCursor;
 
         /**
+         * application context
+         */
+        private Context mContext;
+
+        /**
          * Constructor of <code>WidgetRemoteViewsFactory</code>
          *
          * @param context The {@link Context} to use.
          */
         public WidgetRemoteViewsFactory(Context context) {
-            // Get the context
-            mContext = context;
             // Initialize the image cache
             mFetcher = ImageFetcher.getInstance(context);
             mFetcher.setImageCache(ImageCache.getInstance(context));
-            // Initialize the recent's store
-            mRecentStore = RecentStore.getInstance(context);
+            this.mContext = context.getApplicationContext();
         }
 
         /**
@@ -116,7 +108,7 @@ public class RecentWidgetService extends RemoteViewsService {
             mCursor.moveToPosition(position);
 
             // Create the remote views
-            RemoteViews mViews = new RemoteViews(mContext.getPackageName(), R.layout.app_widget_recents_items);
+            RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
 
             // Copy the album id
             long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
@@ -181,11 +173,8 @@ public class RecentWidgetService extends RemoteViewsService {
         public void onDataSetChanged() {
             if (mCursor != null && !mCursor.isClosed()) {
                 mCursor.close();
-                mCursor = null;
             }
-            SQLiteDatabase db = mRecentStore.getReadableDatabase();
-            String order = RecentStoreColumns.TIMEPLAYED + " DESC";
-            mCursor = db.query(RecentStoreColumns.NAME, null, null, null, null, null, order);
+            mCursor = CursorFactory.makeRecentCursor(mContext);
         }
 
         /**

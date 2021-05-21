@@ -73,7 +73,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
             // Create the remote views
-            mViews = new RemoteViews(context.getPackageName(), R.layout.app_widget_recents);
+            mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
 
             // Link actions buttons to intents
             linkButtons(context, mViews, false);
@@ -81,7 +81,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
             Intent intent = new Intent(context, RecentWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-            compatSetRemoteAdapter(mViews, intent);
+            mViews.setRemoteAdapter(R.id.app_widget_recents_list, intent);
 
             Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
             updateIntent.putExtra(MusicPlaybackService.CMDNAME, RecentWidgetProvider.CMDAPPWIDGETUPDATE);
@@ -176,7 +176,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
      */
     @Override
     public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-        mViews = new RemoteViews(service.getPackageName(), R.layout.app_widget_recents);
+        mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
         /* Set correct drawable for pause state */
         boolean isPlaying = service.isPlaying();
         if (isPlaying) {
@@ -188,13 +188,6 @@ public class RecentWidgetProvider extends AppWidgetBase {
         linkButtons(service, mViews, isPlaying);
         // Update the app-widget
         pushUpdate(service, appWidgetIds, mViews);
-    }
-
-    /**
-     *
-     */
-    private void compatSetRemoteAdapter(RemoteViews rv, Intent intent) {
-        rv.setRemoteAdapter(R.id.app_widget_recents_list, intent);
     }
 
     /**

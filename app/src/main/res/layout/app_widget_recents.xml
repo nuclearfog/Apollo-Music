@@ -96,14 +96,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/colorstrip"
-        android:layout_centerVertical="true"
-        android:background="@drawable/appwidget_bg">
+        android:layout_centerVertical="true">
 
         <ListView
             android:id="@+id/app_widget_recents_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@null"
+            android:background="@drawable/appwidget_bg"
             android:cacheColorHint="@color/transparent" />
     </FrameLayout>
 

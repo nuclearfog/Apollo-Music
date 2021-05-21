@@ -237,6 +237,7 @@ public class ShowHideMasterLayout extends ViewGroup implements Animator.Animator
      * @param completeRunnable An optional runnable to run when any animations
      *                         related to this are complete.
      */
+    @SuppressLint("Recycle")
     public void showMaster(boolean show, int flags, Runnable completeRunnable) {
         if (!mFirstShow && mMasterVisible == show) {
             return;

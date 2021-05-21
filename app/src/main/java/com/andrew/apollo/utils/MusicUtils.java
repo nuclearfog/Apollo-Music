@@ -42,6 +42,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
@@ -1003,7 +1004,7 @@ public final class MusicUtils {
                 } else {
                     // open settings so user can set write permissions
                     Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                    intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                    intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                     activity.startActivity(intent);
                     return;
                 }

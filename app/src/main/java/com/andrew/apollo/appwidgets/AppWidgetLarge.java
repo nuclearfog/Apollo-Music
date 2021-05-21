@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.activities.AudioPlayerActivity;
@@ -64,7 +65,7 @@ public class AppWidgetLarge extends AppWidgetBase {
      */
     @Override
     public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-        RemoteViews appWidgetView = new RemoteViews(service.getPackageName(), R.layout.app_widget_large);
+        RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
 
         CharSequence trackName = service.getTrackName();
         CharSequence artistName = service.getArtistName();
@@ -97,7 +98,7 @@ public class AppWidgetLarge extends AppWidgetBase {
      * default click and hide actions if service not running.
      */
     private void defaultAppWidget(Context context, int[] appWidgetIds) {
-        RemoteViews appWidgetViews = new RemoteViews(context.getPackageName(), R.layout.app_widget_large);
+        RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
         linkButtons(context, appWidgetViews, false);
         pushUpdate(context, appWidgetIds, appWidgetViews);
     }

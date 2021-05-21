@@ -107,8 +107,8 @@ public class RecentStore extends SQLiteOpenHelper {
      * @param songCount  The number of tracks for the album.
      * @param albumYear  The year the album was released.
      */
-    public void addAlbumId(Long albumId, String albumName, String artistName, String songCount, String albumYear) {
-        if (albumId != null && albumName != null && artistName != null && songCount != null) {
+    public void addAlbumId(long albumId, String albumName, String artistName, String songCount, String albumYear) {
+        if (albumId > 0 && albumName != null && artistName != null && songCount != null) {
             SQLiteDatabase database = getWritableDatabase();
             ContentValues values = new ContentValues(6);
             String[] args = {String.valueOf(albumId)};

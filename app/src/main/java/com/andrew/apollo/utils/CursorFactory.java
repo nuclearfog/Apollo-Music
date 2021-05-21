@@ -180,6 +180,10 @@ public class CursorFactory {
      */
     private static final String GENRE_SELECT = Genres.NAME + "!=''";
 
+    /**
+     * condition to filter only valid recent albums
+     */
+    private static final String RECENT_SELECT = RecentStoreColumns.ID + ">=0";
 
     /**
      * Selection to filter songs with empty name
@@ -329,7 +333,7 @@ public class CursorFactory {
      */
     public static Cursor makeRecentCursor(Context context) {
         SQLiteDatabase database = RecentStore.getInstance(context).getReadableDatabase();
-        return database.query(NAME, RECENT_COLUMNS, null, null, null, null, RECENT_ORDER);
+        return database.query(NAME, RECENT_COLUMNS, RECENT_SELECT, null, null, null, RECENT_ORDER);
     }
 
     /**

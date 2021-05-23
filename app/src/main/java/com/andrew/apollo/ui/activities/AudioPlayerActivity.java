@@ -43,6 +43,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -916,11 +917,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.setType("audio/*");
+                shareIntent.setDataAndType(fileUri, "audio/*");
                 shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
             } catch (Exception err) {
+                // fixme file sharing on some devices not working
+                Toast.makeText(this, err.getMessage(), Toast.LENGTH_LONG).show();
                 err.printStackTrace();
             }
         }

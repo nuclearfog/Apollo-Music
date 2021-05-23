@@ -53,7 +53,9 @@ public final class Config {
      * The MIME type passed to a the profile activity
      */
     public static final String MIME_TYPE = "mime_type";
-
+    /**
+     * path to a music folder
+     */
     public static final String FOLDER = "folder_path";
     /**
      * Play from search intent

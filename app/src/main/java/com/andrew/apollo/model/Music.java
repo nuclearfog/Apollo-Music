@@ -7,8 +7,14 @@ import androidx.annotation.NonNull;
  */
 public abstract class Music {
 
+    /**
+     * ID of the element
+     */
     protected final long id;
 
+    /**
+     * name of the element
+     */
     protected final String name;
 
     /**

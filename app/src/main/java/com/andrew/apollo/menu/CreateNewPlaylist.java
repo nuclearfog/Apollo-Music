@@ -126,15 +126,14 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
         Cursor cursor = CursorFactory.makePlaylistCursor(requireContext());
         if (cursor != null) {
             // get all available playlist names
-            String[] playlists = {};
-            if (cursor.moveToFirst()) {
-                int pos = 0;
-                playlists = new String[cursor.getCount()];
-                do {
-                    playlists[pos++] = cursor.getString(2);
-                } while (cursor.moveToNext() && pos < playlists.length);
-                cursor.close();
+            String[] playlists = new String[cursor.getCount()];
+            cursor.moveToFirst();
+            for (int i = 0; i < playlists.length && cursor.isAfterLast(); i++) {
+                playlists[i] = cursor.getString(1);
+                cursor.moveToNext();
             }
+            cursor.close();
+
             // search for conflicts and increase number suffix
             int num = 1;
             boolean conflict;

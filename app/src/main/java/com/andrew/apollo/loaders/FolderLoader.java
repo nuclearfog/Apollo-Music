@@ -6,17 +6,25 @@ import android.database.Cursor;
 import com.andrew.apollo.utils.CursorFactory;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * return all music folders from storage
  */
 public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
 
+    /**
+     * custom comparator to sort folders by name and not by path
+     */
+    private static final Comparator<File> fileComparator = new Comparator<File>() {
+        @Override
+        public int compare(File file1, File file2) {
+            return file1.getName().compareTo(file2.getName());
+        }
+    };
 
     /**
      * @param paramContext Activity context
@@ -28,24 +36,20 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
 
     @Override
     public List<File> loadInBackground() {
-        HashSet<File> hashSet = new HashSet<>();
+        // init tree set to sort folder by name
+        TreeSet<File> tree = new TreeSet<>(fileComparator);
+
         Cursor cursor = CursorFactory.makeFolderCursor(getContext());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
                     String pathName = cursor.getString(0);
                     File folder = new File(pathName).getAbsoluteFile().getParentFile();
-                    hashSet.add(folder);
+                    tree.add(folder);
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
-        List<File> result = new LinkedList<>(hashSet);
-        Collections.sort(result, new Comparator<File>() {
-            public int compare(File param1File1, File param1File2) {
-                return param1File1.getName().compareToIgnoreCase(param1File2.getName());
-            }
-        });
-        return result;
+        return new ArrayList<>(tree);
     }
 }

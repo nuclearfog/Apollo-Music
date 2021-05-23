@@ -21,6 +21,8 @@ import static android.view.View.GONE;
 
 /**
  * decompiled from Apollo.APK version 1.6
+ * <p>
+ * this adapter creates views with music folder information
  */
 public class FolderAdapter extends ArrayAdapter<File> {
 
@@ -28,10 +30,13 @@ public class FolderAdapter extends ArrayAdapter<File> {
 
     private ArrayList<DataHolder> mData = new ArrayList<>();
 
-
-    public FolderAdapter(Context paramContext, @LayoutRes int paramInt) {
-        super(paramContext, paramInt);
-        mLayoutId = paramInt;
+    /**
+     * @param context application context
+     * @param redId ID of the view item
+     */
+    public FolderAdapter(Context context, @LayoutRes int redId) {
+        super(context, redId);
+        mLayoutId = redId;
     }
 
 
@@ -60,24 +65,14 @@ public class FolderAdapter extends ArrayAdapter<File> {
 
 
     @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-
-    @Override
     public void clear() {
         super.clear();
         mData.clear();
     }
 
-
+    /**
+     * build data cache
+     */
     public void buildCache() {
         mData.clear();
         mData.ensureCapacity(getCount());

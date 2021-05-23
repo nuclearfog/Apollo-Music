@@ -46,6 +46,8 @@ import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
+import com.andrew.apollo.loaders.NowPlayingCursor;
+import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
@@ -54,6 +56,7 @@ import com.andrew.apollo.provider.RecentStore;
 import com.devspark.appmsg.AppMsg;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -526,32 +529,6 @@ public final class MusicUtils {
     }
 
     /**
-     * @param cursor The {@link Cursor} used to perform our query.
-     * @return The song list for a MIME type.
-     */
-    @NonNull
-    public static long[] getSongListForCursor(Cursor cursor) {// todo remove
-        if (cursor != null) {
-            int len = cursor.getCount();
-            long[] list = new long[len];
-            cursor.moveToFirst();
-            int columnIndex;
-            try {
-                columnIndex = cursor.getColumnIndexOrThrow(Members.AUDIO_ID);
-            } catch (IllegalArgumentException notaplaylist) {
-                columnIndex = cursor.getColumnIndexOrThrow(Members._ID);
-            }
-            for (int i = 0; i < len; i++) {
-                list[i] = cursor.getLong(columnIndex);
-                cursor.moveToNext();
-            }
-            cursor.close();
-            return list;
-        }
-        return EMPTY_LIST;
-    }
-
-    /**
      * @param context The {@link Context} to use.
      * @param id      The ID of the artist.
      * @return The song list for an artist.
@@ -814,16 +791,17 @@ public final class MusicUtils {
      * @param folder  folder containing songs
      * @return array of track IDs
      */
-    public static long[] getSongListForFolder(Context context, File folder) {
+    public static long[] getSongListForFolder(Context context, String folder) {
         Cursor cursor = CursorFactory.makeFolderSongCursor(context, folder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 // use dynamic array because the result size differs from cursor size
                 List<Long> ids = new LinkedList<>();
+                int idxName = folder.length() + 1;
                 do {
                     String filename = cursor.getString(5);
-                    File file = new File(filename);
-                    if (folder.equals(file.getParentFile())) {
+                    // filter sub folders from results
+                    if (filename.indexOf('/', idxName) < 0) {
                         ids.add(cursor.getLong(0));
                     }
                 } while (cursor.moveToNext());
@@ -1294,6 +1272,44 @@ public final class MusicUtils {
             }
         }
         return 0;
+    }
+
+    /**
+     * create dialog to save current queue to playlist
+     *
+     * @param activity activity of the fragment
+     */
+    public static void saveQueue(FragmentActivity activity) {
+        final WeakReference<FragmentActivity> callback = new WeakReference<>(activity);
+        final Context context = activity.getApplicationContext();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // fetch all track IDs of the qurrent queue
+                NowPlayingCursor queue = new NowPlayingCursor(context);
+                queue.moveToFirst();
+                final long[] ids = new long[queue.getCount()];
+                for (int i = 0; i < ids.length && !queue.isAfterLast(); i++) {
+                    ids[i] = queue.getLong(0);
+                    queue.moveToNext();
+                }
+                queue.close();
+
+                // build playlist creator dialog on main thread
+                FragmentActivity activity = callback.get();
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), "CreatePlaylist");
+                        }
+                    });
+                }
+            }
+        });
+        thread.start();
     }
 
     /**

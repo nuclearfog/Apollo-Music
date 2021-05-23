@@ -16,13 +16,13 @@ import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.MediaColumns;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
-import java.io.File;
 import java.util.List;
 
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
@@ -318,6 +318,7 @@ public class CursorFactory {
      *
      * @return cursor with song information
      */
+    @Nullable
     public static Cursor makeTrackCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -331,6 +332,7 @@ public class CursorFactory {
      *
      * @return cursor with album informatiom
      */
+    @Nullable
     public static Cursor makeRecentCursor(Context context) {
         SQLiteDatabase database = RecentStore.getInstance(context).getReadableDatabase();
         return database.query(NAME, RECENT_COLUMNS, RECENT_SELECT, null, null, null, RECENT_ORDER);
@@ -343,6 +345,7 @@ public class CursorFactory {
      * @param id playlist ID
      * @return cursor with tracks of a playlist
      */
+    @Nullable
     @SuppressLint("InlinedApi")
     public static Cursor makePlaylistSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
@@ -357,6 +360,7 @@ public class CursorFactory {
      *
      * @return cursor with playlist information
      */
+    @Nullable
     public static Cursor makePlaylistCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -370,6 +374,7 @@ public class CursorFactory {
      * @param name name of the playlist
      * @return cursor with playlist information
      */
+    @Nullable
     public static Cursor makePlaylistCursor(Context context, @NonNull String name) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -384,6 +389,7 @@ public class CursorFactory {
      * @param search search string matching a name
      * @return cursor with track information matching the search string
      */
+    @Nullable
     public static Cursor makeTrackSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -398,6 +404,7 @@ public class CursorFactory {
      * @param search search string matching a name
      * @return cursor with albums matching the search string
      */
+    @Nullable
     public static Cursor makeAlbumSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -412,6 +419,7 @@ public class CursorFactory {
      * @param search search string
      * @return cursor with artits matching the search string
      */
+    @Nullable
     public static Cursor makeArtistSearchCursor(Context context, @NonNull String search) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -425,6 +433,7 @@ public class CursorFactory {
      *
      * @return Cursor with song information
      */
+    @Nullable
     public static Cursor makeLastAddedCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -439,6 +448,7 @@ public class CursorFactory {
      * @param genreId genre ID
      * @return cursor with song information
      */
+    @Nullable
     public static Cursor makeGenreSongCursor(Context context, long genreId) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -452,6 +462,7 @@ public class CursorFactory {
      *
      * @return cursor with genre information
      */
+    @Nullable
     public static Cursor makeGenreCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -462,13 +473,14 @@ public class CursorFactory {
      * create cursor to pare a specific folder with tracks with fixed column order
      * {@link #TRACK_COLUMNS}
      *
-     * @param folder folder where to search tracks. Tracks in Sub-Folders should be ignored
+     * @param folderName folder where to search tracks. Tracks in Sub-Folders should be ignored
      * @return cursor with track information matching the path
      */
-    public static Cursor makeFolderSongCursor(Context context, File folder) {
+    @Nullable
+    public static Cursor makeFolderSongCursor(Context context, String folderName) {
         ContentResolver contentResolver = context.getContentResolver();
 
-        String[] args = {folder.toString() + "%"};
+        String[] args = {folderName + "%"};// todo filter subfolders from results, return only tracks from current folder
         return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, FOLDER_TRACKS_ORDER);
     }
 
@@ -478,6 +490,7 @@ public class CursorFactory {
      *
      * @return cursor with all songs
      */
+    @Nullable
     public static Cursor makeFolderCursor(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
 
@@ -491,6 +504,7 @@ public class CursorFactory {
      *
      * @return cursor with favorite list information
      */
+    @Nullable
     public static Cursor makeFavoritesCursor(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
         return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
@@ -502,6 +516,7 @@ public class CursorFactory {
      *
      * @return cursor with artist information
      */
+    @Nullable
     public static Cursor makeArtistCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -516,6 +531,7 @@ public class CursorFactory {
      * @param artistName name of the artist
      * @return cursor with artist information
      */
+    @Nullable
     public static Cursor makeArtistCursor(Context context, @NonNull String artistName) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -530,6 +546,7 @@ public class CursorFactory {
      * @param artistId ID of the artist
      * @return cursor with album information
      */
+    @Nullable
     public static Cursor makeArtistAlbumCursor(Context context, long artistId) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -545,6 +562,7 @@ public class CursorFactory {
      * @param   artistId ID of the artist
      * @return cursor with song information
      */
+    @Nullable
     public static Cursor makeArtistSongCursor(Context context, long artistId) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -559,6 +577,7 @@ public class CursorFactory {
      *
      * @return cursor with album table
      */
+    @Nullable
     public static Cursor makeAlbumCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -573,6 +592,7 @@ public class CursorFactory {
      * @param id Album ID
      * @return cursor with song information
      */
+    @Nullable
     public static Cursor makeAlbumSongCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -588,6 +608,7 @@ public class CursorFactory {
      * @param id album ID
      * @return cursor with an item
      */
+    @Nullable
     public static Cursor makeAlbumCursor(Context context, long id) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -604,6 +625,7 @@ public class CursorFactory {
      * @param artist artist name of the album
      * @return Cursor with matching albums
      */
+    @Nullable
     public static Cursor makeAlbumCursor(Context context, @NonNull String album, @NonNull String artist) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -619,6 +641,7 @@ public class CursorFactory {
      * @param query The user's query.
      * @return The {@link Cursor} used to perform the search.
      */
+    @Nullable
     public static Cursor makeSearchCursor(Context context, String query) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -632,6 +655,7 @@ public class CursorFactory {
      *
      * @return cursor with playlist information
      */
+    @Nullable
     public static Cursor makePlaylistCursor(ContentResolver resolver, Uri uri) {
         return resolver.query(uri, PLAYLIST_COUNT, null, null, null);
     }
@@ -642,6 +666,7 @@ public class CursorFactory {
      * @param trackId audio ID
      * @return cursor with track information
      */
+    @Nullable
     public static Cursor makeTrackCursor(Context context, long trackId) {
         String[] args = {Long.toString(trackId)};
         ContentResolver resolver = context.getContentResolver();
@@ -655,6 +680,7 @@ public class CursorFactory {
      * @param path path to the audio file
      * @return cursor with track information
      */
+    @Nullable
     public static Cursor makeTrackCursor(Context context, String path) {
         String[] args = {path};
         ContentResolver resolver = context.getContentResolver();
@@ -668,6 +694,7 @@ public class CursorFactory {
      * @param path path to the audio file
      * @return cursor with track information
      */
+    @Nullable
     public static Cursor makeTrackCursor(Context context, Uri path) {
         ContentResolver resolver = context.getContentResolver();
 
@@ -681,6 +708,7 @@ public class CursorFactory {
      * @param trackIds query with track IDs
      * @return cursor with track information
      */
+    @Nullable
     public static Cursor makeTrackListCursor(Context context, long[] trackIds) {
         StringBuilder selection = new StringBuilder();
         selection.append(Media._ID + " IN (");
@@ -702,6 +730,7 @@ public class CursorFactory {
      * @param ids query with track IDs
      * @return cursor with track information
      */
+    @Nullable
     public static Cursor makeNowPlayingCursor(Context context, List<Long> ids) {
         StringBuilder selection = new StringBuilder();
         selection.append(MediaStore.Audio.Media._ID + " IN (");
@@ -718,6 +747,7 @@ public class CursorFactory {
     /**
      *
      */
+    @Nullable
     public static Cursor makeCardCursor(Context context) {
         ContentResolver resolver = context.getContentResolver();
         return resolver.query(CARD_URI, null, null, null, null);

@@ -152,9 +152,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_save_queue) {
-            NowPlayingCursor queue = new NowPlayingCursor(requireContext());
-            CreateNewPlaylist.getInstance(MusicUtils.getSongListForCursor(queue)).show(getParentFragmentManager(), "CreatePlaylist");
-            queue.close();
+            MusicUtils.saveQueue(requireActivity());
             return true;
         } else if (item.getItemId() == R.id.menu_clear_queue) {
             MusicUtils.clearQueue();

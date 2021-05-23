@@ -13,24 +13,34 @@ package com.andrew.apollo.model;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
+import java.util.List;
+
 /**
  * A class that represents a genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Genre extends Music {
+public class Genre extends Music implements Comparable<Genre> {
 
-    private long[] ids;
+    /**
+     * IDs of a genre
+     */
+    private final long[] ids;
 
     /**
      * Constructor of <code>Genre</code>
      *
-     * @param ids       The Id of the genre
+     * @param idList    The Id of the genre
      * @param genreName The genre name
      */
-    public Genre(long[] ids, String genreName) {
-        super(ids[0], genreName);
-        this.ids = ids;
+    public Genre(List<Long> idList, String genreName) {
+        super(-1, genreName);
+        this.ids = new long[idList.size()];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = idList.get(i);
+        }
     }
 
     /**
@@ -40,6 +50,12 @@ public class Genre extends Music {
      */
     public long[] getGenreIds() {
         return ids;
+    }
+
+
+    @Override
+    public int compareTo(@NonNull Genre g) {
+        return name.compareTo(g.getName());
     }
 
     /**

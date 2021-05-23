@@ -123,7 +123,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         if (paramContextMenuInfo instanceof AdapterContextMenuInfo) {
             AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) paramContextMenuInfo;
             File mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
-            selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder);
+            selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder.toString());
             paramContextMenu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             paramContextMenu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
         }

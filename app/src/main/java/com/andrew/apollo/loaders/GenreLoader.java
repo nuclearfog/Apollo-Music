@@ -17,12 +17,12 @@ import android.database.Cursor;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.utils.CursorFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Used to return the genres on a user's device.
@@ -30,11 +30,6 @@ import java.util.Map;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
-
-    /**
-     * max count of genres separated by a semicolon. more genre names will be ignored.
-     */
-    private static final int MAX_GENRE_COUNT = 5;
 
     /**
      * Constructor of <code>GenreLoader</code>
@@ -50,55 +45,40 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
      */
     @Override
     public List<Genre> loadInBackground() {
-        List<Genre> result = new LinkedList<>();
+        TreeSet<Genre> result = new TreeSet<>();
         // Create the Cursor
         Cursor mCursor = CursorFactory.makeGenreCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
-                HashMap<String, long[]> group = new HashMap<>();
+                HashMap<String, List<Long>> group = new HashMap<>();
                 do {
                     // get Column information
                     long id = mCursor.getLong(0);
                     String name = mCursor.getString(1);
 
                     // Split genre groups into single genre names
-                    String[] genres = name.split("\\s*;\\s*", MAX_GENRE_COUNT);
+                    String[] genres = name.split("\\s*;\\s*", -1);
 
                     // solve conflicts. add multiple genre IDs for the same genre name.
                     for (String genre : genres) {
-                        long[] ids = group.get(genre);
+                        List<Long> ids = group.get(genre);
                         if (ids == null) {
-                            ids = new long[MAX_GENRE_COUNT];
+                            ids = new LinkedList<>();
                             group.put(genre, ids);
                         }
-                        // insert at empty place
-                        for (int i = 0; i < MAX_GENRE_COUNT; i++) {
-                            if (ids[i] == 0) {
-                                ids[i] = id;
-                                break;
-                            }
-                        }
+                        ids.add(id);
                     }
                 } while (mCursor.moveToNext());
 
-                // finish result
-                for (Map.Entry<String, long[]> entry : group.entrySet()) {
-                    long[] ids = entry.getValue();
-                    String name = entry.getKey();
-                    Genre genre = new Genre(ids, name);
+                // add all elements to sorted list
+                for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
+                    Genre genre = new Genre(entry.getValue(), entry.getKey());
                     result.add(genre);
                 }
             }
             mCursor.close();
         }
-        // sort genres by name
-        Collections.sort(result, new Comparator<Genre>() {
-            @Override
-            public int compare(Genre genre1, Genre genre2) {
-                return genre1.getName().compareTo(genre2.getName());
-            }
-        });
-        return result;
+        return new ArrayList<>(result);
     }
 }

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.CursorFactory;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,28 +18,30 @@ public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
     /**
      * folder to search tracks
      */
-    private File mFolder;
+    private String folderName;
 
     /**
      * @param paramContext Application context
-     * @param folder       folder to open
+     * @param folderName   name of the music folder
      */
-    public FolderSongLoader(Context paramContext, File folder) {
+    public FolderSongLoader(Context paramContext, String folderName) {
         super(paramContext);
-        this.mFolder = folder;
+        this.folderName = folderName;
     }
 
 
     @Override
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
-        Cursor cursor = CursorFactory.makeFolderSongCursor(getContext(), mFolder);
+        Cursor cursor = CursorFactory.makeFolderSongCursor(getContext(), folderName);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
+                int idxName = folderName.length() + 1;
                 do {
                     String filename = cursor.getString(5);
-                    File file = new File(filename);
-                    if (mFolder.equals(file.getParentFile())) {
+                    // fetch only music files from the current folder
+                    // sub folders will be skipped
+                    if (filename.indexOf('/', idxName) < 0) {
                         long id = cursor.getLong(0);
                         String songTitle = cursor.getString(1);
                         String artistName = cursor.getString(2);

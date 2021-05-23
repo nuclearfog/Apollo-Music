@@ -34,7 +34,6 @@ import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.VerticalScrollListener;
 
-import java.io.File;
 import java.util.List;
 
 import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_FAVORITES;
@@ -188,7 +187,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
             foldername = paramBundle.getString("folder_path");
         if (foldername == null)
             foldername = "";
-        return new FolderSongLoader(requireContext(), new File(foldername));
+        return new FolderSongLoader(requireContext(), foldername);
     }
 
 

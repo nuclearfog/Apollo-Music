@@ -18,9 +18,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.andrew.apollo.widgets.theme.ThemeableFrameLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/pager_background">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,6 +58,6 @@
 
         </LinearLayout>
 
-    </com.andrew.apollo.widgets.theme.ThemeableFrameLayout>
+    </FrameLayout>
 
 </LinearLayout>

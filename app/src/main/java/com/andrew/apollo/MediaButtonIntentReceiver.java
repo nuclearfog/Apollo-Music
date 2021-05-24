@@ -47,7 +47,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
     /**
      *
      */
-    private static final String TAG = "com.andrew.apollo:mediabutton";
+    private static final String TAG = BuildConfig.APPLICATION_ID + ":mediabutton";
     /**
      *
      */

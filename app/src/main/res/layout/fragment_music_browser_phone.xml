@@ -21,11 +21,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.andrew.apollo.widgets.theme.ThemeableTitlePageIndicator
+        <com.viewpagerindicator.TitlePageIndicator
             android:id="@+id/fragment_home_phone_pager_titles"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_micro" />
+            android:textSize="@dimen/text_size_micro"
+            android:background="@drawable/tpi_background" />
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/fragment_home_phone_pager"

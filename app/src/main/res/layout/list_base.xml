@@ -19,7 +19,7 @@
     android:paddingTop="@dimen/list_preferred_item_padding"
     android:paddingBottom="@dimen/list_preferred_item_padding">
 
-    <com.andrew.apollo.widgets.theme.ThemeableTextView
+    <TextView
         android:id="@+id/list_base_empty_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         android:drawSelectorOnTop="false"
         android:fadingEdge="vertical"
         android:fastScrollAlwaysVisible="false"
-        android:fastScrollEnabled="false"
+        android:fastScrollEnabled="true"
         android:paddingLeft="@dimen/fast_scroll_padding_left"
         android:paddingRight="@dimen/fast_scroll_padding_right"
         android:paddingStart="@dimen/fast_scroll_padding_left"

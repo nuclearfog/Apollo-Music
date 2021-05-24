@@ -14,7 +14,6 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -41,7 +40,7 @@
         android:paddingRight="@dimen/list_preferred_item_padding"
         android:layout_toEndOf="@+id/image">
 
-        <com.andrew.apollo.widgets.theme.ThemeableTextView
+        <TextView
             android:id="@+id/line_one"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,9 +48,9 @@
             android:singleLine="true"
             android:textSize="@dimen/text_size_medium"
             android:textStyle="bold"
-            app:themeResource="@color/line_one" />
+            android:textColor="@color/line_one" />
 
-        <com.andrew.apollo.widgets.theme.ThemeableTextView
+        <TextView
             android:id="@+id/line_two"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +58,7 @@
             android:layout_marginTop="@dimen/list_item_line_two_margin_top"
             android:singleLine="true"
             android:textSize="@dimen/text_size_small"
-            app:themeResource="@color/line_two" />
+            android:textColor="@color/line_two" />
     </RelativeLayout>
 
 </RelativeLayout>

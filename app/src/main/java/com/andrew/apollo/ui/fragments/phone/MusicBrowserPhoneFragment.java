@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -147,6 +148,10 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         mViewPager.setCurrentItem(mPreferences.getStartPage());
         // Initialize the TPI
         TitlePageIndicator pageIndicator = rootView.findViewById(R.id.fragment_home_phone_pager_titles);
+        // Theme the selected text color
+        pageIndicator.setSelectedColor(ResourcesCompat.getColor(getResources(), R.color.tpi_selected_text_color, null));
+        // Theme the unselected text color
+        pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
         // Attach the ViewPager
         pageIndicator.setViewPager(mViewPager);
         // Scroll to the current artist, album, or song

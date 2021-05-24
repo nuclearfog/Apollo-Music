@@ -20,7 +20,7 @@
     android:padding="@dimen/list_preferred_item_padding">
 
 
-    <com.andrew.apollo.widgets.theme.ThemeableTextView
+    <TextView
         android:id="@+id/grid_base_empty_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,6 +35,7 @@
         android:cacheColorHint="@color/transparent"
         android:drawSelectorOnTop="true"
         android:fadingEdge="vertical"
+        android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
         android:horizontalSpacing="@dimen/grid_item_spacing"
         android:verticalSpacing="@dimen/grid_item_spacing" />

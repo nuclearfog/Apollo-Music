@@ -29,8 +29,6 @@
             android:fadingEdge="vertical"
             android:fastScrollEnabled="true"
             android:horizontalSpacing="@dimen/grid_item_spacing"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbars="vertical"
             android:verticalSpacing="@dimen/grid_item_spacing" />
 
     </FrameLayout>

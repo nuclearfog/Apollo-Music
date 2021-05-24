@@ -145,10 +145,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         mListView.setDragScrollProfile(this);
         // To help make scrolling smooth
         mListView.setOnScrollListener(new VerticalScrollListener(null, null, 0));
-        // Remove the scrollbars and padding for the fast scroll
-        mListView.setVerticalScrollBarEnabled(false);
-        mListView.setFastScrollEnabled(false);
-        mListView.setPadding(0, 0, 0, 0);
         return rootView;
     }
 

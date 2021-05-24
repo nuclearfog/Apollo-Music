@@ -25,7 +25,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="invisible"
-        android:text="@string/empty_music" />
+        android:text="@string/empty_music"
+        android:paddingLeft="@dimen/list_empty_text_padding"
+        android:paddingRight="@dimen/list_empty_text_padding"
+        android:paddingStart="@dimen/list_empty_text_padding"
+        android:paddingEnd="@dimen/list_empty_text_padding" />
 
     <com.andrew.apollo.dragdrop.DragSortListView
         android:id="@+id/list_base"
@@ -34,9 +38,8 @@
         android:cacheColorHint="@color/transparent"
         android:drawSelectorOnTop="false"
         android:fadingEdge="vertical"
-        android:fastScrollAlwaysVisible="true"
-        android:fastScrollEnabled="true"
-        android:scrollbarThumbVertical="@color/white"
+        android:fastScrollAlwaysVisible="false"
+        android:fastScrollEnabled="false"
         android:paddingLeft="@dimen/fast_scroll_padding_left"
         android:paddingRight="@dimen/fast_scroll_padding_right"
         android:paddingStart="@dimen/fast_scroll_padding_left"

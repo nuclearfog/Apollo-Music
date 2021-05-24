@@ -200,8 +200,6 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         mListView.setOnCreateContextMenuListener(this);
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        mListView.setVerticalScrollBarEnabled(false);
-        mListView.setFastScrollEnabled(false);
         return view;
     }
 

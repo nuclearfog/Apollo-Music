@@ -134,10 +134,6 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
         mListView.setOnItemClickListener(this);
         // To help make scrolling smooth
         mListView.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        // Remove the scrollbars and padding for the fast scroll
-        mListView.setVerticalScrollBarEnabled(false);
-        mListView.setFastScrollEnabled(false);
-        mListView.setPadding(0, 0, 0, 0);
         return rootView;
     }
 

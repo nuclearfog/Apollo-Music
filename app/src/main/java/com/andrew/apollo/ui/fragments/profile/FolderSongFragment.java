@@ -79,12 +79,12 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
 
 
     @Override
-    public void onActivityCreated(@Nullable Bundle paramBundle) {
-        super.onActivityCreated(paramBundle);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-        paramBundle = getArguments();
-        if (paramBundle != null) {
-            LoaderManager.getInstance(this).initLoader(0, paramBundle, this);
+        savedInstanceState = getArguments();
+        if (savedInstanceState != null) {
+            LoaderManager.getInstance(this).initLoader(0, savedInstanceState, this);
         }
     }
 

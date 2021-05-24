@@ -158,8 +158,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         // Initialze the theme resources
         mResources = new ThemeUtils(requireActivity());
         // Enable the options menu

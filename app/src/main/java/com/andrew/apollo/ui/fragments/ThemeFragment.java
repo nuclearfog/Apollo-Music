@@ -30,6 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -112,8 +113,8 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Intent apolloThemeIntent = new Intent(BuildConfig.APPLICATION_ID + ".THEMES");
         apolloThemeIntent.addCategory(CATEGORY_DEFAULT);
         mTheme = new ThemeUtils(requireContext());

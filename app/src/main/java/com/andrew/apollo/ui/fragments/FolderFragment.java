@@ -86,8 +86,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void onActivityCreated(@Nullable Bundle paramBundle) {
-        super.onActivityCreated(paramBundle);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         LoaderManager.getInstance(this).initLoader(0, null, this);
     }

@@ -143,8 +143,8 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
      * {@inheritDoc}
      */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader

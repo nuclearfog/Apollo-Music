@@ -121,7 +121,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+        View rootView = inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = rootView.findViewById(R.id.list_base);
         // Set the data behind the list

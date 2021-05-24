@@ -22,6 +22,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -88,7 +89,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.grid_base, container, false);
         GridView mGridView = rootView.findViewById(R.id.grid_base);
@@ -170,7 +171,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && item.getItemId() == OPEN_IN_PLAY_STORE) {
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             ThemeHolder holder = mAdapter.getItem(info.position);

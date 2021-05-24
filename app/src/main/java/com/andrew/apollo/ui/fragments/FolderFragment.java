@@ -66,21 +66,22 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     private long[] selectedFolderSongs = {};
 
     private FolderAdapter mAdapter;
-    private TextView emptyholder;
+
+    private ListView mList;
 
 
     @Override
-    public View onCreateView(LayoutInflater paramLayoutInflater, ViewGroup paramViewGroup, Bundle paramBundle) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle extras) {
         // Init views
-        View mRootView = paramLayoutInflater.inflate(R.layout.list_base, paramViewGroup, false);
-        ListView mListView = mRootView.findViewById(R.id.list_base);
-        emptyholder = mRootView.findViewById(R.id.list_base_empty_info);
+        View mRootView = inflater.inflate(R.layout.list_base, parent, false);
+        mList = mRootView.findViewById(R.id.list_base);
+        TextView emptyholder = mRootView.findViewById(R.id.list_base_empty_info);
         // set listview
-        mListView.setAdapter(mAdapter);
-        mListView.setEmptyView(emptyholder);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
+        mList.setAdapter(mAdapter);
+        mList.setEmptyView(emptyholder);
+        mList.setRecyclerListener(new RecycleHolder());
+        mList.setOnCreateContextMenuListener(this);
+        mList.setOnItemClickListener(this);
         return mRootView;
     }
 
@@ -94,9 +95,9 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public boolean onContextItemSelected(@NonNull MenuItem paramMenuItem) {
-        if (paramMenuItem.getGroupId() == GROUP_ID) {
-            switch (paramMenuItem.getItemId()) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (item.getGroupId() == GROUP_ID) {
+            switch (item.getItemId()) {
                 case SELECTION:
                     MusicUtils.playAll(selectedFolderSongs, 0, false);
 
@@ -106,26 +107,26 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
                     return true;
             }
         }
-        return super.onContextItemSelected(paramMenuItem);
+        return super.onContextItemSelected(item);
     }
 
 
     @Override
-    public void onCreate(@Nullable Bundle paramBundle) {
-        super.onCreate(paramBundle);
+    public void onCreate(@Nullable Bundle extras) {
+        super.onCreate(extras);
         mAdapter = new FolderAdapter(requireContext(), R.layout.list_item_detailed);
     }
 
 
     @Override
-    public void onCreateContextMenu(@NonNull ContextMenu paramContextMenu, @NonNull View paramView, ContextMenuInfo paramContextMenuInfo) {
-        super.onCreateContextMenu(paramContextMenu, paramView, paramContextMenuInfo);
-        if (paramContextMenuInfo instanceof AdapterContextMenuInfo) {
-            AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) paramContextMenuInfo;
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View paramView, ContextMenuInfo info) {
+        super.onCreateContextMenu(menu, paramView, info);
+        if (info instanceof AdapterContextMenuInfo) {
+            AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) info;
             File mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
             selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder.toString());
-            paramContextMenu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-            paramContextMenu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
+            menu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            menu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
         }
     }
 
@@ -138,8 +139,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void onItemClick(AdapterView<?> paramAdapterView, View paramView, int paramInt, long paramLong) {
-        File mFolder = mAdapter.getItem(paramInt);
+    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+        File mFolder = mAdapter.getItem(position);
         Bundle bundle = new Bundle();
         bundle.putLong(ID, 0L);
         bundle.putString(NAME, mFolder.getName());
@@ -152,14 +153,14 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void onLoadFinished(@NonNull Loader<List<File>> paramLoader, List<File> paramList) {
+    public void onLoadFinished(@NonNull Loader<List<File>> loader, @NonNull List<File> data) {
         // Clear list
         mAdapter.clear();
-        if (paramList.isEmpty()) {
-            emptyholder.setVisibility(View.VISIBLE);
+        if (data.isEmpty()) {
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
-            emptyholder.setVisibility(View.INVISIBLE);
-            for (File file : paramList)
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
+            for (File file : data)
                 mAdapter.add(file);
             mAdapter.buildCache();
         }
@@ -167,7 +168,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void onLoaderReset(@NonNull Loader<List<File>> paramLoader) {
+    public void onLoaderReset(@NonNull Loader<List<File>> loader) {
         mAdapter.clear();
     }
 

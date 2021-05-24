@@ -15,7 +15,7 @@
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingTop="@dimen/list_preferred_item_padding"
     android:paddingBottom="@dimen/list_preferred_item_padding">
 
@@ -38,8 +38,10 @@
         android:cacheColorHint="@color/transparent"
         android:drawSelectorOnTop="false"
         android:fadingEdge="vertical"
+        android:scrollbars="none"
         android:fastScrollAlwaysVisible="false"
         android:fastScrollEnabled="true"
+        android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
         android:paddingLeft="@dimen/fast_scroll_padding_left"
         android:paddingRight="@dimen/fast_scroll_padding_right"
         android:paddingStart="@dimen/fast_scroll_padding_left"

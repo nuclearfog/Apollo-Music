@@ -220,7 +220,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID && mAlbum != null) {
             switch (item.getItemId()) {

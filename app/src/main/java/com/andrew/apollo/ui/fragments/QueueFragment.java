@@ -77,7 +77,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     /**
      * The list view
      */
-    private DragSortListView mListView;
+    private DragSortListView mList;
 
     /**
      * Represents a song
@@ -110,18 +110,18 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        mListView = rootView.findViewById(R.id.list_base);
+        mList = rootView.findViewById(R.id.list_base);
         // setup listview
-        mListView.setAdapter(mAdapter);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
-        mListView.setDropListener(this);
-        mListView.setRemoveListener(this);
-        mListView.setDragScrollProfile(this);
+        mList.setAdapter(mAdapter);
+        mList.setRecyclerListener(new RecycleHolder());
+        mList.setOnCreateContextMenuListener(this);
+        mList.setOnItemClickListener(this);
+        mList.setDropListener(this);
+        mList.setRemoveListener(this);
+        mList.setDragScrollProfile(this);
         return rootView;
     }
 
@@ -141,7 +141,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * {@inheritDoc}
      */
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.queue, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -150,7 +150,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_save_queue) {
             MusicUtils.saveQueue(requireActivity());
             return true;
@@ -192,7 +192,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
             long[] trackId = {mSong.getId()};
 
@@ -263,7 +263,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Check for any errors
         if (!data.isEmpty()) {
             // Start fresh
@@ -343,8 +343,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public void setCurrentTrack() {
         int pos = MusicUtils.getQueuePosition();
-        if (mListView != null && pos >= 0) {
-            mListView.smoothScrollToPosition(pos);
+        if (mList != null && pos >= 0) {
+            mList.smoothScrollToPosition(pos);
             mAdapter.setCurrentTrackPos(pos);
             mAdapter.notifyDataSetChanged();
         }

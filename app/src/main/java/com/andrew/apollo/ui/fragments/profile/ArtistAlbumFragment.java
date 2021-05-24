@@ -76,7 +76,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * The list view
      */
-    private ListView mListView;
+    private ListView mList;
     /**
      * Album song list
      */
@@ -124,19 +124,21 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
+        View rootView = inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
-        mListView = rootView.findViewById(R.id.list_base);
+        mList = rootView.findViewById(R.id.list_base);
         // Set the data behind the grid
-        mListView.setAdapter(mAdapter);
+        mList.setAdapter(mAdapter);
         // Release any references to the recycled Views
-        mListView.setRecyclerListener(new RecycleHolder());
+        mList.setRecyclerListener(new RecycleHolder());
+        // disable fast scroll
+        mList.setFastScrollEnabled(false);
         // Listen for ContextMenus to be created
-        mListView.setOnCreateContextMenuListener(this);
+        mList.setOnCreateContextMenuListener(this);
         // Show the songs from the selected album
-        mListView.setOnItemClickListener(this);
+        mList.setOnItemClickListener(this);
         // To help make scrolling smooth
-        mListView.setOnScrollListener(new VerticalScrollListener(this, mProfileTabCarousel, 1));
+        mList.setOnScrollListener(new VerticalScrollListener(this, mProfileTabCarousel, 1));
         return rootView;
     }
 
@@ -293,7 +295,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Scroll to the stop of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
-        mListView.setSelection(0);
+        mList.setSelection(0);
         mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }

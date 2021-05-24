@@ -119,15 +119,15 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        ListView mListView = rootView.findViewById(R.id.list_base);
+        ListView mList = rootView.findViewById(R.id.list_base);
         // setup list view
-        mListView.setAdapter(mAdapter);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
+        mList.setAdapter(mAdapter);
+        mList.setRecyclerListener(new RecycleHolder());
+        mList.setOnCreateContextMenuListener(this);
+        mList.setOnItemClickListener(this);
         return rootView;
     }
 
@@ -171,7 +171,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mPlaylist != null) {
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             switch (item.getItemId()) {
@@ -251,7 +251,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, List<Playlist> data) {
+    public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, @NonNull List<Playlist> data) {
         // Check for any errors
         if (!data.isEmpty()) {
             // Start fresh
@@ -307,6 +307,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      *
      * @return A new {@link AlertDialog} used to delete playlists
      */
+    @NonNull
     private AlertDialog buildDeleteDialog() {
         String name = mPlaylist != null ? mPlaylist.getName() : "";
         return new AlertDialog.Builder(requireContext())

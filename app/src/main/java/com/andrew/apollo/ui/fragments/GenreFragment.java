@@ -18,6 +18,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -65,14 +66,14 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     private static final int LOADER = 0x78BD76B9;
 
     /**
+     * list view
+     */
+    private ListView mList;
+
+    /**
      * The adapter for the list
      */
     private GenreAdapter mAdapter;
-
-    /**
-     * Placeholder for an empty list
-     */
-    private TextView emptyHolder;
 
     /**
      * Genre song list
@@ -99,17 +100,17 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Init views
         View mRootView = inflater.inflate(R.layout.list_base, container, false);
-        ListView mListView = mRootView.findViewById(R.id.list_base);
-        emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
+        mList = mRootView.findViewById(R.id.list_base);
+        TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
         //set listview
-        mListView.setEmptyView(emptyHolder);
-        mListView.setAdapter(mAdapter);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
+        mList.setEmptyView(emptyHolder);
+        mList.setAdapter(mAdapter);
+        mList.setRecyclerListener(new RecycleHolder());
+        mList.setOnCreateContextMenuListener(this);
+        mList.setOnItemClickListener(this);
         return mRootView;
     }
 
@@ -149,7 +150,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
@@ -194,19 +195,19 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Genre>> loader, List<Genre> data) {
+    public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
         // Start fresh
         mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
-            emptyHolder.setVisibility(View.VISIBLE);
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
             // Add the data to the adapter
             for (Genre genre : data)
                 mAdapter.add(genre);
             // Build the cache
             mAdapter.buildCache();
-            emptyHolder.setVisibility(View.INVISIBLE);
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 

@@ -75,7 +75,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     /**
      * The list view
      */
-    private ListView mListView;
+    private ListView mList;
 
     /**
      * current track
@@ -120,17 +120,17 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View mRootView = inflater.inflate(R.layout.list_base, container, false);
         TextView emptyText = mRootView.findViewById(R.id.list_base_empty_info);
         // setup the list view
-        mListView = mRootView.findViewById(R.id.list_base);
-        mListView.setAdapter(mAdapter);
-        mListView.setEmptyView(emptyText);
-        mListView.setRecyclerListener(new RecycleHolder());
-        mListView.setOnCreateContextMenuListener(this);
-        mListView.setOnItemClickListener(this);
+        mList = mRootView.findViewById(R.id.list_base);
+        mList.setAdapter(mAdapter);
+        mList.setEmptyView(emptyText);
+        mList.setRecyclerListener(new RecycleHolder());
+        mList.setOnCreateContextMenuListener(this);
+        mList.setOnItemClickListener(this);
         return mRootView;
     }
 
@@ -174,8 +174,9 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
+
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
             long[] trackIds = {mSong.getId()};
 
@@ -243,20 +244,20 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
         // Check for any errors
         if (data.isEmpty()) {
             // Set the empty text
-            mListView.getEmptyView().setVisibility(View.VISIBLE);
+            mList.getEmptyView().setVisibility(View.VISIBLE);
         } else {
             // Add the data to the adapter
             for (Song song : data)
                 mAdapter.add(song);
             // Build the cache
             mAdapter.buildCache();
-            mListView.getEmptyView().setVisibility(View.INVISIBLE);
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
         }
     }
 
@@ -289,7 +290,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         }
         if (currentSongPosition != 0) {
-            mListView.setSelection(currentSongPosition);
+            mList.setSelection(currentSongPosition);
         }
     }
 

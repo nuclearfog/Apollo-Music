@@ -245,19 +245,21 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-        // Start fresh
-        mAdapter.clear();
-        // Check for any errors
-        if (data.isEmpty()) {
-            // Set the empty text
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            // Add the data to the adapter
-            for (Song song : data)
-                mAdapter.add(song);
-            // Build the cache
-            mAdapter.buildCache();
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (mAdapter.getCount() != data.size()) {
+            // Start fresh
+            mAdapter.clear();
+            // Check for any errors
+            if (data.isEmpty()) {
+                // Set the empty text
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                // Add the data to the adapter
+                for (Song song : data)
+                    mAdapter.add(song);
+                // Build the cache
+                mAdapter.buildCache();
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            }
         }
     }
 

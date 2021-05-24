@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,6 +78,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     private static final int LOADER = 0x1FF07B83;
 
     /**
+     * fragment list view
+     */
+    private ListView mList;
+
+    /**
      * The adapter for the list
      */
     private PlaylistAdapter mAdapter;
@@ -122,9 +128,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.list_base, container, false);
-        ListView mList = rootView.findViewById(R.id.list_base);
+        // empty info
+        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
+        // list view
+        mList = rootView.findViewById(R.id.list_base);
         // setup list view
         mList.setAdapter(mAdapter);
+        mList.setEmptyView(emptyInfo);
         mList.setRecyclerListener(new RecycleHolder());
         mList.setOnCreateContextMenuListener(this);
         mList.setOnItemClickListener(this);
@@ -252,16 +262,20 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, @NonNull List<Playlist> data) {
-        // Check for any errors
-        if (!data.isEmpty()) {
+        if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
-            // Add the data to the adapter
-            for (Playlist playlist : data) {
-                mAdapter.add(playlist);
+            if (data.isEmpty()) {
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+                // Add the data to the adapter
+                for (Playlist playlist : data) {
+                    mAdapter.add(playlist);
+                }
+                // Build the cache
+                mAdapter.buildCache();
             }
-            // Build the cache
-            mAdapter.buildCache();
         }
     }
 

@@ -290,18 +290,20 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Artist>> loader, List<Artist> data) {
-        // Start fresh
-        mAdapter.clear();
-        // Check for any errors
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            // Add the data to the adapter
-            for (Artist artist : data)
-                mAdapter.add(artist);
-            // Build the cache
-            mAdapter.buildCache();
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (mAdapter.getCount() != data.size()) {
+            // Start fresh
+            mAdapter.clear();
+            // Check for any errors
+            if (data.isEmpty()) {
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                // Add the data to the adapter
+                for (Artist artist : data)
+                    mAdapter.add(artist);
+                // Build the cache
+                mAdapter.buildCache();
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            }
         }
     }
 

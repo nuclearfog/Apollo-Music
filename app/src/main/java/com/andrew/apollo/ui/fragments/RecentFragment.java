@@ -300,18 +300,20 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-        // Start fresh
-        mAdapter.clear();
-        if (data.isEmpty()) {
-            // Set the empty text
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            // Add the data to the adapter
-            for (Album album : data)
-                mAdapter.add(album);
-            // Build the cache
-            mAdapter.buildCache();
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (mAdapter.getCount() != data.size()) {
+            // Start fresh
+            mAdapter.clear();
+            if (data.isEmpty()) {
+                // Set the empty text
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                // Add the data to the adapter
+                for (Album album : data)
+                    mAdapter.add(album);
+                // Build the cache
+                mAdapter.buildCache();
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            }
         }
     }
 

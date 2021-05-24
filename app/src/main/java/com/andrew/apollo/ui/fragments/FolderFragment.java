@@ -154,15 +154,17 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> loader, @NonNull List<File> data) {
-        // Clear list
-        mAdapter.clear();
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
-            for (File file : data)
-                mAdapter.add(file);
-            mAdapter.buildCache();
+        if (mAdapter.getCount() != data.size()) {
+            // Clear list
+            mAdapter.clear();
+            if (data.isEmpty()) {
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+                for (File file : data)
+                    mAdapter.add(file);
+                mAdapter.buildCache();
+            }
         }
     }
 

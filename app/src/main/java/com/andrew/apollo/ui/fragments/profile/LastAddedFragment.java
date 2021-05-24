@@ -18,6 +18,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,11 +80,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     private ListView mListView;
 
     /**
-     * empty list info
-     */
-    private TextView emptyText;
-
-    /**
      * Selected track
      */
     @Nullable
@@ -126,13 +122,15 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.list_base, container, false);
-        // init empty text
-        emptyText = mRootView.findViewById(R.id.list_base_empty_info);
+        View rootView = inflater.inflate(R.layout.list_base, container, false);
+        // empty info
+        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
-        mListView = mRootView.findViewById(R.id.list_base);
+        mListView = rootView.findViewById(R.id.list_base);
         // Set the data behind the list
         mListView.setAdapter(mAdapter);
+        // Set empty list info
+        mListView.setEmptyView(emptyInfo);
         // Release any references to the recycled Views
         mListView.setRecyclerListener(new RecycleHolder());
         // Listen for ContextMenus to be created
@@ -141,7 +139,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         mListView.setOnItemClickListener(this);
         // To help make scrolling smooth
         mListView.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        return mRootView;
+        return rootView;
     }
 
     /**
@@ -184,8 +182,9 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
     }
 
+
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
             long[] trackId = {mSong.getId()};
 
@@ -225,7 +224,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
 
                 case FragmentMenuItems.DELETE:
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-                    mAdapter.notifyDataSetChanged();
                     LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
                     return true;
             }
@@ -254,18 +252,17 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
-        // Check for any errors
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // Start fresh
+        mAdapter.clear();
         if (data.isEmpty()) {
-            mListView.setEmptyView(emptyText);
-            emptyText.setVisibility(View.VISIBLE);
+            mListView.getEmptyView().setVisibility(View.VISIBLE);
         } else {
-            // Start fresh
-            mAdapter.clear();
+            mListView.getEmptyView().setVisibility(View.INVISIBLE);
             // Add the data to the adpater
-            for (Song song : data)
+            for (Song song : data) {
                 mAdapter.add(song);
-            emptyText.setVisibility(View.INVISIBLE);
+            }
         }
     }
 

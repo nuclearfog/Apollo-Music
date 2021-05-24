@@ -24,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="invisible"
         android:text="@string/empty_music"
         android:paddingLeft="@dimen/list_empty_text_padding"
         android:paddingRight="@dimen/list_empty_text_padding"

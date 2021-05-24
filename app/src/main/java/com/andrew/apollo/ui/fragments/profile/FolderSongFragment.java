@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,9 +89,16 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle extras) {
+        // root view of the fragment
         View view = inflater.inflate(R.layout.list_base, parent, false);
+        // empty info
+        TextView emptyInfo = view.findViewById(R.id.list_base_empty_info);
+        // list view of the fragment
         mList = view.findViewById(R.id.list_base);
+        // set song adapter
         mList.setAdapter(mAdapter);
+        // Set empty list info
+        mList.setEmptyView(emptyInfo);
         mList.setRecyclerListener(new RecycleHolder());
         mList.setOnCreateContextMenuListener(this);
         mList.setOnItemClickListener(this);
@@ -212,11 +220,16 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> paramLoader, @NonNull List<Song> data) {
-        if (!data.isEmpty()) {
-            mAdapter.clear();
-            for (Song song : data)
+        // start fresh
+        mAdapter.clear();
+        if (data.isEmpty()) {
+            mList.getEmptyView().setVisibility(View.VISIBLE);
+        } else {
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // add items to adapter
+            for (Song song : data) {
                 mAdapter.add(song);
-            mAdapter.notifyDataSetChanged();
+            }
         }
     }
 

@@ -196,18 +196,20 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
-        // Start fresh
-        mAdapter.clear();
-        // Check for any errors
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            // Add the data to the adapter
-            for (Genre genre : data)
-                mAdapter.add(genre);
-            // Build the cache
-            mAdapter.buildCache();
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (mAdapter.getCount() != data.size()) {
+            // Start fresh
+            mAdapter.clear();
+            // Check for any errors
+            if (data.isEmpty()) {
+                mList.getEmptyView().setVisibility(View.VISIBLE);
+            } else {
+                // Add the data to the adapter
+                for (Genre genre : data)
+                    mAdapter.add(genre);
+                // Build the cache
+                mAdapter.buildCache();
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            }
         }
     }
 

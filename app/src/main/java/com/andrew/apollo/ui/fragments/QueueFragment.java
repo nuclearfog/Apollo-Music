@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -113,6 +114,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.list_base, container, false);
+        // empty info
+        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         mList = rootView.findViewById(R.id.list_base);
         // setup listview
         mList.setAdapter(mAdapter);
@@ -122,6 +125,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         mList.setDropListener(this);
         mList.setRemoveListener(this);
         mList.setDragScrollProfile(this);
+        emptyInfo.setVisibility(View.INVISIBLE);
         return rootView;
     }
 

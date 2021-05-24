@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,13 +123,17 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
         View rootView = inflater.inflate(R.layout.list_base, container, false);
+        // empty info
+        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
         mList = rootView.findViewById(R.id.list_base);
         // Set the data behind the grid
         mList.setAdapter(mAdapter);
+        // Set empty list info
+        mList.setEmptyView(emptyInfo);
         // Release any references to the recycled Views
         mList.setRecyclerListener(new RecycleHolder());
         // disable fast scroll
@@ -204,7 +209,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
@@ -265,16 +270,17 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
-        // Check for any errors
-        if (data.isEmpty()) {
-            return;
-        }
+    public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
         // Start fresh
         mAdapter.clear();
-        // Add the data to the adpater
-        for (Album album : data) {
-            mAdapter.add(album);
+        if (data.isEmpty()) {
+            mList.getEmptyView().setVisibility(View.VISIBLE);
+        } else {
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // Add the data to the adpater
+            for (Album album : data) {
+                mAdapter.add(album);
+            }
         }
     }
 

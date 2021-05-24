@@ -18,6 +18,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -117,13 +119,17 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
      * {@inheritDoc}
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // The View for the fragment's UI
         View rootView = inflater.inflate(R.layout.list_base, container, false);
+        // empty info
+        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
         mList = rootView.findViewById(R.id.list_base);
         // Set the data behind the list
         mList.setAdapter(mAdapter);
+        // Set empty list info
+        mList.setEmptyView(emptyInfo);
         // Release any references to the recycled Views
         mList.setRecyclerListener(new RecycleHolder());
         // disable fast scroll
@@ -189,7 +195,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
 
 
     @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
             long[] trackId = {mSong.getId()};
 
@@ -254,16 +260,17 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
-        // Check for any errors
-        if (data.isEmpty()) {
-            return;
-        }
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
-        // Add the data to the adpater
-        for (Song song : data) {
-            mAdapter.add(song);
+        if (data.isEmpty()) {
+            mList.getEmptyView().setVisibility(View.VISIBLE);
+        } else {
+            mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // Add the data to the adpater
+            for (Song song : data) {
+                mAdapter.add(song);
+            }
         }
     }
 

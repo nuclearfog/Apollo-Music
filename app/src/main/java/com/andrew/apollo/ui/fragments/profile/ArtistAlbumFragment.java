@@ -116,7 +116,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
-        mAdapter = new ArtistAlbumAdapter(requireActivity(), R.layout.list_item_detailed_no_background);
+        mAdapter = new ArtistAlbumAdapter(requireActivity(), R.layout.list_item_detailed);
     }
 
     /**

@@ -13,7 +13,6 @@ package com.andrew.apollo.adapters;
 
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andrew.apollo.R;
@@ -25,12 +24,6 @@ import com.andrew.apollo.R;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class MusicHolder {
-
-    /**
-     * This is the overlay on top of the background artist, playlist, or genre
-     * image
-     */
-    public final RelativeLayout mOverlay;
 
     /**
      * This is the artist or album image
@@ -70,8 +63,6 @@ public class MusicHolder {
      */
     public MusicHolder(View view) {
         super();
-        // Initialize mOverlay
-        mOverlay = view.findViewById(R.id.image_background);
 
         // Initialize mImage
         mImage = view.findViewById(R.id.image);

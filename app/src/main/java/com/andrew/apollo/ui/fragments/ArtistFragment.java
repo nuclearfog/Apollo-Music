@@ -219,7 +219,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID && mArtist != null) {
             switch (item.getItemId()) {
@@ -289,7 +289,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Artist>> loader, List<Artist> data) {
+    public void onLoadFinished(@NonNull Loader<List<Artist>> loader, @NonNull List<Artist> data) {
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
@@ -297,12 +297,12 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             if (data.isEmpty()) {
                 mList.getEmptyView().setVisibility(View.VISIBLE);
             } else {
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
                 for (Artist artist : data)
                     mAdapter.add(artist);
                 // Build the cache
                 mAdapter.buildCache();
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
             }
         }
     }

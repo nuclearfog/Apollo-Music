@@ -307,12 +307,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
                 // Set the empty text
                 mList.getEmptyView().setVisibility(View.VISIBLE);
             } else {
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
                 for (Album album : data)
                     mAdapter.add(album);
                 // Build the cache
                 mAdapter.buildCache();
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+
             }
         }
     }

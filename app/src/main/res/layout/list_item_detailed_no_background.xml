@@ -29,7 +29,8 @@
         android:layout_width="@dimen/list_item_detailed_height"
         android:layout_height="@dimen/list_item_detailed_height"
         android:layout_alignParentLeft="true"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         android:layout_alignParentStart="true" />
 
     <RelativeLayout

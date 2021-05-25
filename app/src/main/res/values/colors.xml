@@ -57,8 +57,6 @@
 
     <color name="tpi_unselected_text_color">#ff7f7f7f</color>
 
-    <color name="tpi_footer_color">#ffffffff</color>
-
     <color name="scrollbar_thumb_color">#6fffffff</color>
 
 </resources>

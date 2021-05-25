@@ -71,7 +71,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle extras) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle extras) {
         // Init views
         View mRootView = inflater.inflate(R.layout.list_base, parent, false);
         mList = mRootView.findViewById(R.id.list_base);

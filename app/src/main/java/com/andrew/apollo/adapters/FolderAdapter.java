@@ -32,7 +32,7 @@ public class FolderAdapter extends ArrayAdapter<File> {
 
     /**
      * @param context application context
-     * @param redId ID of the view item
+     * @param redId   ID of the view item
      */
     public FolderAdapter(Context context, @LayoutRes int redId) {
         super(context, redId);

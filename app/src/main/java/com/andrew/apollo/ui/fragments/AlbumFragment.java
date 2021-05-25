@@ -215,7 +215,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      * {@inheritDoc}
      */
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID && mAlbum != null) {
             switch (item.getItemId()) {
@@ -288,7 +288,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Album>> loader, List<Album> data) {
+    public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
@@ -296,12 +296,12 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             if (data.isEmpty()) {
                 mList.getEmptyView().setVisibility(View.VISIBLE);
             } else {
+                mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
                 for (Album album : data)
                     mAdapter.add(album);
                 // Build the cache
                 mAdapter.buildCache();
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
             }
         }
     }

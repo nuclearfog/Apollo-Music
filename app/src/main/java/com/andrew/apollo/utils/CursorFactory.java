@@ -559,7 +559,7 @@ public class CursorFactory {
      * create a cursor to get all songs from an artist with fixed column order
      * {@link #TRACK_COLUMNS}
      *
-     * @param   artistId ID of the artist
+     * @param artistId ID of the artist
      * @return cursor with song information
      */
     @Nullable

@@ -36,7 +36,9 @@
     <!-- Top margin of "line_two" -->
     <dimen name="list_item_line_two_margin_top">8.0dp</dimen>
     <!-- Left padding in the grid text -->
-    <dimen name="grid_item_padding_left">8.0dp</dimen>
+    <dimen name="grid_item_text_padding">8.0dp</dimen>
+    <!--text padding of the normal item-->
+    <dimen name="list_item_text_padding">10dp</dimen>
     <!-- Grid and list item normal height -->
     <dimen name="item_normal_height">64.0dp</dimen>
 

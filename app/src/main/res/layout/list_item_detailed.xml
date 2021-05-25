@@ -34,7 +34,8 @@
             android:layout_height="@dimen/list_item_detailed_height"
             android:layout_marginStart="2dp"
             android:layout_marginLeft="2dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
 
         <RelativeLayout
             android:id="@+id/image_background"

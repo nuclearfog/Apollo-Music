@@ -13,29 +13,26 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <com.viewpagerindicator.TitlePageIndicator
+        android:id="@+id/fragment_home_phone_pager_titles"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_micro"
+        android:background="@drawable/tpi_background" />
 
-        <com.viewpagerindicator.TitlePageIndicator
-            android:id="@+id/fragment_home_phone_pager_titles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_micro"
-            android:background="@drawable/tpi_background" />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/fragment_home_phone_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fragment_home_phone_pager_titles" />
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/fragment_home_phone_pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/fragment_home_phone_pager_titles" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/shadow_height"
+        android:background="@drawable/top_shadow" />
 
-    </RelativeLayout>
-
-    <include layout="@layout/top_shadow" />
-
-</FrameLayout>
+</RelativeLayout>

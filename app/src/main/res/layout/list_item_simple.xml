@@ -13,7 +13,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
@@ -24,49 +25,54 @@
 
     <TextView
         android:id="@+id/line_one"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/line_one_right"
         android:singleLine="true"
+        android:textColor="@color/line_one"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
-        android:textColor="@color/line_one"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/line_one_right" />
+        android:drawablePadding="@dimen/list_item_detailed_drawable_padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/line_two"
+        app:layout_constraintEnd_toStartOf="@+id/line_one_right" />
 
     <TextView
         android:id="@+id/line_one_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:paddingRight="@dimen/list_preferred_item_padding"
+        android:paddingStart="@dimen/list_preferred_item_padding"
+        android:paddingLeft="@dimen/list_preferred_item_padding"
         android:singleLine="true"
-        android:textSize="@dimen/text_size_medium"
         android:textColor="@color/line_one"
-        android:layout_alignParentEnd="true"
-        android:paddingEnd="@dimen/list_preferred_item_padding"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintTop_toTopOf="@id/line_one"
+        app:layout_constraintBottom_toBottomOf="@id/line_one"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/line_two"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/line_one"
-        android:layout_marginTop="@dimen/list_item_line_two_margin_top"
         android:singleLine="true"
+        android:textColor="@color/line_two"
         android:textSize="@dimen/text_size_small"
-        android:textColor="@color/line_two" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line_one"
+        app:layout_constraintBottom_toTopOf="@id/line_three"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/line_three"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:singleLine="true"
+        android:textColor="@color/line_three"
         android:textSize="@dimen/text_size_small"
-        android:textColor="@color/line_three" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line_two"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

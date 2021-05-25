@@ -55,6 +55,11 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     private static final int VIEW_TYPE_COUNT = 3;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * Fake header
      */
     private View mHeader;
@@ -84,6 +89,8 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
+        // layout inflater from fragment
+        inflater = context.getLayoutInflater();
     }
 
     /**
@@ -92,16 +99,14 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
         // Return a faux header at position 0
         if (position == 0) {
             return mHeader;
         }
-
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Remove the background layer
             holder.mOverlay.setBackgroundColor(Color.TRANSPARENT);
@@ -109,7 +114,6 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the album
         Album album = getItem(position - 1);
 

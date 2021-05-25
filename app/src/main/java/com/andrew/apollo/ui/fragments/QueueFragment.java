@@ -276,8 +276,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             for (Song song : data) {
                 mAdapter.add(song);
             }
-            // Build the cache
-            mAdapter.buildCache();
         }
     }
 
@@ -313,8 +311,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
             MusicUtils.removeTrack(mSong.getId());
             // remove track from list
             mAdapter.remove(mSong);
-            // Build the cache
-            mAdapter.buildCache();
             // check if queue is empty
             if (mAdapter.isEmpty()) {
                 NavUtils.goHome(requireActivity());

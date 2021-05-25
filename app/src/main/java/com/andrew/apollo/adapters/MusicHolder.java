@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
 
@@ -34,12 +33,6 @@ public class MusicHolder {
      * image
      */
     public final RelativeLayout mOverlay;
-
-    /**
-     * This is the background artist, playlist, or genre image
-     */
-    @Nullable
-    public final ImageView mBackground;
 
     /**
      * This is the artist or album image
@@ -81,9 +74,6 @@ public class MusicHolder {
         super();
         // Initialize mOverlay
         mOverlay = view.findViewById(R.id.image_background);
-
-        // Initialize mBackground
-        mBackground = view.findViewById(R.id.list_item_background);
 
         // Initialize mImage
         mImage = view.findViewById(R.id.image);

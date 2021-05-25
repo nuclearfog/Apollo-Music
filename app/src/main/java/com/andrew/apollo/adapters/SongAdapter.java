@@ -12,7 +12,6 @@
 package com.andrew.apollo.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +21,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.utils.PreferenceUtils;
-
-import java.util.ArrayList;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the songs on a user's
@@ -41,9 +36,9 @@ import java.util.ArrayList;
 public class SongAdapter extends ArrayAdapter<Song> {
 
     /**
-     * color mask to set background  transparency of the selected item
+     * fragment layout inflater
      */
-    private static final int TRANSPARENCY_MASK = 0x3f000000;
+    private LayoutInflater inflater;
 
     /**
      * The resource Id of the layout to inflate
@@ -51,10 +46,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
     private int mLayoutId;
 
     /**
-     * Used to cache the song info
+     * current item position of the current track
      */
-    private ArrayList<DataHolder> mData = new ArrayList<>();
-
     private int nowplayingPos = -1;
 
     /**
@@ -67,6 +60,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
+        inflater = LayoutInflater.from(context);
     }
 
     /**
@@ -78,7 +72,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
             holder.mLineThree.setVisibility(View.GONE);
@@ -87,24 +81,13 @@ public class SongAdapter extends ArrayAdapter<Song> {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the data holder
-        DataHolder dataHolder = mData.get(position);
+        Song song = getItem(position);
         // Set each song name (line one)
-        holder.mLineOne.setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(song.getName());
         // Set the song duration (line one, right)
-        holder.mLineOneRight.setText(dataHolder.mLineOneRight);
+        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
         // Set the album name (line two)
-        holder.mLineTwo.setText(dataHolder.mLineTwo);
-
-        if (holder.mBackground != null) {
-            // set background of the current track
-            if (position == nowplayingPos) {
-                PreferenceUtils prefs = PreferenceUtils.getInstance(parent.getContext());
-                int backgroundColor = TRANSPARENCY_MASK | (prefs.getDefaultThemeColor() & 0xffffff);
-                holder.mBackground.setBackgroundColor(backgroundColor);
-            } else {
-                holder.mBackground.setBackgroundColor(Color.TRANSPARENT);
-            }
-        }
+        holder.mLineTwo.setText(song.getArtist());
         return convertView;
     }
 
@@ -123,13 +106,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
     @Override
     public boolean hasStableIds() {
         return true;
-    }
-
-
-    @Override
-    public void clear() {
-        super.clear();
-        mData.clear();
     }
 
     /**
@@ -153,7 +129,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
                     nowplayingPos++;
             }
             notifyDataSetChanged();
-            buildCache();
         }
     }
 
@@ -164,32 +139,5 @@ public class SongAdapter extends ArrayAdapter<Song> {
      */
     public void setCurrentTrackPos(int pos) {
         nowplayingPos = pos;
-    }
-
-    /**
-     * Method used to cache the data used to populate the list or grid. The idea
-     * is to cache everything before {@code #getView(int, View, ViewGroup)} is
-     * called.
-     */
-    public void buildCache() {
-        mData.clear();
-        mData.ensureCapacity(getCount());
-        for (int i = 0; i < getCount(); i++) {
-            // Build the song
-            Song song = getItem(i);
-            if (song != null) {
-                // Build the data holder
-                DataHolder holder = new DataHolder();
-                // Song Id
-                holder.mItemId = song.getId();
-                // Song names (line one)
-                holder.mLineOne = song.getName();
-                // Song duration (line one, right)
-                holder.mLineOneRight = MusicUtils.makeTimeString(getContext(), song.duration());
-                // Artist names (line two)
-                holder.mLineTwo = song.getArtist();
-                mData.add(holder);
-            }
-        }
     }
 }

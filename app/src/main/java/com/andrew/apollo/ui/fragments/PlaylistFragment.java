@@ -273,8 +273,6 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                 for (Playlist playlist : data) {
                     mAdapter.add(playlist);
                 }
-                // Build the cache
-                mAdapter.buildCache();
             }
         }
     }

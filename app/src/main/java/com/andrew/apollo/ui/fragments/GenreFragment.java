@@ -205,10 +205,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
             } else {
                 mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
-                for (Genre genre : data)
+                for (Genre genre : data) {
                     mAdapter.add(genre);
-                // Build the cache
-                mAdapter.buildCache();
+                }
             }
         }
     }

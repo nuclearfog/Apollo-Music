@@ -21,11 +21,8 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.ui.fragments.PlaylistFragment;
-
-import java.util.ArrayList;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the playlists on a user's
@@ -41,14 +38,14 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     private static final int VIEW_TYPE_COUNT = 1;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * The resource Id of the layout to inflate
      */
     private final int mLayoutId;
-
-    /**
-     * Used to cache the playlist info
-     */
-    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Constructor of <code>PlaylistAdapter</code>
@@ -60,6 +57,8 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
+        //
+        inflater = LayoutInflater.from(context);
     }
 
     /**
@@ -71,7 +70,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the second and third lines of text
             holder.mLineTwo.setVisibility(View.GONE);
@@ -83,9 +82,9 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the data holder
-        DataHolder dataHolder = mData.get(position);
+        Playlist playlist = getItem(position);
         // Set each playlist name (line one)
-        holder.mLineOne.setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(playlist.getName());
         return convertView;
     }
 
@@ -109,35 +108,5 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     @Override
     public long getItemId(int position) {
         return getItem(position).getId();
-    }
-
-
-    @Override
-    public void clear() {
-        super.clear();
-        mData.clear();
-    }
-
-    /**
-     * Method used to cache the data used to populate the list or grid. The idea
-     * is to cache everything before {@code #getView(int, View, ViewGroup)} is
-     * called.
-     */
-    public void buildCache() {
-        mData.clear();
-        mData.ensureCapacity(getCount());
-        for (int i = 0; i < getCount(); i++) {
-            // Build the artist
-            Playlist playlist = getItem(i);
-            if (playlist != null) {
-                // Build the data holder
-                DataHolder holder = new DataHolder();
-                // Playlist Id
-                holder.mItemId = playlist.getId();
-                // Playlist names (line one)
-                holder.mLineOne = playlist.getName();
-                mData.add(holder);
-            }
-        }
     }
 }

@@ -159,6 +159,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             initGrid();
         }
         // sets the empty view
+        emptyInfo.setText(R.string.empty_recents);
         mList.setEmptyView(emptyInfo);
         // Set the data behind the list
         mList.setAdapter(mAdapter);
@@ -309,11 +310,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             } else {
                 mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
-                for (Album album : data)
+                for (Album album : data) {
                     mAdapter.add(album);
-                // Build the cache
-                mAdapter.buildCache();
-
+                }
             }
         }
     }

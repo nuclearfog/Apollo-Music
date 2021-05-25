@@ -114,7 +114,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     @Override
     public void onCreate(@Nullable Bundle extras) {
         super.onCreate(extras);
-        mAdapter = new FolderAdapter(requireContext(), R.layout.list_item_detailed);
+        mAdapter = new FolderAdapter(requireContext(), R.layout.list_item_simple);
     }
 
 
@@ -161,9 +161,9 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
                 mList.getEmptyView().setVisibility(View.VISIBLE);
             } else {
                 mList.getEmptyView().setVisibility(View.INVISIBLE);
-                for (File file : data)
+                for (File file : data) {
                     mAdapter.add(file);
-                mAdapter.buildCache();
+                }
             }
         }
     }

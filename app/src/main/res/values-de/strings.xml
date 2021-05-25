@@ -122,4 +122,5 @@
     <string name="empty_search">Keine Suchergebnisse gefunden</string>
     <string name="page_folders">Musikordner</string>
     <string name="error_permission_denied">Die App benötigt Berechtigungen zum Abspielen der Musikdateien!</string>
+    <string name="empty_recents">Es sind zur Zeit keine Tracks gehört worden.</string>
 </resources>

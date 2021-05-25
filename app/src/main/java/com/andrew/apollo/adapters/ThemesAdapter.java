@@ -25,12 +25,18 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
     private static final int VIEW_TYPE_COUNT = 2;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * Constructor of <code>ThemesAdapter</code>
      *
      * @param context The {@link Context} to use.
      */
     public ThemesAdapter(Context context) {
         super(context, R.layout.fragment_themes_base);
+        inflater = LayoutInflater.from(context);
     }
 
     /**
@@ -42,7 +48,7 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
         /* Recycle ViewHolder's items */
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_themes_base, parent, false);
+            convertView = inflater.inflate(R.layout.fragment_themes_base, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);
         } else {

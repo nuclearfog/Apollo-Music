@@ -28,16 +28,12 @@ public class RecycleHolder implements RecyclerListener {
      */
     @Override
     public void onMovedToScrapHeap(View view) {
-        MusicHolder holder = (MusicHolder) view.getTag();
-        if (holder == null) {
+        MusicHolder holder;
+        if (view.getTag() instanceof MusicHolder) {
+            holder = (MusicHolder) view.getTag();
+        } else {
             holder = new MusicHolder(view);
             view.setTag(holder);
-        }
-
-        // Release mBackground's reference
-        if (holder.mBackground != null) {
-            holder.mBackground.setImageDrawable(null);
-            holder.mBackground.setImageBitmap(null);
         }
 
         // Release mImage's reference

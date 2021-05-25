@@ -255,10 +255,9 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
             } else {
                 mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
-                for (Song song : data)
+                for (Song song : data) {
                     mAdapter.add(song);
-                // Build the cache
-                mAdapter.buildCache();
+                }
             }
         }
     }

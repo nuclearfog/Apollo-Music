@@ -299,10 +299,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             } else {
                 mList.getEmptyView().setVisibility(View.INVISIBLE);
                 // Add the data to the adapter
-                for (Artist artist : data)
+                for (Artist artist : data) {
                     mAdapter.add(artist);
-                // Build the cache
-                mAdapter.buildCache();
+                }
             }
         }
     }

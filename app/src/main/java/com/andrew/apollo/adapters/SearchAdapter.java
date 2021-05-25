@@ -34,6 +34,11 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     private static final int VIEW_TYPE_COUNT = 2;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * Image cache and image fetcher
      */
     private final ImageFetcher mImageFetcher;
@@ -59,6 +64,8 @@ public class SearchAdapter extends ArrayAdapter<Music> {
         mImageFetcher = ApolloUtils.getImageFetcher(activity);
         // Create the prefix highlighter
         mHighlighter = new PrefixHighlighter(activity);
+        // get inflater from fragment
+        inflater = activity.getLayoutInflater();
     }
 
     /**
@@ -68,8 +75,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         MusicHolder holder;
         if (convertView == null) {
-            LayoutInflater inf = LayoutInflater.from(parent.getContext());
-            convertView = inf.inflate(R.layout.list_item_detailed, parent, false);
+            convertView = inflater.inflate(R.layout.list_item_detailed, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -99,8 +105,6 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             holder.mLineTwo.setText(album.getArtist());
             // Asynchronously load the album images into the adapter
             mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
-            // Asynchronously load the artist image into the adapter
-            mImageFetcher.loadArtistImage(album.getArtist(), holder.mBackground);
             // Highlight the query
             mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
         } else if (music instanceof Song) {
@@ -111,8 +115,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             holder.mLineOne.setText(song.getName());
             // Get the album name
             holder.mLineTwo.setText(song.getAlbum());
-            // Asynchronously load the artist image into the adapter
-            mImageFetcher.loadArtistImage(song.getArtist(), holder.mBackground);
+            // Get the artist name
             holder.mLineThree.setText(song.getArtist());
             // Highlight the query
             mHighlighter.setText(holder.mLineOne, song.getName(), mPrefix);

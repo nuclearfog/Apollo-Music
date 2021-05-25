@@ -71,6 +71,11 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     private static final int VIEW_TYPE_COUNT = 3;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * Fake header
      */
     private final View mHeader;
@@ -101,6 +106,8 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         mLayoutId = layoutId;
         // Know what to put in line two
         mDisplaySetting = setting;
+        // inflater from context
+        inflater = LayoutInflater.from(context);
     }
 
     /**
@@ -126,7 +133,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
             holder.mLineThree.setVisibility(View.GONE);

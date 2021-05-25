@@ -23,13 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
-import java.util.ArrayList;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -42,6 +40,11 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     private static final int VIEW_TYPE_COUNT = 2;
 
     /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
+
+    /**
      * The resource Id of the layout to inflate
      */
     private int mLayoutId;
@@ -50,11 +53,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      * Image cache and image fetcher
      */
     private final ImageFetcher mImageFetcher;
-
-    /**
-     * Used to cache the artist info
-     */
-    private ArrayList<DataHolder> mData = new ArrayList<>();
 
     /**
      * Loads line three and the background image if the user decides to.
@@ -73,6 +71,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
+        // inflater from fragment
+        inflater = context.getLayoutInflater();
     }
 
     /**
@@ -84,25 +84,28 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
+            if (!mLoadExtraData)
+                holder.mLineThree.setVisibility(View.GONE);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-        // Retrieve the data holder
-        DataHolder dataHolder = mData.get(position);
+        Artist artist = getItem(position);
+        // Number of albums (line two)
+        String numAlbums = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
         // Set each artist name (line one)
-        holder.mLineOne.setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(artist.getName());
         // Set the number of albums (line two)
-        holder.mLineTwo.setText(dataHolder.mLineTwo);
+        holder.mLineTwo.setText(numAlbums);
         // Asynchronously load the artist image into the adapter
-        mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mImage);
+        mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
         if (mLoadExtraData) {
+            // Number of songs (line three)
+            String numTracks = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
             // Set the number of songs (line three)
-            holder.mLineThree.setText(dataHolder.mLineThree);
-            // Set the background image
-            mImageFetcher.loadArtistImage(dataHolder.mLineOne, holder.mBackground);
+            holder.mLineThree.setText(numTracks);
             // Play the artist when the artwork is touched
             playArtist(holder.mImage, position);
         }
@@ -123,42 +126,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     @Override
     public int getViewTypeCount() {
         return VIEW_TYPE_COUNT;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void clear() {
-        super.clear();
-        mData.clear();
-    }
-
-    /**
-     * Method used to cache the data used to populate the list or grid. The idea
-     * is to cache everything before {@code #getView(int, View, ViewGroup)} is
-     * called.
-     */
-    public void buildCache() {
-        mData.clear();
-        mData.ensureCapacity(getCount());
-        for (int i = 0; i < getCount(); i++) {
-            // Build the artist
-            final Artist artist = getItem(i);
-            if (artist != null) {
-                // Build the data holder
-                DataHolder holder = new DataHolder();
-                // Artist Id
-                holder.mItemId = artist.getId();
-                // Artist names (line one)
-                holder.mLineOne = artist.getName();
-                // Number of albums (line two)
-                holder.mLineTwo = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
-                // Number of songs (line three)
-                holder.mLineThree = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
-                mData.add(holder);
-            }
-        }
     }
 
     /**
@@ -186,7 +153,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     /**
      * @param pause True to temporarily pause the disk cache, false otherwise.
      */
-    public void setPauseDiskCache(final boolean pause) {
+    public void setPauseDiskCache(boolean pause) {
         if (mImageFetcher != null) {
             mImageFetcher.setPauseDiskCache(pause);
         }
@@ -203,7 +170,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      * @param extra True to load line three and the background image, false
      *              otherwise.
      */
-    public void setLoadExtraData(final boolean extra) {
+    public void setLoadExtraData(boolean extra) {
         mLoadExtraData = extra;
     }
 }

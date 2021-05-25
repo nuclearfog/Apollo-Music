@@ -165,5 +165,6 @@
     <string name="empty_music">To copy music from your computer to your device, use a USB cable.</string>
     <string name="empty_search">No search results found</string>
     <string name="error_permission_denied">App can\'t work with permission to read storage and phone state!</string>
+    <string name="empty_recents">There are no tracks listened yet.</string>
 
 </resources>

@@ -12,10 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import static android.view.View.GONE;
 
@@ -26,9 +24,15 @@ import static android.view.View.GONE;
  */
 public class FolderAdapter extends ArrayAdapter<File> {
 
-    private final int mLayoutId;
+    /**
+     * fragment layout inflater
+     */
+    private LayoutInflater inflater;
 
-    private ArrayList<DataHolder> mData = new ArrayList<>();
+    /**
+     * layout item ID
+     */
+    private final int mLayoutId;
 
     /**
      * @param context application context
@@ -37,52 +41,34 @@ public class FolderAdapter extends ArrayAdapter<File> {
     public FolderAdapter(Context context, @LayoutRes int redId) {
         super(context, redId);
         mLayoutId = redId;
+        // layout inflater from context
+        inflater = LayoutInflater.from(context);
     }
 
 
     @NonNull
     @Override
-    public View getView(int paramInt, @Nullable View paramView, @NonNull ViewGroup paramViewGroup) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup container) {
         MusicHolder holder;
-        if (paramView == null) {
-            paramView = LayoutInflater.from(getContext()).inflate(mLayoutId, paramViewGroup, false);
-            float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
-            holder = new MusicHolder(paramView);
-            holder.mImage.setVisibility(GONE);
+        if (convertView == null) {
+            // inflate view
+            convertView = inflater.inflate(mLayoutId, container, false);
+            holder = new MusicHolder(convertView);
+            // disable unnecessary views
             holder.mLineTwo.setVisibility(GONE);
             holder.mLineThree.setVisibility(GONE);
+            // set text size
+            float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
             holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-            if (holder.mBackground != null)
-                holder.mBackground.setVisibility(GONE);
-            paramView.setTag(holder);
+            // set folder ICON
+            holder.mLineOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.folder, 0, 0, 0);
+            // attach holder to view
+            convertView.setTag(holder);
         } else {
-            holder = (MusicHolder) paramView.getTag();
+            holder = (MusicHolder) convertView.getTag();
         }
-        DataHolder dataHolder1 = mData.get(paramInt);
-        holder.mLineOne.setText(dataHolder1.mLineOne);
-        return paramView;
-    }
-
-
-    @Override
-    public void clear() {
-        super.clear();
-        mData.clear();
-    }
-
-    /**
-     * build data cache
-     */
-    public void buildCache() {
-        mData.clear();
-        mData.ensureCapacity(getCount());
-        for (int i = 0; i < getCount(); i++) {
-            File file = getItem(i);
-            if (file != null) {
-                DataHolder holder = new DataHolder();
-                holder.mLineOne = file.getName();
-                mData.add(holder);
-            }
-        }
+        String name = getItem(position).getName();
+        holder.mLineOne.setText(name);
+        return convertView;
     }
 }

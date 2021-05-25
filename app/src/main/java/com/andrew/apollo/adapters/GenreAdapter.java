@@ -22,11 +22,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.adapters.MusicHolder.DataHolder;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.ui.fragments.GenreFragment;
-
-import java.util.ArrayList;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the genres on a user's
@@ -42,14 +39,14 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
     private static final int VIEW_TYPE_COUNT = 1;
 
     /**
-     * The resource Id of the layout to inflate
+     * fragment layout inflater
      */
-    private final int mLayoutId;
+    private LayoutInflater inflater;
 
     /**
-     * Used to cache the genre info
+     * The resource Id of the layout to inflate
      */
-    private ArrayList<DataHolder> mData = new ArrayList<>();
+    private int mLayoutId;
 
     /**
      * Constructor of <code>GenreAdapter</code>
@@ -57,10 +54,12 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
      * @param context  The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
-    public GenreAdapter(final Context context, final int layoutId) {
+    public GenreAdapter(Context context, int layoutId) {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
+        //
+        inflater = LayoutInflater.from(context);
     }
 
     /**
@@ -72,7 +71,7 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the second and third lines of text
             holder.mLineTwo.setVisibility(View.GONE);
@@ -84,9 +83,9 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the data holder
-        DataHolder dataHolder = mData.get(position);
+        Genre genre = getItem(position);
         // Set each genre name (line one)
-        holder.mLineOne.setText(dataHolder.mLineOne);
+        holder.mLineOne.setText(genre.getName());
         return convertView;
     }
 
@@ -104,37 +103,5 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
     @Override
     public int getViewTypeCount() {
         return VIEW_TYPE_COUNT;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void clear() {
-        super.clear();
-        mData.clear();
-    }
-
-    /**
-     * Method used to cache the data used to populate the list or grid. The idea
-     * is to cache everything before {@code #getView(int, View, ViewGroup)} is
-     * called.
-     */
-    public void buildCache() {
-        mData.clear();
-        mData.ensureCapacity(getCount());
-        for (int i = 0; i < getCount(); i++) {
-            // Build the artist
-            Genre genre = getItem(i);
-            if (genre != null) {
-                // Build the data holder
-                DataHolder holder = new DataHolder();
-                // Genre Id
-                holder.mItemId = genre.getId();
-                // Genre names (line one)
-                holder.mLineOne = genre.getName();
-                mData.add(holder);
-            }
-        }
     }
 }

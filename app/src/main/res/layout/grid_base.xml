@@ -19,7 +19,6 @@
     android:orientation="vertical"
     android:padding="@dimen/list_preferred_item_padding">
 
-
     <TextView
         android:id="@+id/grid_base_empty_info"
         android:layout_width="match_parent"

@@ -67,6 +67,10 @@ public class ImageFetcher extends ImageWorker {
      */
     private static final String DEFAULT_HTTP_CACHE_DIR = "http"; //$NON-NLS-1$
 
+    private static final ImageSize[] QUALITY = {
+            ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE,
+            ImageSize.MEDIUM, ImageSize.SMALL, ImageSize.UNKNOWN};
+
     private static ImageFetcher sInstance = null;
 
     /**
@@ -91,9 +95,8 @@ public class ImageFetcher extends ImageWorker {
         return sInstance;
     }
 
+
     private static String getBestImage(MusicEntry e) {
-        ImageSize[] QUALITY = {ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE, ImageSize.MEDIUM,
-                ImageSize.SMALL, ImageSize.UNKNOWN};
         for (ImageSize q : QUALITY) {
             String url = e.getImageURL(q);
             if (url != null) {

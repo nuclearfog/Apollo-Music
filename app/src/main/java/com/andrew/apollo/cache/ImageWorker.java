@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -45,11 +44,6 @@ public abstract class ImageWorker {
     private static final int FADE_IN_TIME = 200;
 
     /**
-     * Default artwork
-     */
-    private BitmapDrawable mDefaultArtwork;
-
-    /**
      * The resources to use
      */
     private Resources mResources;
@@ -58,11 +52,6 @@ public abstract class ImageWorker {
      * Layer drawable used to cross fade the result from the worker
      */
     private Drawable[] mArrayDrawable;
-
-    /**
-     * Default album art
-     */
-    private Bitmap mDefault;
 
     /**
      * The Context to use
@@ -82,14 +71,6 @@ public abstract class ImageWorker {
     protected ImageWorker(Context context) {
         mContext = context.getApplicationContext();
         mResources = mContext.getResources();
-        // Create the default artwork
-        Drawable bitmap = ResourcesCompat.getDrawable(context.getResources(), R.drawable.default_artwork, null);
-        if (bitmap != null)
-            mDefault = ((BitmapDrawable) bitmap).getBitmap();
-        mDefaultArtwork = new BitmapDrawable(mResources, mDefault);
-        // No filter and no dither makes things much quicker
-        mDefaultArtwork.setFilterBitmap(false);
-        mDefaultArtwork.setDither(false);
         // Create the transparent layer for the transition drawable
         ColorDrawable mCurrentDrawable = new ColorDrawable(mResources.getColor(R.color.transparent));
         // A transparent image (layer 0) and the new result (layer 1)
@@ -167,14 +148,6 @@ public abstract class ImageWorker {
     }
 
     /**
-     * @return The default artwork
-     */
-    @Nullable
-    public Bitmap getDefaultArtwork() {
-        return mDefault;
-    }
-
-    /**
      * Called to fetch the artist or ablum art.
      *
      * @param key        The unique identifier for the image.
@@ -201,7 +174,8 @@ public abstract class ImageWorker {
                     ApolloUtils.execute(false, bitmapWorkerTask, key, artistName, albumName, String.valueOf(albumId));
                 } catch (RejectedExecutionException e) {
                     // Executor has exhausted queue space, show default artwork
-                    imageView.setImageBitmap(getDefaultArtwork());
+
+                    imageView.setImageResource(R.drawable.default_artwork);
                 }
             }
         }
@@ -296,7 +270,7 @@ public abstract class ImageWorker {
          */
         public BitmapWorkerTask(ImageWorker callback, ImageView imageView, ImageType imageType) {
             super();
-            imageView.setBackground(callback.mDefaultArtwork);
+            imageView.setBackgroundResource(R.drawable.default_artwork);
             mImageReference = new WeakReference<>(imageView);
             this.callback = new WeakReference<>(callback);
             mImageType = imageType;

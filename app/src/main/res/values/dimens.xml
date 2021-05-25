@@ -36,7 +36,7 @@
     <!-- List item detailed padding -->
     <dimen name="list_item_detailed_padding">12dp</dimen>
     <!-- List item detailed padding -->
-    <dimen name="list_item_detailed_drawable_padding">6dp</dimen>
+    <dimen name="list_item_detailed_drawable_padding">16dp</dimen>
     <!-- Top margin of "line_two" -->
     <dimen name="list_item_line_two_margin_top">8.0dp</dimen>
     <!-- Left padding in the grid text -->

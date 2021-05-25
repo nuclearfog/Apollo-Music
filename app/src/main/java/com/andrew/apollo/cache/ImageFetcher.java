@@ -14,13 +14,17 @@ package com.andrew.apollo.cache;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.andrew.apollo.Config;
 import com.andrew.apollo.MusicPlaybackService;
+import com.andrew.apollo.R;
 import com.andrew.apollo.lastfm.Album;
 import com.andrew.apollo.lastfm.Artist;
 import com.andrew.apollo.lastfm.ImageSize;
@@ -393,5 +397,13 @@ public class ImageFetcher extends ImageWorker {
         }
         // scale down image
         return Bitmap.createScaledBitmap(artwork, NOTIFICATION_SIZE, NOTIFICATION_SIZE, false);
+    }
+
+
+    private Bitmap getDefaultArtwork() {
+        Drawable bitmap = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.default_artwork, null);
+        if (bitmap != null)
+            return ((BitmapDrawable) bitmap).getBitmap();
+        return null;
     }
 }

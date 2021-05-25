@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import com.andrew.apollo.R;
 
 /**
@@ -89,57 +87,5 @@ public class MusicHolder {
 
         // Initialize mLineThree
         mLineThree = view.findViewById(R.id.line_three);
-    }
-
-    /**
-     *
-     */
-    public final static class DataHolder {
-
-        /**
-         * This is the ID of the item being loaded in the adapter
-         */
-        public long mItemId;
-
-        /**
-         * This is the first line displayed in the list or grid
-         * <p>
-         * {@code #getView()} of a specific adapter for more detailed info
-         */
-        public String mLineOne;
-
-        /**
-         * This is displayed on the right side of the first line in the list or grid
-         * <p>
-         * {@code #getView()} of a specific adapter for more detailed info
-         */
-        public String mLineOneRight;
-
-        /**
-         * This is the second line displayed in the list or grid
-         * <p>
-         * {@code #getView()} of a specific adapter for more detailed info
-         */
-        public String mLineTwo;
-
-        /**
-         * This is the third line displayed in the list or grid
-         * <p>
-         * {@code #getView()} of a specific adapter for more detailed info
-         */
-        public String mLineThree;
-
-        /**
-         * Constructor of <code>ThemeHolder</code>
-         */
-        public DataHolder() {
-            super();
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return mLineOne + " - " + mLineTwo;
-        }
     }
 }

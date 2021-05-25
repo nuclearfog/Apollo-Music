@@ -89,6 +89,8 @@ public final class PreferenceUtils {
 
     private int themeColor;
 
+    private int startPage;
+
     /**
      * Constructor for <code>PreferenceUtils</code>
      *
@@ -97,6 +99,7 @@ public final class PreferenceUtils {
     private PreferenceUtils(Context context) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
+        startPage = mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
     }
 
     /**
@@ -116,7 +119,7 @@ public final class PreferenceUtils {
      * @return The page to start on when the app is opened.
      */
     public int getStartPage() {
-        return mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
+        return startPage;
     }
 
     /**
@@ -126,6 +129,7 @@ public final class PreferenceUtils {
      *              in {@link MusicBrowserPhoneFragment}.
      */
     public void setStartPage(int value) {
+        startPage = value;
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt(START_PAGE, value);
         editor.apply();

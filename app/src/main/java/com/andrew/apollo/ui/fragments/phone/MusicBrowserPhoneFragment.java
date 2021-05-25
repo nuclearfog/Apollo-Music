@@ -83,14 +83,14 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     private static final int ARTIST_INDEX = 2;
 
     /**
-     * index of {@link MusicFragments#SONG}
-     */
-    private static final int TRACKS_INDEX = 3;
-
-    /**
      * index of {@link MusicFragments#ALBUM}
      */
-    private static final int ALBUMS_INDEX = 4;
+    private static final int ALBUMS_INDEX = 3;
+
+    /**
+     * index of {@link MusicFragments#SONG}
+     */
+    private static final int TRACKS_INDEX = 4;
 
     /**
      * Pager
@@ -247,6 +247,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_A_Z);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_za) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_Z_A);
@@ -258,6 +259,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_Z_A);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_artist) {
             if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_ARTIST);
@@ -266,11 +268,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ARTIST);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_album) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ALBUM);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_year) {
             if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_YEAR);
@@ -279,11 +283,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_YEAR);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_duration) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_DURATION);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_number_of_songs) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_SONGS);
@@ -292,16 +298,19 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_NUMBER_OF_SONGS);
                 getCallback(ALBUMS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_number_of_albums) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_ALBUMS);
                 getCallback(ARTIST_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_sort_by_filename) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_FILENAME);
                 getCallback(TRACKS_INDEX).refresh();
             }
+            reset();
         } else if (vId == R.id.menu_view_as_simple) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("simple");
@@ -310,7 +319,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
             } else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumLayout("simple");
             }
-            NavUtils.goHome(requireActivity());
+            reset();
         } else if (vId == R.id.menu_view_as_detailed) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("detailed");
@@ -319,7 +328,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
             } else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumLayout("detailed");
             }
-            NavUtils.goHome(requireActivity());
+            reset();
         } else if (vId == R.id.menu_view_as_grid) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("grid");
@@ -328,7 +337,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
             } else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumLayout("grid");
             }
-            NavUtils.goHome(requireActivity());
+            reset();
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -341,6 +350,14 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     @Override
     public void onCenterItemClick(int position) {
         getCallback(position).setCurrentTrack();
+    }
+
+    /**
+     * save current page and reset app
+     */
+    private void reset() {
+        mPreferences.setStartPage(mViewPager.getCurrentItem());
+        NavUtils.goHome(requireActivity());
     }
 
     /**

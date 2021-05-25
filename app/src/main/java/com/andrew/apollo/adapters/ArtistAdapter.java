@@ -86,8 +86,9 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         if (convertView == null) {
             convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
-            if (!mLoadExtraData)
+            if (holder.mLineThree != null && !mLoadExtraData) {
                 holder.mLineThree.setVisibility(View.GONE);
+            }
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
@@ -105,7 +106,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
             // Number of songs (line three)
             String numTracks = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
             // Set the number of songs (line three)
-            holder.mLineThree.setText(numTracks);
+            if (holder.mLineThree != null)
+                holder.mLineThree.setText(numTracks);
             // Play the artist when the artwork is touched
             playArtist(holder.mImage, position);
         }

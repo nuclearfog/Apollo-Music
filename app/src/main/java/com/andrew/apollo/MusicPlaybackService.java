@@ -2324,7 +2324,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 mNextMediaPlayer.setScreenOnWhilePlaying(true);
                 mNextMediaPlayer.setWakeMode(musicService, PowerManager.PARTIAL_WAKE_LOCK);
                 mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-                if (setDataSourceImpl(mNextMediaPlayer, path)) {
+                if (setDataSourceImpl(mNextMediaPlayer, path)) { // fixme Invalid source can break music player
                     mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
                 } else {
                     if (mNextMediaPlayer != null) {

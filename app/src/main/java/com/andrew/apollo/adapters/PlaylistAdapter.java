@@ -38,26 +38,22 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
     private static final int VIEW_TYPE_COUNT = 1;
 
     /**
+     * item layout reource
+     */
+    private static final int LAYOUT = R.layout.list_item_simple;
+
+    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
 
     /**
-     * The resource Id of the layout to inflate
-     */
-    private final int mLayoutId;
-
-    /**
      * Constructor of <code>PlaylistAdapter</code>
      *
-     * @param context  The {@link Context} to use.
-     * @param layoutId The resource Id of the view to inflate.
+     * @param context The {@link Context} to use.
      */
-    public PlaylistAdapter(Context context, int layoutId) {
-        super(context, 0);
-        // Get the layout Id
-        mLayoutId = layoutId;
-        //
+    public PlaylistAdapter(Context context) {
+        super(context, LAYOUT);
         inflater = LayoutInflater.from(context);
     }
 
@@ -70,7 +66,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(LAYOUT, parent, false);
             holder = new MusicHolder(convertView);
             // Hide the second and third lines of text
             holder.mLineTwo.setVisibility(View.GONE);

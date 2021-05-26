@@ -31,10 +31,13 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.webkit.WebView;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -324,5 +327,28 @@ public final class ApolloUtils {
         if (v.getLayerType() != View.LAYER_TYPE_SOFTWARE) {
             v.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
+    }
+
+    /**
+     * register an ListView click listener for a sub view
+     *
+     * @param view      sub view of the view item
+     * @param container parent view of the view item
+     * @param pos       position of the view item
+     * @param id        Item ID
+     */
+    public static void registerItemViewListener(@NonNull View view, final ViewGroup container, final int pos, final long id) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (container instanceof AbsListView) {
+                    AbsListView list = ((AbsListView) container);
+                    list.performItemClick(v, pos, id);
+                } else if (container.getParent() instanceof AbsListView) {
+                    AbsListView list = ((AbsListView) container.getParent());
+                    list.performItemClick(v, pos, id);
+                }
+            }
+        });
     }
 }

@@ -14,10 +14,8 @@ package com.andrew.apollo.adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,12 +62,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     private boolean mLoadExtraData = false;
 
     /**
-     * Sets the album art on click listener to start playing them album when
-     * touched.
-     */
-    private boolean mTouchPlay = false;
-
-    /**
      * Constructor of <code>AlbumAdapter</code>
      *
      * @param context  The {@link Context} to use.
@@ -101,29 +93,34 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         }
         // Retrieve the data holder
         Album album = getItem(position);
-        // Set each album name (line one)
-        holder.mLineOne.setText(album.getName());
-        // Set the artist name (line two)
-        holder.mLineTwo.setText(album.getArtist());
-        // Asynchronously load the album images into the adapter
-        mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
-        // List view only items
-        if (mLoadExtraData) {
-            // Set the number of songs (line three)
-            String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
-            holder.mLineThree.setText(count);
-        }
-        if (mTouchPlay) {
-            // Play the album when the artwork is touched
-            playAlbum(holder.mImage, position);
+        if (album != null) {
+            // Set each album name (line one)
+            holder.mLineOne.setText(album.getName());
+            // Set the artist name (line two)
+            holder.mLineTwo.setText(album.getArtist());
+            // Asynchronously load the album images into the adapter
+            mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+            // List view only items
+            if (mLoadExtraData) {
+                // Set the number of songs (line three)
+                String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
+                holder.mLineThree.setText(count);
+                // register album art click listener
+                ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
+            }
         }
         return convertView;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getItemId(int position) {
-        return getItem(position).getId();
+        Album album = getItem(position);
+        if (album != null)
+            return album.getId();
+        return -position;
     }
 
     /**
@@ -143,26 +140,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     }
 
     /**
-     * Starts playing an album if the user touches the artwork in the list.
-     *
-     * @param albumCover The {@link ImageView} holding the album
-     * @param position   The position of the album to play.
-     */
-    private void playAlbum(ImageView albumCover, final int position) {
-        albumCover.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Album album = getItem(position);
-                if (album != null) {
-                    long id = album.getId();
-                    long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-                    MusicUtils.playAll(list, 0, false);
-                }
-            }
-        });
-    }
-
-    /**
      * @param pause True to temporarily pause the disk cache, false otherwise.
      */
     public void setPauseDiskCache(boolean pause) {
@@ -179,19 +156,9 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     }
 
     /**
-     * @param extra True to load line three and the background image, false
-     *              otherwise.
+     * enable extra information
      */
-    public void setLoadExtraData(boolean extra) {
-        mLoadExtraData = extra;
-        setTouchPlay(true);
-    }
-
-    /**
-     * @param play True to play the album when the artwork is touched, false
-     *             otherwise.
-     */
-    public void setTouchPlay(boolean play) {
-        mTouchPlay = play;
+    public void setLoadExtraData() {
+        mLoadExtraData = true;
     }
 }

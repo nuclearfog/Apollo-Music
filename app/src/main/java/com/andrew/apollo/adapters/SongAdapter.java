@@ -54,7 +54,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
     /**
      * flag to enable drag and drop icon
      */
-    private boolean enableDnD = false;
+    private boolean enableDnD;
 
     /**
      * Constructor of <code>SongAdapter</code>

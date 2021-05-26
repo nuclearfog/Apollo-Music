@@ -14,10 +14,8 @@ package com.andrew.apollo.adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -52,7 +50,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     /**
      * Image cache and image fetcher
      */
-    private final ImageFetcher mImageFetcher;
+    private ImageFetcher mImageFetcher;
 
     /**
      * Loads line three and the background image if the user decides to.
@@ -94,24 +92,36 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
             holder = (MusicHolder) convertView.getTag();
         }
         Artist artist = getItem(position);
-        // Number of albums (line two)
-        String numAlbums = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
-        // Set each artist name (line one)
-        holder.mLineOne.setText(artist.getName());
-        // Set the number of albums (line two)
-        holder.mLineTwo.setText(numAlbums);
-        // Asynchronously load the artist image into the adapter
-        mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
-        if (mLoadExtraData) {
-            // Number of songs (line three)
-            String numTracks = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
-            // Set the number of songs (line three)
-            if (holder.mLineThree != null)
-                holder.mLineThree.setText(numTracks);
-            // Play the artist when the artwork is touched
-            playArtist(holder.mImage, position);
+        if (artist != null) {
+            // Number of albums (line two)
+            String numAlbums = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
+            // Set each artist name (line one)
+            holder.mLineOne.setText(artist.getName());
+            // Set the number of albums (line two)
+            holder.mLineTwo.setText(numAlbums);
+            // Asynchronously load the artist image into the adapter
+            mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
+            if (mLoadExtraData) {
+                // Number of songs (line three)
+                String numTracks = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
+                // Set the number of songs (line three)
+                if (holder.mLineThree != null)
+                    holder.mLineThree.setText(numTracks);
+                // register artist art click listener
+                ApolloUtils.registerItemViewListener(holder.mImage, parent, position, artist.getId());
+            }
         }
         return convertView;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getItemId(int position) {
+        if (getItem(position) != null)
+            return getItem(position).getId();
+        return -position;
     }
 
     /**
@@ -131,28 +141,6 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     }
 
     /**
-     * Starts playing an artist if the user touches the artist image in the
-     * list.
-     *
-     * @param artist   The {@link ImageView} holding the aritst image
-     * @param position The position of the artist to play.
-     */
-    private void playArtist(ImageView artist, final int position) {
-        artist.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(final View v) {
-                Artist artist = getItem(position);
-                if (artist != null) {
-                    final long id = artist.getId();
-                    final long[] list = MusicUtils.getSongListForArtist(getContext(), id);
-                    MusicUtils.playAll(list, 0, false);
-                }
-            }
-        });
-    }
-
-    /**
      * @param pause True to temporarily pause the disk cache, false otherwise.
      */
     public void setPauseDiskCache(boolean pause) {
@@ -169,10 +157,9 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     }
 
     /**
-     * @param extra True to load line three and the background image, false
-     *              otherwise.
+     * enable extra information
      */
-    public void setLoadExtraData(boolean extra) {
-        mLoadExtraData = extra;
+    public void setLoadExtraData() {
+        mLoadExtraData = true;
     }
 }

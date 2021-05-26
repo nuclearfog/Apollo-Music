@@ -116,7 +116,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
-        mAdapter = new ArtistAlbumAdapter(requireActivity(), R.layout.list_item_detailed);
+        mAdapter = new ArtistAlbumAdapter(requireActivity());
     }
 
     /**
@@ -191,7 +191,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Get the position of the selected item
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         // Create a new album
-        mAlbum = mAdapter.getItem(info.position - 1);
+        mAlbum = mAdapter.getItem(info.position);
         // Create a list of the album's songs
         if (mAlbum != null) {
             mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
@@ -249,11 +249,18 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (position > 0) {
-            Album album = mAdapter.getItem(position - 1);
-            if (album != null) {
-                NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
-                requireActivity().finish();
+        if (view.getId() == R.id.image) {
+            // Album art was clicked
+            long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
+            MusicUtils.playAll(list, 0, false);
+        } else {
+            // open Album
+            if (position > 0) {
+                Album album = mAdapter.getItem(position);
+                if (album != null) {
+                    NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
+                    requireActivity().finish();
+                }
             }
         }
     }
@@ -309,12 +316,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Override
     public void onScrollStateChanged(int scrollState) {
-        if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-                || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-            mAdapter.setPauseDiskCache(true);
-        } else {
-            mAdapter.setPauseDiskCache(false);
-            mAdapter.notifyDataSetChanged();
-        }
+        boolean pauseCache = scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
+                || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
+        mAdapter.setPauseDiskCache(pauseCache);
     }
 }

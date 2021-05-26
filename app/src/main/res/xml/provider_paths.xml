@@ -2,7 +2,15 @@
 <paths>
 
     <external-path
-        name="apollo_share"
-        path="." />
+        name="apollo_music"
+        path="/" />
+
+    <external-files-path
+        name="apollo_music2"
+        path="/" />
+
+    <external-media-path
+        name="apollo_music3"
+        path="/" />
 
 </paths>

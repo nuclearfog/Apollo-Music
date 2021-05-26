@@ -115,7 +115,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     @Override
     public void onCreate(@Nullable Bundle extras) {
         super.onCreate(extras);
-        mAdapter = new FolderAdapter(requireContext(), R.layout.list_item_simple);
+        mAdapter = new FolderAdapter(requireContext());
     }
 
 

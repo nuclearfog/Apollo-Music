@@ -1409,15 +1409,24 @@ public final class MusicUtils {
      *
      */
     public static void playAllFromUserItemClick(ArrayAdapter<Song> adapter, int position) {
-        if (adapter.getViewTypeCount() > 1 && position == 0) {
+        if (position < adapter.getViewTypeCount() - 1) {
+            // invalid position
             return;
         }
-        long[] list = getSongListForAdapter(adapter);
-        int pos = adapter.getViewTypeCount() > 1 ? position - 1 : position;
-        if (list.length == 0) {
-            pos = 0;
+        // if view type count is greater than 1, a header exists at first position
+        // calculate position offset
+        int off = (adapter.getViewTypeCount() - 1);
+        // length of the arrayadapter
+        int len = adapter.getCount();
+        // calculate real position
+        position -= off;
+        // copy all IDs to an array
+        long[] list = new long[len - off];
+        for (int i = 0; i < list.length; i++) {
+            list[i] = adapter.getItemId(i + off);
         }
-        playAll(list, pos, false);
+        // play whole ID list
+        playAll(list, position, false);
     }
 
     /**
@@ -1494,25 +1503,6 @@ public final class MusicUtils {
         }
         // return path to the files
         return result;
-    }
-
-    /**
-     *
-     */
-    private static long[] getSongListForAdapter(ArrayAdapter<Song> adapter) {
-        if (adapter == null) {
-            return EMPTY_LIST;
-        }
-        long[] list;
-        int count = adapter.getCount() - (adapter.getViewTypeCount() > 1 ? 1 : 0);
-        list = new long[count];
-        for (int i = 0; i < count; i++) {
-            Song song = adapter.getItem(i);
-            if (song != null) {
-                list[i] = song.getId();
-            }
-        }
-        return list;
     }
 
     /**

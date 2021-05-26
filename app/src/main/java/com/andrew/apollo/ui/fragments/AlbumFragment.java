@@ -150,7 +150,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             mList = mRootView.findViewById(R.id.list_base);
             emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
-            mAdapter.setTouchPlay(true);
         } else {
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
             mList = mRootView.findViewById(R.id.grid_base);
@@ -158,14 +157,14 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             GridView grid = (GridView) mList;
             if (ApolloUtils.isLandscape(requireContext())) {
                 if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
+                    mAdapter.setLoadExtraData();
                     grid.setNumColumns(TWO);
                 } else {
                     grid.setNumColumns(FOUR);
                 }
             } else {
                 if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
+                    mAdapter.setLoadExtraData();
                     grid.setNumColumns(ONE);
                 } else {
                     grid.setNumColumns(TWO);
@@ -295,9 +294,14 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mAlbum = mAdapter.getItem(position);
-        if (mAlbum != null) {
-            NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+        if (view.getId() == R.id.image) {
+            long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
+            MusicUtils.playAll(list, 0, false);
+        } else {
+            mAlbum = mAdapter.getItem(position);
+            if (mAlbum != null) {
+                NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+            }
         }
     }
 

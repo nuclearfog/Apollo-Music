@@ -14,10 +14,8 @@ package com.andrew.apollo.adapters;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,7 +49,17 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     /**
      * Number of views (ImageView, TextView, header)
      */
-    private static final int VIEW_TYPE_COUNT = 3;
+    private static final int VIEW_TYPE_COUNT = 2;
+
+    /**
+     * count of header views
+     */
+    private static final int HEADER_COUNT = 1;
+
+    /**
+     * layout resource
+     */
+    private static final int LAYOUT = R.layout.list_item_detailed;
 
     /**
      * fragment layout inflater
@@ -64,11 +72,6 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     private View mHeader;
 
     /**
-     * The resource Id of the layout to inflate
-     */
-    private int mLayoutId;
-
-    /**
      * Image cache and image fetcher
      */
     private ImageFetcher mImageFetcher;
@@ -76,16 +79,13 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     /**
      * Constructor of <code>ArtistAlbumAdapter</code>
      *
-     * @param context  The {@link Context} to use
-     * @param layoutId The resource Id of the view to inflate.
+     * @param context The {@link Context} to use
      */
-    public ArtistAlbumAdapter(FragmentActivity context, int layoutId) {
+    public ArtistAlbumAdapter(FragmentActivity context) {
         super(context, 0);
         // Used to create the custom layout
         // Cache the header
         mHeader = View.inflate(context, R.layout.faux_carousel, null);
-        // Get the layout Id
-        mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
         // layout inflater from fragment
@@ -97,7 +97,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
         // Return a faux header at position 0
         if (position == 0) {
             return mHeader;
@@ -105,27 +105,25 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(LAYOUT, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the album
-        Album album = getItem(position - 1);
-
+        final Album album = getItem(position);
         if (album != null) {
-            String albumName = album.getName();
             // Set each album name (line one)
-            holder.mLineOne.setText(albumName);
+            holder.mLineOne.setText(album.getName());
             // Set the number of songs (line two)
             holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
             // Set the album year (line three)
             holder.mLineThree.setText(album.getRelease());
             // Asynchronously load the album images into the adapter
-            mImageFetcher.loadAlbumImage(album.getArtist(), albumName, album.getId(), holder.mImage);
-            // Play the album when the artwork is touched
-            playAlbum(holder.mImage, position);
+            mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+            // register album art click listener
+            ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
         }
         return convertView;
     }
@@ -143,8 +141,18 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @Override
     public int getCount() {
-        int size = super.getCount();
-        return size == 0 ? 0 : size + 1;
+        return HEADER_COUNT + super.getCount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public Album getItem(int position) {
+        if (position >= HEADER_COUNT)
+            return super.getItem(position - HEADER_COUNT);
+        return null;
     }
 
     /**
@@ -152,10 +160,18 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @Override
     public long getItemId(int position) {
-        if (position == 0) {
-            return -1;
-        }
-        return position - 1;
+        Album album = getItem(position);
+        if (album != null)
+            return album.getId();
+        return -position;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+        return super.getCount() == 0;
     }
 
     /**
@@ -171,30 +187,9 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position == 0)
             return ITEM_VIEW_TYPE_HEADER;
-        }
         return ITEM_VIEW_TYPE_MUSIC;
-    }
-
-    /**
-     * Starts playing an album if the user touches the artwork in the list.
-     *
-     * @param album    The {@link ImageView} holding the album
-     * @param position The position of the album to play.
-     */
-    private void playAlbum(ImageView album, final int position) {
-        album.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Album album = getItem(position - 1);
-                if (album != null) {
-                    long id = album.getId();
-                    long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-                    MusicUtils.playAll(list, 0, false);
-                }
-            }
-        });
     }
 
     /**

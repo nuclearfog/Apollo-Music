@@ -164,14 +164,14 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             GridView grid = (GridView) mList;
             if (ApolloUtils.isLandscape(requireContext())) {
                 if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
+                    mAdapter.setLoadExtraData();
                     grid.setNumColumns(TWO);
                 } else {
                     grid.setNumColumns(FOUR);
                 }
             } else {
                 if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
+                    mAdapter.setLoadExtraData();
                     grid.setNumColumns(ONE);
                 } else {
                     grid.setNumColumns(TWO);
@@ -293,10 +293,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mArtist = mAdapter.getItem(position);
-        if (mArtist != null) {
-            NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
+    public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
+        if (view.getId() == R.id.image) {
+            long[] list = MusicUtils.getSongListForArtist(getContext(), id);
+            MusicUtils.playAll(list, 0, false);
+        } else {
+            mArtist = mAdapter.getItem(position);
+            if (mArtist != null) {
+                NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
+            }
         }
     }
 

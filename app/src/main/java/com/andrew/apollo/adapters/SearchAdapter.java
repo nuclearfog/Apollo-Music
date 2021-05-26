@@ -34,6 +34,11 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     private static final int VIEW_TYPE_COUNT = 2;
 
     /**
+     * layout resource file
+     */
+    private static final int LAYOUT = R.layout.list_item_detailed;
+
+    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
@@ -59,7 +64,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
      * @param activity The {@link FragmentActivity} to use.
      */
     public SearchAdapter(FragmentActivity activity) {
-        super(activity, 0);
+        super(activity, LAYOUT);
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(activity);
         // Create the prefix highlighter
@@ -75,7 +80,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         MusicHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.list_item_detailed, parent, false);
+            convertView = inflater.inflate(LAYOUT, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);
         } else {

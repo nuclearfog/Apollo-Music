@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -25,22 +24,20 @@ import static android.view.View.GONE;
 public class FolderAdapter extends ArrayAdapter<File> {
 
     /**
+     * item layout reource
+     */
+    private static final int LAYOUT = R.layout.list_item_simple;
+
+    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
 
     /**
-     * layout item ID
-     */
-    private final int mLayoutId;
-
-    /**
      * @param context application context
-     * @param redId   ID of the view item
      */
-    public FolderAdapter(Context context, @LayoutRes int redId) {
-        super(context, redId);
-        mLayoutId = redId;
+    public FolderAdapter(Context context) {
+        super(context, LAYOUT);
         // layout inflater from context
         inflater = LayoutInflater.from(context);
     }
@@ -52,7 +49,7 @@ public class FolderAdapter extends ArrayAdapter<File> {
         MusicHolder holder;
         if (convertView == null) {
             // inflate view
-            convertView = inflater.inflate(mLayoutId, container, false);
+            convertView = inflater.inflate(LAYOUT, container, false);
             holder = new MusicHolder(convertView);
             // disable unnecessary views
             holder.mLineTwo.setVisibility(GONE);

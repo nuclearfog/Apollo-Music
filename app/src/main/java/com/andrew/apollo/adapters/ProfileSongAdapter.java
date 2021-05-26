@@ -73,7 +73,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * Count of the view header
      */
-    private static final int HEADER_COUNT = 1;
+    public static final int ADAPTER_HEADER_COUNT = 1;
 
     /**
      * item layout
@@ -144,7 +144,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         }
 
         // Retrieve the album
-        Song song = getItem(position - 1);
+        Song song = getItem(position);
         if (song != null) {
             // Set each track name (line one)
             holder.mLineOne.setText(song.getName());
@@ -191,12 +191,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public int getCount() {
-        if (super.getCount() > 0) {
-            // count header + items
-            return HEADER_COUNT + super.getCount();
-        }
-        // count only the header
-        return HEADER_COUNT;
+        return ADAPTER_HEADER_COUNT + super.getCount();
     }
 
     /**
@@ -204,7 +199,10 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public long getItemId(int position) {
-        return position - 1;
+        Song song = getItem(position);
+        if (song != null)
+            return song.getId();
+        return position;
     }
 
     /**
@@ -220,10 +218,28 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        if (position == 0)
             return ITEM_VIEW_TYPE_HEADER;
-        }
         return ITEM_VIEW_TYPE_MUSIC;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public Song getItem(int position) {
+        if (position >= ADAPTER_HEADER_COUNT)
+            return super.getItem(position - ADAPTER_HEADER_COUNT);
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+        return super.getCount() == 0;
     }
 
     /**

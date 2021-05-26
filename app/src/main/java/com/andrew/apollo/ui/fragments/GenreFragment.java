@@ -88,7 +88,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        mAdapter = new GenreAdapter(requireContext(), R.layout.list_item_simple);
+        mAdapter = new GenreAdapter(requireContext());
     }
 
     /**

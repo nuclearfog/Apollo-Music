@@ -56,6 +56,7 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.ADAPTER_HEADER_COUNT;
 import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
 
 /**
@@ -312,11 +313,9 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public float getSpeed(float w) {
-        if (w > 0.8f) {
+        if (w > 0.8f)
             return mAdapter.getCount() / 0.001f;
-        } else {
-            return 10.0f * w;
-        }
+        return 10.0f * w;
     }
 
     /**
@@ -324,7 +323,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public void remove(int which) {
-        mSong = mAdapter.getItem(which - 1);
+        mSong = mAdapter.getItem(which);
         if (mSong != null) {
             ContentResolver resolver = requireActivity().getContentResolver();
             Uri uri = Members.getContentUri("external", mPlaylistId);
@@ -344,8 +343,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             mAdapter.notifyDataSetChanged();
         } else if (from != to) {
             // calculate relative index
-            from = from - 1;
-            to = to - 1;
+            from = from - ADAPTER_HEADER_COUNT;
+            to = to - ADAPTER_HEADER_COUNT;
             ContentResolver resolver = requireActivity().getContentResolver();
             Members.moveItem(resolver, mPlaylistId, from, to);
             mAdapter.moveTrack(from, to);

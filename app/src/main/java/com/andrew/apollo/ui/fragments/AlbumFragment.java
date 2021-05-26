@@ -79,6 +79,11 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     private static final int ONE = 1, TWO = 2, FOUR = 4;
 
     /**
+     * app settings
+     */
+    private PreferenceUtils preference;
+
+    /**
      * The adapter for the grid
      */
     private AlbumAdapter mAdapter;
@@ -110,6 +115,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        // init preferences
+        preference = PreferenceUtils.getInstance(context);
         // Register the music status listener
         if (context instanceof AppCompatBase) {
             ((AppCompatBase) context).setMusicStateListenerListener(this);
@@ -122,15 +129,13 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int layout;
-        if (isSimpleLayout()) {
-            layout = R.layout.list_item_normal;
-        } else if (isDetailedLayout()) {
-            layout = R.layout.list_item_detailed;
+        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
+        } else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
         } else {
-            layout = R.layout.grid_items_normal;
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_items_normal);
         }
-        mAdapter = new AlbumAdapter(requireActivity(), layout);
     }
 
     /**
@@ -141,7 +146,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         // initialize views
         View mRootView;
         TextView emptyInfo;
-        if (isSimpleLayout()) {
+        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
             mRootView = inflater.inflate(R.layout.list_base, container, false);
             mList = mRootView.findViewById(R.id.list_base);
             emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
@@ -150,13 +155,34 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
             mList = mRootView.findViewById(R.id.grid_base);
             emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
-            setGridRowCount();
+            GridView grid = (GridView) mList;
+            if (ApolloUtils.isLandscape(requireContext())) {
+                if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    grid.setNumColumns(TWO);
+                } else {
+                    grid.setNumColumns(FOUR);
+                }
+            } else {
+                if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    grid.setNumColumns(ONE);
+                } else {
+                    grid.setNumColumns(TWO);
+                }
+            }
         }
         // set adapter and empty view for the list
         mList.setAdapter(mAdapter);
         mList.setEmptyView(emptyInfo);
-        // Set up the helpers
-        initAbsListView();
+        // Release any references to the recycled Views
+        mList.setRecyclerListener(new RecycleHolder());
+        // Listen for ContextMenus to be created
+        mList.setOnCreateContextMenuListener(this);
+        // Show the albums and songs from the selected artist
+        mList.setOnItemClickListener(this);
+        // To help make scrolling smooth
+        mList.setOnScrollListener(this);
         return mRootView;
     }
 
@@ -372,48 +398,5 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onMetaChanged() {
         // Nothing to do
-    }
-
-    /**
-     * Sets up various helpers for both the list and grid
-     */
-    private void initAbsListView() {
-        // Release any references to the recycled Views
-        mList.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
-        mList.setOnCreateContextMenuListener(this);
-        // Show the albums and songs from the selected artist
-        mList.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mList.setOnScrollListener(this);
-    }
-
-    private void setGridRowCount() {
-        if (!(mList instanceof GridView))
-            return;
-        GridView grid = (GridView) mList;
-        if (ApolloUtils.isLandscape(requireContext())) {
-            if (isDetailedLayout()) {
-                mAdapter.setLoadExtraData(true);
-                grid.setNumColumns(TWO);
-            } else {
-                grid.setNumColumns(FOUR);
-            }
-        } else {
-            if (isDetailedLayout()) {
-                mAdapter.setLoadExtraData(true);
-                grid.setNumColumns(ONE);
-            } else {
-                grid.setNumColumns(TWO);
-            }
-        }
-    }
-
-    private boolean isSimpleLayout() {
-        return PreferenceUtils.getInstance(requireContext()).isSimpleLayout(ALBUM_LAYOUT);
-    }
-
-    private boolean isDetailedLayout() {
-        return PreferenceUtils.getInstance(requireContext()).isDetailedLayout(ALBUM_LAYOUT);
     }
 }

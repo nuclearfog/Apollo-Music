@@ -65,16 +65,17 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
      */
     private long[] selectedFolderSongs = {};
 
+    /**
+     * listview adapter for music folder view
+     */
     private FolderAdapter mAdapter;
-
-    private ListView mList;
 
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle extras) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle extras) {
         // Init views
-        View mRootView = inflater.inflate(R.layout.list_base, parent, false);
-        mList = mRootView.findViewById(R.id.list_base);
+        View mRootView = inflater.inflate(R.layout.list_base, container, false);
+        ListView mList = mRootView.findViewById(R.id.list_base);
         TextView emptyholder = mRootView.findViewById(R.id.list_base_empty_info);
         // set listview
         mList.setAdapter(mAdapter);
@@ -119,8 +120,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
 
     @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View paramView, ContextMenuInfo info) {
-        super.onCreateContextMenu(menu, paramView, info);
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo info) {
+        super.onCreateContextMenu(menu, v, info);
         if (info instanceof AdapterContextMenuInfo) {
             AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) info;
             File mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
@@ -133,7 +134,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 
     @NonNull
     @Override
-    public Loader<List<File>> onCreateLoader(int paramInt, Bundle paramBundle) {
+    public Loader<List<File>> onCreateLoader(int id, Bundle args) {
         return new FolderLoader(requireContext());
     }
 
@@ -157,10 +158,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         if (mAdapter.getCount() != data.size()) {
             // Clear list
             mAdapter.clear();
-            if (data.isEmpty()) {
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            if (!data.isEmpty()) {
                 for (File file : data) {
                     mAdapter.add(file);
                 }

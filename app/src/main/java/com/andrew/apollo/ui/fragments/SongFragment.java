@@ -248,12 +248,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
-            // Check for any errors
-            if (data.isEmpty()) {
-                // Set the empty text
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // add items to adapter
+            if (!data.isEmpty()) {
                 // Add the data to the adapter
                 for (Song song : data) {
                     mAdapter.add(song);

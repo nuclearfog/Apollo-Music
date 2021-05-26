@@ -128,6 +128,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         View rootView = inflater.inflate(R.layout.list_base, container, false);
         // empty info
         TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
+        // setup empty text
+        emptyInfo.setText(R.string.empty_artst_albums);
         // Initialize the list
         mList = rootView.findViewById(R.id.list_base);
         // Set the data behind the grid
@@ -273,10 +275,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
         // Start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // Add the data to the adpater
             for (Album album : data) {
                 mAdapter.add(album);
@@ -302,7 +301,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
-        mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }
 

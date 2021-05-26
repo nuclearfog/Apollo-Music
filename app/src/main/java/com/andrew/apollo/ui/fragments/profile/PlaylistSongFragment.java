@@ -85,11 +85,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     private ProfileSongAdapter mAdapter;
 
     /**
-     *
-     */
-    private DragSortListView mListView;
-
-    /**
      * Represents a song
      */
     @Nullable
@@ -137,7 +132,9 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         // empty info
         TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
-        mListView = rootView.findViewById(R.id.list_base);
+        DragSortListView mListView = rootView.findViewById(R.id.list_base);
+        // setup empty text
+        emptyInfo.setText(R.string.empty_playlist);
         // Set the data behind the list
         mListView.setAdapter(mAdapter);
         // Set empty list info
@@ -292,10 +289,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mListView.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mListView.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // Add the data to the adpater
             for (Song song : data) {
                 mAdapter.add(song);

@@ -26,7 +26,8 @@
         android:paddingLeft="@dimen/list_empty_text_padding"
         android:paddingRight="@dimen/list_empty_text_padding"
         android:paddingStart="@dimen/list_empty_text_padding"
-        android:paddingEnd="@dimen/list_empty_text_padding" />
+        android:paddingEnd="@dimen/list_empty_text_padding"
+        android:visibility="gone" />
 
     <com.andrew.apollo.dragdrop.DragSortListView
         android:id="@+id/list_base"

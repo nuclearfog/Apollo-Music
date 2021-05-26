@@ -48,7 +48,7 @@ import com.andrew.apollo.menu.PhotoSelectionDialog.ProfileType;
 import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
 import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
-import com.andrew.apollo.ui.fragments.profile.FavoriteFragment;
+import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
 import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -101,7 +101,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     public static final String PAGE_FOLDERS = "page_folders";
     /**
-     * mime type of the {@link FavoriteFragment}
+     * mime type of the {@link FavoriteSongFragment}
      */
     public static final String PAGE_FAVORIT = "page_fav";
     /**

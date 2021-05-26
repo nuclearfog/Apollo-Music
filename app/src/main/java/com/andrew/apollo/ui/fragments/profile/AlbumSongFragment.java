@@ -257,10 +257,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // Add the data to the adpater
             for (Song song : data) {
                 mAdapter.add(song);
@@ -286,7 +283,6 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
-        mAdapter.notifyDataSetChanged();
         LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
     }
 }

@@ -263,10 +263,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // Add the data to the adpater
             for (Song song : data) {
                 mAdapter.add(song);

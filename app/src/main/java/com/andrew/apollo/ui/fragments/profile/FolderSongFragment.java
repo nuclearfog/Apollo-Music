@@ -222,10 +222,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
     public void onLoadFinished(@NonNull Loader<List<Song>> paramLoader, @NonNull List<Song> data) {
         // start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mList.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mList.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // add items to adapter
             for (Song song : data) {
                 mAdapter.add(song);

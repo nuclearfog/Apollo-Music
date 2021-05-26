@@ -121,8 +121,10 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        // init app settings
+        prefs = PreferenceUtils.getInstance(context);
+        // Register the music status listener
         if (context instanceof AppCompatBase) {
-            // Register the music status listener
             ((AppCompatBase) context).setMusicStateListenerListener(this);
         }
     }
@@ -134,7 +136,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        prefs = PreferenceUtils.getInstance(requireContext());
         if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
             mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_simple);
         } else if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
@@ -160,12 +161,35 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
             emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
             mList = mRootView.findViewById(R.id.grid_base);
-            initGrid();
+            GridView grid = (GridView) mList;
+            if (ApolloUtils.isLandscape(requireContext())) {
+                if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    grid.setNumColumns(TWO);
+                } else {
+                    grid.setNumColumns(FOUR);
+                }
+            } else {
+                if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    grid.setNumColumns(ONE);
+                } else {
+                    grid.setNumColumns(TWO);
+                }
+            }
         }
         // setup list view
         mList.setAdapter(mAdapter);
+        // setup empty view
         mList.setEmptyView(emptyHolder);
-        initAbsListView();
+        // Release any references to the recycled Views
+        mList.setRecyclerListener(new RecycleHolder());
+        // Listen for ContextMenus to be created
+        mList.setOnCreateContextMenuListener(this);
+        // Show the albums and songs from the selected artist
+        mList.setOnItemClickListener(this);
+        // To help make scrolling smooth
+        mList.setOnScrollListener(this);
         return mRootView;
     }
 
@@ -293,11 +317,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
-            // Check for any errors
-            if (data.isEmpty()) {
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            if (!data.isEmpty()) {
                 // Add the data to the adapter
                 for (Artist artist : data) {
                     mAdapter.add(artist);
@@ -376,41 +396,5 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             }
         }
         return 0;
-    }
-
-    /**
-     * Sets up various helpers for both the list and grid
-     */
-    private void initAbsListView() {
-        // Release any references to the recycled Views
-        mList.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
-        mList.setOnCreateContextMenuListener(this);
-        // Show the albums and songs from the selected artist
-        mList.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mList.setOnScrollListener(this);
-    }
-
-
-    private void initGrid() {
-        if (!(mList instanceof GridView))
-            return;
-        GridView grid = (GridView) mList;
-        if (ApolloUtils.isLandscape(requireContext())) {
-            if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                mAdapter.setLoadExtraData(true);
-                grid.setNumColumns(TWO);
-            } else {
-                grid.setNumColumns(FOUR);
-            }
-        } else {
-            if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                mAdapter.setLoadExtraData(true);
-                grid.setNumColumns(ONE);
-            } else {
-                grid.setNumColumns(TWO);
-            }
-        }
     }
 }

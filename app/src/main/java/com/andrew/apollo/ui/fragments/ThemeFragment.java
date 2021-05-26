@@ -29,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -92,7 +93,10 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // init views
         View rootView = inflater.inflate(R.layout.grid_base, container, false);
+        TextView emptyInfo = rootView.findViewById(R.id.grid_base_empty_info);
         GridView mGridView = rootView.findViewById(R.id.grid_base);
+        // disable empty view holder
+        emptyInfo.setVisibility(View.GONE);
         // init adapter
         mAdapter = new ThemesAdapter(requireContext());
         // Release any reference to the recycled Views

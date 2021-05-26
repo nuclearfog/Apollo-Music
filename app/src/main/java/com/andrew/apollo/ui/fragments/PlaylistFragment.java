@@ -78,11 +78,6 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     private static final int LOADER = 0x1FF07B83;
 
     /**
-     * fragment list view
-     */
-    private ListView mList;
-
-    /**
      * The adapter for the list
      */
     private PlaylistAdapter mAdapter;
@@ -131,7 +126,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         // empty info
         TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // list view
-        mList = rootView.findViewById(R.id.list_base);
+        ListView mList = rootView.findViewById(R.id.list_base);
         // setup list view
         mList.setAdapter(mAdapter);
         mList.setEmptyView(emptyInfo);
@@ -265,10 +260,8 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
-            if (data.isEmpty()) {
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // set items to list
+            if (!data.isEmpty()) {
                 // Add the data to the adapter
                 for (Playlist playlist : data) {
                     mAdapter.add(playlist);

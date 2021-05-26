@@ -75,11 +75,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     private ProfileSongAdapter mAdapter;
 
     /**
-     * The list view
-     */
-    private ListView mListView;
-
-    /**
      * Selected track
      */
     @Nullable
@@ -126,7 +121,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         // empty info
         TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
-        mListView = rootView.findViewById(R.id.list_base);
+        ListView mListView = rootView.findViewById(R.id.list_base);
         // Set the data behind the list
         mListView.setAdapter(mAdapter);
         // Set empty list info
@@ -255,10 +250,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // Start fresh
         mAdapter.clear();
-        if (data.isEmpty()) {
-            mListView.getEmptyView().setVisibility(View.VISIBLE);
-        } else {
-            mListView.getEmptyView().setVisibility(View.INVISIBLE);
+        if (!data.isEmpty()) {
             // Add the data to the adpater
             for (Song song : data) {
                 mAdapter.add(song);

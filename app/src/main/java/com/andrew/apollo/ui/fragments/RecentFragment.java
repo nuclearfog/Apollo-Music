@@ -156,14 +156,36 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             mRootView = inflater.inflate(R.layout.grid_base, container, false);
             emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
             mList = mRootView.findViewById(R.id.grid_base);
-            initGrid();
+            GridView mGridView = (GridView) mList;
+            if (ApolloUtils.isLandscape(requireContext())) {
+                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    mGridView.setNumColumns(TWO);
+                } else {
+                    mGridView.setNumColumns(FOUR);
+                }
+            } else {
+                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
+                    mAdapter.setLoadExtraData(true);
+                    mGridView.setNumColumns(ONE);
+                } else {
+                    mGridView.setNumColumns(TWO);
+                }
+            }
         }
         // sets the empty view
         emptyInfo.setText(R.string.empty_recents);
         mList.setEmptyView(emptyInfo);
         // Set the data behind the list
         mList.setAdapter(mAdapter);
-        initAbsListView();
+        // Release any references to the recycled Views
+        mList.setRecyclerListener(new RecycleHolder());
+        // Listen for ContextMenus to be created
+        mList.setOnCreateContextMenuListener(this);
+        // Show the albums and songs from the selected artist
+        mList.setOnItemClickListener(this);
+        // To help make scrolling smooth
+        mList.setOnScrollListener(this);
         return mRootView;
     }
 
@@ -304,11 +326,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         if (mAdapter.getCount() != data.size()) {
             // Start fresh
             mAdapter.clear();
-            if (data.isEmpty()) {
-                // Set the empty text
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
+            // add items to list
+            if (!data.isEmpty()) {
                 // Add the data to the adapter
                 for (Album album : data) {
                     mAdapter.add(album);
@@ -365,42 +384,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     public void setCurrentTrack() {
         if (!mAdapter.isEmpty()) {
             mList.smoothScrollToPosition(0);
-        }
-    }
-
-    /**
-     * Sets up various helpers for both the list and grid
-     */
-    private void initAbsListView() {
-        // Release any references to the recycled Views
-        mList.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
-        mList.setOnCreateContextMenuListener(this);
-        // Show the albums and songs from the selected artist
-        mList.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mList.setOnScrollListener(this);
-    }
-
-
-    private void initGrid() {
-        if (mList instanceof GridView) {
-            GridView mGridView = (GridView) mList;
-            if (ApolloUtils.isLandscape(requireContext())) {
-                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
-                    mGridView.setNumColumns(TWO);
-                } else {
-                    mGridView.setNumColumns(FOUR);
-                }
-            } else {
-                if (pref.isDetailedLayout(RECENT_LAYOUT)) {
-                    mAdapter.setLoadExtraData(true);
-                    mGridView.setNumColumns(ONE);
-                } else {
-                    mGridView.setNumColumns(TWO);
-                }
-            }
         }
     }
 }

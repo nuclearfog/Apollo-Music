@@ -166,5 +166,8 @@
     <string name="empty_search">No search results found</string>
     <string name="error_permission_denied">App can\'t work with permission to read storage and phone state!</string>
     <string name="empty_recents">There are no tracks listened yet.</string>
+    <string name="empty_playlist">Playlist is empty.</string>
+    <string name="empty_favorits">There are no tracks added to favorits!</string>
+    <string name="empty_artst_albums">There is no album of this artist</string>
 
 </resources>

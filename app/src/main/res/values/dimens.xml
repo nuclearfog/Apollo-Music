@@ -45,6 +45,9 @@
     <dimen name="list_item_text_padding">10dp</dimen>
     <!-- Grid and list item normal height -->
     <dimen name="item_normal_height">64.0dp</dimen>
+    <!-- Item theme settings -->
+    <dimen name="item_theme_text_padding">5dp</dimen>
+    <dimen name="item_theme_image_padding">10dp</dimen>
 
     <!-- Bottom Action Bar -->
     <dimen name="bottom_action_bar_height">48.0dp</dimen>

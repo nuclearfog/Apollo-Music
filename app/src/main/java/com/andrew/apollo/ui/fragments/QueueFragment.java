@@ -104,7 +104,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adpater
-        mAdapter = new SongAdapter(requireContext(), R.layout.edit_track_list_item);
+        mAdapter = new SongAdapter(requireContext(), true);
     }
 
     /**

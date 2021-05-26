@@ -50,6 +50,8 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
+
 /**
  * This class is used to display all of the songs the user put on their device
  * within the last four weeks.
@@ -108,8 +110,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple,
-                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING);
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
     }
 
     /**

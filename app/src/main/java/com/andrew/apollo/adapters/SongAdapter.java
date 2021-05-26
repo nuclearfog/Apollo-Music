@@ -21,6 +21,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.andrew.apollo.R;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
@@ -36,14 +37,14 @@ import com.andrew.apollo.utils.MusicUtils;
 public class SongAdapter extends ArrayAdapter<Song> {
 
     /**
+     * item layout
+     */
+    private static final int LAYOUT = R.layout.list_item_simple;
+
+    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
-
-    /**
-     * The resource Id of the layout to inflate
-     */
-    private int mLayoutId;
 
     /**
      * current item position of the current track
@@ -51,16 +52,19 @@ public class SongAdapter extends ArrayAdapter<Song> {
     private int nowplayingPos = -1;
 
     /**
+     * flag to enable drag and drop icon
+     */
+    private boolean enableDnD = false;
+
+    /**
      * Constructor of <code>SongAdapter</code>
      *
-     * @param context  The {@link Context} to use.
-     * @param layoutId The resource Id of the view to inflate.
+     * @param context The {@link Context} to use.
      */
-    public SongAdapter(Context context, int layoutId) {
-        super(context, 0);
-        // Get the layout Id
-        mLayoutId = layoutId;
+    public SongAdapter(Context context, boolean enableDrag) {
+        super(context, LAYOUT);
         inflater = LayoutInflater.from(context);
+        enableDnD = enableDrag;
     }
 
     /**
@@ -72,7 +76,9 @@ public class SongAdapter extends ArrayAdapter<Song> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(LAYOUT, parent, false);
+            if (enableDnD)
+                convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
             holder.mLineThree.setVisibility(View.GONE);

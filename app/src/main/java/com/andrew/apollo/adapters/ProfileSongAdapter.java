@@ -68,7 +68,17 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * Number of views (ImageView, TextView, header)
      */
-    private static final int VIEW_TYPE_COUNT = 3;
+    private static final int VIEW_TYPE_COUNT = 2;
+
+    /**
+     * Count of the view header
+     */
+    private static final int HEADER_COUNT = 1;
+
+    /**
+     * item layout
+     */
+    private static final int LAYOUT = R.layout.list_item_simple;
 
     /**
      * fragment layout inflater
@@ -78,46 +88,35 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * Fake header
      */
-    private final View mHeader;
-
-    /**
-     * The resource Id of the layout to inflate
-     */
-    private final int mLayoutId;
+    private View mHeader;
 
     /**
      * Display setting for the second line in a song fragment
      */
-    private final int mDisplaySetting;
+    private int mDisplaySetting;
+
+    /**
+     * flag to set drag and drop icon
+     */
+    private boolean enableDnD;
 
     /**
      * Constructor of <code>ProfileSongAdapter</code>
      *
-     * @param context  The {@link Context} to use
-     * @param layoutId The resource Id of the view to inflate.
-     * @param setting  defines the content of the second line
+     * @param context The {@link Context} to use
+     * @param setting defines the content of the second line
      */
-    public ProfileSongAdapter(Context context, int layoutId, int setting) {
-        super(context, 0);
+    public ProfileSongAdapter(Context context, int setting, boolean enableDrag) {
+        super(context, LAYOUT);
         // Used to create the custom layout
         // Cache the header
         mHeader = View.inflate(context, R.layout.faux_carousel, null);
-        // Get the layout Id
-        mLayoutId = layoutId;
         // Know what to put in line two
         mDisplaySetting = setting;
+        //
+        enableDnD = enableDrag;
         // inflater from context
         inflater = LayoutInflater.from(context);
-    }
-
-    /**
-     * Constructor of <code>ProfileSongAdapter</code>
-     *
-     * @param context  The {@link Context} to use
-     * @param layoutId The resource Id of the view to inflate.
-     */
-    public ProfileSongAdapter(Context context, int layoutId) {
-        this(context, layoutId, DISPLAY_DEFAULT_SETTING);
     }
 
     /**
@@ -133,7 +132,9 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(mLayoutId, parent, false);
+            convertView = inflater.inflate(LAYOUT, parent, false);
+            if (enableDnD)
+                convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
             holder.mLineThree.setVisibility(View.GONE);
@@ -190,9 +191,12 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     @Override
     public int getCount() {
-        if (super.getCount() > 0)
-            return super.getCount() + 1;
-        return 0;
+        if (super.getCount() > 0) {
+            // count header + items
+            return HEADER_COUNT + super.getCount();
+        }
+        // count only the header
+        return HEADER_COUNT;
     }
 
     /**

@@ -56,6 +56,8 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
+
 /**
  * This class is used to display all of the songs from a particular playlist.
  *
@@ -118,8 +120,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.edit_track_list_item,
-                ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING);
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
     }
 
     /**

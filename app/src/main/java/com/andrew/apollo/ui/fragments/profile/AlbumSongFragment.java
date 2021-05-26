@@ -50,6 +50,8 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_ALBUM_SETTING;
+
 /**
  * This class is used to display all of the songs from a particular album.
  *
@@ -106,8 +108,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple,
-                ProfileSongAdapter.DISPLAY_ALBUM_SETTING);
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
     }
 
     /**

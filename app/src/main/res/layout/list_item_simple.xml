@@ -23,6 +23,19 @@
     android:paddingLeft="@dimen/list_preferred_item_padding"
     android:paddingRight="@dimen/list_preferred_item_padding">
 
+    <ImageView
+        android:id="@+id/edit_track_list_item_handle"
+        android:layout_width="@dimen/drag_and_drop_handle"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:src="@drawable/threedots"
+        android:visibility="gone"
+        tools:ignore="ContentDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <TextView
         android:id="@+id/line_one"
         android:layout_width="0dp"
@@ -32,7 +45,7 @@
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
         android:drawablePadding="@dimen/list_item_detailed_drawable_padding"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edit_track_list_item_handle"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/line_two"
         app:layout_constraintEnd_toStartOf="@+id/line_one_right" />
@@ -58,7 +71,7 @@
         android:singleLine="true"
         android:textColor="@color/line_two"
         android:textSize="@dimen/text_size_small"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edit_track_list_item_handle"
         app:layout_constraintTop_toBottomOf="@id/line_one"
         app:layout_constraintBottom_toTopOf="@id/line_three"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -70,7 +83,7 @@
         android:singleLine="true"
         android:textColor="@color/line_three"
         android:textSize="@dimen/text_size_small"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edit_track_list_item_handle"
         app:layout_constraintTop_toBottomOf="@+id/line_two"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

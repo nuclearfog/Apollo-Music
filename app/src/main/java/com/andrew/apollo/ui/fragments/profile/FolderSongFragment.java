@@ -37,6 +37,7 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
 import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_FAVORITES;
 import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_PLAYLIST;
 import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_QUEUE;
@@ -83,7 +84,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onCreate(@Nullable Bundle paramBundle) {
         super.onCreate(paramBundle);
-        this.mAdapter = new ProfileSongAdapter(requireContext(), R.layout.list_item_simple, 1);
+        this.mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
     }
 
 

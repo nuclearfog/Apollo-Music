@@ -45,6 +45,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,6 +55,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
@@ -92,10 +94,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Message to refresh the time
      */
     private static final int MSG_ID = 0x65059CC4;
-    /**
-     * public path from where to share music files
-     */
-    private static final String AUTHORITY = "/";
+
     /**
      * The service token
      */
@@ -304,7 +303,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * {@inheritDoc}
      */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         MenuItem favorite = menu.findItem(R.id.menu_favorite);
         MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
         // Add fav icon
@@ -348,7 +347,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int vId = item.getItemId();
         if (vId == android.R.id.home) {
             // Go back to the home activity
@@ -497,7 +496,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         if (v.getId() == R.id.audio_player_header) {
             String albumname = MusicUtils.getAlbumName();
             String artistname = MusicUtils.getArtistName();
@@ -518,7 +517,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
     @Override
-    public void onRepeat(View v, long howlong, int repcnt) {
+    public void onRepeat(@NonNull View v, long howlong, int repcnt) {
         if (v.getId() == R.id.action_button_previous) {
             scanBackward(repcnt, howlong);
         } else if (v.getId() == R.id.action_button_next) {
@@ -644,7 +643,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
 
-    private long parseIdFromIntent(Intent intent, String longKey, String stringKey) {
+    private long parseIdFromIntent(@NonNull Intent intent, String longKey, String stringKey) {
         long id = intent.getLongExtra(longKey, -1);
         if (id < 0) {
             String idString = intent.getStringExtra(stringKey);
@@ -916,7 +915,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         if (path != null) {
             try {
                 File file = new File(path);
-                Uri fileUri = FileProvider.getUriForFile(this, AUTHORITY, file);
+                Uri fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);
 
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
@@ -956,7 +955,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             AudioPlayerActivity activity = mAudioPlayer.get();
             if (msg.what == MSG_ID && activity != null) {
                 long next = activity.refreshCurrentTime();

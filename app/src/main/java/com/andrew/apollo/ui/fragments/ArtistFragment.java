@@ -141,7 +141,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         } else if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
             mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_detailed);
         } else {
-            mAdapter = new ArtistAdapter(requireActivity(), R.layout.grid_items_normal);
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.grid_item_normal);
         }
     }
 

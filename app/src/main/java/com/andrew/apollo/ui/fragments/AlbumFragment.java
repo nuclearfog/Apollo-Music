@@ -134,7 +134,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         } else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
             mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
         } else {
-            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_items_normal);
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
         }
     }
 

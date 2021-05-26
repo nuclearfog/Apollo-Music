@@ -113,7 +113,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Create the adapter
-        mAdapter = new SongAdapter(requireContext(), R.layout.list_item_simple);
+        mAdapter = new SongAdapter(requireContext(), false);
     }
 
     /**

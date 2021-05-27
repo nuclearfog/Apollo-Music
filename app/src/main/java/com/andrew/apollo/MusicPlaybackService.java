@@ -42,7 +42,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
-import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -1065,7 +1064,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             long id = mPlayList.get(mNextPlayPos);
             mPlayer.setNextDataSource(Media.EXTERNAL_CONTENT_URI + "/" + id);
         } else {
-            mPlayer.setNextDataSource(null);
+            mPlayer.resetNextPlayer();
         }
     }
 
@@ -2231,8 +2230,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
         private final WeakReference<MusicPlaybackService> mService;
 
+        @NonNull
         private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
 
+        @Nullable
         private MediaPlayer mNextMediaPlayer;
 
         private Handler mHandler;
@@ -2254,7 +2255,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         public void setDataSource(String path) {
             mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path);
             if (mIsInitialized) {
-                setNextDataSource(null);
+                resetNextPlayer();
             }
         }
 
@@ -2265,7 +2266,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          * @return True if the <code>player</code> has been prepared and is
          * ready to play, false otherwise
          */
-        private boolean setDataSourceImpl(MediaPlayer player, String path) {
+        private boolean setDataSourceImpl(MediaPlayer player, @NonNull String path) {
             MusicPlaybackService musicService = mService.get();
             if (musicService != null) {
                 try {
@@ -2302,36 +2303,34 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          * @param path The path of the file, or the http/rtsp URL of the stream
          *             you want to play
          */
-        public void setNextDataSource(String path) {
+        public void setNextDataSource(@NonNull String path) {
             try {
-                mCurrentMediaPlayer.setNextMediaPlayer(null);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-                return;
-            }
-            if (mNextMediaPlayer != null) {
-                mNextMediaPlayer.release();
-                mNextMediaPlayer = null;
-            }
-            if (path == null) {
-                return;
-            }
-            MusicPlaybackService musicService = mService.get();
-            if (musicService != null) {
                 mNextMediaPlayer = new MediaPlayer();
-                mNextMediaPlayer.setScreenOnWhilePlaying(true);
-                mNextMediaPlayer.setWakeMode(musicService, PowerManager.PARTIAL_WAKE_LOCK);
                 mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-                if (setDataSourceImpl(mNextMediaPlayer, path)) { // fixme Invalid source can break music player
+                if (setDataSourceImpl(mNextMediaPlayer, path)) {
+                    // prepare next player
                     mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
                 } else {
-                    if (mNextMediaPlayer != null) {
-                        mNextMediaPlayer.release();
-                        mNextMediaPlayer = null;
-                    }
+                    // an error occured, reset next player
+                    resetNextPlayer();
                 }
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
+        }
+
+        /**
+         * remove next player
+         */
+        public void resetNextPlayer() {
+            try {
+                mCurrentMediaPlayer.setNextMediaPlayer(null);
+                if (mNextMediaPlayer != null) {
+                    mNextMediaPlayer.release();
+                    mNextMediaPlayer = null;
+                }
+            } catch (Exception err) {
+                err.printStackTrace();
             }
         }
 
@@ -2449,9 +2448,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         @Override
         public void onCompletion(MediaPlayer mp) {
             if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
+                // switch to next player
                 mCurrentMediaPlayer.release();
                 mCurrentMediaPlayer = mNextMediaPlayer;
                 mNextMediaPlayer = null;
+                //
                 mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
             } else {
                 mHandler.sendEmptyMessage(TRACK_ENDED);

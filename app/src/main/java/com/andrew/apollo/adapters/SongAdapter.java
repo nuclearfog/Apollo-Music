@@ -131,6 +131,17 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * {@inheritDoc}
      */
     @Override
+    public void remove(@Nullable Song song) {
+        int pos = getPosition(song);
+        if (pos < nowplayingPos)
+            nowplayingPos--;
+        super.remove(song);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasStableIds() {
         return true;
     }

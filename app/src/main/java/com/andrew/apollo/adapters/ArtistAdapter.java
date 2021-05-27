@@ -121,7 +121,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     public long getItemId(int position) {
         if (getItem(position) != null)
             return getItem(position).getId();
-        return -position;
+        return position;
     }
 
     /**

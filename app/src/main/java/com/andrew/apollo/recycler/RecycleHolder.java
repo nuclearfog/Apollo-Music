@@ -14,6 +14,7 @@ package com.andrew.apollo.recycler;
 import android.view.View;
 import android.widget.AbsListView.RecyclerListener;
 
+import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.MusicHolder;
 
 /**
@@ -36,10 +37,9 @@ public class RecycleHolder implements RecyclerListener {
             view.setTag(holder);
         }
 
-        // Release mImage's reference
+        // set default artwork
         if (holder.mImage != null) {
-            holder.mImage.setImageDrawable(null);
-            holder.mImage.setImageBitmap(null);
+            holder.mImage.setImageResource(R.drawable.default_artwork);
         }
 
         // Release mLineOne's reference

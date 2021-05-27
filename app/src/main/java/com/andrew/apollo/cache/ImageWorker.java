@@ -174,8 +174,7 @@ public abstract class ImageWorker {
                     ApolloUtils.execute(false, bitmapWorkerTask, key, artistName, albumName, String.valueOf(albumId));
                 } catch (RejectedExecutionException e) {
                     // Executor has exhausted queue space, show default artwork
-
-                    imageView.setImageResource(R.drawable.default_artwork);
+                    e.printStackTrace();
                 }
             }
         }

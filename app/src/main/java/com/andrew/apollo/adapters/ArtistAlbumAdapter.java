@@ -97,7 +97,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
      */
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Return a faux header at position 0
         if (position == 0) {
             return mHeader;
@@ -112,7 +112,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
             holder = (MusicHolder) convertView.getTag();
         }
         // Retrieve the album
-        final Album album = getItem(position);
+        Album album = getItem(position);
         if (album != null) {
             // Set each album name (line one)
             holder.mLineOne.setText(album.getName());

@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -239,11 +240,14 @@ public class ImageFetcher extends ImageWorker {
      * @param albumName  The album name the cache key needs to be generated.
      * @param artistName The artist name the cache key needs to be generated.
      */
+    @Nullable
     public static String generateAlbumCacheKey(String albumName, String artistName) {
         if (albumName == null || artistName == null) {
             return null;
         }
-        return albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
+        String result = albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
+        // encode string to avoid illegal characters in filenames
+        return Base64.encodeToString(result.getBytes(), Base64.DEFAULT);
     }
 
     /**

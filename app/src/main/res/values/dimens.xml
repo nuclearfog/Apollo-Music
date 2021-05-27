@@ -116,6 +116,7 @@
 
     <!-- Drag and drop -->
     <dimen name="drag_and_drop_handle">26.0dp</dimen>
+    <dimen name="drag_and_drop_handle_margin">10dp</dimen>
 
     <!-- Color scheme dialog -->
     <dimen name="color_scheme_dialog_row_padding">8.0dp</dimen>

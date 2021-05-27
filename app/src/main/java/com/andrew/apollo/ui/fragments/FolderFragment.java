@@ -61,6 +61,11 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     private static final int SELECTION = 0x718EDAAE;
 
     /**
+     * ID of the loader
+     */
+    private static final int LOADER_ID = 0xE1E246AA;
+
+    /**
      * IDs of all tracks of the folder
      */
     private long[] selectedFolderSongs = {};
@@ -70,7 +75,18 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
      */
     private FolderAdapter mAdapter;
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreate(@Nullable Bundle extras) {
+        super.onCreate(extras);
+        mAdapter = new FolderAdapter(requireContext());
+    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle extras) {
         // Init views
@@ -86,39 +102,19 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         return mRootView;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
-        LoaderManager.getInstance(this).initLoader(0, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
-            switch (item.getItemId()) {
-                case SELECTION:
-                    MusicUtils.playAll(selectedFolderSongs, 0, false);
-
-                    // fallthrough
-                case ADD_QUEUE:
-                    MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
-                    return true;
-            }
-        }
-        return super.onContextItemSelected(item);
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle extras) {
-        super.onCreate(extras);
-        mAdapter = new FolderAdapter(requireContext());
-    }
-
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo info) {
         super.onCreateContextMenu(menu, v, info);
@@ -131,14 +127,28 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         }
     }
 
-
-    @NonNull
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Loader<List<File>> onCreateLoader(int id, Bundle args) {
-        return new FolderLoader(requireContext());
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (item.getGroupId() == GROUP_ID) {
+            switch (item.getItemId()) {
+                case SELECTION:
+                    MusicUtils.playAll(selectedFolderSongs, 0, false);
+                    return true;
+
+                case ADD_QUEUE:
+                    MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
+                    return true;
+            }
+        }
+        return super.onContextItemSelected(item);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         File mFolder = mAdapter.getItem(position);
@@ -152,9 +162,22 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         startActivity(intent);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Loader<List<File>> onCreateLoader(int id, Bundle args) {
+        return new FolderLoader(requireContext());
+    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onLoadFinished(@NonNull Loader<List<File>> loader, @NonNull List<File> data) {
+        // stop loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         if (mAdapter.getCount() != data.size()) {
             // Clear list
             mAdapter.clear();
@@ -166,19 +189,25 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onLoaderReset(@NonNull Loader<List<File>> loader) {
         mAdapter.clear();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(0, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setCurrentTrack() {
     }

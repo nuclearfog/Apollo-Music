@@ -26,6 +26,7 @@ import com.andrew.apollo.model.Song;
 import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.PreferenceUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the songs on a user's
@@ -42,6 +43,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
     private static final int LAYOUT = R.layout.list_item_simple;
 
     /**
+     * transparency mask for a RGB color
+     */
+    private static final int TRANSPARENCY_MASK = 0x40FFFFFF;
+
+    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
@@ -50,6 +56,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * current item position of the current track
      */
     private int nowplayingPos = -1;
+
+    /**
+     * background color of the selected track
+     */
+    private int selectedColor;
 
     /**
      * flag to enable drag and drop icon
@@ -63,6 +74,8 @@ public class SongAdapter extends ArrayAdapter<Song> {
      */
     public SongAdapter(Context context, boolean enableDrag) {
         super(context, LAYOUT);
+        PreferenceUtils prefs = PreferenceUtils.getInstance(context);
+        selectedColor = prefs.getDefaultThemeColor() & TRANSPARENCY_MASK;
         inflater = LayoutInflater.from(context);
         enableDnD = enableDrag;
     }
@@ -86,6 +99,12 @@ public class SongAdapter extends ArrayAdapter<Song> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
+        // set background color
+        if (position == nowplayingPos) {
+            convertView.setBackgroundColor(selectedColor);
+        } else {
+            convertView.setBackgroundColor(0);
+        }
         // Retrieve the data holder
         Song song = getItem(position);
         // Set each song name (line one)
@@ -97,7 +116,9 @@ public class SongAdapter extends ArrayAdapter<Song> {
         return convertView;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getItemId(int position) {
         Song song = getItem(position);
@@ -129,10 +150,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
             if (nowplayingPos == from) {
                 nowplayingPos = to;
             } else {
-                if (from < nowplayingPos && to >= nowplayingPos)
+                if (from < nowplayingPos && to >= nowplayingPos) {
                     nowplayingPos--;
-                else if (from > nowplayingPos && to <= nowplayingPos)
+                } else if (from > nowplayingPos && to <= nowplayingPos) {
                     nowplayingPos++;
+                }
             }
             notifyDataSetChanged();
         }

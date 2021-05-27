@@ -56,8 +56,8 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
-import static com.andrew.apollo.adapters.ProfileSongAdapter.ADAPTER_HEADER_COUNT;
 import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
+import static com.andrew.apollo.adapters.ProfileSongAdapter.HEADER_COUNT;
 
 /**
  * This class is used to display all of the songs from a particular playlist.
@@ -189,28 +189,29 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        int mSelectedPosition = info.position - 1;
-        // Creat a new song
-        mSong = mAdapter.getItem(mSelectedPosition);
-        // Play the song
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Play next
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-        // Add the song to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the song to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
-        // View more content by the song artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        // Make the song a ringtone
-        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-        // Remove the song from playlist
-        menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_PLAYLIST, Menu.NONE, R.string.context_menu_remove_from_playlist);
-        // Delete the song
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            // Creat a new song
+            mSong = mAdapter.getItem(info.position);
+            // Play the song
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Play next
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+            // Add the song to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the song to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
+            // View more content by the song artist
+            menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // Make the song a ringtone
+            menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+            // Remove the song from playlist
+            menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_PLAYLIST, Menu.NONE, R.string.context_menu_remove_from_playlist);
+            // Delete the song
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        }
     }
 
 
@@ -339,17 +340,17 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public void drop(int from, int to) {
-        if (from == 0 || to == 0) {
+        if (from == 0 || to == 0 || from == to) {
+            // no changes detected, revert layout changes
             mAdapter.notifyDataSetChanged();
-        } else if (from != to) {
-            // calculate relative index
-            from = from - ADAPTER_HEADER_COUNT;
-            to = to - ADAPTER_HEADER_COUNT;
-            ContentResolver resolver = requireActivity().getContentResolver();
-            Members.moveItem(resolver, mPlaylistId, from, to);
-            mAdapter.moveTrack(from, to);
         } else {
-            mAdapter.notifyDataSetChanged();
+            // update adapter
+            Song mSong = mAdapter.getItem(from);
+            mAdapter.remove(mSong);
+            mAdapter.insert(mSong, to);
+            // move playlist track
+            ContentResolver resolver = requireActivity().getContentResolver();
+            Members.moveItem(resolver, mPlaylistId, from - HEADER_COUNT, to - HEADER_COUNT);
         }
     }
 

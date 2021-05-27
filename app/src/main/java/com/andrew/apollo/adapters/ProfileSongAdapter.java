@@ -73,7 +73,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * Count of the view header
      */
-    public static final int ADAPTER_HEADER_COUNT = 1;
+    public static final int HEADER_COUNT = 1;
 
     /**
      * item layout
@@ -182,35 +182,16 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      * {@inheritDoc}
      */
     @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int getCount() {
-        return ADAPTER_HEADER_COUNT + super.getCount();
+        return super.getCount() + HEADER_COUNT;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public long getItemId(int position) {
-        Song song = getItem(position);
-        if (song != null)
-            return song.getId();
-        return position;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
+    public boolean isEmpty() {
+        return super.getCount() == 0;
     }
 
     /**
@@ -226,11 +207,27 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void insert(@Nullable Song song, int index) {
+        super.insert(song, index - HEADER_COUNT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Nullable
     @Override
     public Song getItem(int position) {
-        if (position >= ADAPTER_HEADER_COUNT)
-            return super.getItem(position - ADAPTER_HEADER_COUNT);
+        if (position >= HEADER_COUNT)
+            return super.getItem(position - HEADER_COUNT);
         return null;
     }
 
@@ -238,20 +235,17 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      * {@inheritDoc}
      */
     @Override
-    public boolean isEmpty() {
-        return super.getCount() == 0;
+    public long getItemId(int position) {
+        if (position >= HEADER_COUNT)
+            return super.getItem(position - HEADER_COUNT).getId();
+        return 0;
     }
 
     /**
-     * move track to another position
-     *
-     * @param from position of the track
-     * @param to   new position of the track
+     * {@inheritDoc}
      */
-    public void moveTrack(int from, int to) {
-        Song mSong = getItem(from);
-        remove(mSong);
-        insert(mSong, to);
-        notifyDataSetChanged();
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 }

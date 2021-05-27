@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
@@ -51,20 +53,36 @@ import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
 
 /**
  * decompiled from Apollo 1.6 APK
+ * <p>
+ * This fragment class shows tracks from a music folder
  */
-public class FolderSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        AdapterView.OnItemClickListener, FragmentCallback {
+public class FolderSongFragment extends Fragment implements LoaderCallbacks<List<Song>>,
+        OnItemClickListener, FragmentCallback {
 
     /**
      * context menu ID
      */
     private static final int GROUP_ID = 0x1CABF982;
 
-    private ProfileSongAdapter mAdapter;
+    /**
+     * ID for the loader
+     */
+    private static final int LOADER_ID = 0x16A4BF2B;
 
+    /**
+     *
+     */
+    private ProfileTabCarousel mProfileTabCarousel;
+
+    /**
+     * fragment list view
+     */
     private ListView mList;
 
-    private ProfileTabCarousel mProfileTabCarousel;
+    /**
+     * list view adapter with song views
+     */
+    private ProfileSongAdapter mAdapter;
 
     /**
      * track selected from contextmenu
@@ -72,7 +90,9 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
     @Nullable
     private Song selectedSong;
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -80,14 +100,18 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         mProfileTabCarousel = activity.findViewById(R.id.acivity_profile_base_tab_carousel);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void onCreate(@Nullable Bundle paramBundle) {
-        super.onCreate(paramBundle);
-        this.mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle extras) {
         // root view of the fragment
@@ -107,18 +131,22 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         return view;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         savedInstanceState = getArguments();
         if (savedInstanceState != null) {
-            LoaderManager.getInstance(this).initLoader(0, savedInstanceState, this);
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, savedInstanceState, this);
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle extras) {
         Bundle bundle;
@@ -131,31 +159,46 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         extras.putAll(bundle);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo info) {
         super.onCreateContextMenu(menu, v, info);
-        int position = ((AdapterContextMenuInfo) info).position - 1;
-        selectedSong = mAdapter.getItem(position);
-        menu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        menu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-        menu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        menu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        menu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-        menu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
+        if (info instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo adapterInfo = (AdapterContextMenuInfo) info;
+            // set selected track
+            selectedSong = mAdapter.getItem(adapterInfo.position);
+            // Play the song
+            menu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // play the song
+            menu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+            // Add the song to the queue
+            menu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // get more tracks by artist
+            menu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // set selected track as ringtone
+            menu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+            // delete track
+            menu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
+            // Add the song to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
+        }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean onContextItemSelected(@NonNull MenuItem paramMenuItem) {
-        if (paramMenuItem.getGroupId() == GROUP_ID && selectedSong != null) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        if (item.getGroupId() == GROUP_ID && selectedSong != null) {
             long[] ids = {selectedSong.getId()};
 
-            switch (paramMenuItem.getItemId()) {
+            switch (item.getItemId()) {
                 default:
-                    return super.onContextItemSelected(paramMenuItem);
+                    return super.onContextItemSelected(item);
 
                 case PLAY_SELECTION:
                     MusicUtils.playAll(ids, 0, false);
@@ -178,7 +221,7 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
                     return true;
 
                 case PLAYLIST_SELECTED:
-                    long playlistId = paramMenuItem.getIntent().getLongExtra("playlist", 0L);
+                    long playlistId = item.getIntent().getLongExtra("playlist", 0L);
                     MusicUtils.addToPlaylist(requireActivity(), ids, playlistId);
                     return true;
 
@@ -200,27 +243,25 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         return false;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
-    public Loader<List<Song>> onCreateLoader(int paramInt, @Nullable Bundle paramBundle) {
-        String foldername = null;
-        if (paramBundle != null)
-            foldername = paramBundle.getString("folder_path");
-        if (foldername == null)
+    public Loader<List<Song>> onCreateLoader(int id, @Nullable Bundle extras) {
+        String foldername;
+        if (extras != null)
+            foldername = extras.getString("folder_path", "");
+        else
             foldername = "";
         return new FolderSongLoader(requireContext(), foldername);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
-    }
-
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> paramLoader, @NonNull List<Song> data) {
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
         // start fresh
         mAdapter.clear();
         if (!data.isEmpty()) {
@@ -231,16 +272,28 @@ public class FolderSongFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         mAdapter.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+        MusicUtils.playAllFromUserItemClick(mAdapter, position);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void refresh() {
         mList.setSelection(0);
-        LoaderManager.getInstance(this).restartLoader(0, getArguments(), this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

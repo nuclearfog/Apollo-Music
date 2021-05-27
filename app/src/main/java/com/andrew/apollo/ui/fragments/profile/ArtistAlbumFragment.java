@@ -188,22 +188,24 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        // Create a new album
-        mAlbum = mAdapter.getItem(info.position);
-        // Create a list of the album's songs
-        if (mAlbum != null) {
-            mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
-            // Play the album
-            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-            // Add the album to the queue
-            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-            // Add the album to a playlist
-            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
-            // Delete the album
-            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            // Create a new album
+            mAlbum = mAdapter.getItem(info.position);
+            // Create a list of the album's songs
+            if (mAlbum != null) {
+                mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+                // Play the album
+                menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+                // Add the album to the queue
+                menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+                // Add the album to a playlist
+                SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+                MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
+                // Delete the album
+                menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+            }
         }
     }
 

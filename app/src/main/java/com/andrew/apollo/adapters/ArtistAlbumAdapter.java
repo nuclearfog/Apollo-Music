@@ -163,7 +163,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         Album album = getItem(position);
         if (album != null)
             return album.getId();
-        return -position;
+        return super.getItemId(position);
     }
 
     /**

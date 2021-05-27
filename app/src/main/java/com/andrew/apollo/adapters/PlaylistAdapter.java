@@ -33,11 +33,6 @@ import com.andrew.apollo.ui.fragments.PlaylistFragment;
 public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
     /**
-     * Number of views (TextView)
-     */
-    private static final int VIEW_TYPE_COUNT = 1;
-
-    /**
      * item layout reource
      */
     private static final int LAYOUT = R.layout.list_item_simple;
@@ -96,13 +91,10 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
      * {@inheritDoc}
      */
     @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
-    }
-
-
-    @Override
     public long getItemId(int position) {
-        return getItem(position).getId();
+        Playlist list = getItem(position);
+        if (list != null)
+            return list.getId();
+        return super.getItemId(position);
     }
 }

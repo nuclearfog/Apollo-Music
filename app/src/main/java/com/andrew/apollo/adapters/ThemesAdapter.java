@@ -20,10 +20,8 @@ import com.andrew.apollo.R;
 public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 
     /**
-     * Number of views (ImageView and TextView)
+     * Item layout resource
      */
-    private static final int VIEW_TYPE_COUNT = 2;
-
     private static final int ITEM_LAYOUT = R.layout.fragment_themes_base;
 
     /**
@@ -63,22 +61,6 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
         // Set the theme name
         holder.mLineOne.setText(themeHolder.mName);
         return convertView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
     }
 
     /**

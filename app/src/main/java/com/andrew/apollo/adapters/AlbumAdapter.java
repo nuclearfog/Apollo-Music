@@ -37,11 +37,6 @@ import com.andrew.apollo.utils.MusicUtils;
 public class AlbumAdapter extends ArrayAdapter<Album> {
 
     /**
-     * Number of views (ImageView and TextView)
-     */
-    private static final int VIEW_TYPE_COUNT = 2;
-
-    /**
      * fragment layout inflater
      */
     private LayoutInflater inflater;
@@ -120,7 +115,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         Album album = getItem(position);
         if (album != null)
             return album.getId();
-        return position;
+        return super.getItemId(position);
     }
 
     /**
@@ -129,14 +124,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     @Override
     public boolean hasStableIds() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
     }
 
     /**

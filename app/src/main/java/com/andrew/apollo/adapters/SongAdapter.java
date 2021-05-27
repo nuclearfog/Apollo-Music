@@ -124,7 +124,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
         Song song = getItem(position);
         if (song != null)
             return song.getId();
-        return position;
+        return super.getItemId(position);
     }
 
     /**
@@ -167,7 +167,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
                     nowplayingPos++;
                 }
             }
-            notifyDataSetChanged();
         }
     }
 

@@ -58,6 +58,12 @@ import java.util.List;
  */
 public class SearchActivity extends AppCompatBase implements LoaderCallbacks<List<Music>>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection {
+
+    /**
+     * ID of the loader
+     */
+    private static final int LOADER_ID = 0xF97E2FD6;
+
     /**
      * Grid view column count. ONE - list, TWO - normal grid
      */
@@ -74,13 +80,6 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
     private String mFilterString;
 
     /**
-     * Grid view
-     */
-    private GridView mGridView;
-
-    private TextView emptyText;
-
-    /**
      * List view adapter
      */
     private SearchAdapter mAdapter;
@@ -91,12 +90,10 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // init view
-        mGridView = findViewById(R.id.grid_search);
-        emptyText = findViewById(R.id.grid_search_empty_info);
+        GridView mGridView = findViewById(R.id.grid_search);
+        TextView emptyText = findViewById(R.id.grid_search_empty_info);
         View background = findViewById(R.id.grid_search_container);
-
         // Initialze the theme resources
         ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style
@@ -121,6 +118,8 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
         mGridView.setAdapter(mAdapter);
         // Recycle the data
         mGridView.setRecyclerListener(new RecycleHolder());
+        // set emty message
+        mGridView.setEmptyView(emptyText);
         // Speed up scrolling
         mGridView.setOnScrollListener(this);
         mGridView.setOnItemClickListener(this);
@@ -131,7 +130,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
         }
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
-        LoaderManager.getInstance(this).initLoader(0, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -144,7 +143,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
         mFilterString = !TextUtils.isEmpty(query) ? query : null;
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
-        LoaderManager.getInstance(this).restartLoader(0, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -202,13 +201,12 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<Music>> loader, List<Music> data) {
-        if (data.isEmpty()) {
-            mGridView.setEmptyView(emptyText);
-            emptyText.setVisibility(View.VISIBLE);
-        } else {
-            for (Music music : data)
-                mAdapter.add(music);
-            emptyText.setVisibility(View.INVISIBLE);
+        // disable loader until user interaction
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // set data
+        mAdapter.clear();
+        for (Music music : data) {
+            mAdapter.add(music);
         }
     }
 
@@ -253,7 +251,7 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
         mFilterString = !TextUtils.isEmpty(newText) ? newText : null;
         // Set the prefix
         mAdapter.setPrefix(mFilterString);
-        LoaderManager.getInstance(this).restartLoader(0, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
         return true;
     }
 

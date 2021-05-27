@@ -14,8 +14,8 @@ android {
         applicationId 'com.andrew.apollo'
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 5
-        versionName '1.0.2'
+        versionCode 6
+        versionName '1.0.3'
     }
 
     buildTypes {

@@ -29,11 +29,6 @@ import java.util.Locale;
 public class SearchAdapter extends ArrayAdapter<Music> {
 
     /**
-     * Number of views (ImageView and TextView)
-     */
-    private static final int VIEW_TYPE_COUNT = 2;
-
-    /**
      * layout resource file
      */
     private static final int LAYOUT = R.layout.list_item_detailed;
@@ -87,9 +82,9 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             /* Recycle ViewHolder's items */
             holder = (MusicHolder) convertView.getTag();
         }
-
         Music music = getItem(position);
         if (music instanceof Artist) {
+            // set artist information
             Context context = parent.getContext();
             Artist artist = (Artist) music;
             // Get the artist name
@@ -103,6 +98,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             // Highlight the query
             mHighlighter.setText(holder.mLineOne, artist.getName(), mPrefix);
         } else if (music instanceof Album) {
+            // set album information
             Album album = (Album) music;
             // Get the album name
             holder.mLineOne.setText(album.getName());
@@ -113,6 +109,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
             // Highlight the query
             mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
         } else if (music instanceof Song) {
+            // set track information
             Song song = (Song) music;
             // set image
             holder.mImage.setImageResource(R.drawable.header_temp);
@@ -128,6 +125,16 @@ public class SearchAdapter extends ArrayAdapter<Music> {
         return convertView;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getItemId(int position) {
+        Music music = getItem(position);
+        if (music != null)
+            return music.getId();
+        return super.getItemId(position);
+    }
 
     /**
      * {@inheritDoc}
@@ -135,14 +142,6 @@ public class SearchAdapter extends ArrayAdapter<Music> {
     @Override
     public boolean hasStableIds() {
         return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
     }
 
     /**

@@ -238,7 +238,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     public long getItemId(int position) {
         if (position >= HEADER_COUNT)
             return super.getItem(position - HEADER_COUNT).getId();
-        return 0;
+        return super.getItemId(position);
     }
 
     /**

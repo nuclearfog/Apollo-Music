@@ -68,7 +68,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x3C6F54AB;
+    private static final int LOADER_ID = 0x3C6F54AB;
 
     /**
      * The adapter for the list
@@ -138,7 +138,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -268,14 +268,13 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-        // Check for any errors
-        if (!data.isEmpty()) {
-            // Start fresh
-            mAdapter.clear();
-            // Add the data to the adapter
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -335,7 +334,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public void refresh() {
         if (isAdded()) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
         }
     }
 

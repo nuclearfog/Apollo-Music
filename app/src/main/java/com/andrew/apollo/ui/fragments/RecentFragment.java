@@ -73,7 +73,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x178EB63F;
+    private static final int LOADER_ID = 0x178EB63F;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -197,7 +197,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -327,16 +327,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            // add items to list
-            if (!data.isEmpty()) {
-                // Add the data to the adapter
-                for (Album album : data) {
-                    mAdapter.add(album);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Album album : data) {
+            mAdapter.add(album);
         }
     }
 
@@ -364,7 +361,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
     public void restartLoader() {
         // Update the list when the user deletes any items
         if (mShouldRefresh) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
         }
         mShouldRefresh = false;
     }
@@ -374,13 +371,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
      */
     @Override
     public void onMetaChanged() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 

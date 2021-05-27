@@ -75,7 +75,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x61AF9DC4;
+    private static final int LOADER_ID = 0x61AF9DC4;
 
     /**
      * selection to remove track with given ID
@@ -170,7 +170,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         Bundle arguments = getArguments();
         if (arguments != null) {
             mPlaylistId = arguments.getLong(Config.ID);
-            LoaderManager.getInstance(this).initLoader(LOADER, arguments, this);
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
     }
 
@@ -261,7 +261,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:
                     mAdapter.remove(mSong);
                     MusicUtils.removeFromPlaylist(requireContext(), mSong.getId(), mPlaylistId);
-                    LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+                    LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
                     return true;
             }
         }
@@ -290,13 +290,13 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adpater
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // Add the data to the adpater
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -357,6 +357,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

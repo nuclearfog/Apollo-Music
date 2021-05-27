@@ -63,7 +63,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x78BD76B9;
+    private static final int LOADER_ID = 0x78BD76B9;
 
     /**
      * The adapter for the list
@@ -118,7 +118,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -191,17 +191,15 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            // Check for any errors
-            if (!data.isEmpty()) {
-                // Add the data to the adapter
-                for (Genre genre : data) {
-                    mAdapter.add(genre);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Genre genre : data) {
+            mAdapter.add(genre);
         }
+
     }
 
     /**
@@ -216,8 +214,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 
     @Override
     public void refresh() {
-        mAdapter.clear();
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 

@@ -71,7 +71,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x4DCB855B;
+    private static final int LOADER_ID = 0x4DCB855B;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -194,7 +194,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -318,19 +318,13 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            // Check for any errors
-            if (data.isEmpty()) {
-                mList.getEmptyView().setVisibility(View.VISIBLE);
-            } else {
-                mList.getEmptyView().setVisibility(View.INVISIBLE);
-                // Add the data to the adapter
-                for (Album album : data) {
-                    mAdapter.add(album);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Album album : data) {
+            mAdapter.add(album);
         }
     }
 
@@ -363,7 +357,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 
@@ -390,7 +384,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     public void restartLoader() {
         // Update the list when the user deletes any items
         if (mShouldRefresh) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
         }
         mShouldRefresh = false;
     }

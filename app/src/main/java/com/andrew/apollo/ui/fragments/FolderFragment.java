@@ -178,14 +178,11 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     public void onLoadFinished(@NonNull Loader<List<File>> loader, @NonNull List<File> data) {
         // stop loader
         LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-        if (mAdapter.getCount() != data.size()) {
-            // Clear list
-            mAdapter.clear();
-            if (!data.isEmpty()) {
-                for (File file : data) {
-                    mAdapter.add(file);
-                }
-            }
+        // Clear list
+        mAdapter.clear();
+        // add data to the adapter
+        for (File file : data) {
+            mAdapter.add(file);
         }
     }
 
@@ -194,6 +191,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
      */
     @Override
     public void onLoaderReset(@NonNull Loader<List<File>> loader) {
+        // Clear the data in the adapter
         mAdapter.clear();
     }
 

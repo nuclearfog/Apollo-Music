@@ -68,7 +68,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x67F9045C;
+    private static final int LOADER_ID = 0x67F9045C;
 
     /**
      * The adapter for the list
@@ -156,7 +156,7 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
-            LoaderManager.getInstance(this).initLoader(LOADER, arguments, this);
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
     }
 
@@ -264,13 +264,13 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adpater
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // Add the data to the adpater
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -292,6 +292,6 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
-        LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

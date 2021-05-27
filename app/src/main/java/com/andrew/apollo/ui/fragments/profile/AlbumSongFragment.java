@@ -257,13 +257,13 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adpater
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // Add the data to the adpater
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 

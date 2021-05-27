@@ -262,13 +262,13 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // add items to adapter
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // add items to adapter
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -293,6 +293,9 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
      */
     @Override
     public void refresh() {
+        // Scroll to the stop of the list before restarting the loader.
+        // Otherwise, if the user has scrolled enough to move the header, it
+        // becomes misplaced and needs to be reset.
         mList.setSelection(0);
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }

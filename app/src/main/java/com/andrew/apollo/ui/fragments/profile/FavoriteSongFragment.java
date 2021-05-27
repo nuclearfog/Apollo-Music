@@ -68,7 +68,7 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x52140696;
+    private static final int LOADER_ID = 0x52140696;
 
     /**
      * The adapter for the list
@@ -149,7 +149,7 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -220,12 +220,12 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
 
                 case FragmentMenuItems.REMOVE_FROM_FAVORITES:
                     FavoritesStore.getInstance(requireContext()).removeItem(mSong.getId());
-                    LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+                    LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
                     return true;
 
                 case FragmentMenuItems.DELETE:
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-                    LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+                    LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
                     return true;
             }
         }
@@ -254,13 +254,13 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adapter
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // Add the data to the adapter
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -276,6 +276,6 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 }

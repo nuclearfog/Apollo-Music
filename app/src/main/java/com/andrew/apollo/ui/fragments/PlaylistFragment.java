@@ -75,7 +75,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x1FF07B83;
+    private static final int LOADER_ID = 0x1FF07B83;
 
     /**
      * The adapter for the list
@@ -145,7 +145,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -257,16 +257,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, @NonNull List<Playlist> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            // set items to list
-            if (!data.isEmpty()) {
-                // Add the data to the adapter
-                for (Playlist playlist : data) {
-                    mAdapter.add(playlist);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Playlist playlist : data) {
+            mAdapter.add(playlist);
         }
     }
 
@@ -285,7 +282,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void restartLoader() {
         // Refresh the list when a playlist is deleted or renamed
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -299,12 +296,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 
     @Override
     public void setCurrentTrack() {
+        // todo implement track selection
     }
 
     /**

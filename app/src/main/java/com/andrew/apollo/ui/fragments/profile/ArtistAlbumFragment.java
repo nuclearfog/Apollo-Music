@@ -68,7 +68,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x6D4DD8EA;
+    private static final int LOADER_ID = 0x6D4DD8EA;
 
     /**
      * The adapter for the grid
@@ -160,7 +160,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
-            LoaderManager.getInstance(this).initLoader(LOADER, arguments, this);
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
     }
 
@@ -282,13 +282,13 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adpater
-            for (Album album : data) {
-                mAdapter.add(album);
-            }
+        // Add the data to the adpater
+        for (Album album : data) {
+            mAdapter.add(album);
         }
     }
 
@@ -310,7 +310,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
-        LoaderManager.getInstance(this).restartLoader(LOADER, getArguments(), this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 
     /**

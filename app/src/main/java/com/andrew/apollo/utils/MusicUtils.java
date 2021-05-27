@@ -918,17 +918,24 @@ public final class MusicUtils {
         Uri uri = Playlists.Members.getContentUri(VOLUME_EXTERNAL, playlistid);
         Cursor cursor = CursorFactory.makePlaylistCursor(resolver, uri);
         if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int base = cursor.getInt(0);
-                int numinserted = 0;
-                for (int offSet = 0; offSet < size; offSet += 1000) {
-                    makeInsertItems(ids, offSet, 1000, base);
-                    numinserted += resolver.bulkInsert(uri, mContentValuesCache);
+            try {
+                if (cursor.moveToFirst()) {
+                    int base = cursor.getInt(0);
+                    int numinserted = 0;
+                    for (int offSet = 0; offSet < size; offSet += 1000) {
+                        makeInsertItems(ids, offSet, 1000, base);
+                        numinserted += resolver.bulkInsert(uri, mContentValuesCache);
+                    }
+                    String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+                    AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
                 }
-                String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
-                AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+            } catch (SecurityException err) {
+                // thrown when the app does not own the playlist
+                // todo add error message
+                err.printStackTrace();
+            } finally {
+                cursor.close();
             }
-            cursor.close();
         }
     }
 

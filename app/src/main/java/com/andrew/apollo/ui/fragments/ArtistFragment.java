@@ -71,7 +71,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x1137083;
+    private static final int LOADER_ID = 0x1137083;
 
     /**
      * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -202,7 +202,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -319,15 +319,13 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Artist>> loader, @NonNull List<Artist> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            if (!data.isEmpty()) {
-                // Add the data to the adapter
-                for (Artist artist : data) {
-                    mAdapter.add(artist);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Artist artist : data) {
+            mAdapter.add(artist);
         }
     }
 
@@ -346,8 +344,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void refresh() {
         // Wait a moment for the preference to change.
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
+
 
     @Override
     public void setCurrentTrack() {
@@ -372,7 +371,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void restartLoader() {
         // Update the list when the user deletes any items
         if (mShouldRefresh) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
         }
         mShouldRefresh = false;
     }

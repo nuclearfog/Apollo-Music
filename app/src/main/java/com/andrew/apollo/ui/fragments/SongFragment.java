@@ -65,7 +65,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x70B1F21F;
+    private static final int LOADER_ID = 0x70B1F21F;
 
     /**
      * The adapter for the list
@@ -143,7 +143,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -245,16 +245,13 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-        if (mAdapter.getCount() != data.size()) {
-            // Start fresh
-            mAdapter.clear();
-            // add items to adapter
-            if (!data.isEmpty()) {
-                // Add the data to the adapter
-                for (Song song : data) {
-                    mAdapter.add(song);
-                }
-            }
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+        // Start fresh
+        mAdapter.clear();
+        // Add the data to the adapter
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -272,22 +269,19 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 
     @Override
     public void setCurrentTrack() {
-        int currentSongPosition = 0;
+        // current unique track ID
         long trackId = MusicUtils.getCurrentAudioId();
         for (int pos = 0; pos < mAdapter.getCount(); pos++) {
             if (mAdapter.getItemId(pos) == trackId) {
-                currentSongPosition = pos;
+                mList.setSelection(pos);
                 break;
             }
-        }
-        if (currentSongPosition != 0) {
-            mList.setSelection(currentSongPosition);
         }
     }
 
@@ -298,9 +292,9 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     public void restartLoader() {
         // Update the list when the user deletes any items
         if (mShouldRefresh) {
-            LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+            LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+            mShouldRefresh = false;
         }
-        mShouldRefresh = false;
     }
 
     /**

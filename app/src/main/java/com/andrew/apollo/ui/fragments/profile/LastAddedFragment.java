@@ -69,7 +69,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
     /**
      * LoaderCallbacks identifier
      */
-    private static final int LOADER = 0x4D492A47;
+    private static final int LOADER_ID = 0x4D492A47;
 
     /**
      * The adapter for the list
@@ -147,7 +147,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -221,7 +221,7 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
 
                 case FragmentMenuItems.DELETE:
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-                    LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+                    LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
                     return true;
             }
         }
@@ -250,13 +250,13 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
         mAdapter.clear();
-        if (!data.isEmpty()) {
-            // Add the data to the adpater
-            for (Song song : data) {
-                mAdapter.add(song);
-            }
+        // Add the data to the adpater
+        for (Song song : data) {
+            mAdapter.add(song);
         }
     }
 
@@ -272,6 +272,6 @@ public class LastAddedFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER, null, this);
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 }

@@ -22,7 +22,7 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
     private static final Comparator<File> fileComparator = new Comparator<File>() {
         @Override
         public int compare(File file1, File file2) {
-            return file1.getName().compareTo(file2.getName());
+            return file1.getName().compareToIgnoreCase(file2.getName());
         }
     };
 

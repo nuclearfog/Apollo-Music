@@ -6,6 +6,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
@@ -42,6 +44,12 @@ public class CursorFactory {
     private static final String DEF_SORT = " DESC";
 
     /**
+     * custom android version dependent column name
+     */
+    private static final String ALBUM_ID = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
+            Artists.Albums.ALBUM_ID : BaseColumns._ID;
+
+    /**
      * SQL Projection of an album row
      */
     @SuppressLint("InlinedApi")
@@ -51,7 +59,21 @@ public class CursorFactory {
             Albums.ARTIST,
             Albums.NUMBER_OF_SONGS,
             Albums.FIRST_YEAR,
-            Albums.ARTIST_ID
+            Albums.ARTIST_ID,
+            Albums.ALBUM_ART
+    };
+
+    /**
+     * SQL Projection of an album row
+     */
+    @SuppressLint("InlinedApi")
+    public static final String[] ARTIST_ALBUM_COLUMN = {
+            ALBUM_ID,
+            Artists.Albums.ALBUM,
+            Artists.Albums.ARTIST,
+            Artists.Albums.NUMBER_OF_SONGS,
+            Artists.Albums.FIRST_YEAR,
+            Artists.Albums.ARTIST_ID
     };
 
     /**
@@ -190,12 +212,6 @@ public class CursorFactory {
      */
     @SuppressLint("InlinedApi")
     public static final String TRACK_FILTER_SELECT = Media.IS_MUSIC + "=1 AND " + Media.TITLE + "!=''";
-
-    /**
-     * selection for albums of an artist
-     */
-    @SuppressLint("InlinedApi")
-    private static final String ARTIST_ALBUM_SELECT = Albums.ARTIST_ID + "=?";
 
     /**
      *
@@ -449,10 +465,11 @@ public class CursorFactory {
      * @return cursor with song information
      */
     @Nullable
+    @SuppressLint("InlinedApi")
     public static Cursor makeGenreSongCursor(Context context, long genreId) {
         ContentResolver resolver = context.getContentResolver();
 
-        Uri media = Genres.Members.getContentUri("external", genreId);
+        Uri media = Genres.Members.getContentUri(VOLUME_EXTERNAL, genreId);
         return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, GENRE_TRACK_ORDER);
     }
 
@@ -547,12 +564,13 @@ public class CursorFactory {
      * @return cursor with album information
      */
     @Nullable
+    @SuppressLint("InlinedApi")
     public static Cursor makeArtistAlbumCursor(Context context, long artistId) {
         ContentResolver resolver = context.getContentResolver();
+        Uri uri = Artists.Albums.getContentUri(VOLUME_EXTERNAL, artistId);
 
-        String[] args = {Long.toString(artistId)};
         String order = PreferenceUtils.getInstance(context).getArtistAlbumSortOrder();
-        return resolver.query(Albums.EXTERNAL_CONTENT_URI, ALBUM_COLUMN, ARTIST_ALBUM_SELECT, args, order);
+        return resolver.query(uri, ARTIST_ALBUM_COLUMN, null, null, order);
     }
 
     /**

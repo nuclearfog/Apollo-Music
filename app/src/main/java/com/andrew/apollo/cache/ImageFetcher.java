@@ -316,7 +316,8 @@ public class ImageFetcher extends ImageWorker {
      * Used to fetch artist images.
      */
     public void loadArtistImage(String key, ImageView imageView) {
-        loadImage(key, key, null, -1, imageView, ImageType.ARTIST);
+        // fixme last FM does not return artist images anymore so try to download an album artwork instead
+        loadImage(key, key, null, -1, imageView, ImageType.ALBUM);
     }
 
     /**

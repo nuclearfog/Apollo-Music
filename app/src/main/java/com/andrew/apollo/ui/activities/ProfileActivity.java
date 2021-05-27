@@ -221,7 +221,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         // Initialize the pager adapter
         mPagerAdapter = new PagerAdapter(this);
         // Initialze the carousel
-        mTabCarousel = findViewById(R.id.acivity_profile_base_tab_carousel);
+        mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
         mTabCarousel.reset();
         mTabCarousel.getPhoto().setOnClickListener(this);
         // Set up the action bar
@@ -309,7 +309,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 break;
         }
         // Initialize the ViewPager
-        mViewPager = findViewById(R.id.acivity_profile_base_pager);
+        mViewPager = findViewById(R.id.activity_profile_base_pager);
         // Attch the adapter
         mViewPager.setAdapter(mPagerAdapter);
         // Offscreen limit

@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_action_bar_height"
     android:layout_gravity="bottom"
-    tools:ignore="ContentDescription,RtlHardcoded">
+    tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
 
     <include
         android:id="@+id/colorstrip"

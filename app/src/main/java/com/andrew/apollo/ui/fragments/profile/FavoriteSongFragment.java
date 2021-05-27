@@ -99,7 +99,7 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = (Activity) context;
-        mProfileTabCarousel = activity.findViewById(R.id.acivity_profile_base_tab_carousel);
+        mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
     }
 
     /**

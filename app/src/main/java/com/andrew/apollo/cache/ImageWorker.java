@@ -300,32 +300,26 @@ public abstract class ImageWorker {
                 // Define the album id now
                 long mAlbumId = Long.parseLong(params[3]);
 
-                // download only album cover since Last.FM does not return artist images anymore
-                // at the moment artist cover can set only manually
-                // fixme
-                if (mImageType.equals(ImageType.ALBUM)) {
+                // Second, if we're fetching artwork, check the device for the image
+                if (bitmap == null && mAlbumId >= 0 && mKey != null && !isCancelled()
+                        && getAttachedImageView() != null && worker.mImageCache != null) {
+                    bitmap = worker.mImageCache.getCachedArtwork(worker.mContext, mKey, mAlbumId);
+                }
 
-                    // Second, if we're fetching artwork, check the device for the image
-                    if (bitmap == null && mAlbumId >= 0 && mKey != null && !isCancelled()
-                            && getAttachedImageView() != null && worker.mImageCache != null) {
-                        bitmap = worker.mImageCache.getCachedArtwork(worker.mContext, mKey, mAlbumId);
+                // Third, by now we need to download the image
+                if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled() && getAttachedImageView() != null) {
+                    // Now define what the artist name, album name, and url are.
+                    String mArtistName = params[1];
+                    String mAlbumName = params[2];
+                    String mUrl = worker.processImageUrl(mArtistName, mAlbumName, mImageType);
+                    if (mUrl != null) {
+                        bitmap = worker.processBitmap(mUrl);
                     }
+                }
 
-                    // Third, by now we need to download the image
-                    if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled() && getAttachedImageView() != null) {
-                        // Now define what the artist name, album name, and url are.
-                        String mArtistName = params[1];
-                        String mAlbumName = params[2];
-                        String mUrl = worker.processImageUrl(mArtistName, mAlbumName, mImageType);
-                        if (mUrl != null) {
-                            bitmap = worker.processBitmap(mUrl);
-                        }
-                    }
-
-                    // Fourth, add the new image to the cache
-                    if (bitmap != null && mKey != null && worker.mImageCache != null) {
-                        worker.addBitmapToCache(mKey, bitmap);
-                    }
+                // Fourth, add the new image to the cache
+                if (bitmap != null && mKey != null && worker.mImageCache != null) {
+                    worker.addBitmapToCache(mKey, bitmap);
                 }
 
                 // Add the second layer to the translation drawable

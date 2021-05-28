@@ -100,6 +100,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Preference fragment class
+     */
     public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
         /**
@@ -132,6 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (colorScheme != null)
                 colorScheme.setOnPreferenceClickListener(this);
         }
+
 
         @Override
         public boolean onPreferenceClick(Preference preference) {

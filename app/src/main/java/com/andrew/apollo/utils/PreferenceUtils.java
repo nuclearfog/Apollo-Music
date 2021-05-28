@@ -169,7 +169,7 @@ public final class PreferenceUtils {
      * false otherwise.
      */
     public boolean downloadMissingArtwork() {
-        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTWORK, true);
+        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTWORK, false);
     }
 
     /**
@@ -177,7 +177,7 @@ public final class PreferenceUtils {
      * false otherwise.
      */
     public boolean downloadMissingArtistImages() {
-        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTIST_IMAGES, true);
+        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTIST_IMAGES, false);
     }
 
     /**

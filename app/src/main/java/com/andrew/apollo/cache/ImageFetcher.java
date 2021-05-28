@@ -17,7 +17,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -245,9 +244,7 @@ public class ImageFetcher extends ImageWorker {
         if (albumName == null || artistName == null) {
             return null;
         }
-        String result = albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
-        // encode string to avoid illegal characters in filenames
-        return Base64.encodeToString(result.getBytes(), Base64.DEFAULT);
+        return albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
     }
 
     /**

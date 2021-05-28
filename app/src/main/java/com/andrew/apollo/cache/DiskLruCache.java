@@ -287,7 +287,7 @@ public final class DiskLruCache implements Closeable {
             }
         }
         // create a new empty cache
-        if (directory.mkdirs()) {
+        if (directory.exists() || directory.mkdirs()) {
             cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
             cache.rebuildJournal();
             return cache;

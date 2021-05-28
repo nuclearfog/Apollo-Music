@@ -460,10 +460,7 @@ public final class ImageCache {
         if (data == null) {
             return null;
         }
-        Bitmap cachedImage = getBitmapFromMemCache(data);
-        if (cachedImage == null) {
-            cachedImage = getBitmapFromDiskCache(data);
-        }
+        Bitmap cachedImage = getBitmapFromDiskCache(data);
         if (cachedImage != null) {
             addBitmapToMemCache(data, cachedImage);
             return cachedImage;
@@ -501,6 +498,7 @@ public final class ImageCache {
      * @param context The {@link Context} to use
      * @return The artwork for an album
      */
+    @Nullable
     public Bitmap getArtworkFromFile(Context context, long albumId) {
         if (albumId < 0) {
             return null;
@@ -516,15 +514,10 @@ public final class ImageCache {
                 artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
                 fileDescr.close();
             }
-        } catch (IllegalStateException e) {
-            //e.printStackTrace();
-        } catch (IOException e) {
-            //e.printStackTrace();
         } catch (OutOfMemoryError e) {
-            //e.printStackTrace();
             evictAll();
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return artwork;
     }
@@ -626,6 +619,9 @@ public final class ImageCache {
         }
     }
 
+    /**
+     *
+     */
     private void waitUntilUnpaused() {
         synchronized (PAUSELOCK) {
             if (Looper.myLooper() != Looper.getMainLooper()) {

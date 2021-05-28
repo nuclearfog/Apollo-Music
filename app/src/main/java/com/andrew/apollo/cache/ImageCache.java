@@ -21,11 +21,14 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
+import android.os.StatFs;
 import android.util.Log;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -45,12 +48,8 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class ImageCache {
 
-    private static final String TAG = ImageCache.class.getSimpleName();
-
-    /**
-     * The {@link Uri} used to retrieve album art
-     */
-    private static Uri mArtworkUri;
+    @Keep
+    private static final String TAG = "ImageCache";
 
     /**
      * Default memory cache size as a percent of device memory class
@@ -58,14 +57,19 @@ public final class ImageCache {
     private static final float MEM_CACHE_DIVIDER = 0.25f;
 
     /**
-     * Default disk cache size 10MB
+     * Default disk cache size 32 MB
      */
-    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10;
+    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 32;
 
     /**
      * Compression settings when writing images to disk cache
      */
     private static final CompressFormat COMPRESS_FORMAT = CompressFormat.JPEG;
+
+    /**
+     * The {@link Uri} used to retrieve album art
+     */
+    private static final Uri mArtworkUri = Uri.parse("content://media/external/audio/albumart");
 
     /**
      * Disk cache index to read from
@@ -75,14 +79,18 @@ public final class ImageCache {
     /**
      * Image compression quality
      */
-    private static final int COMPRESS_QUALITY = 98;
+    private static final int COMPRESS_QUALITY = 90;
+
+    /**
+     * singleton instance of this class
+     */
     private static ImageCache sInstance;
 
-    static {
-        mArtworkUri = Uri.parse("content://media/external/audio/albumart");
-    }
-
+    /**
+     *
+     */
     private final Object PAUSELOCK = new Object();
+
     /**
      * Used to temporarily pause the disk cache while scrolling
      */
@@ -181,13 +189,17 @@ public final class ImageCache {
     }
 
     /**
-     * Check how much usable space is available at a given path.
+     * Check if space is available at a given path.
      *
      * @param path The path to check
-     * @return The space available in bytes
+     * @return true if there is enough space for the cache
      */
-    private static long getUsableSpace(File path) {
-        return path.getUsableSpace();
+    private static boolean isSpaceAvailable(String path) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            StatFs fs = new StatFs(path);
+            return fs.getBlockSizeLong() * fs.getAvailableBlocksLong() > DISK_CACHE_SIZE;
+        }
+        return true;
     }
 
     /**
@@ -266,7 +278,7 @@ public final class ImageCache {
             if (!cacheFolder.exists()) {
                 cacheFolder.mkdirs();
             }
-            if (getUsableSpace(cacheFolder) > DISK_CACHE_SIZE) {
+            if (isSpaceAvailable(cacheFolder.getPath())) {
                 try {
                     mDiskCache = DiskLruCache.open(cacheFolder, 1, 1, DISK_CACHE_SIZE);
                 } catch (IOException e) {

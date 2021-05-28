@@ -65,7 +65,7 @@ public class ImageFetcher extends ImageWorker {
     /**
      * location folder name of the image cache
      */
-    private static final String DEFAULT_HTTP_CACHE_DIR = "http"; //$NON-NLS-1$
+    private static final String DEFAULT_CACHE_DIR = "download";
 
     private static final ImageSize[] QUALITY = {
             ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE,
@@ -255,7 +255,7 @@ public class ImageFetcher extends ImageWorker {
         if (url == null) {
             return null;
         }
-        File file = downloadBitmapToFile(mContext, url, DEFAULT_HTTP_CACHE_DIR);
+        File file = downloadBitmapToFile(mContext, url, DEFAULT_CACHE_DIR);
         if (file != null) {
             // Return a sampled down version
             Bitmap bitmap = decodeSampledBitmapFromFile(file.toString());

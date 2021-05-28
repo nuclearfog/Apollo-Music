@@ -73,7 +73,7 @@ public abstract class MusicEntry extends ImageHolder {
     @NonNull
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + "name='" + name + '\'' + ", url='" + url
+        return "MusicEntry" + "[" + "name='" + name + '\'' + ", url='" + url
                 + '\'' + ']';
     }
 }

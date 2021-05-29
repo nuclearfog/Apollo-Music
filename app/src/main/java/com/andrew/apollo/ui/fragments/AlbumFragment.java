@@ -94,11 +94,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     private AbsListView mList;
 
     /**
-     * Album song list
-     */
-    private long[] mAlbumList = {};
-
-    /**
      * Represents an album
      */
     @Nullable
@@ -218,8 +213,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             // Create a new album
             mAlbum = mAdapter.getItem(info.position);
             if (mAlbum != null) {
-                // Create a list of the album's songs
-                mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
                 // Play the album
                 menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
                 // Add the album to the queue
@@ -245,6 +238,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         // Avoid leaking context menu selections
         if (item.getGroupId() == GROUP_ID && mAlbum != null) {
+            long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(mAlbumList, 0, false);

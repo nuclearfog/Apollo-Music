@@ -128,7 +128,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
             // get all available playlist names
             String[] playlists = new String[cursor.getCount()];
             cursor.moveToFirst();
-            for (int i = 0; i < playlists.length && cursor.isAfterLast(); i++) {
+            for (int i = 0; i < playlists.length && !cursor.isAfterLast(); i++) {
                 playlists[i] = cursor.getString(1);
                 cursor.moveToNext();
             }

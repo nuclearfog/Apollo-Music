@@ -216,8 +216,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_QUEUE:
-                    MusicUtils.removeTrack(mSong.getId());
-                    refresh();
+                    remove(mSelectedPosition);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_FAVORITES:

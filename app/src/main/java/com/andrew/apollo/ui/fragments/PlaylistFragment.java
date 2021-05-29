@@ -211,7 +211,22 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                     return true;
 
                 case FragmentMenuItems.DELETE:
-                    buildDeleteDialog().show();
+                    String name = mPlaylist.getName();
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle(getString(R.string.delete_dialog_title, name))
+                            .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
+                                    requireActivity().getContentResolver().delete(mUri, null, null);
+                                    MusicUtils.refresh();
+                                }
+                            }).setNegativeButton(R.string.cancel, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).setMessage(R.string.cannot_be_undone).show();
                     return true;
             }
         }
@@ -224,7 +239,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bundle bundle = new Bundle();
-        mPlaylist = mAdapter.getItem(position);
+        Playlist selected = mAdapter.getItem(position);
         String playlistName = null;
         // Favorites list
         if (position == 0) {
@@ -234,11 +249,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         } else if (position == 1) {
             playlistName = getString(R.string.playlist_last_added);
             bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
-        } else if (mPlaylist != null) {
+        } else if (selected != null) {
             // User created
-            playlistName = mPlaylist.getName();
+            playlistName = selected.getName();
             bundle.putString(Config.MIME_TYPE, Playlists.CONTENT_TYPE);
-            bundle.putLong(Config.ID, mPlaylist.getId());
+            bundle.putLong(Config.ID, selected.getId());
         }
         bundle.putString(Config.NAME, playlistName);
         // Create the intent to launch the profile activity
@@ -307,30 +322,5 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void setCurrentTrack() {
         // do nothing
-    }
-
-    /**
-     * Create a new {@link AlertDialog} for easy playlist deletion
-     *
-     * @return A new {@link AlertDialog} used to delete playlists
-     */
-    @NonNull
-    private AlertDialog buildDeleteDialog() {
-        String name = mPlaylist != null ? mPlaylist.getName() : "";
-        return new AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.delete_dialog_title, name))
-                .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
-                        requireActivity().getContentResolver().delete(mUri, null, null);
-                        MusicUtils.refresh();
-                    }
-                }).setNegativeButton(R.string.cancel, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).setMessage(R.string.cannot_be_undone).create();
     }
 }

@@ -202,10 +202,10 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ThemeHolder holder = mAdapter.getItem(position);
-        if (holder != null) {
-            String name = getString(R.string.theme_set, holder.mName);
-            mTheme.setThemePackageName(holder.mPackage);
+        ThemeHolder selection = mAdapter.getItem(position);
+        if (selection != null) {
+            String name = getString(R.string.theme_set, selection.mName);
+            mTheme.setThemePackageName(selection.mPackage);
             AppMsg.makeText(requireActivity(), name, AppMsg.STYLE_CONFIRM).show();
         }
     }

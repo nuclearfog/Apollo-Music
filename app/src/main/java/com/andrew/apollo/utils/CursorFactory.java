@@ -139,7 +139,8 @@ public class CursorFactory {
             Playlists.Members.TITLE,
             Playlists.Members.ARTIST,
             Playlists.Members.ALBUM,
-            Playlists.Members.DURATION
+            Playlists.Members.DURATION,
+            Playlists.Members.PLAY_ORDER
     };
 
     /**

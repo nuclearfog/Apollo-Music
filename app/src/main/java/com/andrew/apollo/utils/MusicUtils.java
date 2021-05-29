@@ -775,8 +775,7 @@ public final class MusicUtils {
         Cursor cursor = CursorFactory.makeArtistCursor(context, name);
         long id = -1;
         if (cursor != null) {
-            cursor.moveToFirst();
-            if (!cursor.isAfterLast()) {
+            if (cursor.moveToFirst()) {
                 id = cursor.getLong(0);
             }
             cursor.close();

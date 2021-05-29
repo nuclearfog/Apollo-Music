@@ -35,6 +35,11 @@ public class Song extends Music {
     private int mDuration = -1;
 
     /**
+     * playlist position of the track
+     */
+    private int playlistPos = -1;
+
+    /**
      * Constructor of <code>Song</code>
      *
      * @param songId     The Id of the song
@@ -51,6 +56,14 @@ public class Song extends Music {
             mAlbumName = albumName;
         if (length > 0)
             mDuration = (int) length / 1000;
+    }
+
+    /**
+     * @param playlistPos playlist position of the track
+     */
+    public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
+        this(songId, songName, artistName, albumName, length);
+        this.playlistPos = playlistPos;
     }
 
     /**
@@ -92,6 +105,15 @@ public class Song extends Music {
     }
 
     /**
+     * track position in a playlist
+     *
+     * @return playlist position
+     */
+    public int getPlaylistPos() {
+        return playlistPos;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -102,6 +124,7 @@ public class Song extends Music {
         result = prime * result + mArtistName.hashCode();
         result = prime * result + mDuration;
         result = prime * result + (int) id;
+        result = prime * result + playlistPos;
         result = prime * result + name.hashCode();
         return result;
     }
@@ -116,7 +139,7 @@ public class Song extends Music {
         if (obj instanceof Song) {
             Song other = (Song) obj;
             return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
-                    name.equals(other.name) && mDuration == other.mDuration && id == other.id;
+                    name.equals(other.name) && mDuration == other.mDuration && id == other.id && other.playlistPos == playlistPos;
         }
         return false;
     }

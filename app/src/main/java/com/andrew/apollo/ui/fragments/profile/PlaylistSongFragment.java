@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -56,6 +57,7 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
 import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
 import static com.andrew.apollo.adapters.ProfileSongAdapter.HEADER_COUNT;
 
@@ -80,7 +82,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     /**
      * selection to remove track with given ID
      */
-    private static final String DELETE_SELECT = Members.AUDIO_ID + "=?";
+    private static final String DELETE_SELECT = Members.AUDIO_ID + "=? AND " + Members.PLAY_ORDER + "=?";
 
     /**
      * The adapter for the list
@@ -247,6 +249,9 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                 case FragmentMenuItems.PLAYLIST_SELECTED:
                     long playlistId = item.getIntent().getLongExtra("playlist", 0);
                     MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
+                    // reload if track was added to this playlist
+                    if (this.mPlaylistId == playlistId)
+                        refresh();
                     return true;
 
                 case FragmentMenuItems.MORE_BY_ARTIST:
@@ -326,16 +331,23 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      * {@inheritDoc}
      */
     @Override
+    @SuppressLint("InlinedApi")
     public void remove(int which) {
-        mSong = mAdapter.getItem(which);
-        if (mSong != null) {
+        Song song = mAdapter.getItem(which);
+        if (song != null) {
+            // there can be duplicate songs in a playlist, so we need both track id and playlist position
+            String[] args = {Long.toString(song.getId()), Integer.toString(song.getPlaylistPos())};
+            // remove track from playlist
             ContentResolver resolver = requireActivity().getContentResolver();
-            Uri uri = Members.getContentUri("external", mPlaylistId);
-            String[] args = {Long.toString(mSong.getId())};
-            resolver.delete(uri, DELETE_SELECT, args);
-
-            mAdapter.remove(mSong);
+            Uri uri = Members.getContentUri(VOLUME_EXTERNAL, mPlaylistId);
+            if (resolver.delete(uri, DELETE_SELECT, args) == 1) {
+                // reload playlist content
+                mAdapter.remove(song);
+                return;
+            }
         }
+        // if we end here, nothing changed, revert layout changes
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -347,13 +359,15 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             // no changes detected, revert layout changes
             mAdapter.notifyDataSetChanged();
         } else {
-            // update adapter
-            Song mSong = mAdapter.getItem(from);
-            mAdapter.remove(mSong);
-            mAdapter.insert(mSong, to);
             // move playlist track
             ContentResolver resolver = requireActivity().getContentResolver();
-            Members.moveItem(resolver, mPlaylistId, from - HEADER_COUNT, to - HEADER_COUNT);
+            boolean success = Members.moveItem(resolver, mPlaylistId, from - HEADER_COUNT, to - HEADER_COUNT);
+            if (success) {
+                // update adapter
+                Song selectedSong = mAdapter.getItem(from);
+                mAdapter.remove(selectedSong);
+                mAdapter.insert(selectedSong, to);
+            }
         }
     }
 

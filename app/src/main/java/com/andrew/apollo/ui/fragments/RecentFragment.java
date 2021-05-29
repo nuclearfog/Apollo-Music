@@ -311,9 +311,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
             long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
             MusicUtils.playAll(list, 0, false);
         } else {
-            mAlbum = mAdapter.getItem(position);
-            if (mAlbum != null) {
-                NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+            Album selection = mAdapter.getItem(position);
+            if (selection != null) {
+                NavUtils.openAlbumProfile(requireActivity(), selection.getName(), selection.getArtist(), selection.getId());
             }
         }
     }

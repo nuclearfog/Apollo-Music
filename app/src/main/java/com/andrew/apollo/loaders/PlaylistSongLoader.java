@@ -65,8 +65,10 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
                     String album = mCursor.getString(3);
                     // Copy the duration
                     long duration = mCursor.getLong(4);
+                    // Copy playlist position
+                    int pos = mCursor.getInt(5);
                     // Create a new song
-                    Song song = new Song(id, songName, artist, album, duration);
+                    Song song = new Song(id, songName, artist, album, duration, pos);
                     // Add everything up
                     result.add(song);
                 } while (mCursor.moveToNext());

@@ -232,6 +232,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
                 // Remove the album from the list
                 menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
             }
+        } else {
+            // remove selection
+            mAlbum = null;
         }
     }
 
@@ -297,9 +300,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
             long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
             MusicUtils.playAll(list, 0, false);
         } else {
-            mAlbum = mAdapter.getItem(position);
-            if (mAlbum != null) {
-                NavUtils.openAlbumProfile(requireActivity(), mAlbum.getName(), mAlbum.getArtist(), mAlbum.getId());
+            Album selectedAlbum = mAdapter.getItem(position);
+            if (selectedAlbum != null) {
+                NavUtils.openAlbumProfile(requireActivity(), selectedAlbum.getName(), selectedAlbum.getArtist(), selectedAlbum.getId());
             }
         }
     }
@@ -337,23 +340,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
         mAdapter.clear();
     }
 
-    /**
-     * @return The position of an item in the list or grid based on the id of the currently playing album.
-     */
-    private int getItemPositionByAlbum() {
-        long albumId = MusicUtils.getCurrentAlbumId();
-        if (mAdapter == null) {
-            return 0;
-        }
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Album a = mAdapter.getItem(i);
-            if (a != null && a.getId() == albumId) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
 
     @Override
     public void refresh() {
@@ -363,9 +349,15 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
     @Override
     public void setCurrentTrack() {
-        int currentAlbumPosition = getItemPositionByAlbum();
-        if (currentAlbumPosition != 0) {
-            mList.setSelection(currentAlbumPosition);
+        if (mAdapter != null && mList != null) {
+            long albumId = MusicUtils.getCurrentAlbumId();
+            for (int i = 0; i < mAdapter.getCount(); i++) {
+                Album album = mAdapter.getItem(i);
+                if (album != null && album.getId() == albumId) {
+                    mList.setSelection(i);
+                    break;
+                }
+            }
         }
     }
 

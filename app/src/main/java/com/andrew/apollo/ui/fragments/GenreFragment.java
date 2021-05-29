@@ -73,6 +73,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
     /**
      * Genre song list
      */
+    @NonNull
     private long[] mGenreList = {};
 
     /**
@@ -132,13 +133,18 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
             // Create a new genre
             Genre mGenre = mAdapter.getItem(info.position);
-            // Create a list of the genre's songs
-            mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
-            // Play the genre
-            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-            // Add the genre to the queue
-            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            if (mGenre != null) {
+                // Create a list of the genre's songs
+                mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
+                // Play the genre
+                menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+                // Add the genre to the queue
+                menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+                return;
+            }
         }
+        // remove old selection if an error occurs
+        mGenreList = new long[0];
     }
 
     /**
@@ -220,5 +226,6 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 
     @Override
     public void setCurrentTrack() {
+        // do nothing
     }
 }

@@ -42,7 +42,9 @@ public class FolderAdapter extends ArrayAdapter<File> {
         inflater = LayoutInflater.from(context);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup container) {
@@ -64,8 +66,11 @@ public class FolderAdapter extends ArrayAdapter<File> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-        String name = getItem(position).getName();
-        holder.mLineOne.setText(name);
+        File folder = getItem(position);
+        if (folder != null) {
+            String name = folder.getName();
+            holder.mLineOne.setText(name);
+        }
         return convertView;
     }
 }

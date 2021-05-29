@@ -142,37 +142,28 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         } else {
             holder = (MusicHolder) convertView.getTag();
         }
-
         // Retrieve the album
         Song song = getItem(position);
         if (song != null) {
             // Set each track name (line one)
             holder.mLineOne.setText(song.getName());
             // Set the line two
-            switch (mDisplaySetting) {
-                // show duration if on album fragment
-                case DISPLAY_ALBUM_SETTING:
+            if (mDisplaySetting == DISPLAY_ALBUM_SETTING) {
+                holder.mLineOneRight.setVisibility(View.GONE);
+                holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+            } else if (mDisplaySetting == DISPLAY_PLAYLIST_SETTING) {
+                if (song.duration() < 0) {
                     holder.mLineOneRight.setVisibility(View.GONE);
-                    holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
-                    break;
-
-                case DISPLAY_PLAYLIST_SETTING:
-                    if (song.duration() == -1) {
-                        holder.mLineOneRight.setVisibility(View.GONE);
-                    } else {
-                        holder.mLineOneRight.setVisibility(View.VISIBLE);
-                        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
-                    }
-                    String sb = song.getArtist() + " - " + song.getAlbum();
-                    holder.mLineTwo.setText(sb);
-                    break;
-
-                case DISPLAY_DEFAULT_SETTING:
-                default:
+                } else {
                     holder.mLineOneRight.setVisibility(View.VISIBLE);
                     holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
-                    holder.mLineTwo.setText(song.getAlbum());
-                    break;
+                }
+                String sb = song.getArtist() + " - " + song.getAlbum();
+                holder.mLineTwo.setText(sb);
+            } else {
+                holder.mLineOneRight.setVisibility(View.VISIBLE);
+                holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+                holder.mLineTwo.setText(song.getAlbum());
             }
         }
         return convertView;

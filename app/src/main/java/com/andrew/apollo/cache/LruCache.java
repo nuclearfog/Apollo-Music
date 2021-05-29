@@ -16,6 +16,7 @@ package com.andrew.apollo.cache;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
@@ -29,6 +30,9 @@ import java.util.Map;
  * overview.
  */
 public class LruCache<K, V> {
+
+    @Keep
+    private static final String TAG = "LruCache";
 
     private LinkedHashMap<K, V> map;
 
@@ -108,8 +112,7 @@ public class LruCache<K, V> {
             V value;
             synchronized (this) {
                 if (this.size < 0 || this.map.isEmpty() && size != 0) {
-                    throw new IllegalStateException(getClass().getName()
-                            + ".sizeOf() is reporting inconsistent results!");
+                    throw new IllegalStateException(TAG + ".sizeOf() is reporting inconsistent results!");
                 }
 
                 if (this.size <= maxSize || this.map.isEmpty()) {

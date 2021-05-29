@@ -193,6 +193,9 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
             menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
             // Delete the song
             menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        } else {
+            // remove selection if an error occurs
+            mSong = null;
         }
     }
 

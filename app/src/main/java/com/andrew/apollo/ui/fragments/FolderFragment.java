@@ -68,6 +68,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
     /**
      * IDs of all tracks of the folder
      */
+    @NonNull
     private long[] selectedFolderSongs = {};
 
     /**
@@ -124,6 +125,9 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
             selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder.toString());
             menu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             menu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
+        } else {
+            // remove selection
+            selectedFolderSongs = new long[0];
         }
     }
 
@@ -208,5 +212,6 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
      */
     @Override
     public void setCurrentTrack() {
+        // do nothing
     }
 }

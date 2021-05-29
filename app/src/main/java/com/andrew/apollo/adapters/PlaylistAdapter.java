@@ -74,8 +74,10 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
         }
         // Retrieve the data holder
         Playlist playlist = getItem(position);
-        // Set each playlist name (line one)
-        holder.mLineOne.setText(playlist.getName());
+        if (playlist != null) {
+            // Set each playlist name (line one)
+            holder.mLineOne.setText(playlist.getName());
+        }
         return convertView;
     }
 

@@ -81,8 +81,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * Album song list
      */
-    @Nullable
-    private long[] mAlbumList;
+    @NonNull
+    private long[] mAlbumList = {};
     /**
      * Represents an album
      */
@@ -205,8 +205,12 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                 MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
                 // Delete the album
                 menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+                return;
             }
         }
+        // remove selected item if an error occurs
+        mAlbumList = new long[0];
+        mAlbum = null;
     }
 
     /**
@@ -218,8 +222,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         if (item.getGroupId() == GROUP_ID) {
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    if (mAlbumList != null)
-                        MusicUtils.playAll(mAlbumList, 0, false);
+                    MusicUtils.playAll(mAlbumList, 0, false);
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
@@ -231,10 +234,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
                     return true;
 
                 case FragmentMenuItems.PLAYLIST_SELECTED:
-                    if (mAlbumList != null) {
-                        long id = item.getIntent().getLongExtra("playlist", 0);
-                        MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
-                    }
+                    long id = item.getIntent().getLongExtra("playlist", 0);
+                    MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
                     return true;
 
                 case FragmentMenuItems.DELETE:

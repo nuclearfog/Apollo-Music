@@ -614,6 +614,7 @@ public final class MusicUtils {
      * @param ids     list of genre IDs
      * @return song IDs from genres
      */
+    @NonNull
     public static long[] getSongListForGenres(Context context, long[] ids) {
         int size = 0;
         long[][] data = new long[ids.length][];
@@ -661,28 +662,27 @@ public final class MusicUtils {
      * @param forceShuffle True to force a shuffle, false otherwise.
      */
     public static void playAll(long[] list, int position, boolean forceShuffle) {
-        IApolloService service = mService;
-        if (list.length > 0 && service != null) {
+        if (list.length > 0 && mService != null) {
             try {
                 if (forceShuffle) {
-                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+                    mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
                 } else {
-                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
+                    mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                 }
-                long currentId = service.getAudioId();
+                long currentId = mService.getAudioId();
                 int currentQueuePosition = getQueuePosition();
                 if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
                     long[] playlist = getQueue();
                     if (Arrays.equals(list, playlist)) {
-                        service.play();
+                        mService.play();
                         return;
                     }
                 }
                 if (position < 0) {
                     position = 0;
                 }
-                service.open(list, forceShuffle ? 0 : position);
-                service.play();
+                mService.open(list, forceShuffle ? 0 : position);
+                mService.play();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -791,6 +791,7 @@ public final class MusicUtils {
      * @param folder  folder containing songs
      * @return array of track IDs
      */
+    @NonNull
     public static long[] getSongListForFolder(Context context, String folder) {
         Cursor cursor = CursorFactory.makeFolderSongCursor(context, folder);
         if (cursor != null) {

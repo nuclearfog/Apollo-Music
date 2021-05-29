@@ -96,6 +96,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * Artist song list
      */
+    @NonNull
     private long[] mArtistList = {};
 
     /**
@@ -220,22 +221,27 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        // Create a new model
-        mArtist = mAdapter.getItem(info.position);
-        if (mArtist != null) {
-            // Create a list of the artist's songs
-            mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
-            // Play the artist
-            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-            // Add the artist to the queue
-            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-            // Add the artist to a playlist
-            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-            MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
-            // Delete the artist
-            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            // Create a new model
+            mArtist = mAdapter.getItem(info.position);
+            if (mArtist != null) {
+                // Create a list of the artist's songs
+                mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
+                // Play the artist
+                menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+                // Add the artist to the queue
+                menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+                // Add the artist to a playlist
+                SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+                MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
+                // Delete the artist
+                menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+            }
+        } else {
+            // remove selection
+            mArtist = null;
         }
     }
 
@@ -298,9 +304,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
             long[] list = MusicUtils.getSongListForArtist(getContext(), id);
             MusicUtils.playAll(list, 0, false);
         } else {
-            mArtist = mAdapter.getItem(position);
-            if (mArtist != null) {
-                NavUtils.openArtistProfile(requireActivity(), mArtist.getName());
+            Artist selectedArtist = mAdapter.getItem(position);
+            if (selectedArtist != null) {
+                NavUtils.openArtistProfile(requireActivity(), selectedArtist.getName());
             }
         }
     }
@@ -343,16 +349,21 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public void refresh() {
-        // Wait a moment for the preference to change.
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
 
     @Override
     public void setCurrentTrack() {
-        int currentArtistPosition = getItemPositionByArtist();
-        if (currentArtistPosition != 0) {
-            mList.setSelection(currentArtistPosition);
+        if (mList != null && mAdapter != null) {
+            long artistId = MusicUtils.getCurrentArtistId();
+            for (int i = 0; i < mAdapter.getCount(); i++) {
+                Artist artist = mAdapter.getItem(i);
+                if (artist != null && artist.getId() == artistId) {
+                    mList.setSelection(i);
+                    break;
+                }
+            }
         }
     }
 
@@ -382,23 +393,5 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onMetaChanged() {
         // Nothing to do
-    }
-
-    /**
-     * @return The position of an item in the list or grid based on the name of
-     * the currently playing artist.
-     */
-    private int getItemPositionByArtist() {
-        long artistId = MusicUtils.getCurrentArtistId();
-        if (mAdapter == null) {
-            return 0;
-        }
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            Artist artist = mAdapter.getItem(i);
-            if (artist != null && artist.getId() == artistId) {
-                return i;
-            }
-        }
-        return 0;
     }
 }

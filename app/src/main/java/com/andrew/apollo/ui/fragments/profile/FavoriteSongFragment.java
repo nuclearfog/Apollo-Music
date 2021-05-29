@@ -180,6 +180,9 @@ public class FavoriteSongFragment extends Fragment implements LoaderManager.Load
             menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_FAVORITES, Menu.NONE, R.string.remove_from_favorites);
             // Delete the song
             menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        } else {
+            // remove selection if an error occurs
+            mSong = null;
         }
     }
 

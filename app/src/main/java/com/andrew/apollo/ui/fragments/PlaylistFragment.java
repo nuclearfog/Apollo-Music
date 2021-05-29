@@ -56,6 +56,7 @@ import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
 
+import static com.andrew.apollo.loaders.PlaylistLoader.DEFAULT_PLAYLIST_COUNT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
 
@@ -165,10 +166,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
             // Add the playlist to the queue
             menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
             // Delete and rename (user made playlists)
-            if (info.position > 1) {
+            if (info.position >= DEFAULT_PLAYLIST_COUNT) {
                 menu.add(GROUP_ID, FragmentMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
                 menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
             }
+        } else {
+            // remove old selection
+            mPlaylist = null;
         }
     }
 
@@ -302,7 +306,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 
     @Override
     public void setCurrentTrack() {
-        // todo implement track selection
+        // do nothing
     }
 
     /**

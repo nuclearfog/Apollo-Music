@@ -81,6 +81,12 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
     private ThemeUtils mTheme;
 
     /**
+     * selected theme
+     */
+    @Nullable
+    private ThemeHolder holder;
+
+    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public ThemeFragment() {
@@ -163,12 +169,18 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        if (info.position > 0) {
-            // Open to the theme's Play Store page
-            menu.add(GROUP_ID, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
-        }
         super.onCreateContextMenu(menu, v, menuInfo);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            if (info.position > 0) {
+                holder = mAdapter.getItem(info.position);
+                // Open to the theme's Play Store page
+                menu.add(GROUP_ID, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
+                return;
+            }
+        }
+        // reset selection
+        holder = null;
     }
 
     /**
@@ -176,13 +188,11 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
      */
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getGroupId() == GROUP_ID && item.getItemId() == OPEN_IN_PLAY_STORE) {
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-            ThemeHolder holder = mAdapter.getItem(info.position);
-            if (holder != null) {
+        if (item.getGroupId() == GROUP_ID && holder != null) {
+            if (item.getItemId() == OPEN_IN_PLAY_STORE) {
                 ThemeUtils.openAppPage(requireContext(), holder.mName);
+                return true;
             }
-            return true;
         }
         return super.onContextItemSelected(item);
     }

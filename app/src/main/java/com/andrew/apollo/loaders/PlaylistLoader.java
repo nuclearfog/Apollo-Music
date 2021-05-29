@@ -30,6 +30,11 @@ import java.util.List;
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 
     /**
+     * number of default playlist entries
+     */
+    public static final int DEFAULT_PLAYLIST_COUNT = 2;
+
+    /**
      * Constructor of <code>PlaylistLoader</code>
      *
      * @param context The {@link Context} to use
@@ -67,7 +72,11 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
         return result;
     }
 
-    /* Adds the favorites and last added playlists */
+    /**
+     * Adds the favorites and last added playlists
+     *
+     * @param mPlaylistList list with playlists
+     */
     private void makeDefaultPlaylists(List<Playlist> mPlaylistList) {
         Resources resources = getContext().getResources();
         /* Favorites list */

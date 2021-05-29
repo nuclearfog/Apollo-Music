@@ -75,8 +75,10 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
         }
         // Retrieve the data holder
         Genre genre = getItem(position);
-        // Set each genre name (line one)
-        holder.mLineOne.setText(genre.getName());
+        if (genre != null) {
+            // Set each genre name (line one)
+            holder.mLineOne.setText(genre.getName());
+        }
         return convertView;
     }
 

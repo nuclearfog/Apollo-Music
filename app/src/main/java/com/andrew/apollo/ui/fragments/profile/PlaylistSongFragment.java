@@ -211,6 +211,9 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_PLAYLIST, Menu.NONE, R.string.context_menu_remove_from_playlist);
             // Delete the song
             menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        } else {
+            // remove selection if an error occurs
+            mSong = null;
         }
     }
 

@@ -88,7 +88,7 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
      * track selected from contextmenu
      */
     @Nullable
-    private Song selectedSong;
+    private Song mSong;
 
     /**
      * {@inheritDoc}
@@ -169,7 +169,7 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
             // Get the position of the selected item
             AdapterContextMenuInfo adapterInfo = (AdapterContextMenuInfo) info;
             // set selected track
-            selectedSong = mAdapter.getItem(adapterInfo.position);
+            mSong = mAdapter.getItem(adapterInfo.position);
             // Play the song
             menu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             // play the song
@@ -185,6 +185,9 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
             // Add the song to a playlist
             SubMenu subMenu = menu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
             MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
+        } else {
+            // remove selection if an error occurs
+            mSong = null;
         }
     }
 
@@ -193,8 +196,8 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
      */
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getGroupId() == GROUP_ID && selectedSong != null) {
-            long[] ids = {selectedSong.getId()};
+        if (item.getGroupId() == GROUP_ID && mSong != null) {
+            long[] ids = {mSong.getId()};
 
             switch (item.getItemId()) {
                 default:
@@ -213,7 +216,7 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
                     return true;
 
                 case ADD_TO_FAVORITES:
-                    FavoritesStore.getInstance(requireContext()).addSongId(selectedSong);
+                    FavoritesStore.getInstance(requireContext()).addSongId(mSong);
                     return true;
 
                 case NEW_PLAYLIST:
@@ -226,17 +229,17 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
                     return true;
 
                 case MORE_BY_ARTIST:
-                    NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
+                    NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
                     return true;
 
                 case USE_AS_RINGTONE:
-                    MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
+                    MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
                 case DELETE:
                     break;
             }
-            MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), ids);
+            MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), ids);
             refresh();
             return true;
         }

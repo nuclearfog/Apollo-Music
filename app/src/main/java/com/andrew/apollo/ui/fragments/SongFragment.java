@@ -152,26 +152,30 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        int mSelectedPosition = info.position;
-        // Create a new song
-        mSong = mAdapter.getItem(mSelectedPosition);
-        // Play the song
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-        // Play next
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-        // Add the song to the queue
-        menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-        // Add the song to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
-        // View more content by the song artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        // Make the song a ringtone
-        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-        // Delete the song
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            // Create a new song
+            mSong = mAdapter.getItem(info.position);
+            // Play the song
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+            // Play next
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+            // Add the song to the queue
+            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add the song to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
+            // View more content by the song artist
+            menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // Make the song a ringtone
+            menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+            // Delete the song
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        } else {
+            // remove selection if an error occurs
+            mSong = null;
+        }
     }
 
 
@@ -275,12 +279,14 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void setCurrentTrack() {
-        // current unique track ID
-        long trackId = MusicUtils.getCurrentAudioId();
-        for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-            if (mAdapter.getItemId(pos) == trackId) {
-                mList.setSelection(pos);
-                break;
+        if (mList != null && mAdapter != null) {
+            // current unique track ID
+            long trackId = MusicUtils.getCurrentAudioId();
+            for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+                if (mAdapter.getItemId(pos) == trackId) {
+                    mList.setSelection(pos);
+                    break;
+                }
             }
         }
     }

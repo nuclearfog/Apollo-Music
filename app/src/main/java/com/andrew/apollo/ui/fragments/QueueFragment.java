@@ -89,7 +89,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     /**
      * Position of a context menu item
      */
-    private int mSelectedPosition;
+    private int mSelectedPosition = -1;
 
     /**
      * Empty constructor as per the {@link Fragment} documentation
@@ -172,24 +172,30 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        mSelectedPosition = info.position;
-        // Creat a new song
-        mSong = mAdapter.getItem(mSelectedPosition);
-        // Play the song next
-        menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-        // Add the song to a playlist
-        SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-        MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
-        // Remove the song from the queue
-        menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_QUEUE, Menu.NONE, R.string.remove_from_queue);
-        // View more content by the song artist
-        menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-        // Make the song a ringtone
-        menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-        // Delete the song
-        menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        if (menuInfo instanceof AdapterContextMenuInfo) {
+            // Get the position of the selected item
+            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            mSelectedPosition = info.position;
+            // Creat a new song
+            mSong = mAdapter.getItem(mSelectedPosition);
+            // Play the song next
+            menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+            // Add the song to a playlist
+            SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+            MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
+            // Remove the song from the queue
+            menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_QUEUE, Menu.NONE, R.string.remove_from_queue);
+            // View more content by the song artist
+            menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+            // Make the song a ringtone
+            menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+            // Delete the song
+            menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+        } else {
+            // remove old selection
+            mSelectedPosition = -1;
+            mSong = null;
+        }
     }
 
     /**
@@ -197,14 +203,14 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      */
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getGroupId() == GROUP_ID && mSong != null) {
+        if (item.getGroupId() == GROUP_ID && mSong != null && mSelectedPosition >= 0) {
             long[] trackId = {mSong.getId()};
 
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_NEXT:
-                    NowPlayingCursor queue = new NowPlayingCursor(requireContext());
-                    queue.removeItem(mSelectedPosition);
-                    queue.close();
+                    NowPlayingCursor queueCursor = new NowPlayingCursor(requireContext());
+                    queueCursor.removeItem(mSelectedPosition);
+                    queueCursor.close();
                     MusicUtils.playNext(trackId);
                     refresh();
                     return true;
@@ -276,6 +282,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         for (Song song : data) {
             mAdapter.add(song);
         }
+        // set current track selection
+        setCurrentTrack();
     }
 
     /**
@@ -342,7 +350,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     @Override
     public void setCurrentTrack() {
         int pos = MusicUtils.getQueuePosition();
-        if (mList != null && pos >= 0) {
+        if (mList != null && mAdapter != null && pos >= 0) {
             mList.smoothScrollToPosition(pos);
             mAdapter.setCurrentTrackPos(pos);
             mAdapter.notifyDataSetChanged();

@@ -101,6 +101,11 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     private long mPlaylistId;
 
     /**
+     * selected playlist is in queue
+     */
+    private boolean queueIsPlaylist = false;
+
+    /**
      * Empty constructor as per the {@link Fragment} documentation
      */
     public PlaylistSongFragment() {
@@ -282,6 +287,8 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MusicUtils.playAllFromUserItemClick(mAdapter, position);
+        // mark playlist as current queue
+        queueIsPlaylist = true;
     }
 
     /**
@@ -343,6 +350,9 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             if (resolver.delete(uri, DELETE_SELECT, args) == 1) {
                 // reload playlist content
                 mAdapter.remove(song);
+                // remove track from queue
+                if (queueIsPlaylist)
+                    MusicUtils.removeQueueItem(which);
                 return;
             }
         }
@@ -355,10 +365,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     @Override
     public void drop(int from, int to) {
-        if (from == 0 || to == 0 || from == to) {
-            // no changes detected, revert layout changes
-            mAdapter.notifyDataSetChanged();
-        } else {
+        if (from > 0 && to > 0 && from != to) {
             // move playlist track
             ContentResolver resolver = requireActivity().getContentResolver();
             boolean success = Members.moveItem(resolver, mPlaylistId, from - HEADER_COUNT, to - HEADER_COUNT);
@@ -367,8 +374,13 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                 Song selectedSong = mAdapter.getItem(from);
                 mAdapter.remove(selectedSong);
                 mAdapter.insert(selectedSong, to);
+                // move track item in the current queue
+                if (queueIsPlaylist)
+                    MusicUtils.moveQueueItem(from - HEADER_COUNT, to - HEADER_COUNT);
+                return;
             }
         }
+        mAdapter.notifyDataSetChanged();
     }
 
 

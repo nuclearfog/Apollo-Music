@@ -484,6 +484,21 @@ public final class MusicUtils {
     }
 
     /**
+     * remove track from the current playlist
+     *
+     * @param pos index of the track
+     */
+    public static void removeQueueItem(int pos) {
+        try {
+            if (mService != null) {
+                mService.removeTracks(pos, pos);
+            }
+        } catch (RemoteException err) {
+            err.printStackTrace();
+        }
+    }
+
+    /**
      * @return The position of the current track in the queue.
      */
     public static int getQueuePosition() {
@@ -519,7 +534,7 @@ public final class MusicUtils {
     public static boolean removeTracks(int which) {
         try {
             IApolloService service = mService;
-            if (service != null && service.removeTracks(which, which) == 0) {
+            if (service != null && service.removeTracks(which, which) > 0) {
                 return true;
             }
         } catch (RemoteException e) {

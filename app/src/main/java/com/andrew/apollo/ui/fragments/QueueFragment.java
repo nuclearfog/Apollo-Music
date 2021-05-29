@@ -314,7 +314,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
         Song mSong = mAdapter.getItem(which);
         if (mSong != null) {
             // remove track from queue
-            MusicUtils.removeTrack(mSong.getId());
+            MusicUtils.removeQueueItem(which);
             // remove track from list
             mAdapter.remove(mSong);
             // check if queue is empty

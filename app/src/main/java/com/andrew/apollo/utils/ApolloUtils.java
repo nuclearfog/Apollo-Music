@@ -185,6 +185,8 @@ public final class ApolloUtils {
     }
 
     /**
+     * creates a license dialog
+     *
      * @param context The {@link Context} to use.
      * @return An {@link AlertDialog} used to show the open source licenses used
      * in Apollo.
@@ -197,6 +199,29 @@ public final class ApolloUtils {
                 .setView(webView)
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
+    }
+
+    /**
+     * creates a dialog to ask if cache should be cleared
+     *
+     * @param context The {@link Context} to use.
+     * @return Dialog instance
+     */
+    public static AlertDialog createCacheClearDialog(final Context context) {
+        return new AlertDialog.Builder(context).setMessage(R.string.delete_warning)
+                .setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ImageCache mImageCache = ImageCache.getInstance(context);
+                        mImageCache.clearCaches();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
     }
 
     /**
@@ -288,11 +313,11 @@ public final class ApolloUtils {
     }
 
     /**
-     * Shows the {@link ColorPickerView}
+     * generate the {@link ColorPickerView}
      *
      * @param activity The {@link Context} to use.
      */
-    public static void showColorPicker(final Activity activity) {
+    public static AlertDialog showColorPicker(final Activity activity) {
         final ColorSchemeDialog colorPickerView = new ColorSchemeDialog(activity);
         colorPickerView.setButton(AlertDialog.BUTTON_POSITIVE,
                 activity.getString(android.R.string.ok), new OnClickListener() {
@@ -307,7 +332,7 @@ public final class ApolloUtils {
                     }
                 });
         colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (OnClickListener) null);
-        colorPickerView.show();
+        return colorPickerView;
     }
 
     /**
@@ -341,10 +366,13 @@ public final class ApolloUtils {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // check if container is a list
                 if (container instanceof AbsListView) {
                     AbsListView list = ((AbsListView) container);
                     list.performItemClick(v, pos, id);
-                } else if (container.getParent() instanceof AbsListView) {
+                }
+                // check if parent is a list
+                else if (container.getParent() instanceof AbsListView) {
                     AbsListView list = ((AbsListView) container.getParent());
                     list.performItemClick(v, pos, id);
                 }

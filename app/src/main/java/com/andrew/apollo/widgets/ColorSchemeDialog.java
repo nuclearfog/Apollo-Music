@@ -31,8 +31,6 @@ import com.andrew.apollo.widgets.ColorPickerView.OnColorChangedListener;
 import java.util.Locale;
 
 /**
- * Shows the {@link ColorPanelView} in a new {@link AlertDialog}.
- *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ColorSchemeDialog extends AlertDialog implements OnColorChangedListener, OnClickListener {

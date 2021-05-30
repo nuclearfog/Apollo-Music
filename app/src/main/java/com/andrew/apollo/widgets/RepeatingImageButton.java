@@ -19,7 +19,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
+
+import androidx.appcompat.widget.AppCompatImageButton;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -27,11 +28,11 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
 
 /**
- * A {@link ImageButton} that will repeatedly call a 'listener' method as long
+ * A {@link AppCompatImageButton} that will repeatedly call a 'listener' method as long
  * as the button is pressed, otherwise functions like a typecal
- * {@link ImageButton}
+ * {@link AppCompatImageButton}
  */
-public class RepeatingImageButton extends androidx.appcompat.widget.AppCompatImageButton implements OnClickListener {
+public class RepeatingImageButton extends AppCompatImageButton implements OnClickListener {
 
     private static final long sInterval = 400;
 

@@ -43,7 +43,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentScroll;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.VerticalScrollListener;
@@ -58,7 +58,7 @@ import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETT
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener, FragmentCallback {
+        OnItemClickListener, FragmentScroll {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -296,5 +296,11 @@ public class ArtistSongFragment extends Fragment implements LoaderManager.Loader
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+    }
+
+
+    @Override
+    public void scrollToTop() {
+        mList.setSelection(0);
     }
 }

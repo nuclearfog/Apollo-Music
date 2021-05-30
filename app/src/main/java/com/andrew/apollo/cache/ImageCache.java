@@ -37,6 +37,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -528,6 +529,8 @@ public final class ImageCache {
             }
         } catch (OutOfMemoryError e) {
             evictAll();
+        } catch (FileNotFoundException e) {
+            // ignore
         } catch (Exception e) {
             e.printStackTrace();
         }

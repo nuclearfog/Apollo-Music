@@ -11,13 +11,12 @@
 
 package com.andrew.apollo.ui.activities;
 
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +28,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
-import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.ThemeUtils;
@@ -40,7 +38,6 @@ import com.andrew.apollo.utils.ThemeUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SettingsActivity extends AppCompatActivity {
-
 
     /**
      * {@inheritDoc}
@@ -72,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             finish();
@@ -105,24 +102,31 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
+        private static final String LICENSE = "open_source";
+
+        private static final String DEL_CACHE = "delete_cache";
+
+        private static final String THEME_SEL = "theme_chooser";
+
+        private static final String COLOR_SEL = "color_scheme";
+
+        private static final String VERSION = "version";
+
         /**
-         * Image cache
+         * dialogs to ask the user for actions
          */
-        private ImageCache mImageCache;
+        private AlertDialog licenseDialog, cacheClearDialog, colorPicker;
 
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.settings);
 
-            // Initialze the image cache
-            mImageCache = ImageCache.getInstance(requireContext());
-
-            Preference mOpenSourceLicenses = findPreference("open_source");
-            Preference deleteCache = findPreference("delete_cache");
-            Preference themeChooser = findPreference("theme_chooser");
-            Preference colorScheme = findPreference("color_scheme");
-            Preference version = findPreference("version");
+            Preference mOpenSourceLicenses = findPreference(LICENSE);
+            Preference deleteCache = findPreference(DEL_CACHE);
+            Preference themeChooser = findPreference(THEME_SEL);
+            Preference colorScheme = findPreference(COLOR_SEL);
+            Preference version = findPreference(VERSION);
 
             if (version != null)
                 version.setSummary(BuildConfig.VERSION_NAME);
@@ -134,40 +138,34 @@ public class SettingsActivity extends AppCompatActivity {
                 themeChooser.setOnPreferenceClickListener(this);
             if (colorScheme != null)
                 colorScheme.setOnPreferenceClickListener(this);
+
+            licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
+            cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());
+            colorPicker = ApolloUtils.showColorPicker(requireActivity());
         }
 
 
         @Override
-        public boolean onPreferenceClick(Preference preference) {
+        public boolean onPreferenceClick(@NonNull Preference preference) {
             switch (preference.getKey()) {
-
-                case "open_source":
-                    ApolloUtils.createOpenSourceDialog(requireContext()).show();
+                case LICENSE:
+                    if (licenseDialog != null && !licenseDialog.isShowing())
+                        licenseDialog.show();
                     return true;
 
-                case "delete_cache":
-                    new AlertDialog.Builder(requireContext()).setMessage(R.string.delete_warning)
-                            .setPositiveButton(android.R.string.ok, new OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mImageCache.clearCaches();
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, new OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).create().show();
+                case DEL_CACHE:
+                    if (cacheClearDialog != null && !cacheClearDialog.isShowing())
+                        cacheClearDialog.show();
                     return true;
 
-                case "theme_chooser":
+                case COLOR_SEL:
+                    if (colorPicker != null && !colorPicker.isShowing())
+                        colorPicker.show();
+                    return true;
+
+                case THEME_SEL:
                     Intent themeChooserIntent = new Intent(requireContext(), ThemesAppCompat.class);
                     startActivity(themeChooserIntent);
-                    return true;
-
-                case "color_scheme":
-                    ApolloUtils.showColorPicker(requireActivity());
                     return true;
             }
             return false;

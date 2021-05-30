@@ -12,6 +12,7 @@
 package com.andrew.apollo.widgets;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
@@ -41,7 +43,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
     /**
      * Highlight color
      */
-    private int color = -1;
+    private int color = Color.WHITE;
 
     /**
      * @param context The {@link Context} to use
@@ -70,7 +72,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
      * {@inheritDoc}
      */
     @Override
-    public boolean onLongClick(View view) {
+    public boolean onLongClick(@NonNull View view) {
         if (TextUtils.isEmpty(view.getContentDescription())) {
             return false;
         } else {

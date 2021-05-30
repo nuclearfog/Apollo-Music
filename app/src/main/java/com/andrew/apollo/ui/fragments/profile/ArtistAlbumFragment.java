@@ -43,7 +43,7 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentScroll;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
@@ -58,7 +58,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistAlbumFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Album>>,
-        OnItemClickListener, FragmentCallback, ScrollableHeader {
+        OnItemClickListener, FragmentScroll, ScrollableHeader {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -307,11 +307,17 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Override
     public void refresh() {
-        // Scroll to the stop of the list before restarting the loader.
+        // Scroll to the top of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
         mList.setSelection(0);
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+    }
+
+
+    @Override
+    public void scrollToTop() {
+        mList.setSelection(0);
     }
 
     /**

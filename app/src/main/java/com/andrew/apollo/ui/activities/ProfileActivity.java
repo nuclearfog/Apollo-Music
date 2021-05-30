@@ -542,6 +542,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     @Override
     public void onPageSelected(int position) {
         mTabCarousel.setCurrentTab(position);
+        if (type == Type.ARTIST) {
+            scrollFragmentToTop();
+        }
     }
 
     /**
@@ -755,6 +758,18 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     }
 
     /**
+     * scroll all list fragments to top
+     */
+    private void scrollFragmentToTop() {
+        for (int i = 0; i < mPagerAdapter.getCount(); i++) {
+            Fragment fragment = mPagerAdapter.getFragment(i);
+            if (fragment instanceof FragmentScroll) {
+                ((FragmentScroll) fragment).scrollToTop();
+            }
+        }
+    }
+
+    /**
      * refresh all fragments
      */
     private void refreshAll() {
@@ -763,11 +778,20 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         }
     }
 
+
     /**
      * callback for sub fragments to refreshAll
      */
     public interface FragmentCallback {
 
         void refresh();
+    }
+
+    /**
+     * callback to scroll listviews of the fragments to top
+     */
+    public interface FragmentScroll extends FragmentCallback {
+
+        void scrollToTop();
     }
 }

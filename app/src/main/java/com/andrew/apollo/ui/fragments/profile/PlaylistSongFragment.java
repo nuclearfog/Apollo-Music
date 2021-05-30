@@ -352,7 +352,7 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
                 mAdapter.remove(song);
                 // remove track from queue
                 if (queueIsPlaylist)
-                    MusicUtils.removeQueueItem(which);
+                    MusicUtils.removeQueueItem(which - HEADER_COUNT);
                 return;
             }
         }

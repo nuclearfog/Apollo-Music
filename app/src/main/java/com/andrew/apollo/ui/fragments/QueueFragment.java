@@ -331,10 +331,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public void drop(int from, int to) {
         if (from != to) {
             MusicUtils.moveQueueItem(from, to);
-            mAdapter.moveTrack(from, to);
-        } else {
-            mAdapter.notifyDataSetChanged();
         }
+        mAdapter.moveTrack(from, to);
     }
 
 

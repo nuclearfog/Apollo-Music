@@ -142,6 +142,16 @@ public class SongAdapter extends ArrayAdapter<Song> {
      * {@inheritDoc}
      */
     @Override
+    public void insert(Song song, int to) {
+        if (to <= nowplayingPos)
+            nowplayingPos++;
+        super.insert(song, to);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasStableIds() {
         return true;
     }
@@ -155,18 +165,21 @@ public class SongAdapter extends ArrayAdapter<Song> {
     @MainThread
     public void moveTrack(int from, int to) {
         if (from != to) {
-            Song mSong = getItem(from);
-            remove(mSong);
-            insert(mSong, to);
-            if (nowplayingPos == from) {
-                nowplayingPos = to;
+            if (from != nowplayingPos) {
+                // move tracks around selected track
+                Song mSong = getItem(from);
+                remove(mSong);
+                insert(mSong, to);
             } else {
-                if (from < nowplayingPos && to >= nowplayingPos) {
-                    nowplayingPos--;
-                } else if (from > nowplayingPos && to <= nowplayingPos) {
-                    nowplayingPos++;
-                }
+                // move selected track to new position
+                Song mSong = getItem(from);
+                remove(mSong);
+                insert(mSong, to);
+                nowplayingPos = to;
             }
+        } else {
+            // nothing changed, revert layout changes
+            notifyDataSetChanged();
         }
     }
 

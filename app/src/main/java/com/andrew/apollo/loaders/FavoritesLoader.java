@@ -21,12 +21,6 @@ import com.andrew.apollo.utils.CursorFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ALBUMNAME;
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ARTISTNAME;
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.DURATION;
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.ID;
-import static com.andrew.apollo.provider.FavoritesStore.FavoriteColumns.SONGNAME;
-
 /**
  * Used to query the {@link FavoritesStore} for the tracks marked as favorites.
  *
@@ -55,22 +49,17 @@ public class FavoritesLoader extends WrappedAsyncTaskLoader<List<Song>> {
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {
-                int idxId = mCursor.getColumnIndexOrThrow(ID);
-                int nameIdx = mCursor.getColumnIndexOrThrow(SONGNAME);
-                int artistIdx = mCursor.getColumnIndexOrThrow(ARTISTNAME);
-                int albumIdx = mCursor.getColumnIndexOrThrow(ALBUMNAME);
-                int durIdx = mCursor.getColumnIndexOrThrow(DURATION);
                 do {
                     // Copy the song Id
-                    long id = mCursor.getLong(idxId);
+                    long id = mCursor.getLong(0);
                     // Copy the song name
-                    String songName = mCursor.getString(nameIdx);
+                    String songName = mCursor.getString(1);
                     // Copy the artist name
-                    String artist = mCursor.getString(artistIdx);
+                    String artist = mCursor.getString(3);
                     // Copy the album name
-                    String album = mCursor.getString(albumIdx);
+                    String album = mCursor.getString(2);
                     // Copy the duration value in milliseconds
-                    long duration = mCursor.getLong(durIdx);
+                    long duration = mCursor.getLong(5);
                     // Create a new song
                     Song song = new Song(id, songName, artist, album, duration);
                     // Add everything up

@@ -17,7 +17,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.NonNull;
+
 import com.andrew.apollo.model.Song;
+
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -39,7 +43,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
      * query to create favorite table
      */
     private static final String FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME +
-            " (" + FavoriteColumns.ID + " LONG NOT NULL," + FavoriteColumns.SONGNAME + " TEXT NOT NULL," +
+            " (" + FavoriteColumns.ID + " LONG PRIMARY KEY," + FavoriteColumns.SONGNAME + " TEXT NOT NULL," +
             FavoriteColumns.ALBUMNAME + " TEXT NOT NULL," + FavoriteColumns.ARTISTNAME + " TEXT NOT NULL," +
             FavoriteColumns.PLAYCOUNT + " LONG NOT NULL," + FavoriteColumns.DURATION + " LONG);";
 
@@ -56,12 +60,12 @@ public class FavoritesStore extends SQLiteOpenHelper {
     /**
      * database version
      */
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     /**
      * singleton instance
      */
-    private static FavoritesStore sInstance = null;
+    private static FavoritesStore sInstance;
 
 
     /**
@@ -107,12 +111,12 @@ public class FavoritesStore extends SQLiteOpenHelper {
      *
      * @param mSong song instance
      */
-    public void addSongId(Song mSong) {
+    public void addSongId(@NonNull Song mSong) {
         addSongId(mSong.getId(), mSong.getName(), mSong.getAlbum(), mSong.getArtist(), mSong.durationMillis());
     }
 
     /**
-     * Used to store song Ids in our database
+     * Used to store song IDs in our database
      *
      * @param songId     The album's ID
      * @param songName   The song name
@@ -120,74 +124,24 @@ public class FavoritesStore extends SQLiteOpenHelper {
      * @param artistName The artist name
      * @param duration   Track duration in milliseconds
      */
-    public void addSongId(Long songId, String songName, String albumName, String artistName, long duration) {
-        if (songId == null || songName == null || albumName == null || artistName == null) {
-            return;
-        }
-        Long playCount = getPlayCount(songId);
+    public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
+        // increment by 1
+        long playCount = getPlayCount(songId) + 1;
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues(5);
+        ContentValues values = new ContentValues(6);
         database.beginTransaction();
 
         values.put(FavoriteColumns.ID, songId);
         values.put(FavoriteColumns.SONGNAME, songName);
         values.put(FavoriteColumns.ALBUMNAME, albumName);
         values.put(FavoriteColumns.ARTISTNAME, artistName);
-        values.put(FavoriteColumns.PLAYCOUNT, playCount != 0 ? playCount + 1 : 1);
+        values.put(FavoriteColumns.PLAYCOUNT, playCount);
         values.put(FavoriteColumns.DURATION, duration);
 
-        database.delete(FavoriteColumns.NAME, FavoriteColumns.ID + "=" + songId, null);
-        database.insert(FavoriteColumns.NAME, null, values);
+        database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
         database.setTransactionSuccessful();
         database.endTransaction();
-    }
-
-    /**
-     * Used to retrieve a single song Id from our database
-     *
-     * @param songId The song Id to reference
-     * @return The song Id
-     */
-    public Long getSongId(Long songId) {
-        if (songId <= -1) {
-            return null;
-        }
-        String[] having = {String.valueOf(songId)};
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                Long id = cursor.getLong(cursor.getColumnIndexOrThrow(FavoriteColumns.ID));
-                cursor.close();
-                return id;
-            }
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * Used to retrieve the play count
-     *
-     * @param songId The song Id to reference
-     * @return The play count for a song
-     */
-    public Long getPlayCount(Long songId) {
-        if (songId <= -1) {
-            return null;
-        }
-        String[] having = {String.valueOf(songId)};
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                Long playCount = cursor.getLong(cursor.getColumnIndexOrThrow(FavoriteColumns.PLAYCOUNT));
-                cursor.close();
-                return playCount;
-            }
-            cursor.close();
-        }
-        return (long) 0;
+        database.close();
     }
 
     /**
@@ -205,6 +159,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
             result = cursor.moveToFirst();
             cursor.close();
         }
+        database.close();
         return result;
     }
 
@@ -213,10 +168,34 @@ public class FavoritesStore extends SQLiteOpenHelper {
      *
      * @param songId track ID
      */
-    public void removeItem(Long songId) {
-        String[] args = {String.valueOf(songId)};
-        SQLiteDatabase database = getReadableDatabase();
+    public void removeItem(long songId) {
+        String[] args = {Long.toString(songId)};
+        SQLiteDatabase database = getWritableDatabase();
         database.delete(FavoriteColumns.NAME, FAVORITE_SELECT, args);
+        database.close();
+    }
+
+    /**
+     * Used to retrieve how often a favorited track was played
+     *
+     * @param songId The song Id to reference
+     * @return The play count for a song
+     */
+    private long getPlayCount(long songId) {
+        long result = 0;
+        if (songId >= 0) {
+            String[] having = {Long.toString(songId)};
+            SQLiteDatabase database = getReadableDatabase();
+            Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    result = cursor.getLong(4);
+                }
+                cursor.close();
+            }
+            database.close();
+        }
+        return result;
     }
 
     /**

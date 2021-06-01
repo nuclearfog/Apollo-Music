@@ -18,6 +18,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import com.andrew.apollo.ui.activities.ProfileActivity;
 
 /**
@@ -35,6 +37,9 @@ import com.andrew.apollo.ui.activities.ProfileActivity;
  */
 public class RecentStore extends SQLiteOpenHelper {
 
+    /**
+     * column projection of the RECENT table
+     */
     private static final String[] RECENT_PROJECTION = {
             RecentStoreColumns.ID,
             RecentStoreColumns.ALBUMNAME,
@@ -42,25 +47,45 @@ public class RecentStore extends SQLiteOpenHelper {
             RecentStoreColumns.TIMEPLAYED
     };
 
+    /**
+     * SQL query to create table with recently listened albums
+     */
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + RecentStoreColumns.NAME + " ("
-            + RecentStoreColumns.ID + " LONG NOT NULL," + RecentStoreColumns.ALBUMNAME
+            + RecentStoreColumns.ID + " LONG PRIMARY KEY," + RecentStoreColumns.ALBUMNAME
             + " TEXT NOT NULL," + RecentStoreColumns.ARTISTNAME + " TEXT NOT NULL,"
             + RecentStoreColumns.ALBUMSONGCOUNT + " TEXT NOT NULL,"
             + RecentStoreColumns.ALBUMYEAR + " TEXT," + RecentStoreColumns.TIMEPLAYED
             + " LONG NOT NULL);";
 
+    /**
+     * select recent album by ID
+     */
     private static final String RECENT_SELECT_ID = RecentStoreColumns.ID + "=?";
 
+    /**
+     * select recent album by name
+     */
     private static final String RECENT_SELECT_NAME = RecentStoreColumns.ARTISTNAME + "=?";
 
+    /**
+     * default sort order
+     */
     private static final String RECENT_ORDER = RecentStoreColumns.TIMEPLAYED + " DESC";
 
-
-    /* Name of database file */
+    /**
+     * Name of database file
+     */
     public static final String DATABASENAME = "albumhistory.db";
-    /* Version constant to increment when the database should be rebuilt */
-    private static final int VERSION = 1;
-    private static RecentStore sInstance = null;
+
+    /**
+     * Version constant to increment when the database should be rebuilt
+     */
+    private static final int VERSION = 2;
+
+    /**
+     * singleton instance of this class
+     */
+    private static RecentStore sInstance;
 
     /**
      * Constructor of <code>RecentStore</code>
@@ -77,6 +102,7 @@ public class RecentStore extends SQLiteOpenHelper {
      */
     public static synchronized RecentStore getInstance(Context context) {
         if (sInstance == null) {
+            // initialize with application context to avoid memory leak
             sInstance = new RecentStore(context.getApplicationContext());
         }
         return sInstance;
@@ -111,7 +137,6 @@ public class RecentStore extends SQLiteOpenHelper {
         if (albumId > 0 && albumName != null && artistName != null && songCount != null) {
             SQLiteDatabase database = getWritableDatabase();
             ContentValues values = new ContentValues(6);
-            String[] args = {String.valueOf(albumId)};
 
             values.put(RecentStoreColumns.ID, albumId);
             values.put(RecentStoreColumns.ALBUMNAME, albumName);
@@ -121,35 +146,36 @@ public class RecentStore extends SQLiteOpenHelper {
             values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
 
             database.beginTransaction();
-            database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
-            database.insert(RecentStoreColumns.NAME, null, values);
+            database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             database.setTransactionSuccessful();
             database.endTransaction();
+            database.close();
         }
     }
 
     /**
      * Used to retrieve the most recently listened album for an artist.
      *
-     * @param key The key to reference.
+     * @param artistName The artistName to reference.
      * @return The most recently listened album for an artist.
      */
-    public String getAlbumName(String key) {
-        if (!TextUtils.isEmpty(key)) {
+    @Nullable
+    public String getAlbumName(String artistName) {
+        String result = null;
+        if (!TextUtils.isEmpty(artistName)) {
+            String[] having = {artistName};
             SQLiteDatabase database = getReadableDatabase();
-            String[] having = {key};
             Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME,
                     having, null, null, RECENT_ORDER);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    String album = cursor.getString(cursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
-                    cursor.close();
-                    return album;
+                    result = cursor.getString(cursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
                 }
                 cursor.close();
             }
+            database.close();
         }
-        return null;
+        return result;
     }
 
     /**
@@ -159,8 +185,9 @@ public class RecentStore extends SQLiteOpenHelper {
      */
     public void removeItem(long albumId) {
         String[] args = {Long.toString(albumId)};
-        SQLiteDatabase database = getReadableDatabase();
+        SQLiteDatabase database = getWritableDatabase();
         database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
+        database.close();
     }
 
 

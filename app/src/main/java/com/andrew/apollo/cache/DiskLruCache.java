@@ -38,7 +38,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ***************************************************************************** Taken from the JB source code, can be found in:
+ * *****************************************************************************
+ * Taken from the JB source code, can be found in:
  * libcore/luni/src/main/java/libcore/io/DiskLruCache.java or direct link:
  * https:
  * //android.googlesource.com/platform/libcore/+/android-4.1.1_r1/luni/src/

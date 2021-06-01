@@ -98,7 +98,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     /**
      * The last scrolled position
      */
-    private int mLastScrollPosition = Integer.MIN_VALUE;
+    private int mLastScrollPosition = 0;
 
     /**
      * Allowed horizontal scroll duration
@@ -180,6 +180,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
         mFirstTab.setOverlayOnClickListener(mTabOneTouchInterceptListener);
         mSecondTab = findViewById(R.id.profile_tab_carousel_tab_two);
         mSecondTab.setOverlayOnClickListener(mTabTwoTouchInterceptListener);
+        updateAlphaLayers();
     }
 
     /**

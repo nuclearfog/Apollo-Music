@@ -20,6 +20,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 
+import androidx.appcompat.widget.AppCompatImageButton;
+
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
@@ -31,7 +33,7 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 @SuppressLint("AppCompatCustomView")
-public class PlayPauseButton extends ImageButton implements OnClickListener, OnLongClickListener {
+public class PlayPauseButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**
      * @param context The {@link Context} to use

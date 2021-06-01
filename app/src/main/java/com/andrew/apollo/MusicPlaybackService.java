@@ -1191,7 +1191,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
         if (what.equals(META_CHANGED)) {
             // Increase the play count for favorite songs.
-            if (mFavoritesCache.getSongId(audioId) != null) {
+            if (mFavoritesCache.exists(audioId)) {
                 mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
             }
             // Add the track to the recently played list.
@@ -1736,8 +1736,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public boolean isFavorite() {
         if (mFavoritesCache != null) {
             synchronized (this) {
-                Long id = mFavoritesCache.getSongId(getAudioId());
-                return id != null;
+                return mFavoritesCache.exists(getAudioId());
             }
         }
         return false;

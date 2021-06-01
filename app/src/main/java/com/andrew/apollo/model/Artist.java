@@ -11,8 +11,6 @@
 
 package com.andrew.apollo.model;
 
-import android.text.TextUtils;
-
 /**
  * A class that represents an artist.
  *
@@ -76,22 +74,11 @@ public class Artist extends Music {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof Artist) {
+            Artist artist = (Artist) obj;
+            return id == artist.id && mAlbumNumber == artist.mAlbumNumber &&
+                    mSongNumber == artist.mSongNumber && name.equals(artist.name);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Artist other = (Artist) obj;
-        if (mAlbumNumber != other.mAlbumNumber) {
-            return false;
-        }
-        if (id != other.id) {
-            return false;
-        }
-        if (!TextUtils.equals(name, other.name)) {
-            return false;
-        }
-        return mSongNumber == other.mSongNumber;
+        return false;
     }
 }

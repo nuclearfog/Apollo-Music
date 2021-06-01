@@ -11,8 +11,6 @@
 
 package com.andrew.apollo.model;
 
-import android.text.TextUtils;
-
 
 /**
  * A class that represents a playlist.
@@ -51,16 +49,10 @@ public class Playlist extends Music {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof Playlist) {
+            Playlist playlist = (Playlist) obj;
+            return id == playlist.id && name.equals(playlist.name);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Playlist other = (Playlist) obj;
-        if (id != other.id) {
-            return false;
-        }
-        return TextUtils.equals(name, other.name);
+        return false;
     }
 }

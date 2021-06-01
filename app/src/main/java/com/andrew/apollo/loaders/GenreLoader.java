@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * Used to return the genres on a user's device.
@@ -30,6 +31,11 @@ import java.util.TreeSet;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
+
+    /**
+     * regex pattern to split genre group separated by
+     */
+    private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
 
     /**
      * Constructor of <code>GenreLoader</code>
@@ -58,7 +64,7 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
                     String name = mCursor.getString(1);
 
                     // Split genre groups into single genre names
-                    String[] genres = name.split("\\s*;\\s*", -1);
+                    String[] genres = SEPARATOR.split(name);
 
                     // solve conflicts. add multiple genre IDs for the same genre name.
                     for (String genre : genres) {

@@ -11,8 +11,6 @@
 
 package com.andrew.apollo.model;
 
-import android.text.TextUtils;
-
 /**
  * A class that represents an album.
  *
@@ -91,25 +89,11 @@ public class Album extends Music {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof Album) {
+            Album album = (Album) obj;
+            return id == album.id && mSongNumber == album.mSongNumber &&
+                    name.equals(album.name) && mArtistName.equals(album.mArtistName) && mYear.equals(album.mYear);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Album other = (Album) obj;
-        if (id != other.id) {
-            return false;
-        }
-        if (!TextUtils.equals(name, other.name)) {
-            return false;
-        }
-        if (!TextUtils.equals(mArtistName, other.mArtistName)) {
-            return false;
-        }
-        if (mSongNumber != other.mSongNumber) {
-            return false;
-        }
-        return TextUtils.equals(mYear, other.mYear);
+        return false;
     }
 }

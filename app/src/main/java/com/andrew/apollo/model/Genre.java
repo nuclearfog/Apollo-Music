@@ -11,10 +11,9 @@
 
 package com.andrew.apollo.model;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,7 +54,7 @@ public class Genre extends Music implements Comparable<Genre> {
 
     @Override
     public int compareTo(@NonNull Genre g) {
-        return name.compareTo(g.getName());
+        return name.compareToIgnoreCase(g.getName());
     }
 
     /**
@@ -65,7 +64,7 @@ public class Genre extends Music implements Comparable<Genre> {
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + (int) id;
+        result = prime * result + Arrays.hashCode(ids);
         result = prime * result + name.hashCode();
         return result;
     }
@@ -78,16 +77,16 @@ public class Genre extends Music implements Comparable<Genre> {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof Genre) {
+            Genre g = (Genre) obj;
+            if (g.ids.length == ids.length) {
+                for (int i = 0; i < ids.length; i++) {
+                    if (g.ids[i] != ids[i])
+                        return false;
+                }
+            }
+            return g.name.equals(name);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Genre other = (Genre) obj;
-        if (id != other.id) {
-            return false;
-        }
-        return TextUtils.equals(name, other.name);
+        return false;
     }
 }

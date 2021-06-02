@@ -1,24 +1,12 @@
-/*
- * Copyright (C) 2012 Andrew Neal Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
- */
-
 package com.andrew.apollo.ui.fragments.profile;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
@@ -29,7 +17,7 @@ import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
-import com.andrew.apollo.loaders.LastAddedLoader;
+import com.andrew.apollo.loaders.MostPlayedLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
@@ -39,25 +27,24 @@ import com.andrew.apollo.utils.NavUtils;
 
 import java.util.List;
 
-import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
 
 /**
- * This class is used to display all of the songs the user put on their device
- * within the last four weeks.
+ * This fragment class shows the most playes tracks
  *
- * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class LastAddedFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class MostPlayedFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
     /**
-     * Used to keep context menu items from bleeding into other fragments
+     * context menu ID
      */
-    private static final int GROUP_ID = 0x461834C5;
+    private static final int GROUP_ID = 0xC46D92C;
 
     /**
-     * LoaderCallbacks identifier
+     * Loader ID
      */
-    private static final int LOADER_ID = 0x4D492A47;
+    private static final int LOADER_ID = 0xB1174551;
 
     /**
      * The adapter for the list
@@ -70,38 +57,44 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
     @Nullable
     private Song mSong;
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void init() {
-        // Enable the options menu
-        setHasOptionsMenu(true);
-        // Start the loader
+        // sets empty list text
+        setEmptyText(R.string.empty_recents);
+        // start loader
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
-        return mAdapter;
-    }
-
-
-    @Override
-    protected void onItemClick(View view, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
+    protected ListAdapter getAdapter() {
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
+        return mAdapter;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onItemClick(View v, int pos, long id) {
+        // play all tracks
+        MusicUtils.playAllFromUserItemClick(mAdapter, pos);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (menuInfo instanceof AdapterContextMenuInfo) {
+        if (menuInfo instanceof AdapterView.AdapterContextMenuInfo) {
             // Get the position of the selected item
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
             // Creat a new song
             mSong = mAdapter.getItem(info.position);
             // Play the song
@@ -125,12 +118,13 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mSong != null) {
             long[] trackId = {mSong.getId()};
-
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
                     MusicUtils.playAll(trackId, 0, false);
@@ -177,17 +171,27 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void refresh() {
+        // restart loader
+        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
-    public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        return new LastAddedLoader(requireContext());
+    public Loader<List<Song>> onCreateLoader(int id, @Nullable Bundle args) {
+        // initialize loader
+        return new MostPlayedLoader(requireContext());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
+    public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
         // disable loader
         LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // Start fresh
@@ -205,11 +209,5 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
         mAdapter.clear();
-    }
-
-
-    @Override
-    public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 }

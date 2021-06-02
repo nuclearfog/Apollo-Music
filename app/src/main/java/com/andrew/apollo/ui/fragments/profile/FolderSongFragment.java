@@ -1,25 +1,17 @@
 package com.andrew.apollo.ui.fragments.profile;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
@@ -30,12 +22,8 @@ import com.andrew.apollo.loaders.FolderSongLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.widgets.ProfileTabCarousel;
-import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
@@ -56,8 +44,7 @@ import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
  * <p>
  * This fragment class shows tracks from a music folder
  */
-public class FolderSongFragment extends Fragment implements LoaderCallbacks<List<Song>>,
-        OnItemClickListener, FragmentCallback {
+public class FolderSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
     /**
      * context menu ID
@@ -70,16 +57,6 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
     private static final int LOADER_ID = 0x16A4BF2B;
 
     /**
-     *
-     */
-    private ProfileTabCarousel mProfileTabCarousel;
-
-    /**
-     * fragment list view
-     */
-    private ListView mList;
-
-    /**
      * list view adapter with song views
      */
     private ProfileSongAdapter mAdapter;
@@ -90,73 +67,27 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
     @Nullable
     private Song mSong;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Activity activity = (Activity) context;
-        mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
-    }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle extras) {
-        // root view of the fragment
-        View view = inflater.inflate(R.layout.list_base, parent, false);
-        // empty info
-        TextView emptyInfo = view.findViewById(R.id.list_base_empty_info);
-        // list view of the fragment
-        mList = view.findViewById(R.id.list_base);
-        // set song adapter
-        mList.setAdapter(mAdapter);
-        // Set empty list info
-        mList.setEmptyView(emptyInfo);
-        mList.setRecyclerListener(new RecycleHolder());
-        mList.setOnCreateContextMenuListener(this);
-        mList.setOnItemClickListener(this);
-        mList.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        return view;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void init() {
         setHasOptionsMenu(true);
-        savedInstanceState = getArguments();
-        if (savedInstanceState != null) {
-            LoaderManager.getInstance(this).initLoader(LOADER_ID, savedInstanceState, this);
+        Bundle param = getArguments();
+        if (param != null) {
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, param, this);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onSaveInstanceState(@NonNull Bundle extras) {
-        Bundle bundle;
-        super.onSaveInstanceState(extras);
-        if (getArguments() != null) {
-            bundle = getArguments();
-        } else {
-            bundle = new Bundle();
-        }
-        extras.putAll(bundle);
+    protected ListAdapter getAdapter() {
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+        return mAdapter;
+    }
+
+
+    @Override
+    protected void onItemClick(View v, int position, long id) {
+        MusicUtils.playAllFromUserItemClick(mAdapter, position);
     }
 
     /**
@@ -287,19 +218,11 @@ public class FolderSongFragment extends Fragment implements LoaderCallbacks<List
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void refresh() {
         // Scroll to the stop of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
-        mList.setSelection(0);
+        scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

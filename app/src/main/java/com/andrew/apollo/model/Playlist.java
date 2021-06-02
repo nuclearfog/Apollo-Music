@@ -20,6 +20,21 @@ package com.andrew.apollo.model;
 public class Playlist extends Music {
 
     /**
+     * unique ID to define this playlist as favorite list
+     */
+    public static final long FAVORITE_ID = 12345677943456L;
+
+    /**
+     * unique ID to define this playlist as "last added" list
+     */
+    public static final long LAST_ADDED_ID = 0xF57622096950ABBCL;
+
+    /**
+     * unique ID to define this playlist as "most played" list
+     */
+    public static final long MOST_PLAYED_ID = 0x502CDB3BD99EE393L;
+
+    /**
      * Constructor of <code>Genre</code>
      *
      * @param playlistId   The Id of the playlist

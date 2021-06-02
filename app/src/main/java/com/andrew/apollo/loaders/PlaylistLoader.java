@@ -80,10 +80,14 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
     private void makeDefaultPlaylists(List<Playlist> mPlaylistList) {
         Resources resources = getContext().getResources();
         /* Favorites list */
-        Playlist favorites = new Playlist(-1, resources.getString(R.string.playlist_favorites));
+        Playlist favorites = new Playlist(Playlist.FAVORITE_ID, resources.getString(R.string.playlist_favorites));
         mPlaylistList.add(favorites);
+        // todo add system to disable the rows
         /* Last added list */
-        Playlist lastAdded = new Playlist(-2, resources.getString(R.string.playlist_last_added));
+        Playlist lastAdded = new Playlist(Playlist.LAST_ADDED_ID, resources.getString(R.string.playlist_last_added));
         mPlaylistList.add(lastAdded);
+        /* Last added list */
+        Playlist mostPlayed = new Playlist(Playlist.MOST_PLAYED_ID, resources.getString(R.string.playlist_most_played));
+        mPlaylistList.add(mostPlayed);
     }
 }

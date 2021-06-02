@@ -59,6 +59,7 @@ import java.util.List;
 import static com.andrew.apollo.loaders.PlaylistLoader.DEFAULT_PLAYLIST_COUNT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
+import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
 /**
  * This class is used to display all of the playlists on a user's device.
@@ -238,28 +239,35 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Bundle bundle = new Bundle();
         Playlist selected = mAdapter.getItem(position);
-        String playlistName = null;
-        // Favorites list
-        if (position == 0) {
-            playlistName = getString(R.string.playlist_favorites);
-            bundle.putString(Config.MIME_TYPE, PAGE_FAVORIT);
+        if (selected != null) {
+            Bundle bundle = new Bundle();
+            // Favorites list
+            if (selected.getId() == Playlist.FAVORITE_ID) {
+                bundle.putString(Config.NAME, getString(R.string.playlist_favorites));
+                bundle.putString(Config.MIME_TYPE, PAGE_FAVORIT);
+            }
             // Last added
-        } else if (position == 1) {
-            playlistName = getString(R.string.playlist_last_added);
-            bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
-        } else if (selected != null) {
-            // User created
-            playlistName = selected.getName();
-            bundle.putString(Config.MIME_TYPE, Playlists.CONTENT_TYPE);
-            bundle.putLong(Config.ID, selected.getId());
+            else if (selected.getId() == Playlist.LAST_ADDED_ID) {
+                bundle.putString(Config.NAME, getString(R.string.playlist_last_added));
+                bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
+            }
+            // most played track
+            else if (selected.getId() == Playlist.MOST_PLAYED_ID) {
+                bundle.putString(Config.NAME, getString(R.string.playlist_most_played));
+                bundle.putString(Config.MIME_TYPE, PAGE_MOST_PLAYED);
+            }
+            // User created playlist
+            else {
+                bundle.putString(Config.MIME_TYPE, Playlists.CONTENT_TYPE);
+                bundle.putString(Config.NAME, selected.getName());
+                bundle.putLong(Config.ID, selected.getId());
+            }
+            // Create the intent to launch the profile activity
+            Intent intent = new Intent(requireContext(), ProfileActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
         }
-        bundle.putString(Config.NAME, playlistName);
-        // Create the intent to launch the profile activity
-        Intent intent = new Intent(requireContext(), ProfileActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
     }
 
     /**

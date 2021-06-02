@@ -11,28 +11,21 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.Config;
@@ -42,12 +35,8 @@ import com.andrew.apollo.loaders.ArtistAlbumLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
-import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentScroll;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.widgets.ProfileTabCarousel;
-import com.andrew.apollo.widgets.VerticalScrollListener;
 import com.andrew.apollo.widgets.VerticalScrollListener.ScrollableHeader;
 
 import java.util.List;
@@ -57,8 +46,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ArtistAlbumFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Album>>,
-        OnItemClickListener, FragmentScroll, ScrollableHeader {
+public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallbacks<List<Album>>, ScrollableHeader {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -74,10 +62,7 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      * The adapter for the grid
      */
     private ArtistAlbumAdapter mAdapter;
-    /**
-     * The list view
-     */
-    private ListView mList;
+
     /**
      * Album song list
      */
@@ -88,79 +73,44 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
      */
     @Nullable
     private Album mAlbum;
-    /**
-     * Profile header
-     */
-    private ProfileTabCarousel mProfileTabCarousel;
 
-    /**
-     * Empty constructor as per the {@link Fragment} documentation
-     */
-    public ArtistAlbumFragment() {
-    }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Activity activity = (Activity) context;
-        mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adpater
-        mAdapter = new ArtistAlbumAdapter(requireActivity());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        View rootView = inflater.inflate(R.layout.list_base, container, false);
-        // empty info
-        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
-        // setup empty text
-        emptyInfo.setText(R.string.empty_artst_albums);
-        // Initialize the list
-        mList = rootView.findViewById(R.id.list_base);
-        // Set the data behind the grid
-        mList.setAdapter(mAdapter);
-        // Set empty list info
-        mList.setEmptyView(emptyInfo);
-        // Release any references to the recycled Views
-        mList.setRecyclerListener(new RecycleHolder());
-        // disable fast scroll
-        mList.setFastScrollEnabled(false);
-        // Listen for ContextMenus to be created
-        mList.setOnCreateContextMenuListener(this);
-        // Show the songs from the selected album
-        mList.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mList.setOnScrollListener(new VerticalScrollListener(this, mProfileTabCarousel, 1));
-        return rootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void init() {
         // Enable the options menu
         setHasOptionsMenu(true);
+        // sets empty list text
+        setEmptyText(R.string.empty_artst_albums);
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
+        }
+    }
+
+
+    @Override
+    protected ListAdapter getAdapter() {
+        mAdapter = new ArtistAlbumAdapter(requireActivity());
+        return mAdapter;
+    }
+
+
+    @Override
+    protected void onItemClick(View v, int pos, long id) {
+        if (v.getId() == R.id.image) {
+            // Album art was clicked
+            long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
+            MusicUtils.playAll(list, 0, false);
+        } else {
+            // open Album
+            if (pos > 0) {
+                Album album = mAdapter.getItem(pos);
+                if (album != null) {
+                    NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
+                    requireActivity().finish();
+                }
+            }
         }
     }
 
@@ -171,15 +121,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     public void onPause() {
         super.onPause();
         mAdapter.flush();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putAll(getArguments() != null ? getArguments() : new Bundle());
     }
 
     /**
@@ -250,27 +191,6 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (view.getId() == R.id.image) {
-            // Album art was clicked
-            long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-            MusicUtils.playAll(list, 0, false);
-        } else {
-            // open Album
-            if (position > 0) {
-                Album album = mAdapter.getItem(position);
-                if (album != null) {
-                    NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
-                    requireActivity().finish();
-                }
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @NonNull
     @Override
     public Loader<List<Album>> onCreateLoader(int id, @Nullable Bundle args) {
@@ -310,14 +230,8 @@ public class ArtistAlbumFragment extends Fragment implements LoaderManager.Loade
         // Scroll to the top of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
-        mList.setSelection(0);
+        scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
-    }
-
-
-    @Override
-    public void scrollToTop() {
-        mList.setSelection(0);
     }
 
     /**

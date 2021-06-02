@@ -12,35 +12,28 @@
 package com.andrew.apollo.ui.fragments.profile;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio.Playlists.Members;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
-import com.andrew.apollo.dragdrop.DragSortListView;
 import com.andrew.apollo.dragdrop.DragSortListView.DragScrollProfile;
 import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
@@ -49,11 +42,8 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
@@ -66,8 +56,8 @@ import static com.andrew.apollo.adapters.ProfileSongAdapter.HEADER_COUNT;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlaylistSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener, DropListener, RemoveListener, DragScrollProfile, FragmentCallback {
+public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>,
+        DropListener, RemoveListener, DragScrollProfile {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -105,74 +95,13 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
      */
     private boolean queueIsPlaylist = false;
 
-    /**
-     * Empty constructor as per the {@link Fragment} documentation
-     */
-    public PlaylistSongFragment() {
-    }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Activity activity = (Activity) context;
-        activity.findViewById(R.id.activity_profile_base_tab_carousel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        View rootView = inflater.inflate(R.layout.list_base, container, false);
-        // empty info
-        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
-        // Initialize the list
-        DragSortListView mListView = rootView.findViewById(R.id.list_base);
-        // setup empty text
-        emptyInfo.setText(R.string.empty_playlist);
-        // Set the data behind the list
-        mListView.setAdapter(mAdapter);
-        // Set empty list info
-        mListView.setEmptyView(emptyInfo);
-        // Release any references to the recycled Views
-        mListView.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
-        mListView.setOnCreateContextMenuListener(this);
-        // Play the selected song
-        mListView.setOnItemClickListener(this);
-        // Set the drop listener
-        mListView.setDropListener(this);
-        // Set the swipe to remove listener
-        mListView.setRemoveListener(this);
-        // Quick scroll while dragging
-        mListView.setDragScrollProfile(this);
-        // To help make scrolling smooth
-        mListView.setOnScrollListener(new VerticalScrollListener(null, null, 0));
-        return rootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void init() {
         // Enable the options menu
         setHasOptionsMenu(true);
+        // sets empty list text
+        setEmptyText(R.string.empty_playlist);
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -181,13 +110,19 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putAll(getArguments() != null ? getArguments() : new Bundle());
+    protected ListAdapter getAdapter() {
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
+        return mAdapter;
+    }
+
+
+    @Override
+    protected void onItemClick(View view, int position, long id) {
+        MusicUtils.playAllFromUserItemClick(mAdapter, position);
+        // mark playlist as current queue
+        queueIsPlaylist = true;
     }
 
     /**
@@ -279,16 +214,6 @@ public class PlaylistSongFragment extends Fragment implements LoaderManager.Load
             }
         }
         return super.onContextItemSelected(item);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
-        // mark playlist as current queue
-        queueIsPlaylist = true;
     }
 
     /**

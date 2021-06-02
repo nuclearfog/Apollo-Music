@@ -169,5 +169,6 @@
     <string name="empty_playlist">This playlist is empty.</string>
     <string name="empty_favorits">There are no tracks added to favorits!</string>
     <string name="empty_artst_albums">There is no album of this artist</string>
+    <string name="playlist_most_played">Most played</string>
 
 </resources>

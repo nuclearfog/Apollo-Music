@@ -59,6 +59,7 @@ import com.andrew.apollo.appwidgets.RecentWidgetProvider;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.FavoritesStore;
+import com.andrew.apollo.provider.MostPlayedStore;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.CursorFactory;
@@ -436,6 +437,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private FavoritesStore mFavoritesCache;
 
     /**
+     * most played tracks database
+     */
+    private MostPlayedStore mostPlayedStore;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -490,6 +496,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // Initialize the favorites and recents databases
         mRecentsCache = RecentStore.getInstance(this);
         mFavoritesCache = FavoritesStore.getInstance(this);
+        mostPlayedStore = MostPlayedStore.getInstance(this);
 
         // Initialize the notification helper
         mNotificationHelper = new NotificationHelper(this);
@@ -1194,6 +1201,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             if (mFavoritesCache.exists(audioId)) {
                 mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
             }
+            mostPlayedStore.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
             // Add the track to the recently played list.
             mRecentsCache.addAlbumId(albumId, albumName, artistName,
                     MusicUtils.getSongCountForAlbum(this, albumId),

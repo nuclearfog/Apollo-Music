@@ -69,6 +69,7 @@ import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.MOSTPLAYED;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
@@ -108,6 +109,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * mime type of the {@link LastAddedFragment}
      */
     public static final String PAGE_LAST_ADDED = "playlist";
+    /**
+     * mime type of the {@link LastAddedFragment}
+     */
+    public static final String PAGE_MOST_PLAYED = "page_most";
 
     /**
      *
@@ -124,10 +129,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         PLAYLIST,
         FOLDER,
         FAVORITE,
-        LAST_ADDED;
+        LAST_ADDED,
+        MOST_PLAYED;
 
-        public static Type getEnum(String s) {
-            switch (s) {
+        public static Type getEnum(String mime) {
+            switch (mime) {
                 case Audio.Artists.CONTENT_TYPE:
                     return ARTIST;
                 case Audio.Albums.CONTENT_TYPE:
@@ -140,6 +146,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                     return FOLDER;
                 case PAGE_FAVORIT:
                     return FAVORITE;
+                case PAGE_MOST_PLAYED:
+                    return MOST_PLAYED;
                 default:
                 case PAGE_LAST_ADDED:
                     return LAST_ADDED;
@@ -302,6 +310,17 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Last added fragment
                 mPagerAdapter.add(LASTADDED, null);
+                // Action bar title = Last added
+                if (actionBar != null) {
+                    actionBar.setTitle(mProfileName);
+                }
+                break;
+
+            case MOST_PLAYED:
+                // Add the carousel images
+                mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
+                // most played fragment
+                mPagerAdapter.add(MOSTPLAYED, null);
                 // Action bar title = Last added
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);

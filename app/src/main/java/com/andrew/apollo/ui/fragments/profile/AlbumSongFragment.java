@@ -11,27 +11,21 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
-import android.app.Activity;
-import android.content.Context;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.andrew.apollo.Config;
@@ -42,11 +36,8 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.widgets.ProfileTabCarousel;
-import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
@@ -57,8 +48,7 @@ import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_ALBUM_SETTIN
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-        OnItemClickListener, FragmentCallback {
+public class AlbumSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -76,75 +66,14 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     private ProfileSongAdapter mAdapter;
 
     /**
-     * The list view
-     */
-    private ListView mList;
-
-    /**
      * selected track
      */
     @Nullable
     private Song mSong;
 
-    /**
-     * Profile header
-     */
-    private ProfileTabCarousel mProfileTabCarousel;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Activity activity = (Activity) context;
-        mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        View rootView = inflater.inflate(R.layout.list_base, container, false);
-        // empty info
-        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
-        // Initialize the list
-        mList = rootView.findViewById(R.id.list_base);
-        // Set the data behind the list
-        mList.setAdapter(mAdapter);
-        // Set empty list info
-        mList.setEmptyView(emptyInfo);
-        // Release any references to the recycled Views
-        mList.setRecyclerListener(new RecycleHolder());
-        // disable fast scroll
-        mList.setFastScrollEnabled(false);
-        // Listen for ContextMenus to be created
-        mList.setOnCreateContextMenuListener(this);
-        // Play the selected song
-        mList.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mList.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        return rootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void init() {
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
@@ -154,13 +83,17 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putAll(getArguments() != null ? getArguments() : new Bundle());
+    protected ListAdapter getAdapter() {
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
+        return mAdapter;
+    }
+
+
+    @Override
+    protected void onItemClick(View v, int pos, long id) {
+        MusicUtils.playAllFromUserItemClick(mAdapter, pos);
     }
 
     /**
@@ -240,14 +173,6 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
@@ -287,7 +212,7 @@ public class AlbumSongFragment extends Fragment implements LoaderManager.LoaderC
         // Scroll to the stop of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
-        mList.setSelection(0);
+        super.scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

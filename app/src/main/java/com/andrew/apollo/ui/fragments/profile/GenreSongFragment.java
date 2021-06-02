@@ -11,26 +11,18 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
@@ -43,12 +35,8 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.widgets.ProfileTabCarousel;
-import com.andrew.apollo.widgets.VerticalScrollListener;
 
 import java.util.List;
 
@@ -59,8 +47,7 @@ import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETT
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<Song>>,
-        OnItemClickListener, FragmentCallback {
+public class GenreSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -78,79 +65,14 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     private ProfileSongAdapter mAdapter;
 
     /**
-     * The list view
-     */
-    private ListView mListView;
-
-    /**
      * selected track
      */
     @Nullable
     private Song mSong;
 
-    /**
-     * Profile header
-     */
-    private ProfileTabCarousel mProfileTabCarousel;
 
-    /**
-     * Empty constructor as per the {@link Fragment} documentation
-     */
-    public GenreSongFragment() {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        Activity activity = (Activity) context;
-        mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // The View for the fragment's UI
-        View rootView = inflater.inflate(R.layout.list_base, container, false);
-        // empty info
-        TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
-        // Initialize the list
-        mListView = rootView.findViewById(R.id.list_base);
-        // Set the data behind the list
-        mListView.setAdapter(mAdapter);
-        // Set empty list info
-        mListView.setEmptyView(emptyInfo);
-        // Release any references to the recycled Views
-        mListView.setRecyclerListener(new RecycleHolder());
-        // Listen for ContextMenus to be created
-        mListView.setOnCreateContextMenuListener(this);
-        // Play the selected song
-        mListView.setOnItemClickListener(this);
-        // To help make scrolling smooth
-        mListView.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
-        return rootView;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void init() {
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
@@ -160,13 +82,18 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putAll(getArguments() != null ? getArguments() : new Bundle());
+    protected ListAdapter getAdapter() {
+        // Create the adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+        return mAdapter;
+    }
+
+
+    @Override
+    protected void onItemClick(View view, int position, long id) {
+        MusicUtils.playAllFromUserItemClick(mAdapter, position);
     }
 
     /**
@@ -253,14 +180,6 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MusicUtils.playAllFromUserItemClick(mAdapter, position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
@@ -299,7 +218,7 @@ public class GenreSongFragment extends Fragment implements LoaderCallbacks<List<
         // Scroll to the stop of the list before restarting the loader.
         // Otherwise, if the user has scrolled enough to move the header, it
         // becomes misplaced and needs to be reset.
-        mListView.setSelection(0);
+        scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
     }
 }

@@ -52,6 +52,7 @@ import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
+import com.andrew.apollo.provider.MostPlayedStore;
 import com.andrew.apollo.provider.RecentStore;
 import com.devspark.appmsg.AppMsg;
 
@@ -1502,6 +1503,7 @@ public final class MusicUtils {
                 result = new String[cursor.getCount()];
                 FavoritesStore favStore = FavoritesStore.getInstance(context);
                 RecentStore recents = RecentStore.getInstance(context);
+                MostPlayedStore popular = MostPlayedStore.getInstance(context);
                 ContentResolver resolver = context.getContentResolver();
                 for (int i = 0; i < ids.length; i++) {
                     // Remove from current playlist
@@ -1515,6 +1517,8 @@ public final class MusicUtils {
                     favStore.removeItem(trackId);
                     // Remove any items in the recents database
                     recents.removeItem(albumId);
+                    // remove track from most played list
+                    popular.removeItem(trackId);
                     // remove track from database
                     resolver.delete(Media.EXTERNAL_CONTENT_URI, DATABASE_REMOVE_TRACK, idStr);
                     // move to next track

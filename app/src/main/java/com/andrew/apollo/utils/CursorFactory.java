@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
+import com.andrew.apollo.provider.MostPlayedStore;
+import com.andrew.apollo.provider.MostPlayedStore.MostPlayedColumns;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
@@ -122,6 +124,18 @@ public class CursorFactory {
             FavoriteColumns.ARTISTNAME,
             FavoriteColumns.PLAYCOUNT,
             FavoriteColumns.DURATION
+    };
+
+    /**
+     *
+     */
+    public static final String[] MOSTPLAYED_COLUMNS = {
+            MostPlayedColumns.ID,
+            MostPlayedColumns.SONGNAME,
+            MostPlayedColumns.ALBUMNAME,
+            MostPlayedColumns.ARTISTNAME,
+            MostPlayedColumns.PLAYCOUNT,
+            MostPlayedColumns.DURATION
     };
 
     /**
@@ -318,6 +332,11 @@ public class CursorFactory {
      * SQLite sport order
      */
     public static final String FAV_ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
+
+    /**
+     * SQLite sport order
+     */
+    public static final String MP_ORDER = MostPlayedColumns.PLAYCOUNT + DEF_SORT;
 
     /**
      *
@@ -526,6 +545,17 @@ public class CursorFactory {
     public static Cursor makeFavoritesCursor(Context context) {
         SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
         return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
+    }
+
+    /**
+     * create a cursor to parse a table with the most played tracks
+     *
+     * @return cursor with most played tracks
+     */
+    @Nullable
+    public static Cursor makeMostPlayedCursor(Context context) {
+        SQLiteDatabase data = MostPlayedStore.getInstance(context).getReadableDatabase();
+        return data.query(MostPlayedColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
     }
 
     /**

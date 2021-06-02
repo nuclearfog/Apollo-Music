@@ -458,6 +458,7 @@ public final class MusicUtils {
     /**
      * @return The queue.
      */
+    @NonNull
     public static long[] getQueue() {
         try {
             if (mService != null) {
@@ -1114,6 +1115,7 @@ public final class MusicUtils {
      * @param playlistId The playlist Id
      * @return The track list for a playlist
      */
+    @NonNull
     public static long[] getSongListForPlaylist(Context context, long playlistId) {
         Cursor cursor = CursorFactory.makePlaylistSongCursor(context, playlistId);
         if (cursor != null) {
@@ -1137,15 +1139,14 @@ public final class MusicUtils {
      */
     public static void playPlaylist(Context context, long playlistId) {
         long[] playlistList = getSongListForPlaylist(context, playlistId);
-        if (playlistList != null) {
-            playAll(playlistList, -1, false);
-        }
+        playAll(playlistList, -1, false);
     }
 
     /**
      * @param context The {@link Context} to use
      * @return The song list from our favorites database
      */
+    @NonNull
     public static long[] getSongListForFavorites(Context context) {
         Cursor cursor = CursorFactory.makeFavoritesCursor(context);
         if (cursor != null) {
@@ -1175,6 +1176,7 @@ public final class MusicUtils {
      * @param context The {@link Context} to use
      * @return The song list for the last added playlist
      */
+    @NonNull
     public static long[] getSongListForLastAdded(Context context) {
         Cursor cursor = CursorFactory.makeLastAddedCursor(context);
         if (cursor != null) {
@@ -1195,6 +1197,7 @@ public final class MusicUtils {
      * @param context The {@link Context} to use
      * @return The song list for the last added playlist
      */
+    @NonNull
     public static long[] getPopularSongList(Context context) {
         Cursor cursor = CursorFactory.makePopularCursor(context);
         if (cursor != null) {

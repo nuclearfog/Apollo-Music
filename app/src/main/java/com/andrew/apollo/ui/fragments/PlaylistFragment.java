@@ -56,7 +56,6 @@ import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
 
-import static com.andrew.apollo.loaders.PlaylistLoader.DEFAULT_PLAYLIST_COUNT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
@@ -78,6 +77,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
      * LoaderCallbacks identifier
      */
     private static final int LOADER_ID = 0x1FF07B83;
+
+    /**
+     * number of default playlists
+     */
+    private static final int DEFAULT_PLAYLIST_COUNT = 3;
 
     /**
      * The adapter for the list
@@ -159,9 +163,8 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
         if (menuInfo instanceof AdapterContextMenuInfo) {
             // Get the position of the selected item
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-            int mPosition = info.position;
             // Create a new playlist
-            mPlaylist = mAdapter.getItem(mPosition);
+            mPlaylist = mAdapter.getItem(info.position);
             // Play the playlist
             menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
             // Add the playlist to the queue
@@ -183,25 +186,36 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getGroupId() == GROUP_ID && mPlaylist != null) {
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
             switch (item.getItemId()) {
                 case FragmentMenuItems.PLAY_SELECTION:
-                    if (info.position == 0) {
+                    if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
+                        // play favorite playlist
                         MusicUtils.playFavorites(requireContext());
-                    } else if (info.position == 1) {
+                    } else if (mPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+                        // play last added playlist
                         MusicUtils.playLastAdded(requireContext());
+                    } else if (mPlaylist.getId() == Playlist.POPULAR_ID) {
+                        // play popular playlist
+                        MusicUtils.playPopular(requireContext());
                     } else {
+                        // play custom playlist
                         MusicUtils.playPlaylist(requireContext(), mPlaylist.getId());
                     }
                     return true;
 
                 case FragmentMenuItems.ADD_TO_QUEUE:
                     long[] list;
-                    if (info.position == 0) {
+                    if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
+                        // add favorite playlist
                         list = MusicUtils.getSongListForFavorites(requireContext());
-                    } else if (info.position == 1) {
+                    } else if (mPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+                        // add last added playlist
                         list = MusicUtils.getSongListForLastAdded(requireContext());
+                    } else if (mPlaylist.getId() == Playlist.POPULAR_ID) {
+                        // add popular playlist
+                        list = MusicUtils.getPopularSongList(requireContext());
                     } else {
+                        // add custom playlist to queue
                         list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.getId());
                     }
                     MusicUtils.addToQueue(requireActivity(), list);
@@ -253,7 +267,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                 bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
             }
             // most played track
-            else if (selected.getId() == Playlist.MOST_PLAYED_ID) {
+            else if (selected.getId() == Playlist.POPULAR_ID) {
                 bundle.putString(Config.NAME, getString(R.string.playlist_most_played));
                 bundle.putString(Config.MIME_TYPE, PAGE_MOST_PLAYED);
             }

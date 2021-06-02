@@ -32,7 +32,7 @@ public class Playlist extends Music {
     /**
      * unique ID to define this playlist as "most played" list
      */
-    public static final long MOST_PLAYED_ID = 0x502CDB3BD99EE393L;
+    public static final long POPULAR_ID = 0x502CDB3BD99EE393L;
 
     /**
      * Constructor of <code>Genre</code>

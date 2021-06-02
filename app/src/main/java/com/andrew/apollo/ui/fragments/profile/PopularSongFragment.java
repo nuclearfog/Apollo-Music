@@ -17,11 +17,12 @@ import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
-import com.andrew.apollo.loaders.MostPlayedLoader;
+import com.andrew.apollo.loaders.PopularSongsLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
+import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 
@@ -34,7 +35,7 @@ import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SET
  *
  * @author nuclearfog
  */
-public class MostPlayedFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class PopularSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
     /**
      * context menu ID
@@ -103,6 +104,8 @@ public class MostPlayedFragment extends ProfileFragment implements LoaderCallbac
             menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
             // Add the song to the queue
             menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+            // Add option to remove track from popular
+            menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_POPULAR, Menu.NONE, R.string.remove_from_popular);
             // Add the song to a playlist
             SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
             MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
@@ -159,6 +162,11 @@ public class MostPlayedFragment extends ProfileFragment implements LoaderCallbac
                     MusicUtils.setRingtone(requireActivity(), mSong.getId());
                     return true;
 
+                case FragmentMenuItems.REMOVE_FROM_POPULAR:
+                    PopularStore.getInstance(requireContext()).removeItem(mSong.getId());
+                    mAdapter.remove(mSong);
+                    return true;
+
                 case FragmentMenuItems.DELETE:
                     MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
                     LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
@@ -184,7 +192,7 @@ public class MostPlayedFragment extends ProfileFragment implements LoaderCallbac
     @Override
     public Loader<List<Song>> onCreateLoader(int id, @Nullable Bundle args) {
         // initialize loader
-        return new MostPlayedLoader(requireContext());
+        return new PopularSongsLoader(requireContext());
     }
 
     /**

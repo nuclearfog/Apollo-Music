@@ -37,8 +37,8 @@ import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
 import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
 import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
-import com.andrew.apollo.ui.fragments.profile.MostPlayedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
+import com.andrew.apollo.ui.fragments.profile.PopularSongFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -205,7 +205,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         LASTADDED(LastAddedFragment.class),
 
-        MOSTPLAYED(MostPlayedFragment.class),
+        MOSTPLAYED(PopularSongFragment.class),
 
         QUEUE(QueueFragment.class);
 

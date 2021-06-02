@@ -22,8 +22,8 @@ import androidx.annotation.Nullable;
 
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.FavoritesStore.FavoriteColumns;
-import com.andrew.apollo.provider.MostPlayedStore;
-import com.andrew.apollo.provider.MostPlayedStore.MostPlayedColumns;
+import com.andrew.apollo.provider.PopularStore;
+import com.andrew.apollo.provider.PopularStore.PopularColumns;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
@@ -130,12 +130,12 @@ public class CursorFactory {
      *
      */
     public static final String[] MOSTPLAYED_COLUMNS = {
-            MostPlayedColumns.ID,
-            MostPlayedColumns.SONGNAME,
-            MostPlayedColumns.ALBUMNAME,
-            MostPlayedColumns.ARTISTNAME,
-            MostPlayedColumns.PLAYCOUNT,
-            MostPlayedColumns.DURATION
+            PopularColumns.ID,
+            PopularColumns.SONGNAME,
+            PopularColumns.ALBUMNAME,
+            PopularColumns.ARTISTNAME,
+            PopularColumns.PLAYCOUNT,
+            PopularColumns.DURATION
     };
 
     /**
@@ -336,7 +336,7 @@ public class CursorFactory {
     /**
      * SQLite sport order
      */
-    public static final String MP_ORDER = MostPlayedColumns.PLAYCOUNT + DEF_SORT;
+    public static final String MP_ORDER = PopularColumns.PLAYCOUNT + DEF_SORT;
 
     /**
      *
@@ -553,9 +553,9 @@ public class CursorFactory {
      * @return cursor with most played tracks
      */
     @Nullable
-    public static Cursor makeMostPlayedCursor(Context context) {
-        SQLiteDatabase data = MostPlayedStore.getInstance(context).getReadableDatabase();
-        return data.query(MostPlayedColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
+    public static Cursor makePopularCursor(Context context) {
+        SQLiteDatabase data = PopularStore.getInstance(context).getReadableDatabase();
+        return data.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
     }
 
     /**

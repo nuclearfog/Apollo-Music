@@ -51,6 +51,7 @@
     <string name="add_to_queue">Add to queue</string>
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="remove_from_queue">Remove from queue</string>
+    <string name="remove_from_popular">Remove from popular</string>
 
     <!-- Sort orders -->
     <string name="sort_order_entry_az">A-Z</string>
@@ -70,6 +71,7 @@
     <string name="playlist_favorite">Favorite</string>
     <string name="playlist_favorites">Favorites</string>
     <string name="playlist_last_added">Last added</string>
+    <string name="playlist_most_played">Popular</string>
 
     <!-- AlertDialog items -->
     <string name="new_playlist">New playlist</string>
@@ -169,6 +171,5 @@
     <string name="empty_playlist">This playlist is empty.</string>
     <string name="empty_favorits">There are no tracks added to favorits!</string>
     <string name="empty_artst_albums">There is no album of this artist</string>
-    <string name="playlist_most_played">Most played</string>
 
 </resources>

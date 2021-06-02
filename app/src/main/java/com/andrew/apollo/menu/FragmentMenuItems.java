@@ -63,4 +63,7 @@ public class FragmentMenuItems {
 
     /* Used to queue a track to be played next */
     public static final int PLAY_NEXT = 0x4ACDEC66;
+
+    /* Used to remove track from the popular */
+    public static final int REMOVE_FROM_POPULAR = 0xB06947EE;
 }

@@ -14,12 +14,12 @@ import java.util.List;
  *
  * @author nuclearfog
  */
-public class MostPlayedLoader extends WrappedAsyncTaskLoader<List<Song>> {
+public class PopularSongsLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
     /**
      *
      */
-    public MostPlayedLoader(Context context) {
+    public PopularSongsLoader(Context context) {
         super(context);
     }
 
@@ -30,7 +30,7 @@ public class MostPlayedLoader extends WrappedAsyncTaskLoader<List<Song>> {
     public List<Song> loadInBackground() {
         List<Song> result = new LinkedList<>();
         // Create the Cursor
-        Cursor mCursor = CursorFactory.makeMostPlayedCursor(getContext());
+        Cursor mCursor = CursorFactory.makePopularCursor(getContext());
         // Gather the data
         if (mCursor != null) {
             if (mCursor.moveToFirst()) {

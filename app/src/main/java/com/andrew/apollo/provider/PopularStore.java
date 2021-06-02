@@ -9,48 +9,55 @@ import android.database.sqlite.SQLiteOpenHelper;
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 
 /**
+ * database for popular tracks with the information how often a track was played
  *
+ * @author nuclearfog
  */
-public class MostPlayedStore extends SQLiteOpenHelper {
+public class PopularStore extends SQLiteOpenHelper {
 
     /**
      * column projection of track table
      */
     private static final String[] MOSTPLAYED_COLUMNS = {
-            MostPlayedColumns.ID,
-            MostPlayedColumns.SONGNAME,
-            MostPlayedColumns.ALBUMNAME,
-            MostPlayedColumns.ARTISTNAME,
-            MostPlayedColumns.PLAYCOUNT
+            PopularColumns.ID,
+            PopularColumns.SONGNAME,
+            PopularColumns.ALBUMNAME,
+            PopularColumns.ARTISTNAME,
+            PopularColumns.PLAYCOUNT
     };
 
     /**
      * query to create track table
      */
-    private static final String MOSTPLAYED_TABLE = "CREATE TABLE IF NOT EXISTS " + MostPlayedColumns.NAME + " (" +
-            MostPlayedColumns.ID + " LONG PRIMARY KEY," + MostPlayedColumns.SONGNAME + " TEXT NOT NULL," +
-            MostPlayedColumns.ALBUMNAME + " TEXT NOT NULL," + MostPlayedColumns.ARTISTNAME + " TEXT NOT NULL," +
-            MostPlayedColumns.PLAYCOUNT + " LONG NOT NULL," + MostPlayedColumns.DURATION + " LONG);";
+    private static final String MOSTPLAYED_TABLE = "CREATE TABLE IF NOT EXISTS " + PopularColumns.NAME + " (" +
+            PopularColumns.ID + " LONG PRIMARY KEY," + PopularColumns.SONGNAME + " TEXT NOT NULL," +
+            PopularColumns.ALBUMNAME + " TEXT NOT NULL," + PopularColumns.ARTISTNAME + " TEXT NOT NULL," +
+            PopularColumns.PLAYCOUNT + " LONG NOT NULL," + PopularColumns.DURATION + " LONG);";
 
     /**
      * condition to find track in most played table
      */
-    private static final String TRACK_SELECT = MostPlayedColumns.ID + "=?";
+    private static final String TRACK_SELECT = PopularColumns.ID + "=?";
 
     /**
      * database filename
      */
-    public static final String DB_NAME = "mostplayed.db";
+    public static final String DB_NAME = "popular.db";
 
     /**
      * database version
      */
     private static final int VERSION = 1;
 
-    private static MostPlayedStore singleton;
+    /**
+     * singleton instance
+     */
+    private static PopularStore singleton;
 
-
-    private MostPlayedStore(Context context) {
+    /**
+     *
+     */
+    private PopularStore(Context context) {
         super(context, DB_NAME, null, VERSION);
     }
 
@@ -59,9 +66,9 @@ public class MostPlayedStore extends SQLiteOpenHelper {
      *
      * @return singleton instance of this class
      */
-    public static MostPlayedStore getInstance(Context context) {
+    public static PopularStore getInstance(Context context) {
         if (singleton == null) {
-            singleton = new MostPlayedStore(context.getApplicationContext());
+            singleton = new PopularStore(context.getApplicationContext());
         }
         return singleton;
     }
@@ -75,7 +82,7 @@ public class MostPlayedStore extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + MostPlayedColumns.NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PopularColumns.NAME);
         onCreate(db);
     }
 
@@ -95,14 +102,14 @@ public class MostPlayedStore extends SQLiteOpenHelper {
         ContentValues values = new ContentValues(6);
         database.beginTransaction();
 
-        values.put(MostPlayedColumns.ID, songId);
-        values.put(MostPlayedColumns.SONGNAME, songName);
-        values.put(MostPlayedColumns.ALBUMNAME, albumName);
-        values.put(MostPlayedColumns.ARTISTNAME, artistName);
-        values.put(MostPlayedColumns.PLAYCOUNT, playCount);
-        values.put(MostPlayedColumns.DURATION, duration);
+        values.put(PopularColumns.ID, songId);
+        values.put(PopularColumns.SONGNAME, songName);
+        values.put(PopularColumns.ALBUMNAME, albumName);
+        values.put(PopularColumns.ARTISTNAME, artistName);
+        values.put(PopularColumns.PLAYCOUNT, playCount);
+        values.put(PopularColumns.DURATION, duration);
 
-        database.insertWithOnConflict(MostPlayedColumns.NAME, null, values, CONFLICT_REPLACE);
+        database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
         database.setTransactionSuccessful();
         database.endTransaction();
         database.close();
@@ -116,7 +123,7 @@ public class MostPlayedStore extends SQLiteOpenHelper {
     public void removeItem(long trackId) {
         String[] args = {Long.toString(trackId)};
         SQLiteDatabase database = getWritableDatabase();
-        database.delete(MostPlayedColumns.NAME, TRACK_SELECT, args);
+        database.delete(PopularColumns.NAME, TRACK_SELECT, args);
         database.close();
     }
 
@@ -131,7 +138,7 @@ public class MostPlayedStore extends SQLiteOpenHelper {
         if (songId >= 0) {
             String[] having = {Long.toString(songId)};
             SQLiteDatabase database = getReadableDatabase();
-            Cursor cursor = database.query(MostPlayedColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
+            Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
                     result = cursor.getLong(4);
@@ -146,7 +153,7 @@ public class MostPlayedStore extends SQLiteOpenHelper {
     /**
      * columns of the most played tracks table
      */
-    public interface MostPlayedColumns {
+    public interface PopularColumns {
 
         /* Table name */
         String NAME = "mostplayed";

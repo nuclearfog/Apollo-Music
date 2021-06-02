@@ -1190,12 +1190,39 @@ public final class MusicUtils {
     }
 
     /**
+     * create an ID list of popular tracks
+     *
+     * @param context The {@link Context} to use
+     * @return The song list for the last added playlist
+     */
+    public static long[] getPopularSongList(Context context) {
+        Cursor cursor = CursorFactory.makePopularCursor(context);
+        if (cursor != null) {
+            long[] list = new long[cursor.getCount()];
+            for (int i = 0; i < list.length; i++) {
+                cursor.moveToNext();
+                list[i] = cursor.getLong(0);
+            }
+            cursor.close();
+            return list;
+        }
+        return EMPTY_LIST;
+    }
+
+    /**
      * Plays the last added songs from the past two weeks.
      *
      * @param context The {@link Context} to use
      */
     public static void playLastAdded(Context context) {
         playAll(getSongListForLastAdded(context), 0, false);
+    }
+
+    /**
+     * Plays popular tracks starting with the most listened tracks
+     */
+    public static void playPopular(Context context) {
+        playAll(getPopularSongList(context), 0, false);
     }
 
     /**

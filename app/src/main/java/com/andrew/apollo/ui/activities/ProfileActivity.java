@@ -69,8 +69,8 @@ import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.MOSTPLAYED;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.POPULAR;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 /**
@@ -320,7 +320,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // most played fragment
-                mPagerAdapter.add(MOSTPLAYED, null);
+                mPagerAdapter.add(POPULAR, null);
                 // Action bar title = Last added
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -360,7 +360,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         Drawable pinIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_pinn_to_home, null);
         pinnAction.setIcon(pinIcon);
         String title;
-        if (type == Type.FAVORITE || type == Type.LAST_ADDED || type == Type.PLAYLIST) {
+        if (type == Type.FAVORITE || type == Type.LAST_ADDED
+                || type == Type.PLAYLIST || type == Type.MOST_PLAYED) {
             title = getString(R.string.menu_play_all);
         } else {
             title = getString(R.string.menu_shuffle);
@@ -442,6 +443,10 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
 
                 case LAST_ADDED:
                     MusicUtils.playLastAdded(this);
+                    break;
+
+                case MOST_PLAYED:
+                    MusicUtils.playPopular(this);
                     break;
 
                 case FOLDER:

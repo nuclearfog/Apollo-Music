@@ -96,23 +96,25 @@ public class PopularStore extends SQLiteOpenHelper {
      * @param duration   Track duration in milliseconds
      */
     public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
-        // increment by 1
-        long playCount = getPlayCount(songId) + 1;
-        SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues(6);
-        database.beginTransaction();
+        if (songId > 0 && songName != null && albumName != null && artistName != null) {
+            // increment by 1
+            long playCount = getPlayCount(songId) + 1;
+            SQLiteDatabase database = getWritableDatabase();
+            ContentValues values = new ContentValues(6);
+            database.beginTransaction();
 
-        values.put(PopularColumns.ID, songId);
-        values.put(PopularColumns.SONGNAME, songName);
-        values.put(PopularColumns.ALBUMNAME, albumName);
-        values.put(PopularColumns.ARTISTNAME, artistName);
-        values.put(PopularColumns.PLAYCOUNT, playCount);
-        values.put(PopularColumns.DURATION, duration);
+            values.put(PopularColumns.ID, songId);
+            values.put(PopularColumns.SONGNAME, songName);
+            values.put(PopularColumns.ALBUMNAME, albumName);
+            values.put(PopularColumns.ARTISTNAME, artistName);
+            values.put(PopularColumns.PLAYCOUNT, playCount);
+            values.put(PopularColumns.DURATION, duration);
 
-        database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
-        database.setTransactionSuccessful();
-        database.endTransaction();
-        database.close();
+            database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
+            database.setTransactionSuccessful();
+            database.endTransaction();
+            database.close();
+        }
     }
 
     /**

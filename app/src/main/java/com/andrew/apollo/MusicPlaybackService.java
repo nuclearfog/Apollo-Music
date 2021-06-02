@@ -1203,9 +1203,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             }
             mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
             // Add the track to the recently played list.
-            mRecentsCache.addAlbumId(albumId, albumName, artistName,
-                    MusicUtils.getSongCountForAlbum(this, albumId),
-                    MusicUtils.getReleaseDateForAlbum(this, albumId));
+            String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
+            String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
+            mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
         } else if (what.equals(QUEUE_CHANGED)) {
             saveQueue(true);
             if (isPlaying()) {

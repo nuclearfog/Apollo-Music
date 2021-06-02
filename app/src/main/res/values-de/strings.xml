@@ -127,5 +127,5 @@
     <string name="empty_favorits">Es wurden noch keine Tracks zu den Favoriten hinzugefügt.</string>
     <string name="empty_artst_albums">Es gibt keine Alben dieses Künstlers</string>
     <string name="playlist_most_played">Beliebt</string>
-    <string name="remove_from_popular">Aus \\\"Populär\\\" entfernen</string>
+    <string name="remove_from_popular">Von hier entfernen</string>
 </resources>

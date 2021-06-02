@@ -205,7 +205,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         LASTADDED(LastAddedFragment.class),
 
-        MOSTPLAYED(PopularSongFragment.class),
+        POPULAR(PopularSongFragment.class),
 
         QUEUE(QueueFragment.class);
 

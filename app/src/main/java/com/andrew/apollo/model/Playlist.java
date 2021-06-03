@@ -22,7 +22,7 @@ public class Playlist extends Music {
     /**
      * unique ID to define this playlist as favorite list
      */
-    public static final long FAVORITE_ID = 12345677943456L;
+    public static final long FAVORITE_ID = 0xF092D5DEB4A19EEL;
 
     /**
      * unique ID to define this playlist as "last added" list

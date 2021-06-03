@@ -35,11 +35,11 @@ import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
 import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
+import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
 /**
  * This class is opened when the user touches a Home screen shortcut or album
@@ -52,16 +52,16 @@ import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 public class ShortcutActivity extends AppCompatActivity implements ServiceConnection, LoaderCallbacks<List<Song>> {
 
     /**
+     * ID of the loader
+     */
+    private static final int LOADER_ID = 0x32942390;
+    /**
      * If true, this class will begin playback and open
      * {@link AudioPlayerActivity}, false will close the class after playback,
      * which is what happens when a user starts playing something from an
      * app-widget
      */
     public static final String OPEN_AUDIO_PLAYER = null;
-    /**
-     * Used with the loader and voice queries
-     */
-    private List<Song> mSong = new LinkedList<>();
     /**
      * Service token
      */
@@ -106,51 +106,46 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         MusicUtils.connectService(service);
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
-            LoaderManager.getInstance(this).initLoader(0, null, this);
+            LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
         } else if (MusicUtils.isConnected()) {
             AsyncHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     String requestedMimeType = "";
-                    if (mIntent.getExtras() != null)
+                    if (mIntent.getExtras() != null) {
                         requestedMimeType = mIntent.getExtras().getString(MIME_TYPE);
-
+                    }
                     // First, check the artist MIME type
                     if (MediaStore.Audio.Artists.CONTENT_TYPE.equals(requestedMimeType)) {
-
                         // Shuffle the artist track list
                         mShouldShuffle = true;
-
                         // Get the artist song list
                         mList = MusicUtils.getSongListForArtist(context, getId());
                     } else if (MediaStore.Audio.Albums.CONTENT_TYPE.equals(requestedMimeType)) {
-
                         // Shuffle the album track list
                         mShouldShuffle = true;
-
                         // Get the album song list
                         mList = MusicUtils.getSongListForAlbum(context, getId());
                     } else if (MediaStore.Audio.Genres.CONTENT_TYPE.equals(requestedMimeType)) {
-
                         // Shuffle the genre track list
                         mShouldShuffle = true;
-
                         // Get the genre song list
                         mList = MusicUtils.getSongListForGenre(context, getId());
                     } else if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(requestedMimeType)) {
-
                         // Don't shuffle the playlist track list
                         mShouldShuffle = false;
-
                         // Get the playlist song list
                         mList = MusicUtils.getSongListForPlaylist(context, getId());
                     } else if (PAGE_FAVORIT.equals(requestedMimeType)) {
-
                         // Don't shuffle the Favorites track list
                         mShouldShuffle = false;
-
                         // Get the Favorites song list
                         mList = MusicUtils.getSongListForFavorites(context);
+                    } else if (PAGE_MOST_PLAYED.equals(requestedMimeType)) {
+                        // Don't shuffle the popular track list
+                        mShouldShuffle = false;
+                        // Get the popular song list
+                        mList = MusicUtils.getPopularSongList(context);
                     } else if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
                         // Don't shuffle the last added track list
                         mShouldShuffle = false;
@@ -201,6 +196,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
+        // disable loader
+        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
         // If the user searched for a playlist or genre, this list will
         // return empty
         if (data.isEmpty()) {
@@ -213,11 +210,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
             allDone();
             return;
         }
-        // Start fresh
-        mSong.clear();
-        // Add the data to the adpater
-        mSong.addAll(data);
-
         // What's about to happen is similar to the above process. Apollo
         // runs a
         // series of checks to see if anything comes up. When it does, it
@@ -227,11 +219,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
         // this. It allows the user to perform very specific queries. i.e.
         // "Listen to Ethio
 
-        String song = mSong.get(0).getName();
-        String album = mSong.get(0).getAlbum();
-        String artist = mSong.get(0).getArtist();
+        String song = data.get(0).getName();
+        String album = data.get(0).getAlbum();
+        String artist = data.get(0).getArtist();
         // This tripes as the song, album, and artist Id
-        long id = mSong.get(0).getId();
+        long id = data.get(0).getId();
         // First, try to play a song
         if (song != null) {
             mList = new long[]{id};
@@ -253,8 +245,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-        // Clear the data
-        mSong.clear();
     }
 
     /**

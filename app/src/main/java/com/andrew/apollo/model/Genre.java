@@ -51,9 +51,12 @@ public class Genre extends Music implements Comparable<Genre> {
         return ids;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int compareTo(@NonNull Genre g) {
+        // sort genre by name
         return name.compareToIgnoreCase(g.getName());
     }
 

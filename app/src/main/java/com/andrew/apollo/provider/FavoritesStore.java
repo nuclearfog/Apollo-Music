@@ -125,23 +125,25 @@ public class FavoritesStore extends SQLiteOpenHelper {
      * @param duration   Track duration in milliseconds
      */
     public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
-        // increment by 1
-        long playCount = getPlayCount(songId) + 1;
-        SQLiteDatabase database = getWritableDatabase();
-        ContentValues values = new ContentValues(6);
-        database.beginTransaction();
+        if (songId > 0 && songName != null && albumName != null && artistName != null) {
+            // increment by 1
+            long playCount = getPlayCount(songId) + 1;
+            SQLiteDatabase database = getWritableDatabase();
+            ContentValues values = new ContentValues(6);
+            database.beginTransaction();
 
-        values.put(FavoriteColumns.ID, songId);
-        values.put(FavoriteColumns.SONGNAME, songName);
-        values.put(FavoriteColumns.ALBUMNAME, albumName);
-        values.put(FavoriteColumns.ARTISTNAME, artistName);
-        values.put(FavoriteColumns.PLAYCOUNT, playCount);
-        values.put(FavoriteColumns.DURATION, duration);
+            values.put(FavoriteColumns.ID, songId);
+            values.put(FavoriteColumns.SONGNAME, songName);
+            values.put(FavoriteColumns.ALBUMNAME, albumName);
+            values.put(FavoriteColumns.ARTISTNAME, artistName);
+            values.put(FavoriteColumns.PLAYCOUNT, playCount);
+            values.put(FavoriteColumns.DURATION, duration);
 
-        database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
-        database.setTransactionSuccessful();
-        database.endTransaction();
-        database.close();
+            database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
+            database.setTransactionSuccessful();
+            database.endTransaction();
+            database.close();
+        }
     }
 
     /**

@@ -276,7 +276,12 @@ public class CursorFactory {
     /**
      * select specific artist matching name
      */
-    private static final String PLAYLIST_SELECT = Playlists.NAME + "=?";
+    private static final String PLAYLIST_NAME_SELECT = Playlists.NAME + "=?";
+
+    /**
+     * select playlist by ID
+     */
+    private static final String PLAYLIST_ID_SELECT = Playlists._ID + "=?";
 
     /**
      * selection to find artist name matching search
@@ -415,7 +420,21 @@ public class CursorFactory {
         ContentResolver resolver = context.getContentResolver();
 
         String[] args = {name};
-        return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_SELECT, args, null);
+        return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_NAME_SELECT, args, null);
+    }
+
+    /**
+     * create a cursor for a single playlist with fixed column order
+     * {@link #PLAYLIST_COLUMNS}
+     *
+     * @param id ID of the playlist
+     * @return cursor with playlist information
+     */
+    @Nullable
+    public static Cursor makePlaylistCursor(Context context, long id) {
+        String[] param = {String.valueOf(id)};
+        ContentResolver resolver = context.getContentResolver();
+        return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_ID_SELECT, param, Playlists.NAME);
     }
 
     /**

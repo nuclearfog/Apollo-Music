@@ -21,8 +21,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio.Playlists;
 
+import androidx.annotation.Nullable;
+
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
+import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
 /**
@@ -32,10 +35,9 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class RenamePlaylist extends BasePlaylistDialog {
 
-    private static final String CONDITION = Playlists._ID + "=?";
-
-    private static final String[] PROJECTION = {Playlists.NAME};
-
+    /**
+     * ID of the playlist to rename
+     */
     private long mRenameId;
 
     /**
@@ -65,19 +67,26 @@ public class RenamePlaylist extends BasePlaylistDialog {
     @Override
     @SuppressLint("StringFormatInvalid")
     public void initObjects(Bundle savedInstanceState) {
-
-        if (savedInstanceState != null)
+        // get ID of the playlist to rename
+        if (savedInstanceState != null) {
             mRenameId = savedInstanceState.getLong("rename");
-        else if (getArguments() != null)
-            mRenameId = getArguments().getLong("rename", -1);
-        String mOriginalName = getPlaylistNameFromId(mRenameId);
-        mDefaultname = savedInstanceState != null ? savedInstanceState.getString("defaultname") : mOriginalName;
-        if ((mRenameId < 0 || mOriginalName == null || mDefaultname == null) && getDialog() != null) {
-            getDialog().dismiss();
-            return;
+        } else if (getArguments() != null) {
+            mRenameId = getArguments().getLong("rename");
         }
-        String promptformat = getString(R.string.create_playlist_prompt);
-        mPrompt = String.format(promptformat, mOriginalName, mDefaultname);
+        // get playlist name
+        String mOriginalName = getPlaylistNameFromId();
+        if (savedInstanceState != null) {
+            mDefaultname = savedInstanceState.getString("defaultname");
+        } else {
+            mDefaultname = mOriginalName;
+        }
+        // check for valid information
+        if (mRenameId >= 0 && mOriginalName != null && mDefaultname != null) {
+            String promptformat = getString(R.string.create_playlist_prompt);
+            mPrompt = String.format(promptformat, mOriginalName, mDefaultname);
+        } else if (getDialog() != null) {
+            getDialog().dismiss();
+        }
     }
 
     /**
@@ -102,6 +111,7 @@ public class RenamePlaylist extends BasePlaylistDialog {
         }
     }
 
+
     @Override
     public void onTextChangedListener() {
         String playlistName = mPlaylist.getText().toString();
@@ -122,18 +132,15 @@ public class RenamePlaylist extends BasePlaylistDialog {
     }
 
     /**
-     * @param id The Id of the playlist
      * @return The name of the playlist
      */
-    private String getPlaylistNameFromId(long id) {
-        String[] param = {String.valueOf(id)};
-        ContentResolver resolver = requireActivity().getContentResolver();
-        Cursor cursor = resolver.query(Playlists.EXTERNAL_CONTENT_URI, PROJECTION, CONDITION, param, Playlists.NAME);
-
+    @Nullable
+    private String getPlaylistNameFromId() {
+        Cursor cursor = CursorFactory.makePlaylistCursor(requireContext(), mRenameId);
         String playlistName = null;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                playlistName = cursor.getString(0);
+                playlistName = cursor.getString(1);
             }
             cursor.close();
         }

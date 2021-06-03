@@ -169,7 +169,7 @@ public class RecentStore extends SQLiteOpenHelper {
                     having, null, null, RECENT_ORDER);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
+                    result = cursor.getString(1);
                 }
                 cursor.close();
             }

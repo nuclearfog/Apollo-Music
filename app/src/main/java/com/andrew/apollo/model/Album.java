@@ -51,17 +51,29 @@ public class Album extends Music {
         mSongNumber = songNumber;
     }
 
-
+    /**
+     * get artist name of the album
+     *
+     * @return name of the artist
+     */
     public String getArtist() {
         return mArtistName;
     }
 
-
+    /**
+     * get number of tracks in this album
+     *
+     * @return number of tracks
+     */
     public int getTrackCount() {
         return mSongNumber;
     }
 
-
+    /**
+     * get release date
+     *
+     * @return release date string or empty string if not defined
+     */
     public String getRelease() {
         return mYear;
     }

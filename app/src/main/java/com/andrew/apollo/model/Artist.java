@@ -42,12 +42,20 @@ public class Artist extends Music {
         mAlbumNumber = albumNumber;
     }
 
-
+    /**
+     * get album count of the artist
+     *
+     * @return number of albums by artist
+     */
     public int getAlbumCount() {
         return mAlbumNumber;
     }
 
-
+    /**
+     * get track count of the artist
+     *
+     * @return number of the tracks by artist
+     */
     public int getTrackCount() {
         return mSongNumber;
     }

@@ -44,6 +44,7 @@
     <string name="menu_detailed">Detailed</string>
     <string name="menu_grid">Grid</string>
     <string name="menu_view_as">View as</string>
+    <string name="menu_clear_popular">Clear songs</string>
 
     <!-- Playlist items -->
     <string name="add_to_playlist">Add to playlist</string>

@@ -45,6 +45,15 @@ public class Playlist extends Music {
     }
 
     /**
+     * check if playlist is default playlist
+     *
+     * @return true if playlist is one of the default playlists
+     */
+    public boolean isDefault() {
+        return id == FAVORITE_ID || id == LAST_ADDED_ID || id == POPULAR_ID;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

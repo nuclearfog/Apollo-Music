@@ -130,6 +130,15 @@ public class PopularStore extends SQLiteOpenHelper {
     }
 
     /**
+     * remove all popular tracks from playlist
+     */
+    public void removeAll() {
+        SQLiteDatabase database = getWritableDatabase();
+        database.delete(PopularColumns.NAME, null, null);
+        database.close();
+    }
+
+    /**
      * Used to retrieve how often a track was played
      *
      * @param songId The song Id to reference

@@ -45,12 +45,7 @@ import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.menu.PhotoSelectionDialog;
 import com.andrew.apollo.menu.PhotoSelectionDialog.ProfileType;
-import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
-import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
-import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
-import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
-import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
+import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -79,38 +74,46 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends AppCompatBase implements OnPageChangeListener, Listener, OnClickListener, DeleteDialogCallback {
+public class ProfileActivity extends AppCompatBase implements OnPageChangeListener,
+        Listener, OnClickListener, DeleteDialogCallback {
 
     /**
      * request code to load new photo
      */
     private static final int NEW_PHOTO = 0x487B;
     /**
-     * page index of the {@link ArtistSongFragment} if {@link Type#ARTIST} is set
+     * page index of the {@link com.andrew.apollo.ui.fragments.profile.ArtistSongFragment}
+     * if {@link Type#ARTIST} is set
      */
     private static final int ARTIST_SONG = 0;
     /**
-     * page index of the {@link ArtistAlbumFragment} if {@link Type#ARTIST} is set
+     * page index of the {@link com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment}
+     * if {@link Type#ARTIST} is set
      */
     private static final int ARTIST_ALBUM = 1;
     /**
-     * page index of the {@link AlbumSongFragment} if {@link Type#ARTIST} is not set
+     * page index of the {@link com.andrew.apollo.ui.fragments.profile.AlbumSongFragment}
+     * if {@link Type#ARTIST} is not set
      */
     private static final int ALBUM_SONG = 0;
     /**
-     * mime type of the {@link FolderSongFragment}
+     * page index of the {@link com.andrew.apollo.ui.fragments.profile.PopularSongFragment}
+     */
+    private static final int PLAYLIST_SONG = 0;
+    /**
+     * mime type of the {@link com.andrew.apollo.ui.fragments.profile.FolderSongFragment}
      */
     public static final String PAGE_FOLDERS = "page_folders";
     /**
-     * mime type of the {@link FavoriteSongFragment}
+     * mime type of the {@link com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment}
      */
     public static final String PAGE_FAVORIT = "page_fav";
     /**
-     * mime type of the {@link LastAddedFragment}
+     * mime type of the {@link com.andrew.apollo.ui.fragments.profile.LastAddedFragment}
      */
     public static final String PAGE_LAST_ADDED = "playlist";
     /**
-     * mime type of the {@link LastAddedFragment}
+     * mime type of the {@link com.andrew.apollo.ui.fragments.profile.LastAddedFragment}
      */
     public static final String PAGE_MOST_PLAYED = "page_most";
 
@@ -194,6 +197,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * The main profile title
      */
     private String mProfileName = "";
+
+    /**
+     * random generator for folder shuffle
+     */
+    private Random r = new Random();
 
     /**
      * Image cache
@@ -389,6 +397,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             }
         } else if (type == Type.ALBUM) {
             getMenuInflater().inflate(R.menu.album_song_sort_by, menu);
+        } else if (type == Type.MOST_PLAYED) {
+            getMenuInflater().inflate(R.menu.popular_songs_clear, menu);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -398,8 +408,8 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
+        // return to home
+        if (item.getItemId() == android.R.id.home) {
             // If an album profile, go up to the artist profile
             if (type == Type.ALBUM) {
                 NavUtils.openArtistProfile(this, mArtistName);
@@ -408,7 +418,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 // Otherwise just go back
                 goBack();
             }
-        } else if (itemId == R.id.menu_add_to_homescreen) {
+        }
+        // add item to home screen
+        else if (item.getItemId() == R.id.menu_add_to_homescreen) {
             // Place the artist, album, genre, or playlist onto the Home
             // screen. Definitely one of my favorite features.
             long id = mArguments.getLong(Config.ID);
@@ -417,20 +429,24 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             } else {
                 ApolloUtils.createShortcutIntent(mProfileName, mArtistName, id, mType, this);
             }
-        } else if (itemId == R.id.menu_shuffle) {
+        }
+        // shuffle tracks
+        else if (item.getItemId() == R.id.menu_shuffle) {
             long id = mArguments.getLong(Config.ID);
-            long[] list = {};
             switch (type) {
                 case ARTIST:
-                    list = MusicUtils.getSongListForArtist(this, id);
+                    long[] list = MusicUtils.getSongListForArtist(this, id);
+                    MusicUtils.playAll(list, 0, true);
                     break;
 
                 case ALBUM:
                     list = MusicUtils.getSongListForAlbum(this, id);
+                    MusicUtils.playAll(list, 0, true);
                     break;
 
                 case GENRE:
                     list = MusicUtils.getSongListForGenre(this, id);
+                    MusicUtils.playAll(list, 0, true);
                     break;
 
                 case PLAYLIST:
@@ -450,20 +466,17 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                     break;
 
                 case FOLDER:
-                    String folderName = mArguments.getString(FOLDER);
-                    if (folderName != null)
-                        list = MusicUtils.getSongListForFolder(this, folderName);
+                    String folderName = mArguments.getString(FOLDER, "");
+                    list = MusicUtils.getSongListForFolder(this, folderName);
                     if (list.length > 0) {
                         // play list at random position
-                        Random r = new Random();
-                        MusicUtils.playAll(list, r.nextInt(list.length), true);
+                        MusicUtils.playAll(list, r.nextInt(list.length - 1), true);
                     }
                     break;
             }
-            if (list.length > 0) {
-                MusicUtils.playAll(list, 0, true);
-            }
-        } else if (itemId == R.id.menu_sort_by_az) {
+        }
+        // sort alphabetical
+        else if (item.getItemId() == R.id.menu_sort_by_az) {
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
@@ -476,7 +489,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                     refreshFragment(ALBUM_SONG);
                 }
             }
-        } else if (itemId == R.id.menu_sort_by_za) {
+        }
+        // sort alphabetical reverse
+        else if (item.getItemId() == R.id.menu_sort_by_za) {
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
@@ -489,12 +504,16 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                     refreshFragment(ALBUM_SONG);
                 }
             }
-        } else if (itemId == R.id.menu_sort_by_album) {
+        }
+        // sort by album name
+        else if (item.getItemId() == R.id.menu_sort_by_album) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
                 refreshFragment(ARTIST_SONG);
             }
-        } else if (itemId == R.id.menu_sort_by_year) {
+        }
+        // sort by release date
+        else if (item.getItemId() == R.id.menu_sort_by_year) {
             if (type == Type.ARTIST) {
                 if (mViewPager.getCurrentItem() == ARTIST_SONG) {
                     mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
@@ -504,7 +523,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                     refreshFragment(ARTIST_ALBUM);
                 }
             }
-        } else if (itemId == R.id.menu_sort_by_duration) {
+        }
+        // sort by track duration
+        else if (item.getItemId() == R.id.menu_sort_by_duration) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
                 refreshFragment(ARTIST_SONG);
@@ -512,15 +533,21 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
                 refreshFragment(ALBUM_SONG);
             }
-        } else if (itemId == R.id.menu_sort_by_date_added) {
+        }
+        // sort by date added
+        else if (item.getItemId() == R.id.menu_sort_by_date_added) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
                 refreshFragment(ARTIST_SONG);
             }
-        } else if (itemId == R.id.menu_sort_by_track_list) {
+        }
+        // sort by default order
+        else if (item.getItemId() == R.id.menu_sort_by_track_list) {
             mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
             refreshFragment(ALBUM_SONG);
-        } else if (itemId == R.id.menu_sort_by_filename) {
+        }
+        // sort by file name
+        else if (item.getItemId() == R.id.menu_sort_by_filename) {
             if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
                 mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
                 refreshFragment(ARTIST_SONG);
@@ -528,6 +555,11 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
                 refreshAll();
             }
+        }
+        // clear popular playlist
+        else if (item.getItemId() == R.id.menu_clear_popular) {
+            PopularStore.getInstance(this).removeAll();
+            refreshFragment(PLAYLIST_SONG);
         } else {
             return super.onOptionsItemSelected(item);
         }

@@ -61,6 +61,7 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.WeakHashMap;
 
 import static android.media.RingtoneManager.TYPE_RINGTONE;
@@ -104,6 +105,11 @@ public final class MusicUtils {
     private static IApolloService mService;
 
     private static ContentValues[] mContentValuesCache;
+
+    /**
+     * random initialization for shuffle
+     */
+    private static Random random = new Random();
 
     private static int sForegroundActivities = 0;
 
@@ -747,7 +753,8 @@ public final class MusicUtils {
                         return;
                     }
                 }
-                service.open(mTrackList, 0);
+                int pos = random.nextInt(mTrackList.length - 1);
+                service.open(mTrackList, pos);
                 service.play();
                 cursor.close();
             } catch (RemoteException err) {

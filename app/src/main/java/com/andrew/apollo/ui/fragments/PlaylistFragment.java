@@ -79,11 +79,6 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     private static final int LOADER_ID = 0x1FF07B83;
 
     /**
-     * number of default playlists
-     */
-    private static final int DEFAULT_PLAYLIST_COUNT = 3;
-
-    /**
      * The adapter for the list
      */
     private PlaylistAdapter mAdapter;
@@ -165,14 +160,17 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
             AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
             // Create a new playlist
             mPlaylist = mAdapter.getItem(info.position);
-            // Play the playlist
-            menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-            // Add the playlist to the queue
-            menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
             // Delete and rename (user made playlists)
-            if (info.position >= DEFAULT_PLAYLIST_COUNT) {
-                menu.add(GROUP_ID, FragmentMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
-                menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+            if (mPlaylist != null) {
+                // Play the playlist
+                menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+                // Add the playlist to the queue
+                menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+                if (!mPlaylist.isDefault()) {
+                    // add options to edit playlist
+                    menu.add(GROUP_ID, FragmentMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
+                    menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+                }
             }
         } else {
             // remove old selection

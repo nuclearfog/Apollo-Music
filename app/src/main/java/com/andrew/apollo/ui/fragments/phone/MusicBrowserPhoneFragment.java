@@ -228,15 +228,17 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int vId = item.getItemId();
-        if (vId == R.id.menu_shuffle) {
-            // Shuffle all the songs
+        // Shuffle all the songs
+        if (item.getItemId() == R.id.menu_shuffle) {
             MusicUtils.shuffleAll(requireContext());
-        } else if (vId == R.id.menu_favorite) {
-            // Toggle the current track as a favorite and update the menu item
+        }
+        // Toggle the current track as a favorite and update the menu item
+        else if (item.getItemId() == R.id.menu_favorite) {
             MusicUtils.toggleFavorite();
             requireActivity().invalidateOptionsMenu();
-        } else if (vId == R.id.menu_sort_by_az) {
+        }
+        // sort track/album/artist list alphabetical
+        else if (item.getItemId() == R.id.menu_sort_by_az) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_A_Z);
                 getCallback(ARTIST_INDEX).refresh();
@@ -248,7 +250,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_za) {
+        }
+        // sort track/album/artist list alphabetical reverse
+        else if (item.getItemId() == R.id.menu_sort_by_za) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_Z_A);
                 getCallback(ARTIST_INDEX).refresh();
@@ -260,7 +264,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_artist) {
+        }
+        // sort albums/tracks by artist name
+        else if (item.getItemId() == R.id.menu_sort_by_artist) {
             if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_ARTIST);
                 getCallback(ALBUMS_INDEX).refresh();
@@ -269,13 +275,17 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_album) {
+        }
+        // sort tracks by album name
+        else if (item.getItemId() == R.id.menu_sort_by_album) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ALBUM);
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_year) {
+        }
+        // sort albums/tracks by release date
+        else if (item.getItemId() == R.id.menu_sort_by_year) {
             if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_YEAR);
                 getCallback(ALBUMS_INDEX).refresh();
@@ -284,13 +294,17 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_duration) {
+        }
+        // sort tracks by duration
+        else if (item.getItemId() == R.id.menu_sort_by_duration) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_DURATION);
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_number_of_songs) {
+        }
+        // sort artists/albums by song count
+        else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_SONGS);
                 getCallback(ALBUMS_INDEX).refresh();
@@ -299,19 +313,25 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 getCallback(ALBUMS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_number_of_albums) {
+        }
+        // sort artists by album count
+        else if (item.getItemId() == R.id.menu_sort_by_number_of_albums) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_ALBUMS);
                 getCallback(ARTIST_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_sort_by_filename) {
+        }
+        // sort tracks by file name
+        else if (item.getItemId() == R.id.menu_sort_by_filename) {
             if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
                 mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_FILENAME);
                 getCallback(TRACKS_INDEX).refresh();
             }
             reset();
-        } else if (vId == R.id.menu_view_as_simple) {
+        }
+        // set simple item view
+        else if (item.getItemId() == R.id.menu_view_as_simple) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("simple");
             } else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
@@ -320,7 +340,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setAlbumLayout("simple");
             }
             reset();
-        } else if (vId == R.id.menu_view_as_detailed) {
+        }
+        // set detailed item view
+        else if (item.getItemId() == R.id.menu_view_as_detailed) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("detailed");
             } else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
@@ -329,7 +351,9 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
                 mPreferences.setAlbumLayout("detailed");
             }
             reset();
-        } else if (vId == R.id.menu_view_as_grid) {
+        }
+        // set grid item view
+        else if (item.getItemId() == R.id.menu_view_as_grid) {
             if (mViewPager.getCurrentItem() == RECENT_INDEX) {
                 mPreferences.setRecentLayout("grid");
             } else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {

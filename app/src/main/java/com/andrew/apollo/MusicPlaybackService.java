@@ -895,8 +895,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         synchronized (this) {
             closeCursor();
             mCursor = CursorFactory.makeTrackCursor(this, trackId);
+            updateAlbumCursor();
         }
-        updateAlbumCursor();
     }
 
     /**
@@ -908,8 +908,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         synchronized (this) {
             closeCursor();
             mCursor = CursorFactory.makeTrackCursor(this, path);
+            updateAlbumCursor();
         }
-        updateAlbumCursor();
     }
 
     /**
@@ -919,8 +919,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         synchronized (this) {
             closeCursor();
             mCursor = CursorFactory.makeTrackCursor(this, uri);
+            updateAlbumCursor();
         }
-        updateAlbumCursor();
     }
 
     /**
@@ -1130,7 +1130,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             int lookback = mHistory.size();
             int idx;
             do {
-                idx = mShuffler.nextInt(mAutoShuffleList.size());
+                idx = mShuffler.nextInt(mAutoShuffleList.size() - 1);
                 lookback /= 2;
             } while (wasRecentlyUsed(idx, lookback));
 
@@ -1762,7 +1762,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 mShuffleMode = SHUFFLE_NORMAL;
             }
             long oldId = getAudioId();
-            mPlayPos = position >= 0 ? position : mShuffler.nextInt(mPlayList.size());
+            mPlayPos = position >= 0 ? position : mShuffler.nextInt(mPlayList.size() - 1);
 
             boolean newlist = true;
             if (mPlayList.size() == list.length) {

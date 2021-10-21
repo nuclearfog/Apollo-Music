@@ -2,18 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.michaelrocks.paranoid'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
     useLibrary 'org.apache.http.legacy'
-
-    lintOptions {
-        checkReleaseBuilds false
-    }
 
     defaultConfig {
         applicationId 'com.andrew.apollo'
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 7
         versionName '1.1'
     }

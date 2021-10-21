@@ -6,7 +6,7 @@ There are also some new functions, bug fixes and improvements. Compatible with A
 
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/nuclearfog/Apollo-Music)](https://github.com/nuclearfog/Apollo-Music/releases/latest/download/Apollo.apk)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/nuclearfog/Apollo-Music/blob/master/LICENSE)
 
 
 ## Screenshots

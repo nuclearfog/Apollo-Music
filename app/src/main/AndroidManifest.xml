@@ -79,7 +79,8 @@
         <!-- Main activity -->
         <activity
             android:name=".ui.activities.HomeActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -267,7 +268,9 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- Media button receiver -->
-        <receiver android:name=".MediaButtonIntentReceiver">
+        <receiver
+            android:name=".MediaButtonIntentReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />

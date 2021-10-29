@@ -11,6 +11,10 @@
 
 package com.andrew.apollo;
 
+import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
+
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -26,6 +30,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaMetadataRetriever;
@@ -73,10 +78,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
-
-import static android.app.NotificationManager.IMPORTANCE_LOW;
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -489,6 +490,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * {@inheritDoc}
      */
+    @SuppressLint({"InlinedApi", "UnspecifiedImmutableFlag"})
     @Override
     public void onCreate() {
         super.onCreate();
@@ -560,7 +562,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
 
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, 0);
+        mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         // Listen for the idle state
         scheduleDelayedShutdown();
@@ -585,7 +587,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private void setUpRemoteControlClient() {
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setComponent(mMediaButtonReceiverComponent);
-        mRemoteControlClient = new RemoteControlClient(PendingIntent.getBroadcast(this, 0, mediaButtonIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+        int intentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            intentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        PendingIntent controlIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, intentFlags);
+        mRemoteControlClient = new RemoteControlClient(controlIntent);
         mAudioManager.registerRemoteControlClient(mRemoteControlClient);
 
         // Flags for the media transport control that this client supports.
@@ -1684,9 +1690,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             } else if (position > mPlayer.duration()) {
                 position = mPlayer.duration();
             }
-            long result = mPlayer.seek(position);
+            mPlayer.seek(position);
             notifyChange(POSITION_CHANGED);
-            return result;
+            return position;
         }
         return -1;
     }
@@ -2237,8 +2243,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
         private final WeakReference<MusicPlaybackService> mService;
 
-        @NonNull
-        private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
+        private MediaPlayer mCurrentMediaPlayer;
 
         @Nullable
         private MediaPlayer mNextMediaPlayer;
@@ -2252,6 +2257,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          */
         public MultiPlayer(MusicPlaybackService service) {
             mService = new WeakReference<>(service);
+            mCurrentMediaPlayer = createPlayer();
             mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
         }
 
@@ -2267,44 +2273,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
 
         /**
-         * @param player The {@link MediaPlayer} to use
-         * @param path   The path of the file, or the http/rtsp URL of the stream
-         *               you want to play
-         * @return True if the <code>player</code> has been prepared and is
-         * ready to play, false otherwise
-         */
-        private boolean setDataSourceImpl(MediaPlayer player, @NonNull String path) {
-            MusicPlaybackService musicService = mService.get();
-            if (musicService != null) {
-                try {
-                    player.reset();
-                    player.setOnPreparedListener(null);
-                    if (path.startsWith("content://")) {
-                        ContentResolver resolver = musicService.getApplicationContext().getContentResolver();
-                        ParcelFileDescriptor pfd = resolver.openFileDescriptor(Uri.parse(path), "r");
-                        player.setDataSource(pfd.getFileDescriptor(), 0, pfd.getStatSize());
-                        pfd.close();
-                    } else {
-                        player.setDataSource(path);
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    }
-                    player.prepare();
-                } catch (Exception err) {
-                    err.printStackTrace();
-                    return false;
-                }
-                player.setOnCompletionListener(this);
-                player.setOnErrorListener(this);
-                Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-                intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-                musicService.sendBroadcast(intent);
-                return true;
-            }
-            return false;
-        }
-
-        /**
          * Set the MediaPlayer to start when this MediaPlayer finishes playback.
          *
          * @param path The path of the file, or the http/rtsp URL of the stream
@@ -2312,7 +2280,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          */
         public void setNextDataSource(@NonNull String path) {
             try {
-                mNextMediaPlayer = new MediaPlayer();
+                mNextMediaPlayer = createPlayer();
                 mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
                 if (setDataSourceImpl(mNextMediaPlayer, path)) {
                     // prepare next player
@@ -2409,11 +2377,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          * Gets the current playback position.
          *
          * @param whereto The offset in milliseconds from the start to seek to
-         * @return The offset in milliseconds from the start to seek to
          */
-        public long seek(long whereto) {
+        public void seek(long whereto) {
             mCurrentMediaPlayer.seekTo((int) whereto);
-            return whereto;
         }
 
         /**
@@ -2439,8 +2405,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          */
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
-            MusicPlaybackService musicService = mService.get();
-            if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED && musicService != null) {
+            if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
                 mIsInitialized = false;
                 mCurrentMediaPlayer.reset();
                 mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED), 2000);
@@ -2464,6 +2429,61 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
             } else {
                 mHandler.sendEmptyMessage(TRACK_ENDED);
             }
+        }
+
+        /**
+         * create and configure MediaPlayer instance
+         *
+         * @return player
+         */
+        private MediaPlayer createPlayer() {
+            MediaPlayer player = new MediaPlayer();
+            player.setScreenOnWhilePlaying(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attr = new AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(AudioAttributes.USAGE_MEDIA).build();
+                player.setAudioAttributes(attr);
+            }
+            return player;
+        }
+
+        /**
+         * @param player The {@link MediaPlayer} to use
+         * @param path   The path of the file, or the http/rtsp URL of the stream
+         *               you want to play
+         * @return True if the <code>player</code> has been prepared and is
+         * ready to play, false otherwise
+         */
+        private boolean setDataSourceImpl(MediaPlayer player, @NonNull String path) {
+            MusicPlaybackService musicService = mService.get();
+            if (musicService != null) {
+                try {
+                    player.reset();
+                    player.setOnPreparedListener(null);
+                    if (path.startsWith("content://")) {
+                        ContentResolver resolver = musicService.getApplicationContext().getContentResolver();
+                        ParcelFileDescriptor pfd = resolver.openFileDescriptor(Uri.parse(path), "r");
+                        player.setDataSource(pfd.getFileDescriptor(), 0, pfd.getStatSize());
+                        pfd.close();
+                    } else {
+                        player.setDataSource(path);
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    }
+                    player.prepare();
+                } catch (Exception err) {
+                    err.printStackTrace();
+                    return false;
+                }
+                player.setOnCompletionListener(this);
+                player.setOnErrorListener(this);
+                Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+                intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+                intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
+                musicService.sendBroadcast(intent);
+                return true;
+            }
+            return false;
         }
     }
 

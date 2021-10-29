@@ -11,6 +11,9 @@
 
 package com.andrew.apollo;
 
+import static com.andrew.apollo.MusicPlaybackService.NOTIFICAITON_ID;
+
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,8 +25,6 @@ import android.widget.RemoteViews;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-
-import static com.andrew.apollo.MusicPlaybackService.NOTIFICAITON_ID;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -145,9 +146,10 @@ public class NotificationHelper {
     /**
      * Open to the now playing screen
      */
+    @SuppressLint("InlinedApi")
     private PendingIntent getPendingIntent() {
         Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER");
-        return PendingIntent.getActivity(mService, 0, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), 0);
+        return PendingIntent.getActivity(mService, 0, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**
@@ -186,21 +188,22 @@ public class NotificationHelper {
     /**
      * Initialize notification callbacks
      */
+    @SuppressLint("InlinedApi")
     private void initCallbacks() {
         callbacks = new PendingIntent[4];
         ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
 
         Intent action = new Intent(MusicPlaybackService.TOGGLEPAUSE_ACTION).setComponent(serviceName);
-        callbacks[0] = PendingIntent.getService(mService, 1, action, 0);
+        callbacks[0] = PendingIntent.getService(mService, 1, action, PendingIntent.FLAG_IMMUTABLE);
 
         action = new Intent(MusicPlaybackService.NEXT_ACTION).setComponent(serviceName);
-        callbacks[1] = PendingIntent.getService(mService, 2, action, 0);
+        callbacks[1] = PendingIntent.getService(mService, 2, action, PendingIntent.FLAG_IMMUTABLE);
 
         action = new Intent(MusicPlaybackService.PREVIOUS_ACTION).setComponent(serviceName);
-        callbacks[2] = PendingIntent.getService(mService, 3, action, 0);
+        callbacks[2] = PendingIntent.getService(mService, 3, action, PendingIntent.FLAG_IMMUTABLE);
 
         action = new Intent(MusicPlaybackService.STOP_ACTION).setComponent(serviceName);
-        callbacks[3] = PendingIntent.getService(mService, 4, action, 0);
+        callbacks[3] = PendingIntent.getService(mService, 4, action, PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**

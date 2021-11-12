@@ -16,9 +16,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_widget_recents_items"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -28,13 +28,13 @@
         android:scaleType="centerCrop" />
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/list_preferred_item_padding"
         android:paddingLeft="@dimen/list_preferred_item_padding"
+        android:paddingStart="@dimen/list_preferred_item_padding"
+        android:layout_gravity="center_vertical"
         tools:ignore="RtlSymmetry">
 
         <TextView

@@ -20,16 +20,16 @@
     android:scrollbars="none">
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:baselineAligned="false">
 
             <include
                 android:id="@+id/profile_tab_carousel_tab_one"

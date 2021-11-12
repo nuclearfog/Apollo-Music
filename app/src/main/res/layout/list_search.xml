@@ -6,18 +6,18 @@
     android:layout_height="match_parent">
 
     <FrameLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
         android:padding="@dimen/list_preferred_item_padding">
 
         <TextView
             android:id="@+id/grid_search_empty_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:visibility="invisible"
+            android:layout_gravity="center"
             android:text="@string/empty_search" />
 
         <GridView

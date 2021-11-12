@@ -14,9 +14,9 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <View
         android:layout_width="match_parent"
@@ -36,9 +36,9 @@
 
         <include
             android:id="@+id/activity_profile_base_tab_carousel"
-            layout="@layout/profile_tab_carousel"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            layout="@layout/profile_tab_carousel" />
 
     </FrameLayout>
 

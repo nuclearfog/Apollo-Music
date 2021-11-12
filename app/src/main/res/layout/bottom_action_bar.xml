@@ -26,26 +26,26 @@
 
     <LinearLayout
         android:id="@+id/bottom_action_bar"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/colorstrip"
         android:clickable="true"
-        android:orientation="horizontal"
-        android:focusable="true">
+        android:focusable="true"
+        android:layout_below="@+id/colorstrip">
 
         <com.andrew.apollo.widgets.SquareImageView
             android:id="@+id/bottom_action_bar_album_art"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left|center"
-            android:background="@drawable/default_artwork" />
+            android:background="@drawable/default_artwork"
+            android:layout_gravity="left|center" />
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:paddingLeft="@dimen/bottom_action_bar_info_padding_left">
+            android:paddingLeft="@dimen/bottom_action_bar_info_padding_left"
+            android:layout_gravity="center_vertical">
 
             <TextView
                 android:id="@+id/bottom_action_bar_line_one"
@@ -66,9 +66,9 @@
             android:scrollbars="none">
 
             <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="match_parent">
 
                 <com.andrew.apollo.widgets.RepeatingImageButton
                     android:id="@+id/action_button_previous"

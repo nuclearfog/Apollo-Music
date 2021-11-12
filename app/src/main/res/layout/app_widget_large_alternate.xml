@@ -22,9 +22,9 @@
     tools:ignore="ContentDescription,RtlSymmetry">
 
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/app_widget_large_alternate_image"
@@ -34,32 +34,32 @@
 
         <LinearLayout
             android:id="@+id/app_widget_large_alternate_info_container"
+            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
+            android:paddingLeft="@dimen/notification_info_container_padding_left"
             android:paddingStart="@dimen/notification_info_container_padding_left"
-            android:paddingLeft="@dimen/notification_info_container_padding_left">
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/app_widget_large_alternate_line_one"
-                style="@style/NotificationText"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                style="@style/NotificationText" />
 
             <TextView
                 android:id="@+id/app_widget_large_alternate_line_two"
-                style="@style/NotificationText"
                 android:textColor="@color/transparent_white"
-                android:textSize="@dimen/text_size_small" />
+                android:textSize="@dimen/text_size_small"
+                style="@style/NotificationText" />
 
             <TextView
                 android:id="@+id/app_widget_large_alternate_line_three"
-                style="@style/NotificationText"
                 android:textColor="@color/transparent_white"
-                android:textSize="@dimen/text_size_small" />
+                android:textSize="@dimen/text_size_small"
+                style="@style/NotificationText" />
 
         </LinearLayout>
 
@@ -68,18 +68,18 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:background="@color/transparent_white"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@color/transparent_white" />
+        android:layout_marginBottom="2dp" />
 
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="fill_horizontal"
         android:layout_marginBottom="@dimen/app_widget_bottom_margin"
-        android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:layout_gravity="fill_horizontal"
+        android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
         android:showDividers="middle">
 
         <ImageButton
@@ -88,8 +88,8 @@
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/accessibility_shuffle"
             android:padding="@dimen/notification_expanded_button_padding"
+            android:contentDescription="@string/accessibility_shuffle"
             android:src="@drawable/btn_playback_shuffle" />
 
         <ImageButton
@@ -98,8 +98,8 @@
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/accessibility_prev"
             android:padding="@dimen/notification_expanded_button_padding"
+            android:contentDescription="@string/accessibility_prev"
             android:src="@drawable/btn_playback_previous" />
 
         <ImageButton
@@ -117,8 +117,8 @@
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/accessibility_next"
             android:padding="@dimen/notification_expanded_button_padding"
+            android:contentDescription="@string/accessibility_next"
             android:src="@drawable/btn_playback_next" />
 
         <ImageButton
@@ -127,8 +127,8 @@
             android:layout_height="@dimen/notification_expanded_button_height"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:contentDescription="@string/accessibility_repeat"
             android:padding="@dimen/notification_expanded_button_padding"
+            android:contentDescription="@string/accessibility_repeat"
             android:src="@drawable/btn_playback_repeat" />
 
     </LinearLayout>

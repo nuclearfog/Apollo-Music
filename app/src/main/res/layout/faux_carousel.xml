@@ -18,7 +18,7 @@
     android:layout_height="wrap_content">
 
     <include
-        layout="@layout/profile_tab_carousel"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        layout="@layout/profile_tab_carousel" />
 
 </FrameLayout>

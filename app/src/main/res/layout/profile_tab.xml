@@ -27,68 +27,68 @@
             android:id="@+id/profile_tab_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:contentDescription="@null"
-            android:scaleType="centerCrop"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop" />
 
         <com.andrew.apollo.widgets.SquareImageView
             android:id="@+id/profile_tab_album_art"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
             android:visibility="gone"
-            android:layout_alignParentStart="true" />
+            android:contentDescription="@null"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerCrop" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/profile_carousel_label_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
             android:background="@color/transparent_black"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <com.andrew.apollo.widgets.theme.Colorstrip
             android:id="@+id/profile_tab_colorstrip"
             android:layout_width="match_parent"
             android:layout_height="@dimen/profile_indicator_height"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <View
             android:id="@+id/profile_tab_alpha_overlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:layout_marginBottom="@dimen/profile_carousel_label_height"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
 
         <TextView
             android:id="@+id/profile_tab_label"
             android:layout_width="match_parent"
             android:layout_height="@dimen/profile_carousel_label_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
-            android:gravity="left|center_vertical"
             android:paddingLeft="@dimen/profile_label_padding"
             android:paddingRight="@dimen/profile_label_padding"
+            android:gravity="left|center_vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:singleLine="true"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_large"
-            android:layout_alignParentStart="true"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 

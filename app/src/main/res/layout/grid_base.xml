@@ -22,13 +22,13 @@
         android:id="@+id/grid_base_empty_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/empty_music"
+        android:visibility="gone"
         android:paddingLeft="@dimen/list_empty_text_padding"
-        android:paddingRight="@dimen/list_empty_text_padding"
         android:paddingStart="@dimen/list_empty_text_padding"
+        android:paddingRight="@dimen/list_empty_text_padding"
         android:paddingEnd="@dimen/list_empty_text_padding"
-        android:visibility="gone" />
+        android:layout_gravity="center"
+        android:text="@string/empty_music" />
 
     <GridView
         android:id="@+id/grid_base"
@@ -37,11 +37,11 @@
         android:cacheColorHint="@color/transparent"
         android:drawSelectorOnTop="true"
         android:fadingEdge="vertical"
-        android:scrollbars="none"
         android:fastScrollAlwaysVisible="false"
-        android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
         android:fastScrollEnabled="true"
         android:horizontalSpacing="@dimen/grid_item_spacing"
+        android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
+        android:scrollbars="none"
         android:verticalSpacing="@dimen/grid_item_spacing" />
 
 </FrameLayout>

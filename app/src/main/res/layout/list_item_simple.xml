@@ -18,26 +18,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
-    android:gravity="center_vertical"
-    android:minHeight="@dimen/item_normal_height"
     android:paddingLeft="@dimen/list_preferred_item_padding"
-    android:paddingRight="@dimen/list_preferred_item_padding">
+    android:paddingRight="@dimen/list_preferred_item_padding"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/item_normal_height">
 
     <ImageView
         android:id="@+id/edit_track_list_item_handle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_marginRight="@dimen/drag_and_drop_handle_margin"
+        android:layout_marginEnd="@dimen/drag_and_drop_handle_margin"
         android:clickable="false"
         android:focusable="false"
         android:src="@drawable/threedots"
-        android:layout_marginRight="@dimen/drag_and_drop_handle_margin"
-        android:layout_marginEnd="@dimen/drag_and_drop_handle_margin"
-        android:visibility="gone"
-        tools:ignore="ContentDescription"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/list_item_text_barrier" />
+        app:layout_constraintEnd_toStartOf="@id/list_item_text_barrier"
+        tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/list_item_text_barrier"
@@ -49,11 +49,11 @@
         android:id="@+id/line_one"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/list_item_detailed_drawable_padding"
         android:singleLine="true"
         android:textColor="@color/line_one"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
-        android:drawablePadding="@dimen/list_item_detailed_drawable_padding"
         app:layout_constraintStart_toEndOf="@+id/list_item_text_barrier"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/line_two"
@@ -63,8 +63,8 @@
         android:id="@+id/line_one_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/list_preferred_item_padding"
         android:paddingLeft="@dimen/list_preferred_item_padding"
+        android:paddingStart="@dimen/list_preferred_item_padding"
         android:singleLine="true"
         android:textColor="@color/line_one"
         android:textSize="@dimen/text_size_medium"

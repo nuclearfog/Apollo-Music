@@ -15,11 +15,11 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/action_bar_color"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
     tools:ignore="ContentDescription">
 
     <ImageView
@@ -30,25 +30,25 @@
         android:gravity="center" />
 
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:orientation="vertical"
         android:paddingLeft="@dimen/notification_info_container_padding_left"
         android:paddingStart="@dimen/notification_info_container_padding_left"
         android:paddingBottom="@dimen/notification_info_container_padding_bottom"
+        android:layout_gravity="center_vertical"
         tools:ignore="RtlSymmetry">
 
         <TextView
             android:id="@+id/notification_base_line_one"
-            style="@style/NotificationText"
-            android:textAppearance="@style/notification_textAppearance" />
+            android:textAppearance="@style/notification_textAppearance"
+            style="@style/NotificationText" />
 
         <TextView
             android:id="@+id/notification_base_line_two"
-            style="@style/NotificationText"
-            android:textAppearance="@style/notification_textAppearance" />
+            android:textAppearance="@style/notification_textAppearance"
+            style="@style/NotificationText" />
 
     </LinearLayout>
 

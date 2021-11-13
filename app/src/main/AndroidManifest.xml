@@ -16,8 +16,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.andrew.apollo">
 
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-    <!-- Used for caching and creating new playlists -->
+    <!-- Used to set the devices's ringtone -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        android:maxSdkVersion="22" />
+    <!-- Used for caching, creating new playlists and deleting tracks -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -25,22 +28,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Used to download images -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Used to keep the service running when the phone sleeps -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- The main service uses a sticky broadcast -->
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-    <!-- Lower or raise the music based on the phone state -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!-- Used to set the devices's ringtone -->
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <!-- Used to create launcher shortcuts -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!-- Allows Apollo to read from External Storage -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <!-- Allows Apollo to stay in the foreground -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Used to create launcher shortcuts -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <!-- The main service uses a sticky broadcast -->
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <!-- Used to keep the service running when the phone sleeps -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <queries>
         <intent>

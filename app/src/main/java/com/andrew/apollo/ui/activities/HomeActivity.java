@@ -11,6 +11,12 @@
 
 package com.andrew.apollo.ui.activities;
 
+import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
+
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,13 +31,6 @@ import androidx.viewpager.widget.ViewPager;
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import com.andrew.apollo.utils.MusicUtils;
-
-import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_PHONE_STATE;
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 /**
  * This class is used to display the {@link ViewPager} used to swipe between the
@@ -58,9 +57,9 @@ public class HomeActivity extends AppCompatBase {
 
     static {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, READ_PHONE_STATE, ACCESS_MEDIA_LOCATION};
+            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
         } else {
-            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, READ_PHONE_STATE};
+            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
         }
     }
 

@@ -1,6 +1,5 @@
-/app/build/intermediates/
 /.gradle/
 /.idea/
 /app/build/
 /app/release/
-/ApolloCM1.zip
+/app/dict/

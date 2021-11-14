@@ -149,7 +149,8 @@ public class NotificationHelper {
     @SuppressLint("InlinedApi")
     private PendingIntent getPendingIntent() {
         Intent intent = new Intent(BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER");
-        return PendingIntent.getActivity(mService, 0, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_IMMUTABLE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**

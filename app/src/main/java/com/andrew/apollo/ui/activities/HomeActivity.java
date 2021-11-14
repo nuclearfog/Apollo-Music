@@ -69,19 +69,18 @@ public class HomeActivity extends AppCompatBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            boolean permissionDenied = false;
-            for (String permission : PERMISSIONS) {
-                if (checkSelfPermission(permission) != PERMISSION_GRANTED) {
-                    permissionDenied = true;
+        // initialize only if it is the first time
+        if (savedInstanceState == null) {
+            // check permissions before initialization
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                for (String permission : PERMISSIONS) {
+                    if (checkSelfPermission(permission) != PERMISSION_GRANTED) {
+                        // request first permission before initialization
+                        requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
+                        return;
+                    }
                 }
             }
-            if (permissionDenied) {
-                requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
-            } else if (savedInstanceState == null) {
-                init();
-            }
-        } else if (savedInstanceState == null) {
             init();
         }
     }
@@ -97,21 +96,15 @@ public class HomeActivity extends AppCompatBase {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // check if permissions are granted
-        if (requestCode == REQ_CHECK_PERM) {
-            boolean permDenied = false;
-            int permCount = PERMISSIONS.length;
-            for (int i = 0; i < permCount; i++) {
-                if (permissions[i].equals(PERMISSIONS[i]) && grantResults[i] == PERMISSION_DENIED) {
-                    permDenied = true;
-                    break;
+        if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
+            for (int grantResult : grantResults) {
+                if (grantResult == PERMISSION_DENIED) {
+                    Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
                 }
             }
-            if (permDenied) {
-                Toast.makeText(this, R.string.error_permission_denied, Toast.LENGTH_LONG).show();
-                finish();
-            } else {
-                init();
-            }
+            init();
         }
     }
 

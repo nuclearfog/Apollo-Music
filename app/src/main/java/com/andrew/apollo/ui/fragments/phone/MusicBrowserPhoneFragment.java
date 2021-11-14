@@ -11,6 +11,14 @@
 
 package com.andrew.apollo.ui.fragments.phone;
 
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUM;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTIST;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDER;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRE;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLIST;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.RECENT;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.SONG;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,14 +43,6 @@ import com.andrew.apollo.utils.SortOrder;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.viewpagerindicator.TitlePageIndicator;
 import com.viewpagerindicator.TitlePageIndicator.OnCenterItemClickListener;
-
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUM;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTIST;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDER;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRE;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLIST;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.RECENT;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.SONG;
 
 /**
  * This class is used to hold the {@link ViewPager} used for swiping between the
@@ -175,10 +175,10 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
      * {@inheritDoc}
      */
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
         // Save the last page the use was on
         mPreferences.setStartPage(mViewPager.getCurrentItem());
+        super.onDestroy();
     }
 
     /**

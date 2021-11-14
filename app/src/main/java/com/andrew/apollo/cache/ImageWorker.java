@@ -158,6 +158,7 @@ public abstract class ImageWorker {
      *                   {@link Bitmap}.
      * @param imageType  The type of image URL to fetch for.
      */
+    @SuppressWarnings("SameParameterValue")
     protected void loadImage(String key, String artistName, String albumName, long albumId, ImageView imageView, ImageType imageType) {
         if (key != null && mImageCache != null && imageView != null) {
             // First, check the memory for the image

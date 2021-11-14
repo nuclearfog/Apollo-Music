@@ -1261,7 +1261,6 @@ public class DragSortListView extends ListView {
         int firstPos = getFirstVisiblePosition();
         int lastPos = getLastVisiblePosition();
 
-        // Log.d("mobeta",
         // "nHead="+numHeaders+" nFoot="+numFooters+" first="+firstPos+" last="+lastPos);
         int topLimit = getPaddingTop();
         if (firstPos < numHeaders) {
@@ -1283,10 +1282,6 @@ public class DragSortListView extends ListView {
                 bottomLimit = Math.min(getChildAt(mSrcPos - firstPos).getBottom(), bottomLimit);
             }
         }
-
-        // Log.d("mobeta", "dragView top=" + (y - mDragDeltaY));
-        // Log.d("mobeta", "limit=" + limit);
-        // Log.d("mobeta", "mDragDeltaY=" + mDragDeltaY);
 
         if (floatY < topLimit) {
             mFloatViewTop = topLimit;

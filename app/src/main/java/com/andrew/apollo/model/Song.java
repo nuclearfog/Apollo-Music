@@ -100,7 +100,7 @@ public class Song extends Music {
      */
     public long durationMillis() {
         if (mDuration > 0)
-            return mDuration * 1000;
+            return (long) mDuration * 1000;
         return -1;
     }
 

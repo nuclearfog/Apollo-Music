@@ -11,12 +11,14 @@
 
 package com.andrew.apollo.appwidgets;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -71,6 +73,10 @@ public class RecentWidgetProvider extends AppWidgetBase {
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        int intentFlag = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intentFlag |= PendingIntent.FLAG_IMMUTABLE;
+        }
         for (int appWidgetId : appWidgetIds) {
             // Create the remote views
             mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
@@ -93,7 +99,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
             onClickIntent.setAction(RecentWidgetProvider.CLICK_ACTION);
             onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, onClickIntent, intentFlag);
             mViews.setPendingIntentTemplate(R.id.app_widget_recents_list, onClickPendingIntent);
 
             // Update the widget
@@ -218,9 +224,11 @@ public class RecentWidgetProvider extends AppWidgetBase {
      * @param playerActive True if player is active in background, which means
      *                     widget click will launch {@link AudioPlayerActivity}
      */
+    @SuppressLint("UnspecifiedImmutableFlag")
     private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
         Intent action;
         PendingIntent pendingIntent;
+        int intentFlag = 0;
 
         ComponentName serviceName = new ComponentName(context, MusicPlaybackService.class);
 
@@ -231,7 +239,10 @@ public class RecentWidgetProvider extends AppWidgetBase {
             // Home
             action = new Intent(context, HomeActivity.class);
         }
-        pendingIntent = PendingIntent.getActivity(context, 0, action, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intentFlag |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        pendingIntent = PendingIntent.getActivity(context, 0, action, intentFlag);
         views.setOnClickPendingIntent(R.id.app_widget_recents_action_bar, pendingIntent);
 
         // Previous track

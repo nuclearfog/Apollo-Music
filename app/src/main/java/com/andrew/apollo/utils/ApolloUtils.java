@@ -250,7 +250,7 @@ public final class ApolloUtils {
      */
     public static ImageFetcher getImageFetcher(FragmentActivity context) {
         ImageFetcher imageFetcher = ImageFetcher.getInstance(context);
-        imageFetcher.setImageCache(ImageCache.findOrCreateCache(context));
+        imageFetcher.setImageCache(ImageCache.getInstance(context));
         return imageFetcher;
     }
 

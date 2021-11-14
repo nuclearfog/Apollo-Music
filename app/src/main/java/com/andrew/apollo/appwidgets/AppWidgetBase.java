@@ -11,20 +11,25 @@
 
 package com.andrew.apollo.appwidgets;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import com.andrew.apollo.MusicPlaybackService;
 
 public abstract class AppWidgetBase extends AppWidgetProvider {
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     protected PendingIntent buildPendingIntent(Context context, String action, ComponentName serviceName) {
         Intent intent = new Intent(action);
         intent.setComponent(serviceName);
         intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         return PendingIntent.getService(context, 0, intent, 0);
     }
 

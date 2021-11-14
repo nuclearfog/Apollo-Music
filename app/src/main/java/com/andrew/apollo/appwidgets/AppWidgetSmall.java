@@ -11,12 +11,14 @@
 
 package com.andrew.apollo.appwidgets;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -136,9 +138,11 @@ public class AppWidgetSmall extends AppWidgetBase {
      * @param playerActive True if player is active in background, which means
      *                     widget click will launch {@link AudioPlayerActivity}
      */
+    @SuppressLint("UnspecifiedImmutableFlag")
     private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
         Intent action;
         PendingIntent pendingIntent;
+        int intentFlag = 0;
 
         ComponentName serviceName = new ComponentName(context, MusicPlaybackService.class);
 
@@ -149,7 +153,10 @@ public class AppWidgetSmall extends AppWidgetBase {
             // Home
             action = new Intent(context, HomeActivity.class);
         }
-        pendingIntent = PendingIntent.getActivity(context, 0, action, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            intentFlag |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        pendingIntent = PendingIntent.getActivity(context, 0, action, intentFlag);
         views.setOnClickPendingIntent(R.id.app_widget_small_info_container, pendingIntent);
         views.setOnClickPendingIntent(R.id.app_widget_small_image, pendingIntent);
 

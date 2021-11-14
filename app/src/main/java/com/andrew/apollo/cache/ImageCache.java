@@ -22,7 +22,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
@@ -31,9 +30,6 @@ import android.util.Log;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -47,7 +43,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * This class holds the memory and disk bitmap caches.
  */
-public final class ImageCache {
+public final class ImageCache implements ComponentCallbacks2 {
 
     @Keep
     private static final String TAG = "ImageCache";
@@ -129,51 +125,6 @@ public final class ImageCache {
     }
 
     /**
-     * Find and return an existing ImageCache stored in a {@link RetainFragment}
-     * , if not found a new one is created using the supplied params and saved
-     * to a {@link RetainFragment}
-     *
-     * @param activity The calling {@link androidx.fragment.app.FragmentActivity}
-     * @return An existing retained ImageCache object or a new one if one did
-     * not exist
-     */
-    public static ImageCache findOrCreateCache(FragmentActivity activity) {
-
-        // Search for, or create an instance of the non-UI RetainFragment
-        RetainFragment retainFragment = findOrCreateRetainFragment(activity.getSupportFragmentManager());
-
-        // See if we already have an ImageCache stored in RetainFragment
-        ImageCache cache = (ImageCache) retainFragment.getObject();
-
-        // No existing ImageCache, create one and store it in RetainFragment
-        if (cache == null) {
-            cache = getInstance(activity);
-            retainFragment.setObject(cache);
-        }
-        return cache;
-    }
-
-    /**
-     * Locate an existing instance of this {@link Fragment} or if not found,
-     * create and add it using {@link FragmentManager}
-     *
-     * @param fm The {@link FragmentManager} to use
-     * @return The existing instance of the {@link Fragment} or the new instance
-     * if just created
-     */
-    public static RetainFragment findOrCreateRetainFragment(FragmentManager fm) {
-        // Check to see if we have retained the worker fragment
-        RetainFragment retainFragment = (RetainFragment) fm.findFragmentByTag(TAG);
-
-        // If not retained, we need to create and add it
-        if (retainFragment == null) {
-            retainFragment = new RetainFragment();
-            fm.beginTransaction().add(retainFragment, TAG).commit();
-        }
-        return retainFragment;
-    }
-
-    /**
      * Get a usable cache directory (external if available, internal otherwise)
      *
      * @param context    The {@link Context} to use
@@ -241,6 +192,35 @@ public final class ImageCache {
         return builder.toString();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onTrimMemory(int level) {
+        if (level >= TRIM_MEMORY_MODERATE) {
+            evictAll();
+        } else if (level >= TRIM_MEMORY_BACKGROUND) {
+            mLruCache.trimToSize(mLruCache.size() / 2);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLowMemory() {
+        // Nothing to do
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        // Nothing to do
+    }
+
     /**
      * Initialize the cache, providing all parameters.
      *
@@ -300,35 +280,7 @@ public final class ImageCache {
         int lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);
         mLruCache = new MemoryCache(lruCacheSize);
         // Release some memory as needed
-        context.registerComponentCallbacks(new ComponentCallbacks2() {
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public void onTrimMemory(int level) {
-                if (level >= TRIM_MEMORY_MODERATE) {
-                    evictAll();
-                } else if (level >= TRIM_MEMORY_BACKGROUND) {
-                    mLruCache.trimToSize(mLruCache.size() / 2);
-                }
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public void onLowMemory() {
-                // Nothing to do
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public void onConfigurationChanged(@NonNull Configuration newConfig) {
-                // Nothing to do
-            }
-        });
+        context.registerComponentCallbacks(this);
     }
 
     /**
@@ -656,47 +608,6 @@ public final class ImageCache {
      */
     public boolean isDiskCachePaused() {
         return mPauseDiskAccess;
-    }
-
-    /**
-     * A simple non-UI Fragment that stores a single Object and is retained over
-     * configuration changes. In this sample it will be used to retain an
-     * {@link ImageCache} object.
-     */
-    public static class RetainFragment extends Fragment {
-
-        /**
-         * The object to be stored
-         */
-        private Object mObject;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            // Make sure this Fragment is retained over a configuration change
-            setRetainInstance(true);
-        }
-
-        /**
-         * Get the stored object
-         *
-         * @return The stored object
-         */
-        public Object getObject() {
-            return mObject;
-        }
-
-        /**
-         * Store a single object in this {@link Fragment}
-         *
-         * @param object The object to store
-         */
-        public void setObject(Object object) {
-            mObject = object;
-        }
     }
 
     /**

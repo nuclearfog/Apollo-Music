@@ -11,8 +11,6 @@
 
 package com.andrew.apollo;
 
-import androidx.annotation.Keep;
-
 /**
  * App-wide constants.
  *
@@ -20,11 +18,6 @@ import androidx.annotation.Keep;
  */
 public final class Config {
 
-    /**
-     * LAST FM Key used to download track informations
-     */
-    @Keep
-    public static final String LASTFM_API_KEY = "";
     /**
      * Used to distinguish album art from artist images
      */

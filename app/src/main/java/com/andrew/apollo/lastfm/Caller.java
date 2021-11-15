@@ -21,10 +21,15 @@
 
 package com.andrew.apollo.lastfm;
 
+import static com.andrew.apollo.Config.USER_AGENT;
+import static com.andrew.apollo.lastfm.StringUtilities.encode;
+import static com.andrew.apollo.lastfm.StringUtilities.map;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import com.andrew.apollo.Config;
+import androidx.annotation.Keep;
+
 import com.andrew.apollo.lastfm.Result.Status;
 
 import org.apache.http.HttpStatus;
@@ -53,10 +58,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import io.michaelrocks.paranoid.Obfuscate;
 
-import static com.andrew.apollo.Config.USER_AGENT;
-import static com.andrew.apollo.lastfm.StringUtilities.encode;
-import static com.andrew.apollo.lastfm.StringUtilities.map;
-
 /**
  * The <code>Caller</code> class handles the low-level communication between the
  * client and last.fm.<br/>
@@ -72,13 +73,22 @@ import static com.andrew.apollo.lastfm.StringUtilities.map;
 @Obfuscate
 public class Caller {
 
+    @Keep
     private static final String TAG = "LastFm.Caller";
 
     private static final String PARAM_API_KEY = "api_key";
 
     private static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
 
-    private static Caller mInstance = null;
+    /**
+     * LAST FM Key used to download track informations
+     */
+    private static final String LASTFM_API_KEY = "";
+
+    /**
+     * singleton instance
+     */
+    private static final Caller mInstance = new Caller();
 
 
     private Caller() {
@@ -88,9 +98,6 @@ public class Caller {
      * @return A new instance of this class
      */
     public static synchronized Caller getInstance() {
-        if (mInstance == null) {
-            mInstance = new Caller();
-        }
         return mInstance;
     }
 
@@ -111,7 +118,6 @@ public class Caller {
      * @return the result of the operation
      */
     public Result call(String method, Map<String, String> params) {
-        String apiKey = Config.LASTFM_API_KEY;
         params = new WeakHashMap<>(params);
         InputStream inputStream;
 
@@ -119,7 +125,7 @@ public class Caller {
         Result lastResult;
 
         // fill parameter map with apiKey and session info
-        params.put(PARAM_API_KEY, apiKey);
+        params.put(PARAM_API_KEY, LASTFM_API_KEY);
         try {
             HttpsURLConnection urlConnection = openPostConnection(method, params);
             inputStream = getInputStreamFromConnection(urlConnection);

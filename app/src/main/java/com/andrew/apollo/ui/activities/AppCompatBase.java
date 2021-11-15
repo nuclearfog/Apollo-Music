@@ -136,7 +136,6 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        MusicUtils.connectService(service);
         // Set the playback drawables
         updatePlaybackControls();
         // Current info
@@ -150,7 +149,6 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        MusicUtils.disconnectService();
     }
 
     /**

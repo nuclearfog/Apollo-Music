@@ -12,12 +12,9 @@
 package com.andrew.apollo.ui.activities;
 
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,7 +54,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SearchActivity extends AppCompatBase implements LoaderCallbacks<List<Music>>,
-        OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection {
+        OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
     /**
      * ID of the loader
@@ -280,22 +277,6 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
         }
         // All done
         finish();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        MusicUtils.connectService(service);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        MusicUtils.disconnectService();
     }
 
     /**

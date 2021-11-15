@@ -391,7 +391,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
      * @return fragment
      */
     private BrowserCallback getCallback(int index) {
-        return (BrowserCallback) mPagerAdapter.getFragment(index);
+        return (BrowserCallback) mPagerAdapter.getItem(index);
     }
 
     /**

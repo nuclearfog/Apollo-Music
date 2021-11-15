@@ -11,6 +11,18 @@
 
 package com.andrew.apollo.ui.activities;
 
+import static com.andrew.apollo.Config.FOLDER;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.POPULAR;
+import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
+
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -55,18 +67,6 @@ import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
 import java.util.Random;
-
-import static com.andrew.apollo.Config.FOLDER;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.POPULAR;
-import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 /**
  * The {@link AppCompatActivity} is used to display the data for specific
@@ -807,7 +807,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      * @param index index of the fragment
      */
     private void refreshFragment(int index) {
-        Fragment fragment = mPagerAdapter.getFragment(index);
+        Fragment fragment = mPagerAdapter.getItem(index);
         if (fragment instanceof FragmentCallback) {
             ((FragmentCallback) fragment).refresh();
         }
@@ -818,7 +818,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
      */
     private void scrollFragmentToTop() {
         for (int i = 0; i < mPagerAdapter.getCount(); i++) {
-            Fragment fragment = mPagerAdapter.getFragment(i);
+            Fragment fragment = mPagerAdapter.getItem(i);
             if (fragment instanceof FragmentScroll) {
                 ((FragmentScroll) fragment).scrollToTop();
             }

@@ -12,14 +12,13 @@
 package com.andrew.apollo.adapters;
 
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentFactory;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.fragments.AlbumFragment;
@@ -40,20 +39,17 @@ import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
 import com.andrew.apollo.ui.fragments.profile.PopularSongFragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * A {@link FragmentPagerAdapter} class for swiping between playlists, recent,
+ * A {@link FragmentStatePagerAdapter} class for swiping between playlists, recent,
  * artists, albums, songs, and genre {@link Fragment}s on phones.<br/>
  */
-public class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    private SparseArray<WeakReference<Fragment>> mFragmentArray = new SparseArray<>();
-
-    private List<Holder> mHolderList = new ArrayList<>(4);
+    private List<Fragment> fragments = new ArrayList<>(4);
 
     private FragmentActivity mFragmentActivity;
 
@@ -74,43 +70,11 @@ public class PagerAdapter extends FragmentPagerAdapter {
      * @param fragment The full qualified name of fragment class.
      * @param params   The instantiate params.
      */
-    @SuppressWarnings("synthetic-access")
-    public void add(MusicFragments fragment, Bundle params) {
-        Holder mHolder = new Holder();
-        mHolder.mClassName = fragment.getClassName();
-        mHolder.mParams = params;
-        mHolderList.add(mHolder);
+    public void add(MusicFragments fragment, @Nullable Bundle params) {
+        if (params != null)
+            fragment.instance.setArguments(params);
+        fragments.add(fragment.instance);
         notifyDataSetChanged();
-    }
-
-    /**
-     * Method that returns the {@link Fragment} in the argument
-     * position.
-     *
-     * @param position The position of the fragment to return.
-     * @return Fragment The {@link Fragment} in the argument position.
-     */
-    public Fragment getFragment(int position) {
-        WeakReference<Fragment> mWeakFragment = mFragmentArray.get(position);
-        if (mWeakFragment != null && mWeakFragment.get() != null) {
-            return mWeakFragment.get();
-        }
-        return getItem(position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @NonNull
-    public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Fragment mFragment = (Fragment) super.instantiateItem(container, position);
-        WeakReference<Fragment> mWeakFragment = mFragmentArray.get(position);
-        if (mWeakFragment != null) {
-            mWeakFragment.clear();
-        }
-        mFragmentArray.put(position, new WeakReference<>(mFragment));
-        return mFragment;
     }
 
     /**
@@ -119,11 +83,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     @NonNull
     public Fragment getItem(int position) {
-        Holder mCurrentHolder = mHolderList.get(position);
-        FragmentFactory fragmentFactory = mFragmentActivity.getSupportFragmentManager().getFragmentFactory();
-        Fragment result = fragmentFactory.instantiate(mFragmentActivity.getClassLoader(), mCurrentHolder.mClassName);
-        result.setArguments(mCurrentHolder.mParams);
-        return result;
+        return fragments.get(position);
     }
 
     /**
@@ -132,10 +92,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
         super.destroyItem(container, position, object);
-        WeakReference<Fragment> mWeakFragment = mFragmentArray.get(position);
-        if (mWeakFragment != null) {
-            mWeakFragment.clear();
-        }
+        fragments.remove(position);
     }
 
     /**
@@ -143,7 +100,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
      */
     @Override
     public int getCount() {
-        return mHolderList.size();
+        return fragments.size();
     }
 
     /**
@@ -155,6 +112,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     /**
+     * clear all fragments from adapter
+     */
+    public void clear() {
+        fragments.clear();
+        notifyDataSetChanged();
+    }
+
+    /**
      * An enumeration of all the main fragments supported.
      */
     public enum MusicFragments {
@@ -162,85 +127,62 @@ public class PagerAdapter extends FragmentPagerAdapter {
         /**
          * The playlist fragment
          */
-        PLAYLIST(PlaylistFragment.class),
+        PLAYLIST(new PlaylistFragment()),
         /**
          * The recent fragment
          */
-        RECENT(RecentFragment.class),
+        RECENT(new RecentFragment()),
         /**
          * The artist fragment
          */
-        ARTIST(ArtistFragment.class),
+        ARTIST(new ArtistFragment()),
         /**
          * The album fragment
          */
-        ALBUM(AlbumFragment.class),
+        ALBUM(new AlbumFragment()),
         /**
          * The song fragment
          */
-        SONG(SongFragment.class),
+        SONG(new SongFragment()),
         /**
          * The genre fragment
          */
-        GENRE(GenreFragment.class),
+        GENRE(new GenreFragment()),
 
         /**
          * The folder fragment
          */
-        FOLDER(FolderFragment.class),
+        FOLDER(new FolderFragment()),
 
-        ALBUMSONG(AlbumSongFragment.class),
+        ALBUMSONG(new AlbumSongFragment()),
 
-        GENRESONG(GenreSongFragment.class),
+        GENRESONG(new GenreSongFragment()),
 
-        ARTISTSONG(ArtistSongFragment.class),
+        ARTISTSONG(new ArtistSongFragment()),
 
-        ARTISTALBUM(ArtistAlbumFragment.class),
+        ARTISTALBUM(new ArtistAlbumFragment()),
 
-        FOLDERSONG(FolderSongFragment.class),
+        FOLDERSONG(new FolderSongFragment()),
 
-        PLAYLISTSONG(PlaylistSongFragment.class),
+        PLAYLISTSONG(new PlaylistSongFragment()),
 
-        FAVORITE(FavoriteSongFragment.class),
+        FAVORITE(new FavoriteSongFragment()),
 
-        LASTADDED(LastAddedFragment.class),
+        LASTADDED(new LastAddedFragment()),
 
-        POPULAR(PopularSongFragment.class),
+        POPULAR(new PopularSongFragment()),
 
-        QUEUE(QueueFragment.class);
+        QUEUE(new QueueFragment());
 
-        private Class<? extends Fragment> mFragmentClass;
+        public final Fragment instance;
 
         /**
          * Constructor of <code>MusicFragments</code>
          *
-         * @param fragmentClass The fragment class
+         * @param fragment The fragment class
          */
-        MusicFragments(Class<? extends Fragment> fragmentClass) {
-            mFragmentClass = fragmentClass;
+        MusicFragments(Fragment fragment) {
+            instance = fragment;
         }
-
-        /**
-         * returns class name if the fragment
-         *
-         * @return name ofthe fragment class
-         */
-        public String getClassName() {
-            return mFragmentClass.getName();
-        }
-    }
-
-    /**
-     * A private class with information about fragment initialization
-     */
-    private static final class Holder {
-        /**
-         * name of the fragment class
-         */
-        String mClassName;
-        /**
-         * information for the fragment
-         */
-        Bundle mParams;
     }
 }

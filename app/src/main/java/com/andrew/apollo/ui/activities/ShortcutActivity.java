@@ -11,6 +11,10 @@
 
 package com.andrew.apollo.ui.activities;
 
+import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
+import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
+
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,10 +40,6 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 
 import java.util.List;
-
-import static com.andrew.apollo.Config.MIME_TYPE;
-import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
-import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
 /**
  * This class is opened when the user touches a Home screen shortcut or album
@@ -103,7 +103,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         final Context context = getApplicationContext();
-        MusicUtils.connectService(service);
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
@@ -164,7 +163,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        MusicUtils.disconnectService();
     }
 
     /**

@@ -11,6 +11,9 @@
 
 package com.andrew.apollo.ui.activities;
 
+import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
+import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
+
 import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -38,9 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -78,9 +79,6 @@ import com.andrew.apollo.widgets.ShuffleButton;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
-import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 /**
  * Apollo's "now playing" interface.
@@ -123,6 +121,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Album art
      */
     private ImageView mAlbumArt;
+
+    /**
+     * album art borders
+     */
+    private View[] albumArtBorder = new View[2];
     /**
      * Tiny artwork
      */
@@ -159,10 +162,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * ViewPager
      */
     private ViewPager mViewPager;
-    /**
-     * Header
-     */
-    private LinearLayout mAudioPlayerHeader;
     /**
      * Image cache
      */
@@ -222,6 +221,27 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * {@inheritDoc}
      */
     @Override
+    protected void onDestroy() {
+        mIsPaused = false;
+        mTimeHandler.removeMessages(MSG_ID);
+        // Unbind from the service
+        if (MusicUtils.isConnected()) {
+            MusicUtils.unbindFromService(mToken);
+        }
+        // Unregister the receiver
+        try {
+            unregisterReceiver(mPlaybackStatus);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        mPagerAdapter.clear();
+        super.onDestroy();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
@@ -233,7 +253,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        MusicUtils.connectService(service);
         // Check whether we were asked to start any playback
         startPlayback();
         // Set the playback drawables
@@ -242,6 +261,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         updateNowPlayingInfo();
         // Update the favorites icon
         invalidateOptionsMenu();
+        // refresh queue after connected
+        refreshQueue();
     }
 
     /**
@@ -249,7 +270,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        MusicUtils.disconnectService();
     }
 
     /**
@@ -356,7 +376,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             // Shuffle all the songs
             MusicUtils.shuffleAll(this);
             // Refresh the queue
-            getFragment().refresh();
+            refreshQueue();
         } else if (vId == R.id.menu_favorite) {
             // Toggle the current track as a favorite and update the menu item
             MusicUtils.toggleFavorite();
@@ -396,7 +416,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
     @Override
     public void onDelete() {
-        getFragment().refresh();
+        refreshQueue();
         if (MusicUtils.getQueue().length == 0) {
             NavUtils.goHome(this);
         }
@@ -422,7 +442,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Current info
         updateNowPlayingInfo();
         // Refresh the queue
-        getFragment().refresh();
+        refreshQueue();
     }
 
     /**
@@ -458,27 +478,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mImageFetcher.flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mIsPaused = false;
-        mTimeHandler.removeMessages(MSG_ID);
-        // Unbind from the service
-        if (MusicUtils.isConnected()) {
-            MusicUtils.unbindFromService(mToken);
-            mToken = null;
-        }
-        // Unregister the receiver
-        try {
-            unregisterReceiver(mPlaybackStatus);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -497,22 +496,40 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
     @Override
     public void onClick(@NonNull View v) {
-        if (v.getId() == R.id.audio_player_header) {
+        if (v.getId() == R.id.audio_player_artist_name ||
+                v.getId() == R.id.audio_player_track_name) {
             String albumname = MusicUtils.getAlbumName();
             String artistname = MusicUtils.getArtistName();
             long albumId = MusicUtils.getCurrentAlbumId();
             NavUtils.openAlbumProfile(this, albumname, artistname, albumId);
-        } else if (v.getId() == R.id.audio_player_switch) {
-            if (mViewPager.getVisibility() == View.VISIBLE) {
-                // Show the artwork, hide the queue
-                showAlbumArt();
-            } else {
-                // Scroll to the current track
-                mAudioPlayerHeader.setOnClickListener(this);
-                getFragment().setCurrentTrack();
-                // Show the queue, hide the artwork
-                hideAlbumArt();
-            }
+        }
+        // Show the queue, hide the artwork
+        else if (v.getId() == R.id.audio_player_switch_queue) {
+            mViewPager.setVisibility(View.VISIBLE);
+            mAlbumArtSmall.setVisibility(View.VISIBLE);
+            // hide this button
+            mQueueSwitch.setVisibility(View.INVISIBLE);
+            // Fade out the artwork
+            if (albumArtBorder[0] != null)
+                fade(albumArtBorder[0], false);
+            if (albumArtBorder[1] != null)
+                fade(albumArtBorder[1], false);
+            fade(mAlbumArt, false);
+            // Scroll to the current track
+            setQueueTrack();
+        }
+        // Show the artwork, hide the queue
+        else if (v.getId() == R.id.audio_player_switch_album_art) {
+            mViewPager.setVisibility(View.INVISIBLE);
+            mQueueSwitch.setVisibility(View.VISIBLE);
+            // hide this button
+            mAlbumArtSmall.setVisibility(View.INVISIBLE);
+            // Fade in the album art
+            if (albumArtBorder[0] != null)
+                fade(albumArtBorder[0], true);
+            if (albumArtBorder[1] != null)
+                fade(albumArtBorder[1], true);
+            fade(mAlbumArt, true);
         }
     }
 
@@ -533,7 +550,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Update the favorites icon
         invalidateOptionsMenu();
         // jumpt to current track
-        getFragment().setCurrentTrack();
+        setQueueTrack();
     }
 
 
@@ -561,24 +578,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Initializes the items in the now playing screen
      */
     private void initPlaybackControls() {
-        // Now playing header
-        mAudioPlayerHeader = findViewById(R.id.audio_player_header);
-        // Opens the currently playing album profile
-        mAudioPlayerHeader.setOnClickListener(this);
-        // Used to hide the artwork and show the queue
-        FrameLayout mSwitch = findViewById(R.id.audio_player_switch);
-        mSwitch.setOnClickListener(this);
-        // Initialize the pager adapter
-        mPagerAdapter = new PagerAdapter(this);
-        // Queue
-        mPagerAdapter.add(QUEUE, null);
-        // Initialize the ViewPager
         // View pager
         mViewPager = findViewById(R.id.audio_player_pager);
-        // Attch the adapter
-        mViewPager.setAdapter(mPagerAdapter);
         // Offscreen pager loading limit
         mViewPager.setOffscreenPageLimit(1);
+        // Initialize the pager adapter and attach
+        mPagerAdapter = new PagerAdapter(this);
+        mPagerAdapter.add(QUEUE, null);
+        mViewPager.setAdapter(mPagerAdapter);
         // Play and pause button
         mPlayPauseButton = findViewById(R.id.action_button_play);
         // Shuffle button
@@ -597,6 +604,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mArtistName = findViewById(R.id.audio_player_artist_name);
         // Album art
         mAlbumArt = findViewById(R.id.audio_player_album_art);
+        // album art shadow borders
+        albumArtBorder[0] = findViewById(R.id.audio_player_album_border);
+        albumArtBorder[1] = findViewById(R.id.audio_player_album_border_bottom);
         // Small album art
         mAlbumArtSmall = findViewById(R.id.audio_player_switch_album_art);
         // Current time
@@ -606,15 +616,21 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Used to show and hide the queue fragment
         mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
         // Theme the queue switch icon
-        mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);//mResources.getDrawable("btn_switch_queue"));
+        mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);
         // Progress
-        mProgress = findViewById(android.R.id.progress);
+        mProgress = findViewById(R.id.player_progress);
         // Set the repeat listner for the previous button
         mPreviousButton.setRepeatListener(this);
         // Set the repeat listner for the next button
         mNextButton.setRepeatListener(this);
         // Update the progress
         mProgress.setOnSeekBarChangeListener(this);
+        // header click listener
+        mTrackName.setOnClickListener(this);
+        mArtistName.setOnClickListener(this);
+        // queue/album art toggle
+        mQueueSwitch.setOnClickListener(this);
+        mAlbumArtSmall.setOnClickListener(this);
         // set colors
         mShuffleButton.setColor(themeColor);
         mRepeatButton.setColor(themeColor);
@@ -704,7 +720,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
                 // Make sure to process intent only once
                 setIntent(new Intent());
                 // Refresh the queue
-                getFragment().refresh();
+                refreshQueue();
             }
         }
     }
@@ -871,40 +887,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
     /**
-     * @param v     The view to animate
-     * @param alpha The alpha to apply
+     * @param v       The view to animate
+     * @param visible true to fade in
      */
-    private void fade(View v, float alpha) {
+    private void fade(View v, boolean visible) {
+        float alpha = visible ? 1.0f : 0.0f;
         ObjectAnimator fade = ObjectAnimator.ofFloat(v, "alpha", alpha);
         fade.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.accelerate_decelerate_interpolator));
         fade.setDuration(400);
         fade.start();
-    }
-
-    /**
-     * Called to show the album art and hide the queue
-     */
-    private void showAlbumArt() {
-        mViewPager.setVisibility(View.INVISIBLE);
-        mAlbumArtSmall.setVisibility(View.GONE);
-        mQueueSwitch.setVisibility(View.VISIBLE);
-        // Fade out the pager container
-        fade(mViewPager, 0f);
-        // Fade in the album art
-        fade(mAlbumArt, 1f);
-    }
-
-    /**
-     * Called to hide the album art and show the queue
-     */
-    public void hideAlbumArt() {
-        mViewPager.setVisibility(View.VISIBLE);
-        mQueueSwitch.setVisibility(View.GONE);
-        mAlbumArtSmall.setVisibility(View.VISIBLE);
-        // Fade out the artwork
-        fade(mAlbumArt, 0f);
-        // Fade in the pager container
-        fade(mViewPager, 1f);
     }
 
     /**
@@ -932,10 +923,21 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     }
 
     /**
-     * @return Queue Fragment
+     * reload queue tracks
      */
-    private BrowserCallback getFragment() {
-        return (BrowserCallback) mPagerAdapter.getFragment(0);
+    private void refreshQueue() {
+        if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
+            ((BrowserCallback) mPagerAdapter.getItem(0)).refresh();
+        }
+    }
+
+    /**
+     * set current track in the queue
+     */
+    private void setQueueTrack() {
+        if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
+            ((BrowserCallback) mPagerAdapter.getItem(0)).setCurrentTrack();
+        }
     }
 
     /**

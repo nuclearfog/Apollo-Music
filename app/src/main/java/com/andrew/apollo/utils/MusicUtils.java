@@ -11,6 +11,10 @@
 
 package com.andrew.apollo.utils;
 
+import static android.media.RingtoneManager.TYPE_RINGTONE;
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
+import static com.andrew.apollo.utils.CursorFactory.PLAYLIST_COLUMNS;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -40,6 +44,7 @@ import android.view.SubMenu;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.BuildConfig;
@@ -63,10 +68,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.WeakHashMap;
-
-import static android.media.RingtoneManager.TYPE_RINGTONE;
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static com.andrew.apollo.utils.CursorFactory.PLAYLIST_COLUMNS;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -102,7 +103,7 @@ public final class MusicUtils {
     /**
      * weak reference to the service to avoid memory leaks
      */
-    private static IApolloService mService;
+    private static volatile IApolloService mService;
 
     private static ContentValues[] mContentValuesCache;
 
@@ -144,16 +145,14 @@ public final class MusicUtils {
     }
 
     /**
-     * @param context  The {@link Context} to use
+     * @param activity The {@link Activity} to use
      * @param callback The {@link ServiceConnection} to use
      * @return The new instance of {@link ServiceToken}
      */
-    public static ServiceToken bindToService(Context context, ServiceConnection callback) {
-        Context realActivity = ((Activity) context).getParent();
-        if (realActivity == null) {
-            realActivity = context;
-        }
-        ContextWrapper contextWrapper = new ContextWrapper(realActivity);
+    public static ServiceToken bindToService(Activity activity, @Nullable ServiceConnection callback) {
+        if (activity.getParent() != null)
+            activity = activity.getParent();
+        ContextWrapper contextWrapper = new ContextWrapper(activity);
         contextWrapper.startService(new Intent(contextWrapper, MusicPlaybackService.class));
         ServiceBinder binder = new ServiceBinder(callback);
         if (contextWrapper.bindService(new Intent().setClass(contextWrapper, MusicPlaybackService.class), binder, 0)) {
@@ -177,7 +176,10 @@ public final class MusicUtils {
         }
         mContextWrapper.unbindService(mBinder);
         if (mConnectionMap.isEmpty()) {
-            mService = null;
+            // todo out of order calls may break this system
+            // e.g. when the service is unbinded before binding
+            // so the reference can't be remain
+            //mService = null;
         }
     }
 
@@ -1572,6 +1574,10 @@ public final class MusicUtils {
      *
      */
     public static final class ServiceBinder implements ServiceConnection {
+
+        /**
+         * callback called when the service is connected/disconnected
+         */
         private final ServiceConnection mCallback;
 
         /**
@@ -1579,7 +1585,7 @@ public final class MusicUtils {
          *
          * @param callback The {@link ServiceConnection} to use
          */
-        public ServiceBinder(ServiceConnection callback) {
+        public ServiceBinder(@Nullable ServiceConnection callback) {
             mCallback = callback;
         }
 

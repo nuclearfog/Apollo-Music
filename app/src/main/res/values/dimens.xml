@@ -78,8 +78,7 @@
 
     <!-- Audio player -->
     <dimen name="audio_player_header_height">60.0dp</dimen>
-    <dimen name="audio_player_header_padding_left">16.0dp</dimen>
-    <dimen name="audio_player_header_padding_right">16.0dp</dimen>
+    <dimen name="audio_player_header_margin">16.0dp</dimen>
     <dimen name="audio_player_switch_padding">10.0dp</dimen>
     <dimen name="audio_player_time_width">52.0dp</dimen>
     <dimen name="audio_player_time_height">14dp</dimen>

@@ -15,6 +15,7 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
@@ -232,7 +233,6 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
         // Unbind from the service
         if (mToken != null) {
             MusicUtils.unbindFromService(mToken);
-            mToken = null;
         }
         // Unregister the receiver
         try {
@@ -257,7 +257,8 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
             }
         } else if (v.getId() == R.id.bottom_action_bar) {
             if (MusicUtils.getCurrentAudioId() != -1) {
-                NavUtils.openAudioPlayer(this);
+                Intent intent = new Intent(this, AudioPlayerActivity.class);
+                startActivity(intent);
             } else {
                 MusicUtils.shuffleAll(this);
             }

@@ -74,6 +74,11 @@
             android:name="android.app.default_searchable"
             android:value=".ui.activities.SearchActivity" />
 
+        <!-- Base activity -->
+        <activity
+            android:name=".ui.activities.AppCompatBase"
+            android:exported="true" />
+
         <!-- Main activity -->
         <activity
             android:name=".ui.activities.HomeActivity"

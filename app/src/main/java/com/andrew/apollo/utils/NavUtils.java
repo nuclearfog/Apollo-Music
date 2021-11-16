@@ -22,7 +22,6 @@ import android.provider.MediaStore;
 
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
-import com.andrew.apollo.ui.activities.AudioPlayerActivity;
 import com.andrew.apollo.ui.activities.HomeActivity;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.ui.activities.SearchActivity;
@@ -100,20 +99,6 @@ public final class NavUtils {
     public static void openSettings(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
         context.startActivity(intent);
-    }
-
-    /**
-     * Opens to {@link AudioPlayerActivity}.
-     *
-     * @param activity The {@link Activity} to use.
-     */
-    public static void openAudioPlayer(Activity activity) {
-        Intent intent = new Intent(activity, AudioPlayerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(intent);
-        activity.finish();
     }
 
     /**

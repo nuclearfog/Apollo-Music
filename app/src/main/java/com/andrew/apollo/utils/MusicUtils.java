@@ -43,6 +43,7 @@ import android.view.Menu;
 import android.view.SubMenu;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -75,6 +76,9 @@ import java.util.WeakHashMap;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class MusicUtils {
+
+    @Keep
+    public static final String TAG = "MusicUtils";
 
     /**
      * selection to remove track from playlist
@@ -122,22 +126,6 @@ public final class MusicUtils {
     }
 
     /**
-     * creates a weak reference to {@link MusicPlaybackService}
-     *
-     * @param binder binder to the service
-     */
-    public static void connectService(IBinder binder) {
-        mService = IApolloService.Stub.asInterface(binder);
-    }
-
-    /**
-     * releaes the weak reference to {@link MusicPlaybackService}
-     */
-    public static void disconnectService() {
-        mService = null;
-    }
-
-    /**
      * check if service is connected
      */
     public static boolean isConnected() {
@@ -176,10 +164,9 @@ public final class MusicUtils {
         }
         mContextWrapper.unbindService(mBinder);
         if (mConnectionMap.isEmpty()) {
-            // todo out of order calls may break this system
-            // e.g. when the service is unbinded before binding
-            // so the reference can't be remain
-            //mService = null;
+            Log.v(TAG, "All connections closed, cleaning Service");
+            // destroying instance
+            mService = null;
         }
     }
 
@@ -1591,7 +1578,7 @@ public final class MusicUtils {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            MusicUtils.connectService(service);
+            mService = IApolloService.Stub.asInterface(service);
             if (mCallback != null) {
                 mCallback.onServiceConnected(className, service);
             }
@@ -1602,7 +1589,7 @@ public final class MusicUtils {
             if (mCallback != null) {
                 mCallback.onServiceDisconnected(className);
             }
-            MusicUtils.disconnectService();
+            mService = null;
         }
     }
 

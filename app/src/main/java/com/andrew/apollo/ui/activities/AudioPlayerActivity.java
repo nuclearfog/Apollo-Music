@@ -217,6 +217,64 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         initPlaybackControls();
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        // Play and pause changes
+        filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
+        // Shuffle and repeat changes
+        filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
+        filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
+        // Track changes
+        filter.addAction(MusicPlaybackService.META_CHANGED);
+        // Update a list, probably the playlist fragment's
+        filter.addAction(MusicPlaybackService.REFRESH);
+        registerReceiver(mPlaybackStatus, filter);
+        // Refresh the current time
+        long next = refreshCurrentTime();
+        queueNextRefresh(next);
+        MusicUtils.notifyForegroundStateChanged(this, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set the playback drawables
+        updatePlaybackControls();
+        // Current info
+        updateNowPlayingInfo();
+        // Refresh the queue
+        refreshQueue();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        NavUtils.goHome(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MusicUtils.notifyForegroundStateChanged(this, false);
+        mImageFetcher.flush();
+
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -236,6 +294,90 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         }
         mPagerAdapter.clear();
         super.onDestroy();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Search view
+        getMenuInflater().inflate(R.menu.search, menu);
+        // Theme the search icon
+        MenuItem searchAction = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchAction.getActionView();
+        // Add voice search
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+        searchView.setSearchableInfo(searchableInfo);
+        // Perform the search
+        searchView.setOnQueryTextListener(this);
+        // Favorite action
+        getMenuInflater().inflate(R.menu.favorite, menu);
+        // Shuffle all
+        getMenuInflater().inflate(R.menu.shuffle, menu);
+        // Share, ringtone, and equalizer
+        getMenuInflater().inflate(R.menu.audio_player, menu);
+        // Settings
+        getMenuInflater().inflate(R.menu.activity_base, menu);
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
+        MenuItem favorite = menu.findItem(R.id.menu_favorite);
+        MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
+        // Add fav icon
+        mResources.setFavoriteIcon(favorite);
+        // Hide the EQ option if it can't be opened
+        Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+        if (getPackageManager().resolveActivity(intent, 0) == null) {
+            effects.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int vId = item.getItemId();
+        if (vId == android.R.id.home) {
+            // Go back to the home activity
+            NavUtils.goHome(this);
+        } else if (vId == R.id.menu_shuffle) {
+            // Shuffle all the songs
+            MusicUtils.shuffleAll(this);
+            // Refresh the queue
+            refreshQueue();
+        } else if (vId == R.id.menu_favorite) {
+            // Toggle the current track as a favorite and update the menu item
+            MusicUtils.toggleFavorite();
+            invalidateOptionsMenu();
+        } else if (vId == R.id.menu_audio_player_ringtone) {
+            // Set the current track as a ringtone
+            MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
+        } else if (vId == R.id.menu_audio_player_share) {
+            // Share the current meta data
+            shareCurrentTrack();
+        } else if (vId == R.id.menu_audio_player_equalizer) {
+            // Sound effects
+            NavUtils.openEffectsPanel(this);
+        } else if (vId == R.id.menu_settings) {
+            // Settings
+            NavUtils.openSettings(this);
+        } else if (vId == R.id.menu_audio_player_delete) {
+            // Delete current song
+            long[] ids = {MusicUtils.getCurrentAudioId()};
+            MusicUtils.openDeleteDialog(this, MusicUtils.getTrackName(), ids);
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 
     /**
@@ -319,90 +461,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mFromTouch = false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
-        MenuItem favorite = menu.findItem(R.id.menu_favorite);
-        MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
-        // Add fav icon
-        mResources.setFavoriteIcon(favorite);
-        // Hide the EQ option if it can't be opened
-        Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-        if (getPackageManager().resolveActivity(intent, 0) == null) {
-            effects.setVisible(false);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Search view
-        getMenuInflater().inflate(R.menu.search, menu);
-        // Theme the search icon
-        MenuItem searchAction = menu.findItem(R.id.menu_search);
-        SearchView searchView = (SearchView) searchAction.getActionView();
-        // Add voice search
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-        searchView.setSearchableInfo(searchableInfo);
-        // Perform the search
-        searchView.setOnQueryTextListener(this);
-        // Favorite action
-        getMenuInflater().inflate(R.menu.favorite, menu);
-        // Shuffle all
-        getMenuInflater().inflate(R.menu.shuffle, menu);
-        // Share, ringtone, and equalizer
-        getMenuInflater().inflate(R.menu.audio_player, menu);
-        // Settings
-        getMenuInflater().inflate(R.menu.activity_base, menu);
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int vId = item.getItemId();
-        if (vId == android.R.id.home) {
-            // Go back to the home activity
-            NavUtils.goHome(this);
-        } else if (vId == R.id.menu_shuffle) {
-            // Shuffle all the songs
-            MusicUtils.shuffleAll(this);
-            // Refresh the queue
-            refreshQueue();
-        } else if (vId == R.id.menu_favorite) {
-            // Toggle the current track as a favorite and update the menu item
-            MusicUtils.toggleFavorite();
-            invalidateOptionsMenu();
-        } else if (vId == R.id.menu_audio_player_ringtone) {
-            // Set the current track as a ringtone
-            MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
-        } else if (vId == R.id.menu_audio_player_share) {
-            // Share the current meta data
-            shareCurrentTrack();
-        } else if (vId == R.id.menu_audio_player_equalizer) {
-            // Sound effects
-            NavUtils.openEffectsPanel(this);
-        } else if (vId == R.id.menu_settings) {
-            // Settings
-            NavUtils.openSettings(this);
-        } else if (vId == R.id.menu_audio_player_delete) {
-            // Delete current song
-            long[] ids = {MusicUtils.getCurrentAudioId()};
-            MusicUtils.openDeleteDialog(this, MusicUtils.getTrackName(), ids);
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -420,62 +478,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         if (MusicUtils.getQueue().length == 0) {
             NavUtils.goHome(this);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        NavUtils.goHome(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Set the playback drawables
-        updatePlaybackControls();
-        // Current info
-        updateNowPlayingInfo();
-        // Refresh the queue
-        refreshQueue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter();
-        // Play and pause changes
-        filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
-        // Shuffle and repeat changes
-        filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
-        filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
-        // Track changes
-        filter.addAction(MusicPlaybackService.META_CHANGED);
-        // Update a list, probably the playlist fragment's
-        filter.addAction(MusicPlaybackService.REFRESH);
-        registerReceiver(mPlaybackStatus, filter);
-        // Refresh the current time
-        long next = refreshCurrentTime();
-        queueNextRefresh(next);
-        MusicUtils.notifyForegroundStateChanged(this, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-        MusicUtils.notifyForegroundStateChanged(this, false);
-        mImageFetcher.flush();
     }
 
 
@@ -532,6 +534,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             fade(mAlbumArt, true);
         }
     }
+
 
     @Override
     public void onRepeat(@NonNull View v, long howlong, int repcnt) {
@@ -658,7 +661,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         queueNextRefresh(1);
     }
 
-
+    /**
+     *
+     */
     private long parseIdFromIntent(@NonNull Intent intent, String longKey, String stringKey) {
         long id = intent.getLongExtra(longKey, -1);
         if (id < 0) {
@@ -832,11 +837,16 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         }
     }
 
+    /**
+     *
+     */
     private void refreshCurrentTimeText(long pos) {
         mCurrentTime.setText(MusicUtils.makeTimeString(this, (int) pos / 1000));
     }
 
-    /* Used to update the current time string */
+    /**
+     * Used to update the current time string
+     */
     private long refreshCurrentTime() {
         if (!MusicUtils.isConnected()) {
             return 500;

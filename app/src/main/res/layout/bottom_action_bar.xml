@@ -13,84 +13,98 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<com.andrew.apollo.widgets.theme.BottomActionBar xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_action_bar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_action_bar_height"
     android:layout_gravity="bottom"
+    android:background="@color/action_bar_color"
     tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
 
-    <include
+    <com.andrew.apollo.widgets.theme.Colorstrip
         android:id="@+id/colorstrip"
-        layout="@layout/colorstrip" />
+        android:layout_width="0dp"
+        android:layout_height="@dimen/colorstrip_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/bottom_action_bar"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_below="@+id/colorstrip">
+    <ImageView
+        android:id="@+id/bottom_action_bar_album_art"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/default_artwork"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/colorstrip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1.0" />
 
-        <com.andrew.apollo.widgets.SquareImageView
-            android:id="@+id/bottom_action_bar_album_art"
+    <TextView
+        android:id="@+id/bottom_action_bar_line_one"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/bab_line_one"
+        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+        android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+        app:layout_constraintTop_toBottomOf="@id/colorstrip"
+        app:layout_constraintBottom_toTopOf="@id/bottom_action_bar_line_two"
+        app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
+        app:layout_constraintVertical_chainStyle="packed"
+        style="@style/BottomActionBarLineOne" />
+
+    <TextView
+        android:id="@+id/bottom_action_bar_line_two"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/bab_line_two"
+        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+        android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+        app:layout_constraintTop_toBottomOf="@id/bottom_action_bar_line_one"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
+        app:layout_constraintVertical_chainStyle="packed"
+        style="@style/BottomActionBarLineTwo" />
+
+    <HorizontalScrollView
+        android:id="@+id/bottom_action_bar_scrollview"
+        android:layout_width="@dimen/bottom_action_bar_button_container_width"
+        android:layout_height="0dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toTopOf="@id/colorstrip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/default_artwork"
-            android:layout_gravity="left|center" />
+            android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/bottom_action_bar_info_padding_left"
-            android:layout_gravity="center_vertical">
+            <com.andrew.apollo.widgets.RepeatingImageButton
+                android:id="@+id/action_button_previous"
+                style="@style/BottomActionBarItem.Previous" />
 
-            <TextView
-                android:id="@+id/bottom_action_bar_line_one"
-                android:textColor="@color/bab_line_one"
-                style="@style/BottomActionBarLineOne" />
+            <com.andrew.apollo.widgets.PlayPauseButton
+                android:id="@+id/action_button_play"
+                style="@style/BottomActionBarItem.Play" />
 
-            <TextView
-                android:id="@+id/bottom_action_bar_line_two"
-                android:layout_below="@+id/bottom_action_bar_line_one"
-                android:textColor="@color/bab_line_two"
-                style="@style/BottomActionBarLineTwo" />
+            <com.andrew.apollo.widgets.RepeatingImageButton
+                android:id="@+id/action_button_next"
+                style="@style/BottomActionBarItem.Next" />
 
-        </RelativeLayout>
+            <com.andrew.apollo.widgets.ShuffleButton
+                android:id="@+id/action_button_shuffle"
+                style="@style/BottomActionBarItem.Shuffle" />
 
-        <HorizontalScrollView
-            android:layout_width="@dimen/bottom_action_bar_button_container_width"
-            android:layout_height="match_parent"
-            android:scrollbars="none">
+            <com.andrew.apollo.widgets.RepeatButton
+                android:id="@+id/action_button_repeat"
+                style="@style/BottomActionBarItem.Repeat" />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+        </LinearLayout>
 
-                <com.andrew.apollo.widgets.RepeatingImageButton
-                    android:id="@+id/action_button_previous"
-                    style="@style/BottomActionBarItem.Previous" />
+    </HorizontalScrollView>
 
-                <com.andrew.apollo.widgets.PlayPauseButton
-                    android:id="@+id/action_button_play"
-                    style="@style/BottomActionBarItem.Play" />
-
-                <com.andrew.apollo.widgets.RepeatingImageButton
-                    android:id="@+id/action_button_next"
-                    style="@style/BottomActionBarItem.Next" />
-
-                <com.andrew.apollo.widgets.ShuffleButton
-                    android:id="@+id/action_button_shuffle"
-                    style="@style/BottomActionBarItem.Shuffle" />
-
-                <com.andrew.apollo.widgets.RepeatButton
-                    android:id="@+id/action_button_repeat"
-                    style="@style/BottomActionBarItem.Repeat" />
-            </LinearLayout>
-        </HorizontalScrollView>
-    </LinearLayout>
-
-</com.andrew.apollo.widgets.theme.BottomActionBar>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +47,7 @@ import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.PlayPauseButton;
 import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.ShuffleButton;
+import com.andrew.apollo.widgets.theme.HoloSelector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -338,10 +338,11 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
         mArtistName = findViewById(R.id.bottom_action_bar_line_two);
         // Album art
         mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
-        // Bottom action bar
-        LinearLayout bottomActionBar = findViewById(R.id.bottom_action_bar);
-        // Display the now playing screen or shuffle if this isn't anything
-        // playing
+        // root view of bottom action bar
+        View bottomActionBar = findViewById(R.id.bottom_action_bar);
+        // set bottom action bar color
+        bottomActionBar.setBackground(new HoloSelector(this));
+        // Display the now playing screen or shuffle if this isn't anything playing
         bottomActionBar.setOnClickListener(this);
         // Open to the currently playing album profile
         mAlbumArt.setOnClickListener(this);

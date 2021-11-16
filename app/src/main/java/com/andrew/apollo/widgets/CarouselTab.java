@@ -77,7 +77,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
         if (selected) {
             mColorstrip.setVisibility(View.VISIBLE);
         } else {
-            mColorstrip.setVisibility(View.GONE);
+            mColorstrip.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -22,7 +22,7 @@
 
     <com.andrew.apollo.widgets.theme.Colorstrip
         android:id="@+id/colorstrip"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/colorstrip_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +41,7 @@
     <ImageView
         android:id="@+id/audio_player_album_art"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:contentDescription="@string/accessibility_album_art"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,7 @@
     <ImageView
         android:id="@+id/audio_player_album_border"
         android:layout_width="@dimen/shadow_height"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:src="@drawable/right_shadow"
         app:layout_constraintTop_toTopOf="@id/audio_player_album_art"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_album_art"
@@ -100,6 +100,7 @@
         android:layout_marginRight="@dimen/audio_player_header_margin"
         android:layout_marginEnd="@dimen/audio_player_header_margin"
         android:layout_gravity="center"
+        android:contentDescription="@string/accessibility_switch_queue"
         app:layout_constraintTop_toTopOf="@id/audio_player_artist_name"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_track_name"
         app:layout_constraintEnd_toEndOf="parent"
@@ -110,6 +111,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"
+        android:contentDescription="@string/accessibility_switch_album_art"
         app:layout_constraintStart_toStartOf="@id/audio_player_switch_queue"
         app:layout_constraintTop_toTopOf="@id/audio_player_switch_queue"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_switch_queue"

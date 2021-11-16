@@ -56,6 +56,7 @@
         android:largeHeap="@bool/config_largeHeap"
         android:requestLegacyExternalStorage="true"
         android:taskAffinity="${applicationId}.task"
+        android:supportsRtl="true"
         android:theme="@style/Apollo.Theme.Dark">
 
         <!-- provider to share music files -->

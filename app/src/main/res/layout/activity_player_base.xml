@@ -15,6 +15,7 @@
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,11 +23,12 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/player_toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/toolbar_height"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="InconsistentLayout" />
 
     <com.andrew.apollo.widgets.theme.Colorstrip
         android:id="@+id/colorstrip"
@@ -83,6 +85,7 @@
         android:layout_marginRight="@dimen/audio_player_header_margin"
         android:layout_marginEnd="@dimen/audio_player_header_margin"
         android:layout_gravity="center"
+        android:contentDescription="@string/accessibility_switch_queue"
         app:layout_constraintTop_toTopOf="@id/audio_player_artist_name"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_track_name"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,6 +96,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="invisible"
+        android:contentDescription="@string/accessibility_switch_album_art"
         app:layout_constraintStart_toStartOf="@id/audio_player_switch_queue"
         app:layout_constraintTop_toTopOf="@id/audio_player_switch_queue"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_switch_queue"
@@ -115,6 +119,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
+        android:contentDescription="@string/accessibility_album_art"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/audio_player_pager"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_pager"
@@ -128,7 +133,8 @@
         android:src="@drawable/top_shadow"
         app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
         app:layout_constraintTop_toTopOf="@id/audio_player_album_art"
-        app:layout_constraintEnd_toEndOf="@id/audio_player_album_art" />
+        app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/audio_player_album_border_bottom"
@@ -137,7 +143,8 @@
         android:src="@drawable/bottom_shadow"
         app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
         app:layout_constraintBottom_toBottomOf="@id/audio_player_album_art"
-        app:layout_constraintEnd_toEndOf="@id/audio_player_album_art" />
+        app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
+        tools:ignore="ContentDescription,InconsistentLayout" />
 
     <TextView
         android:id="@+id/audio_player_current_time"

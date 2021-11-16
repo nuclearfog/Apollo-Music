@@ -189,7 +189,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         setContentView(R.layout.activity_player_base);
         // set toolbar
         Toolbar toolbar = findViewById(R.id.player_toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null) // toolbar only available in portrait mode
+            setSupportActionBar(toolbar);
         // Initialze the theme resources
         mResources = new ThemeUtils(this);
         // Set the overflow style

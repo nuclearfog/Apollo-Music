@@ -112,6 +112,9 @@
     <string name="accessibility_repeat">Repeat</string>
     <string name="accessibility_repeat_all">Repeat all</string>
     <string name="accessibility_repeat_one">Repeat one</string>
+    <string name="accessibility_album_art">Album Art</string>
+    <string name="accessibility_switch_queue">switch to queue</string>
+    <string name="accessibility_switch_album_art">switch to album art</string>
 
     <!-- Toast messages -->
     <string name="pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> pinned to your home screen</string>

@@ -129,4 +129,5 @@
     <string name="playlist_most_played">Beliebt</string>
     <string name="remove_from_popular">Von hier entfernen</string>
     <string name="settings_remastered_title">Weiterentwickelt von</string>
+    <string name="explain_permission_write_settings">Diese Berechtigung wird ausschließlich verwendet um den Klingelton einzustellen</string>
 </resources>

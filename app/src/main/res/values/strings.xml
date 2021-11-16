@@ -121,6 +121,7 @@
     <string name="could_not_be_pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> could not be pinned to your home screen</string>
     <string name="set_as_ringtone">\'<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\' set as ringtone</string>
     <string name="theme_set"><xliff:g id="name">%s</xliff:g> set as the theme</string>
+    <string name="explain_permission_write_settings">This permission is only required to set ringtone</string>
 
     <!-- Settings -->
     <string name="settings_ui_category">Interface</string>

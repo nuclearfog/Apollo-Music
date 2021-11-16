@@ -19,7 +19,7 @@
     <!-- Used to set the devices's ringtone -->
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
-        android:maxSdkVersion="22" />
+        tools:ignore="ProtectedPermissions" />
     <!-- Used for caching, creating new playlists and deleting tracks -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"

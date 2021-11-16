@@ -42,6 +42,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.SubMenu;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -1000,6 +1001,8 @@ public final class MusicUtils {
                     // set ringtone
                     RingtoneManager.setActualDefaultRingtoneUri(activity, TYPE_RINGTONE, uri);
                 } else {
+                    // explain why we need permission to write settings
+                    Toast.makeText(activity, R.string.explain_permission_write_settings, Toast.LENGTH_LONG).show();
                     // open settings so user can set write permissions
                     Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                     intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
@@ -1016,6 +1019,7 @@ public final class MusicUtils {
             err.printStackTrace();
             return;
         }
+        // print message if succeded
         Cursor cursor = CursorFactory.makeTrackCursor(activity, id);
         if (cursor != null) {
             if (cursor.moveToFirst()) {

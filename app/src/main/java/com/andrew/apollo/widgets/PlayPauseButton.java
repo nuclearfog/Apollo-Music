@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.widgets;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -32,7 +31,6 @@ import com.andrew.apollo.widgets.theme.HoloSelector;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("AppCompatCustomView")
 public class PlayPauseButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**

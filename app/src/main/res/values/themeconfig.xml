@@ -35,7 +35,6 @@
     <color name="audio_player_line_two">@color/transparent_white</color>
 
     <!-- Bottom action bar -->
-    <color name="bottom_action_bar">@color/action_bar_color</color>
     <color name="bab_line_one">@color/white</color>
     <color name="bab_line_two">@color/transparent_white</color>
 

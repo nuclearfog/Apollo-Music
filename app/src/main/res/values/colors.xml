@@ -62,4 +62,10 @@
 
     <color name="scrollbar_thumb_color">#6fffffff</color>
 
+    <color name="ic_launcher_background">#2E3E49</color>
+
+    <!-- appmsg colors -->
+    <color name="alert">#CC0000</color>
+    <color name="confirm">#FF8800</color>
+
 </resources>

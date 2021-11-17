@@ -177,4 +177,8 @@
     <string name="empty_favorits">There are no tracks added to favorits!</string>
     <string name="empty_artst_albums">There is no album of this artist</string>
 
+    <!-- Duration format for duration < 1 hour -->
+    <string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
+    <string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
+
 </resources>

@@ -1024,7 +1024,8 @@ public final class MusicUtils {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-                String message = activity.getString(R.string.set_as_ringtone, cursor.getString(2));
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE));
+                String message = activity.getString(R.string.set_as_ringtone, title);
                 AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
             }
             cursor.close();

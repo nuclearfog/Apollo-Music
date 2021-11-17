@@ -255,7 +255,7 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
             } else {
                 MusicUtils.shuffleAll(this);
             }
-        } else if (v.getId() == R.id.bottom_action_bar) {
+        } else if (v.getId() == R.id.bottom_action_bar_background) {
             if (MusicUtils.getCurrentAudioId() != -1) {
                 Intent intent = new Intent(this, AudioPlayerActivity.class);
                 startActivity(intent);
@@ -338,8 +338,8 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
         mArtistName = findViewById(R.id.bottom_action_bar_line_two);
         // Album art
         mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
-        // root view of bottom action bar
-        View bottomActionBar = findViewById(R.id.bottom_action_bar);
+        // background of bottom action bar
+        View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
         // set bottom action bar color
         bottomActionBar.setBackground(new HoloSelector(this));
         // Display the now playing screen or shuffle if this isn't anything playing

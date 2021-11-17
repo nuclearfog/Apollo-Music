@@ -23,6 +23,15 @@
     android:background="@color/action_bar_color"
     tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
 
+    <ImageView
+        android:id="@+id/bottom_action_bar_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+        app:layout_constraintTop_toBottomOf="@id/colorstrip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <com.andrew.apollo.widgets.theme.Colorstrip
         android:id="@+id/colorstrip"
         android:layout_width="0dp"

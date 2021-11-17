@@ -1461,16 +1461,16 @@ public class DragSortListView extends ListView {
          */
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            RelativeLayout v;
+            RelativeLayout view;
             View child;
-            if (convertView != null) {
-                v = (RelativeLayout) convertView;
-                View oldChild = v.getChildAt(0);
+            if (convertView instanceof RelativeLayout) {
+                view = (RelativeLayout) convertView;
+                View oldChild = view.getChildAt(0);
                 try {
-                    child = mAdapter.getView(position, oldChild, v);
+                    child = mAdapter.getView(position, oldChild, view);
                     if (child != oldChild) {
-                        v.removeViewAt(0);
-                        v.addView(child);
+                        view.removeViewAt(0);
+                        view.addView(child);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1478,17 +1478,17 @@ public class DragSortListView extends ListView {
             } else {
                 AbsListView.LayoutParams params = new AbsListView.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                v = new RelativeLayout(getContext());
-                v.setLayoutParams(params);
+                view = new RelativeLayout(getContext());
+                view.setLayoutParams(params);
                 try {
-                    child = mAdapter.getView(position, null, v);
-                    v.addView(child);
+                    child = mAdapter.getView(position, null, view);
+                    view.addView(child);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            adjustItem(position + getHeaderViewsCount(), v, true);
-            return v;
+            adjustItem(position + getHeaderViewsCount(), view, true);
+            return view;
         }
     }
 

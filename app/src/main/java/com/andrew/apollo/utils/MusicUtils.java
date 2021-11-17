@@ -11,10 +11,6 @@
 
 package com.andrew.apollo.utils;
 
-import static android.media.RingtoneManager.TYPE_RINGTONE;
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static com.andrew.apollo.utils.CursorFactory.PLAYLIST_COLUMNS;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -36,7 +32,6 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
-import android.provider.MediaStore.Audio.Playlists.Members;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -89,7 +84,7 @@ public final class MusicUtils {
     /**
      * selection to remove track from database
      */
-    private static final String DATABASE_REMOVE_TRACK = MediaStore.Audio.AudioColumns._ID + "=?";
+    private static final String DATABASE_REMOVE_TRACK = AudioColumns._ID + "=?";
 
     /**
      * code to request file deleting
@@ -102,14 +97,19 @@ public final class MusicUtils {
      */
     private static final long[] EMPTY_LIST = {};
 
-
-    private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>();
+    /**
+     * information about activities accessing this service interface
+     */
+    private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
 
     /**
      * weak reference to the service to avoid memory leaks
      */
     private static volatile IApolloService mService;
 
+    /**
+     *
+     */
     private static ContentValues[] mContentValuesCache;
 
     /**
@@ -898,7 +898,7 @@ public final class MusicUtils {
                 if (!cursor.moveToFirst()) {
                     ContentResolver resolver = context.getContentResolver();
                     ContentValues values = new ContentValues(1);
-                    values.put(PLAYLIST_COLUMNS[1], name);
+                    values.put(Playlists.NAME, name);
                     Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
                     if (uri != null && uri.getLastPathSegment() != null) {
                         return Long.parseLong(uri.getLastPathSegment());
@@ -916,7 +916,7 @@ public final class MusicUtils {
      */
     @SuppressLint("InlinedApi")
     public static void clearPlaylist(Context context, int playlistId) {
-        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistId);
+        Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
         context.getContentResolver().delete(uri, null, null);
     }
 
@@ -929,7 +929,7 @@ public final class MusicUtils {
     public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
         int size = ids.length;
         ContentResolver resolver = activity.getContentResolver();
-        Uri uri = Playlists.Members.getContentUri(VOLUME_EXTERNAL, playlistid);
+        Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistid);
         Cursor cursor = CursorFactory.makePlaylistCursor(resolver, uri);
         if (cursor != null) {
             try {
@@ -963,7 +963,7 @@ public final class MusicUtils {
     @SuppressLint("InlinedApi")
     public static void removeFromPlaylist(Context context, long trackId, long playlistId) {
         String[] args = {Long.toString(trackId)};
-        Uri uri = Members.getContentUri(VOLUME_EXTERNAL, playlistId);
+        Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
         ContentResolver resolver = context.getContentResolver();
         resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
         String message = context.getResources().getQuantityString(
@@ -994,12 +994,11 @@ public final class MusicUtils {
         Uri uri = ContentUris.withAppendedId(Media.EXTERNAL_CONTENT_URI, id);
         // Set ringtone
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // check if app has write permission
-                boolean writePerm = Settings.System.canWrite(activity);
-                if (writePerm) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // check if app can set ringtone
+                if (Settings.System.canWrite(activity)) {
                     // set ringtone
-                    RingtoneManager.setActualDefaultRingtoneUri(activity, TYPE_RINGTONE, uri);
+                    RingtoneManager.setActualDefaultRingtoneUri(activity, RingtoneManager.TYPE_RINGTONE, uri);
                 } else {
                     // explain why we need permission to write settings
                     Toast.makeText(activity, R.string.explain_permission_write_settings, Toast.LENGTH_LONG).show();
@@ -1014,6 +1013,7 @@ public final class MusicUtils {
                 ContentValues values = new ContentValues(1);
                 values.put(AudioColumns.IS_RINGTONE, true);
                 resolver.update(uri, values, null, null);
+                Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
             }
         } catch (Exception err) {
             err.printStackTrace();
@@ -1023,8 +1023,11 @@ public final class MusicUtils {
         Cursor cursor = CursorFactory.makeTrackCursor(activity, id);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
-                String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.TITLE));
+                // get title of the current track
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+                // truncate title
+                if (title.length() > 20)
+                    title = title.substring(0, 20) + "...";
                 String message = activity.getString(R.string.set_as_ringtone, title);
                 AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
             }
@@ -1431,8 +1434,7 @@ public final class MusicUtils {
             try {
                 List<Uri> uris = new LinkedList<>();
                 for (long id : list) {
-                    Uri uri = Media.getContentUri(VOLUME_EXTERNAL, id);
-                    uris.add(uri);
+                    uris.add(Media.getContentUri(MediaStore.VOLUME_EXTERNAL, id));
                 }
                 PendingIntent requestRemove = MediaStore.createDeleteRequest(resolver, uris);
                 activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);

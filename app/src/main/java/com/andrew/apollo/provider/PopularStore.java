@@ -1,12 +1,12 @@
 package com.andrew.apollo.provider;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 
 /**
  * database for popular tracks with the information how often a track was played
@@ -29,10 +29,13 @@ public class PopularStore extends SQLiteOpenHelper {
     /**
      * query to create track table
      */
-    private static final String MOSTPLAYED_TABLE = "CREATE TABLE IF NOT EXISTS " + PopularColumns.NAME + " (" +
-            PopularColumns.ID + " LONG PRIMARY KEY," + PopularColumns.SONGNAME + " TEXT NOT NULL," +
-            PopularColumns.ALBUMNAME + " TEXT NOT NULL," + PopularColumns.ARTISTNAME + " TEXT NOT NULL," +
-            PopularColumns.PLAYCOUNT + " LONG NOT NULL," + PopularColumns.DURATION + " LONG);";
+    private static final String MOSTPLAYED_TABLE = "CREATE TABLE IF NOT EXISTS " + PopularColumns.NAME + " ("
+            + PopularColumns.ID + " LONG PRIMARY KEY,"
+            + PopularColumns.SONGNAME + " TEXT NOT NULL,"
+            + PopularColumns.ALBUMNAME + " TEXT NOT NULL,"
+            + PopularColumns.ARTISTNAME + " TEXT NOT NULL,"
+            + PopularColumns.PLAYCOUNT + " LONG NOT NULL,"
+            + PopularColumns.DURATION + " LONG);";
 
     /**
      * condition to find track in most played table
@@ -113,7 +116,6 @@ public class PopularStore extends SQLiteOpenHelper {
             database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
             database.setTransactionSuccessful();
             database.endTransaction();
-            database.close();
         }
     }
 
@@ -126,7 +128,6 @@ public class PopularStore extends SQLiteOpenHelper {
         String[] args = {Long.toString(trackId)};
         SQLiteDatabase database = getWritableDatabase();
         database.delete(PopularColumns.NAME, TRACK_SELECT, args);
-        database.close();
     }
 
     /**
@@ -135,7 +136,6 @@ public class PopularStore extends SQLiteOpenHelper {
     public void removeAll() {
         SQLiteDatabase database = getWritableDatabase();
         database.delete(PopularColumns.NAME, null, null);
-        database.close();
     }
 
     /**
@@ -156,7 +156,6 @@ public class PopularStore extends SQLiteOpenHelper {
                 }
                 cursor.close();
             }
-            database.close();
         }
         return result;
     }

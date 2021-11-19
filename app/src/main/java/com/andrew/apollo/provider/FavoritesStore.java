@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.provider;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,8 +22,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.NonNull;
 
 import com.andrew.apollo.model.Song;
-
-import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -42,10 +42,13 @@ public class FavoritesStore extends SQLiteOpenHelper {
     /**
      * query to create favorite table
      */
-    private static final String FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME +
-            " (" + FavoriteColumns.ID + " LONG PRIMARY KEY," + FavoriteColumns.SONGNAME + " TEXT NOT NULL," +
-            FavoriteColumns.ALBUMNAME + " TEXT NOT NULL," + FavoriteColumns.ARTISTNAME + " TEXT NOT NULL," +
-            FavoriteColumns.PLAYCOUNT + " LONG NOT NULL," + FavoriteColumns.DURATION + " LONG);";
+    private static final String FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS " + FavoriteColumns.NAME + " ("
+            + FavoriteColumns.ID + " LONG PRIMARY KEY,"
+            + FavoriteColumns.SONGNAME + " TEXT NOT NULL,"
+            + FavoriteColumns.ALBUMNAME + " TEXT NOT NULL,"
+            + FavoriteColumns.ARTISTNAME + " TEXT NOT NULL,"
+            + FavoriteColumns.PLAYCOUNT + " LONG NOT NULL,"
+            + FavoriteColumns.DURATION + " LONG);";
 
     /**
      * condition to find track in favorite table
@@ -142,7 +145,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
             database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
             database.setTransactionSuccessful();
             database.endTransaction();
-            database.close();
         }
     }
 
@@ -161,7 +163,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
             result = cursor.moveToFirst();
             cursor.close();
         }
-        database.close();
         return result;
     }
 
@@ -174,7 +175,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
         String[] args = {Long.toString(songId)};
         SQLiteDatabase database = getWritableDatabase();
         database.delete(FavoriteColumns.NAME, FAVORITE_SELECT, args);
-        database.close();
     }
 
     /**
@@ -195,7 +195,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
                 }
                 cursor.close();
             }
-            database.close();
         }
         return result;
     }

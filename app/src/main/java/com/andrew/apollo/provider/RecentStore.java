@@ -51,11 +51,12 @@ public class RecentStore extends SQLiteOpenHelper {
      * SQL query to create table with recently listened albums
      */
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + RecentStoreColumns.NAME + " ("
-            + RecentStoreColumns.ID + " LONG PRIMARY KEY," + RecentStoreColumns.ALBUMNAME
-            + " TEXT NOT NULL," + RecentStoreColumns.ARTISTNAME + " TEXT NOT NULL,"
+            + RecentStoreColumns.ID + " LONG PRIMARY KEY,"
+            + RecentStoreColumns.ALBUMNAME + " TEXT NOT NULL,"
+            + RecentStoreColumns.ARTISTNAME + " TEXT NOT NULL,"
             + RecentStoreColumns.ALBUMSONGCOUNT + " TEXT NOT NULL,"
-            + RecentStoreColumns.ALBUMYEAR + " TEXT," + RecentStoreColumns.TIMEPLAYED
-            + " LONG NOT NULL);";
+            + RecentStoreColumns.TIMEPLAYED + " LONG NOT NULL,"
+            + RecentStoreColumns.ALBUMYEAR + " TEXT);";
 
     /**
      * select recent album by ID
@@ -149,7 +150,6 @@ public class RecentStore extends SQLiteOpenHelper {
             database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             database.setTransactionSuccessful();
             database.endTransaction();
-            database.close();
         }
     }
 
@@ -173,7 +173,6 @@ public class RecentStore extends SQLiteOpenHelper {
                 }
                 cursor.close();
             }
-            database.close();
         }
         return result;
     }
@@ -187,7 +186,6 @@ public class RecentStore extends SQLiteOpenHelper {
         String[] args = {Long.toString(albumId)};
         SQLiteDatabase database = getWritableDatabase();
         database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
-        database.close();
     }
 
 

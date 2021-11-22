@@ -44,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -63,6 +64,7 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.SortOrder;
+import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.ProfileTabCarousel.Listener;
 
@@ -217,6 +219,16 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_profile_base);
+        Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+        // Initialize the theme resources
+        ThemeUtils mResources = new ThemeUtils(this);
+        // Set the overflow style
+        mResources.setOverflowStyle(this);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+        }
         // Temporary until I can work out a nice landscape layout
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Get the preferences
@@ -235,7 +247,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             mArtistName = mArguments.getString(Config.ARTIST_NAME, "");
         }
         // Initialize the pager adapter
-        mPagerAdapter = new PagerAdapter(this);
+        mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
         // Initialze the carousel
         mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
         mTabCarousel.reset();
@@ -564,12 +576,6 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
             return super.onOptionsItemSelected(item);
         }
         return true;
-    }
-
-
-    @Override
-    public View getContentView() {
-        return View.inflate(this, R.layout.activity_profile_base, null);
     }
 
     /**

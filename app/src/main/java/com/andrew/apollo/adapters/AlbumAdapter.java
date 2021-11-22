@@ -17,9 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
@@ -37,19 +37,14 @@ import com.andrew.apollo.utils.MusicUtils;
 public class AlbumAdapter extends ArrayAdapter<Album> {
 
     /**
-     * fragment layout inflater
+     * Image cache and image fetcher
      */
-    private LayoutInflater inflater;
+    private ImageFetcher mImageFetcher;
 
     /**
      * The resource Id of the layout to inflate
      */
     private int mLayoutId;
-
-    /**
-     * Image cache and image fetcher
-     */
-    private ImageFetcher mImageFetcher;
 
     /**
      * Determines if the grid or list should be the default style
@@ -59,14 +54,11 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
     /**
      * Constructor of <code>AlbumAdapter</code>
      *
-     * @param context  The {@link Context} to use.
-     * @param layoutId The resource Id of the view to inflate.
+     * @param context The {@link Context} to use.
      */
-    public AlbumAdapter(FragmentActivity context, int layoutId) {
-        super(context, layoutId);
-        inflater = context.getLayoutInflater();
-        // Get the layout Id
-        mLayoutId = layoutId;
+    public AlbumAdapter(Context context, @LayoutRes int mLayoutId) {
+        super(context, mLayoutId);
+        this.mLayoutId = mLayoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
     }
@@ -80,6 +72,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);
@@ -99,7 +92,8 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
             if (mLoadExtraData) {
                 // Set the number of songs (line three)
                 String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
-                holder.mLineThree.setText(count);
+                if (holder.mLineThree != null)
+                    holder.mLineThree.setText(count);
                 // register album art click listener
                 ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
             }
@@ -147,5 +141,6 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
      */
     public void setLoadExtraData() {
         mLoadExtraData = true;
+        notifyDataSetChanged();
     }
 }

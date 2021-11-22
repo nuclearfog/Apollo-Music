@@ -954,6 +954,20 @@ public final class MusicUtils {
     }
 
     /**
+     * move a track of a playlist to a new position
+     *
+     * @param playlistId ID of the playlist
+     * @param from       location of the track
+     * @param to         new location of the track
+     * @param off        the offset of the positions, or '0'
+     * @return true if success
+     */
+    public static boolean movePlaylistTrack(Context context, long playlistId, int from, int to, int off) {
+        ContentResolver resolver = context.getContentResolver();
+        return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
+    }
+
+    /**
      * Removes a single track from a given playlist
      *
      * @param context    The {@link Context} to use.
@@ -961,14 +975,17 @@ public final class MusicUtils {
      * @param playlistId The id of the playlist being removed from.
      */
     @SuppressLint("InlinedApi")
-    public static void removeFromPlaylist(Context context, long trackId, long playlistId) {
+    public static boolean removeFromPlaylist(Context context, long trackId, long playlistId) {
         String[] args = {Long.toString(trackId)};
         Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
         ContentResolver resolver = context.getContentResolver();
-        resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
-        String message = context.getResources().getQuantityString(
-                R.plurals.NNNtracksfromplaylist, 1, 1);
-        AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
+        int count = resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
+        if (count > 0) {
+            String message = context.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
+            AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
+            return true;
+        }
+        return false;
     }
 
     /**

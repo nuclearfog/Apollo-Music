@@ -20,7 +20,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,18 +80,14 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
         setHasOptionsMenu(true);
         // sets empty list text
         setEmptyText(R.string.empty_artst_albums);
+        // set adapter
+        mAdapter = new ArtistAlbumAdapter(requireActivity());
+        setAdapter(mAdapter);
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        mAdapter = new ArtistAlbumAdapter(requireActivity());
-        return mAdapter;
     }
 
 
@@ -242,5 +237,15 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
         boolean pauseCache = scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
                 || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
         mAdapter.setPauseDiskCache(pauseCache);
+    }
+
+    @Override
+    public void drop(int from, int to) {
+
+    }
+
+    @Override
+    public void remove(int which) {
+
     }
 }

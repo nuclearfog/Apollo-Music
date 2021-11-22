@@ -39,7 +39,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.Config;
@@ -245,10 +244,10 @@ public final class ApolloUtils {
     /**
      * Creates a new instance of the {@link ImageCache} and {@link ImageFetcher}
      *
-     * @param context The {@link AppCompatActivity} to use.
+     * @param context The {@link Context} to use.
      * @return A new {@link ImageFetcher} used to fetch images asynchronously.
      */
-    public static ImageFetcher getImageFetcher(FragmentActivity context) {
+    public static ImageFetcher getImageFetcher(Context context) {
         ImageFetcher imageFetcher = ImageFetcher.getInstance(context);
         imageFetcher.setImageCache(ImageCache.getInstance(context));
         return imageFetcher;

@@ -82,6 +82,7 @@
             android:layout_centerVertical="true"
             android:scaleType="center"
             android:src="@drawable/btn_playback_next" />
+
     </RelativeLayout>
 
     <ImageView
@@ -92,18 +93,13 @@
         android:contentDescription="@null"
         android:layout_below="@+id/app_widget_recents_action_bar" />
 
-    <FrameLayout
+    <ListView
+        android:id="@+id/app_widget_recents_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/appwidget_bg"
+        android:cacheColorHint="@color/transparent"
         android:layout_below="@+id/colorstrip"
-        android:layout_centerVertical="true">
-
-        <ListView
-            android:id="@+id/app_widget_recents_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/appwidget_bg"
-            android:cacheColorHint="@color/transparent" />
-    </FrameLayout>
+        android:layout_centerVertical="true" />
 
 </RelativeLayout>

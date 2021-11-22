@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,7 +21,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,8 +39,6 @@ import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
-
-import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
 
 /**
  * This class is used to display all of the songs from a particular artist.
@@ -76,18 +75,14 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
     protected void init() {
         // Enable the options menu
         setHasOptionsMenu(true);
+        // init adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+        setAdapter(mAdapter);
         // Start the loader
         Bundle arguments = getArguments();
         if (arguments != null) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
-        return mAdapter;
     }
 
 
@@ -215,5 +210,15 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
         // becomes misplaced and needs to be reset.
         super.scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+    }
+
+    @Override
+    public void drop(int from, int to) {
+
+    }
+
+    @Override
+    public void remove(int which) {
+
     }
 }

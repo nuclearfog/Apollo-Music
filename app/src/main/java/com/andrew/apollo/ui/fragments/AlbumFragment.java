@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.ui.fragments;
 
+import static com.andrew.apollo.utils.PreferenceUtils.ALBUM_LAYOUT;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -53,8 +55,6 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
-import static com.andrew.apollo.utils.PreferenceUtils.ALBUM_LAYOUT;
-
 /**
  * This class is used to display all of the albums on a user's device.
  *
@@ -91,7 +91,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     /**
      * list
      */
-    private AbsListView mList;
+    private GridView mList;
 
     /**
      * Represents an album
@@ -124,13 +124,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
-            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
-        } else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
-        } else {
-            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
-        }
+
     }
 
     /**
@@ -139,35 +133,11 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // initialize views
-        View mRootView;
-        TextView emptyInfo;
-        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
-            mRootView = inflater.inflate(R.layout.list_base, container, false);
-            mList = mRootView.findViewById(R.id.list_base);
-            emptyInfo = mRootView.findViewById(R.id.list_base_empty_info);
-        } else {
-            mRootView = inflater.inflate(R.layout.grid_base, container, false);
-            mList = mRootView.findViewById(R.id.grid_base);
-            emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
-            GridView grid = (GridView) mList;
-            if (ApolloUtils.isLandscape(requireContext())) {
-                if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-                    mAdapter.setLoadExtraData();
-                    grid.setNumColumns(TWO);
-                } else {
-                    grid.setNumColumns(FOUR);
-                }
-            } else {
-                if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-                    mAdapter.setLoadExtraData();
-                    grid.setNumColumns(ONE);
-                } else {
-                    grid.setNumColumns(TWO);
-                }
-            }
-        }
-        // set adapter and empty view for the list
-        mList.setAdapter(mAdapter);
+        View mRootView = inflater.inflate(R.layout.grid_base, container, false);
+        TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
+        mList = mRootView.findViewById(R.id.grid_base);
+        // init list
+        initList();
         mList.setEmptyView(emptyInfo);
         // Release any references to the recycled Views
         mList.setRecyclerListener(new RecycleHolder());
@@ -337,6 +307,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
     @Override
     public void refresh() {
+        // re init list
+        initList();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
@@ -381,5 +353,36 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
     @Override
     public void onMetaChanged() {
         // Nothing to do
+    }
+
+    /**
+     * initialize adapter & list
+     */
+    private void initList() {
+        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
+        } else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
+        } else {
+            mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
+        }
+        if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
+            mList.setNumColumns(ONE);
+        } else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
+            mAdapter.setLoadExtraData();
+            if (ApolloUtils.isLandscape(requireContext())) {
+                mList.setNumColumns(TWO);
+            } else {
+                mList.setNumColumns(ONE);
+            }
+        } else {
+            if (ApolloUtils.isLandscape(requireContext())) {
+                mList.setNumColumns(FOUR);
+            } else {
+                mList.setNumColumns(TWO);
+            }
+        }
+        // set adapter and empty view for the list
+        mList.setAdapter(mAdapter);
     }
 }

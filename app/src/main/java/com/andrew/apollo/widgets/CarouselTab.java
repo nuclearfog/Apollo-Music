@@ -24,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
@@ -50,7 +49,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      */
     public CarouselTab(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mFetcher = ApolloUtils.getImageFetcher((FragmentActivity) context);
+        mFetcher = ApolloUtils.getImageFetcher(context);
     }
 
     /**

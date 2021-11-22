@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
@@ -31,11 +30,6 @@ import com.andrew.apollo.utils.MusicUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistAdapter extends ArrayAdapter<Artist> {
-
-    /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
 
     /**
      * The resource Id of the layout to inflate
@@ -58,14 +52,12 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
      * @param context  The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
-    public ArtistAdapter(FragmentActivity context, int layoutId) {
+    public ArtistAdapter(Context context, int layoutId) {
         super(context, 0);
         // Get the layout Id
         mLayoutId = layoutId;
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
-        // inflater from fragment
-        inflater = context.getLayoutInflater();
     }
 
     /**
@@ -77,6 +69,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         // Recycle ViewHolder's items
         MusicHolder holder;
         if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(mLayoutId, parent, false);
             holder = new MusicHolder(convertView);
             if (holder.mLineThree != null && !mLoadExtraData) {

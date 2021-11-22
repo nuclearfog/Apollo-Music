@@ -18,8 +18,10 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.dragdrop.DragSortListView;
+import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
+import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentScroll;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.VerticalScrollListener;
 
@@ -28,12 +30,13 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
  *
  * @author nuclearfog
  */
-public abstract class ProfileFragment extends Fragment implements OnItemClickListener, FragmentScroll {
+public abstract class ProfileFragment extends Fragment implements OnItemClickListener,
+        DropListener, RemoveListener {
 
     /**
      * list view of this fragment
      */
-    private ListView mList;
+    private DragSortListView mList;
 
     /**
      * textview shown when the list is empty
@@ -66,8 +69,6 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
         emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
         // Initialize the list
         mList = rootView.findViewById(R.id.list_base);
-        // init list adapter
-        mList.setAdapter(getAdapter());
         // Set empty list info
         mList.setEmptyView(emptyInfo);
         // Release any references to the recycled Views
@@ -78,6 +79,8 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
         mList.setOnCreateContextMenuListener(this);
         // Play the selected song
         mList.setOnItemClickListener(this);
+        mList.setDropListener(this);
+        mList.setRemoveListener(this);
         // To help make scrolling smooth
         mList.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
         return rootView;
@@ -112,7 +115,6 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
     /**
      * {@inheritDoc}
      */
-    @Override
     public final void scrollToTop() {
         mList.setSelection(0);
     }
@@ -127,16 +129,21 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
     }
 
     /**
+     *
+     */
+    protected void setAdapter(ListAdapter adapter) {
+        mList.setAdapter(adapter);
+    }
+
+    /**
+     *
+     */
+    public abstract void refresh();
+
+    /**
      * initializes the fragment
      */
     protected abstract void init();
-
-    /**
-     * create adapter for the list view
-     *
-     * @return list view adapter
-     */
-    protected abstract ListAdapter getAdapter();
 
     /**
      * called when an item was clicked

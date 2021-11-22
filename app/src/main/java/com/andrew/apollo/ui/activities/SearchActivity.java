@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -87,14 +88,20 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.list_search);
+        Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+        // Initialize the theme resources
+        ThemeUtils mResources = new ThemeUtils(this);
+        // Set the overflow style
+        mResources.setOverflowStyle(this);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+        }
         // init view
         GridView mGridView = findViewById(R.id.grid_search);
         TextView emptyText = findViewById(R.id.grid_search_empty_info);
         View background = findViewById(R.id.grid_search_container);
-        // Initialze the theme resources
-        ThemeUtils mResources = new ThemeUtils(this);
-        // Set the overflow style
-        mResources.setOverflowStyle(this);
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         // Control the media volume
@@ -210,12 +217,6 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
 
     @Override
     public void onLoaderReset(@NonNull androidx.loader.content.Loader<List<Music>> loader) {
-    }
-
-
-    @Override
-    public View getContentView() {
-        return View.inflate(this, R.layout.list_search, null);
     }
 
 

@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,7 +21,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,8 +39,6 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 
 import java.util.List;
-
-import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
 
 /**
  * This class is used to display all of the songs in {@link FavoritesStore}.
@@ -76,16 +75,11 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
         setHasOptionsMenu(true);
         // sets empty list text
         setEmptyText(R.string.empty_favorits);
+        // init adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
+        setAdapter(mAdapter);
         // Start the loader
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        // Create the adapter
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
-        return mAdapter;
     }
 
 
@@ -216,5 +210,15 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
     @Override
     public void refresh() {
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public void drop(int from, int to) {
+
+    }
+
+    @Override
+    public void remove(int which) {
+
     }
 }

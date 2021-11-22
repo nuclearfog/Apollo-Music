@@ -11,13 +11,13 @@
 
 package com.andrew.apollo.adapters;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.andrew.apollo.R;
@@ -51,16 +51,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     private List<Fragment> fragments = new ArrayList<>(4);
 
-    private FragmentActivity mFragmentActivity;
+    private String[] titles;
 
     /**
      * Constructor of <code>PagerAdapter<code>
-     *
-     * @param fragmentActivity The {@link FragmentActivity} of the {@link androidx.fragment.app.Fragment}.
      */
-    public PagerAdapter(FragmentActivity fragmentActivity) {
-        super(fragmentActivity.getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        mFragmentActivity = fragmentActivity;
+    public PagerAdapter(Context context, FragmentManager fm) {
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        titles = context.getResources().getStringArray(R.array.page_titles);
     }
 
     /**
@@ -90,15 +88,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      * {@inheritDoc}
      */
     @Override
-    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        super.destroyItem(container, position, object);
-        fragments.remove(position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int getCount() {
         return fragments.size();
     }
@@ -108,7 +97,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public CharSequence getPageTitle(int position) {
-        return mFragmentActivity.getResources().getStringArray(R.array.page_titles)[position].toUpperCase(Locale.getDefault());
+        return titles[position].toUpperCase(Locale.getDefault());
     }
 
     /**

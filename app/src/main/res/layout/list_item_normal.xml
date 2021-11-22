@@ -21,6 +21,17 @@
     tools:ignore="ContentDescription">
 
     <ImageView
+        android:id="@+id/list_item_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/list_item_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
         android:id="@+id/image"
         android:layout_width="@dimen/item_normal_height"
         android:layout_height="@dimen/item_normal_height"

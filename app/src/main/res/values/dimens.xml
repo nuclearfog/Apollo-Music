@@ -85,6 +85,7 @@
     <dimen name="audio_player_controls_end_button_height">50.0dp</dimen>
     <dimen name="audio_player_controls_main_button_width">58.0dp</dimen>
     <dimen name="audio_player_controls_main_button_height">58.0dp</dimen>
+    <dimen name="audio_player_controls_main_layout_height">60.0dp</dimen>
 
     <!-- App Widgets -->
     <dimen name="app_widget_large_min_width">250.0dp</dimen>

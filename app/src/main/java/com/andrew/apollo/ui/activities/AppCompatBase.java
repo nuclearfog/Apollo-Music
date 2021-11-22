@@ -25,14 +25,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
-import androidx.appcompat.widget.Toolbar;
 
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.MusicStateListener;
@@ -43,7 +42,6 @@ import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PlaybackStatus;
 import com.andrew.apollo.utils.PlaybackStatus.PlayStatusListener;
-import com.andrew.apollo.utils.ThemeUtils;
 import com.andrew.apollo.widgets.PlayPauseButton;
 import com.andrew.apollo.widgets.RepeatButton;
 import com.andrew.apollo.widgets.ShuffleButton;
@@ -107,10 +105,6 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize the theme resources
-        ThemeUtils mResources = new ThemeUtils(this);
-        // Set the overflow style
-        mResources.setOverflowStyle(this);
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         // Control the media volume
@@ -120,15 +114,15 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
         // Initialize the broadcast receiver
         mPlaybackStatus = new PlaybackStatus(this);
         // Theme the action bar
-        ViewGroup root = (ViewGroup) getContentView();
-        Toolbar toolbar = new Toolbar(this);
-        root.addView(toolbar, 0);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
-        }
-        setContentView(root);
         // Initialize the bottom action bar
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         initBottomActionBar();
     }
 
@@ -229,7 +223,6 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
      */
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         // Unbind from the service
         if (mToken != null) {
             MusicUtils.unbindFromService(mToken);
@@ -242,6 +235,7 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
         }
         // Remove any music status listeners
         mMusicStateListener.clear();
+        super.onDestroy();
     }
 
     /**
@@ -380,9 +374,4 @@ public abstract class AppCompatBase extends AppCompatActivity implements Service
             mMusicStateListener.add(status);
         }
     }
-
-    /**
-     * @return The resource ID to be inflated.
-     */
-    public abstract View getContentView();
 }

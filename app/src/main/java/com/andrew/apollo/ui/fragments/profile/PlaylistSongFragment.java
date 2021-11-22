@@ -11,11 +11,10 @@
 
 package com.andrew.apollo.ui.fragments.profile;
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.net.Uri;
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
+import static com.andrew.apollo.adapters.ProfileSongAdapter.HEADER_COUNT;
+
 import android.os.Bundle;
-import android.provider.MediaStore.Audio.Playlists.Members;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,10 +45,6 @@ import com.andrew.apollo.utils.NavUtils;
 
 import java.util.List;
 
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_PLAYLIST_SETTING;
-import static com.andrew.apollo.adapters.ProfileSongAdapter.HEADER_COUNT;
-
 /**
  * This class is used to display all of the songs from a particular playlist.
  *
@@ -68,11 +62,6 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
      * LoaderCallbacks identifier
      */
     private static final int LOADER_ID = 0x61AF9DC4;
-
-    /**
-     * selection to remove track with given ID
-     */
-    private static final String DELETE_SELECT = Members.AUDIO_ID + "=? AND " + Members.PLAY_ORDER + "=?";
 
     /**
      * The adapter for the list
@@ -98,6 +87,8 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 
     @Override
     protected void init() {
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
+        setAdapter(mAdapter);
         // Enable the options menu
         setHasOptionsMenu(true);
         // sets empty list text
@@ -108,13 +99,6 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
             mPlaylistId = arguments.getLong(Config.ID);
             LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
-        return mAdapter;
     }
 
 
@@ -207,9 +191,9 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:
-                    mAdapter.remove(mSong);
-                    MusicUtils.removeFromPlaylist(requireContext(), mSong.getId(), mPlaylistId);
-                    LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+                    if (MusicUtils.removeFromPlaylist(requireContext(), mSong.getId(), mPlaylistId)) {
+                        mAdapter.remove(mSong);
+                    }
                     return true;
             }
         }
@@ -263,26 +247,14 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
      * {@inheritDoc}
      */
     @Override
-    @SuppressLint("InlinedApi")
     public void remove(int which) {
         Song song = mAdapter.getItem(which);
-        if (song != null) {
-            // there can be duplicate songs in a playlist, so we need both track id and playlist position
-            String[] args = {Long.toString(song.getId()), Integer.toString(song.getPlaylistPos())};
-            // remove track from playlist
-            ContentResolver resolver = requireActivity().getContentResolver();
-            Uri uri = Members.getContentUri(VOLUME_EXTERNAL, mPlaylistId);
-            if (resolver.delete(uri, DELETE_SELECT, args) == 1) {
-                // reload playlist content
-                mAdapter.remove(song);
-                // remove track from queue
-                if (queueIsPlaylist)
-                    MusicUtils.removeQueueItem(which - HEADER_COUNT);
-                return;
-            }
+        if (song != null && MusicUtils.removeFromPlaylist(requireContext(), song.getId(), mPlaylistId)) {
+            mAdapter.remove(song);
+        } else {
+            // if we end here, nothing changed, revert layout changes
+            mAdapter.notifyDataSetChanged();
         }
-        // if we end here, nothing changed, revert layout changes
-        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -291,21 +263,19 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
     @Override
     public void drop(int from, int to) {
         if (from > 0 && to > 0 && from != to) {
-            // move playlist track
-            ContentResolver resolver = requireActivity().getContentResolver();
-            boolean success = Members.moveItem(resolver, mPlaylistId, from - HEADER_COUNT, to - HEADER_COUNT);
-            if (success) {
+            if (MusicUtils.movePlaylistTrack(requireContext(), mPlaylistId, from, to, HEADER_COUNT)) {
                 // update adapter
                 Song selectedSong = mAdapter.getItem(from);
                 mAdapter.remove(selectedSong);
                 mAdapter.insert(selectedSong, to);
                 // move track item in the current queue
-                if (queueIsPlaylist)
+                if (queueIsPlaylist) {
                     MusicUtils.moveQueueItem(from - HEADER_COUNT, to - HEADER_COUNT);
-                return;
+                }
             }
+        } else {
+            mAdapter.notifyDataSetChanged();
         }
-        mAdapter.notifyDataSetChanged();
     }
 
 

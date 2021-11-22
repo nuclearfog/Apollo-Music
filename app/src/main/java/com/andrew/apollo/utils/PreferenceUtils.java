@@ -11,6 +11,9 @@
 
 package com.andrew.apollo.utils;
 
+import static com.andrew.apollo.MusicPlaybackService.REPEAT_NONE;
+import static com.andrew.apollo.MusicPlaybackService.SHUFFLE_NONE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -27,9 +30,6 @@ import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.andrew.apollo.MusicPlaybackService.REPEAT_NONE;
-import static com.andrew.apollo.MusicPlaybackService.SHUFFLE_NONE;
-
 /**
  * A collection of helpers designed to get and set various preferences across
  * Apollo.
@@ -40,56 +40,51 @@ public final class PreferenceUtils {
 
     /* Default start page (Artist page) */
     public static final int DEFFAULT_PAGE = 3;
-
     /* Saves the last page the pager was on in {@link MusicBrowserPhoneFragment} */
     public static final String START_PAGE = "start_page";
-
     // Sort order for the artist list
     public static final String ARTIST_SORT_ORDER = "artist_sort_order";
-
     // Sort order for the artist song list
     public static final String ARTIST_SONG_SORT_ORDER = "artist_song_sort_order";
-
     // Sort order for the artist album list
     public static final String ARTIST_ALBUM_SORT_ORDER = "artist_album_sort_order";
-
     // Sort order for the album list
     public static final String ALBUM_SORT_ORDER = "album_sort_order";
-
     // Sort order for the album song list
     public static final String ALBUM_SONG_SORT_ORDER = "album_song_sort_order";
-
     // Sort order for the song list
     public static final String SONG_SORT_ORDER = "song_sort_order";
-
     // Sets the type of layout to use for the artist list
     public static final String ARTIST_LAYOUT = "artist_layout";
-
     // Sets the type of layout to use for the album list
     public static final String ALBUM_LAYOUT = "album_layout";
-
     // Sets the type of layout to use for the recent list
     public static final String RECENT_LAYOUT = "recent_layout";
-
     // Key used to download images only on Wi-Fi
     public static final String ONLY_ON_WIFI = "only_on_wifi";
-
     // Key that gives permissions to download missing album covers
     public static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
-
     // Key that gives permissions to download missing artist images
     public static final String DOWNLOAD_MISSING_ARTIST_IMAGES = "download_missing_artist_images";
-
     // Key used to set the overall theme color
     public static final String DEFAULT_THEME_COLOR = "default_theme_color";
+    public static final String LAYOUT_SIMPLE = "simple";
+    public static final String LAYOUT_DETAILED = "detailed";
+    public static final String LAYOUT_GRID = "grid";
 
-    private static PreferenceUtils sInstance;
+    private static final String MODE_SHUFFLE = "shufflemode";
+    private static final String MODE_REPEAT = "repeatmode";
+    private static final String POS_SEEK = "seekpos";
+    private static final String POS_CURSOR = "curpos";
+    private static final String HISTORY = "history";
+    private static final String QUEUE = "queue";
+    private static final String ID_CARD = "cardid";
 
     private final SharedPreferences mPreferences;
-
     private int themeColor;
-
     private int startPage;
+
+    private static PreferenceUtils sInstance;
 
     /**
      * Constructor for <code>PreferenceUtils</code>
@@ -278,7 +273,7 @@ public final class PreferenceUtils {
      * @return playlist
      */
     public List<Long> getPlaylist() {
-        String trackQueue = mPreferences.getString("queue", "");
+        String trackQueue = mPreferences.getString(QUEUE, "");
         List<Long> playList = new LinkedList<>();
 
         if (trackQueue != null && trackQueue.length() > 0) {
@@ -302,7 +297,7 @@ public final class PreferenceUtils {
      */
     public List<Integer> getTrackHistory() {
         List<Integer> history = new LinkedList<>();
-        String trackHistory = mPreferences.getString("history", "");
+        String trackHistory = mPreferences.getString(HISTORY, "");
         if (trackHistory != null) {
             int separatorPos = trackHistory.indexOf(";");
             int cut = 0;
@@ -323,7 +318,7 @@ public final class PreferenceUtils {
      * @return card ID
      */
     public int getCardId() {
-        return mPreferences.getInt("cardid", -1);
+        return mPreferences.getInt(ID_CARD, -1);
     }
 
     /**
@@ -332,7 +327,7 @@ public final class PreferenceUtils {
      * @return cursor position
      */
     public int getCursorPosition() {
-        return mPreferences.getInt("curpos", 0);
+        return mPreferences.getInt(POS_CURSOR, 0);
     }
 
     /**
@@ -357,7 +352,7 @@ public final class PreferenceUtils {
      * @return position of the seekbar
      */
     public long getSeekPosition() {
-        return mPreferences.getLong("seekpos", 0);
+        return mPreferences.getLong(POS_SEEK, 0);
     }
 
     /**
@@ -366,7 +361,7 @@ public final class PreferenceUtils {
      * @return integer mode {@link com.andrew.apollo.MusicPlaybackService#REPEAT_NONE#REPEAT_CURRENT#REPEAT_ALL}
      */
     public int getRepeatMode() {
-        return mPreferences.getInt("repeatmode", REPEAT_NONE);
+        return mPreferences.getInt(MODE_REPEAT, REPEAT_NONE);
     }
 
     /**
@@ -375,7 +370,7 @@ public final class PreferenceUtils {
      * @return integer mode {@link com.andrew.apollo.MusicPlaybackService#SHUFFLE_NONE#SHUFFLE_NORMAL#SHUFFLE_AUTO}
      */
     public int getShuffleMode() {
-        return mPreferences.getInt("shufflemode", SHUFFLE_NONE);
+        return mPreferences.getInt(MODE_SHUFFLE, SHUFFLE_NONE);
     }
 
     /**
@@ -439,8 +434,8 @@ public final class PreferenceUtils {
             buffer.append(Long.toHexString(n));
             buffer.append(";");
         }
-        editor.putString("queue", buffer.toString());
-        editor.putInt("cardid", cardId);
+        editor.putString(QUEUE, buffer.toString());
+        editor.putInt(ID_CARD, cardId);
         editor.apply();
     }
 
@@ -456,7 +451,7 @@ public final class PreferenceUtils {
             buffer.append(Long.toHexString(n));
             buffer.append(";");
         }
-        editor.putString("history", buffer.toString());
+        editor.putString(HISTORY, buffer.toString());
         editor.apply();
     }
 
@@ -467,7 +462,7 @@ public final class PreferenceUtils {
      */
     public void setCursorPosition(int position) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt("curpos", position);
+        editor.putInt(POS_CURSOR, position);
         editor.apply();
     }
 
@@ -478,7 +473,7 @@ public final class PreferenceUtils {
      */
     public void setSeekPosition(long seekPos) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putLong("seekpos", seekPos);
+        editor.putLong(POS_SEEK, seekPos);
         editor.apply();
     }
 
@@ -490,30 +485,30 @@ public final class PreferenceUtils {
      */
     public void setRepeatAndShuffleMode(int repeatMode, int shuffleMode) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt("repeatmode", repeatMode);
-        editor.putInt("shufflemode", shuffleMode);
+        editor.putInt(MODE_REPEAT, repeatMode);
+        editor.putInt(MODE_SHUFFLE, shuffleMode);
         editor.apply();
     }
 
     /**
-     * @param which Which list to check.
+     * check if page is configured to show a simple layout
+     *
+     * @param which Which page to check: {@link #ARTIST_LAYOUT}, {@link #ALBUM_LAYOUT} or {@link #RECENT_LAYOUT}
      * @return True if the layout type is the simple layout, false otherwise.
      */
     public boolean isSimpleLayout(String which) {
-        String simple = "simple";
-        String defaultValue = "grid";
-        String result = mPreferences.getString(which, defaultValue);
-        return result != null && result.equals(simple);
+        String result = mPreferences.getString(which, LAYOUT_GRID);
+        return result != null && result.equals(LAYOUT_SIMPLE);
     }
 
     /**
-     * @param which Which list to check.
-     * @return True if the layout type is the simple layout, false otherwise.
+     * check if page is configured to show a detailled layout
+     *
+     * @param which Which page to check: {@link #ARTIST_LAYOUT}, {@link #ALBUM_LAYOUT} or {@link #RECENT_LAYOUT}
+     * @return True if the layout type is the detailled layout, false otherwise.
      */
     public boolean isDetailedLayout(String which) {
-        String detailed = "detailed";
-        String defaultValue = "grid";
-        String result = mPreferences.getString(which, defaultValue);
-        return result != null && result.equals(detailed);
+        String result = mPreferences.getString(which, LAYOUT_GRID);
+        return result != null && result.equals(LAYOUT_DETAILED);
     }
 }

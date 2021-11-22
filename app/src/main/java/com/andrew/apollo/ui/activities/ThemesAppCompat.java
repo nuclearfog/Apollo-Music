@@ -11,11 +11,11 @@
 
 package com.andrew.apollo.ui.activities;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.fragments.ThemeFragment;
@@ -34,11 +34,17 @@ public class ThemesAppCompat extends AppCompatBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Set up the action bar
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(getString(R.string.settings_theme_chooser_title));
+        setContentView(R.layout.activity_base);
+
+        Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+        // Initialize the theme resources
+        ThemeUtils mResources = new ThemeUtils(this);
+        // Set the overflow style
+        mResources.setOverflowStyle(this);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            mResources.themeActionBar(getSupportActionBar(), R.string.settings_theme_chooser_title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         // Transact the theme fragment
         if (savedInstanceState == null) {
@@ -69,13 +75,5 @@ public class ThemesAppCompat extends AppCompatBase {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View getContentView() {
-        return View.inflate(this, R.layout.activity_base, null);
     }
 }

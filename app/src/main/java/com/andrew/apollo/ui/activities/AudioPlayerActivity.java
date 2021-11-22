@@ -587,7 +587,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         // Offscreen pager loading limit
         mViewPager.setOffscreenPageLimit(1);
         // Initialize the pager adapter and attach
-        mPagerAdapter = new PagerAdapter(this);
+        mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
         mPagerAdapter.add(QUEUE, null);
         mViewPager.setAdapter(mPagerAdapter);
         // Play and pause button

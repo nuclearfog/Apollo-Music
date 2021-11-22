@@ -12,6 +12,8 @@
 package com.andrew.apollo.ui.fragments.profile;
 
 
+import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_ALBUM_SETTING;
+
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -20,7 +22,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,19 +37,16 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
-import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
-
-import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_ALBUM_SETTING;
 
 /**
  * This class is used to display all of the songs from a particular album.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class AlbumSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>, FragmentCallback {
+public class AlbumSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -77,17 +75,14 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
         // Enable the options menu
         setHasOptionsMenu(true);
         // Start the loader
+        // init adapter
+        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
+        setAdapter(mAdapter);
+        //
         Bundle arguments = getArguments();
         if (arguments != null) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
         }
-    }
-
-
-    @Override
-    protected ListAdapter getAdapter() {
-        mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
-        return mAdapter;
     }
 
 
@@ -214,5 +209,15 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
         // becomes misplaced and needs to be reset.
         super.scrollToTop();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+    }
+
+    @Override
+    public void drop(int from, int to) {
+
+    }
+
+    @Override
+    public void remove(int which) {
+
     }
 }

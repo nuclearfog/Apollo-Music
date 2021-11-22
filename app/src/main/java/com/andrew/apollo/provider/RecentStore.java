@@ -20,15 +20,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import com.andrew.apollo.ui.activities.ProfileActivity;
-
 /**
  * The {@link RecentStore} is used to display a a grid or list of
  * recently listened to albums. In order to populate the this grid or list with
  * the correct data, we keep a cache of the album ID, name, and time it was
  * played to be retrieved later.
  * <p>
- * In {@link ProfileActivity}, when viewing the profile for an artist, the first
+ * In {@link com.andrew.apollo.ui.activities.ProfileActivity}, when viewing the profile for an artist, the first
  * image the carousel header is the last album the user listened to for that
  * particular artist. That album is retrieved using
  * {@link #getAlbumName(String)}.

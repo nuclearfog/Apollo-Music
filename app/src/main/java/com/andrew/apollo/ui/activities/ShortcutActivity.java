@@ -12,8 +12,6 @@
 package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.Config.MIME_TYPE;
-import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
-import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -135,12 +133,12 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                         mShouldShuffle = false;
                         // Get the playlist song list
                         mList = MusicUtils.getSongListForPlaylist(context, getId());
-                    } else if (PAGE_FAVORIT.equals(requestedMimeType)) {
+                    } else if (ProfileActivity.PAGE_FAVORIT.equals(requestedMimeType)) {
                         // Don't shuffle the Favorites track list
                         mShouldShuffle = false;
                         // Get the Favorites song list
                         mList = MusicUtils.getSongListForFavorites(context);
-                    } else if (PAGE_MOST_PLAYED.equals(requestedMimeType)) {
+                    } else if (ProfileActivity.PAGE_MOST_PLAYED.equals(requestedMimeType)) {
                         // Don't shuffle the popular track list
                         mShouldShuffle = false;
                         // Get the popular song list
@@ -261,7 +259,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      * @return True if the user searched for the favorites playlist
      */
     private boolean isFavorite() {
-        if (PAGE_FAVORIT.equals(mVoiceQuery)) {
+        if (ProfileActivity.PAGE_FAVORIT.equals(mVoiceQuery)) {
             return true;
         }
         // Check to see if the user spoke the word "Favorite"

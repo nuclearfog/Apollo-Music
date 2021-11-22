@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.ui.fragments;
 
+import static com.andrew.apollo.utils.PreferenceUtils.ARTIST_LAYOUT;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -53,8 +55,6 @@ import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
-import static com.andrew.apollo.utils.PreferenceUtils.ARTIST_LAYOUT;
-
 /**
  * This class is used to display all of the artists on a user's device.
  *
@@ -86,12 +86,12 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     /**
      * The grid view
      */
-    private AbsListView mList;
+    private GridView mList;
 
     /**
      * app preferences
      */
-    private PreferenceUtils prefs;
+    private PreferenceUtils preference;
 
     /**
      * Artist song list
@@ -123,7 +123,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         // init app settings
-        prefs = PreferenceUtils.getInstance(context);
+        preference = PreferenceUtils.getInstance(context);
         // Register the music status listener
         if (context instanceof AppCompatBase) {
             ((AppCompatBase) context).setMusicStateListenerListener(this);
@@ -134,51 +134,13 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      * {@inheritDoc}
      */
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adapter
-        if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
-            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_simple);
-        } else if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_detailed);
-        } else {
-            mAdapter = new ArtistAdapter(requireActivity(), R.layout.grid_item_normal);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // initialize views
-        View mRootView;
-        TextView emptyHolder;
-        if (prefs.isSimpleLayout(ARTIST_LAYOUT)) {
-            mRootView = inflater.inflate(R.layout.list_base, container, false);
-            emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
-            mList = mRootView.findViewById(R.id.list_base);
-        } else {
-            mRootView = inflater.inflate(R.layout.grid_base, container, false);
-            emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
-            mList = mRootView.findViewById(R.id.grid_base);
-            GridView grid = (GridView) mList;
-            if (ApolloUtils.isLandscape(requireContext())) {
-                if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                    mAdapter.setLoadExtraData();
-                    grid.setNumColumns(TWO);
-                } else {
-                    grid.setNumColumns(FOUR);
-                }
-            } else {
-                if (prefs.isDetailedLayout(ARTIST_LAYOUT)) {
-                    mAdapter.setLoadExtraData();
-                    grid.setNumColumns(ONE);
-                } else {
-                    grid.setNumColumns(TWO);
-                }
-            }
-        }
+        View mRootView = inflater.inflate(R.layout.grid_base, container, false);
+        TextView emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
+        mList = mRootView.findViewById(R.id.grid_base);
+        // init list
+        initList();
         // setup list view
         mList.setAdapter(mAdapter);
         // setup empty view
@@ -349,6 +311,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
      */
     @Override
     public void refresh() {
+        initList();
         LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
     }
 
@@ -393,5 +356,36 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
     @Override
     public void onMetaChanged() {
         // Nothing to do
+    }
+
+    /**
+     * initialize adapter & list
+     */
+    private void initList() {
+        if (preference.isSimpleLayout(ARTIST_LAYOUT)) {
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_normal);
+        } else if (preference.isDetailedLayout(ARTIST_LAYOUT)) {
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.list_item_detailed);
+        } else {
+            mAdapter = new ArtistAdapter(requireActivity(), R.layout.grid_item_normal);
+        }
+        if (preference.isSimpleLayout(ARTIST_LAYOUT)) {
+            mList.setNumColumns(ONE);
+        } else if (preference.isDetailedLayout(ARTIST_LAYOUT)) {
+            mAdapter.setLoadExtraData();
+            if (ApolloUtils.isLandscape(requireContext())) {
+                mList.setNumColumns(TWO);
+            } else {
+                mList.setNumColumns(ONE);
+            }
+        } else {
+            if (ApolloUtils.isLandscape(requireContext())) {
+                mList.setNumColumns(FOUR);
+            } else {
+                mList.setNumColumns(TWO);
+            }
+        }
+        // set adapter and empty view for the list
+        mList.setAdapter(mAdapter);
     }
 }

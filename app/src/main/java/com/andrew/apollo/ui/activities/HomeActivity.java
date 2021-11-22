@@ -20,17 +20,18 @@ import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.ThemeUtils;
 
 /**
  * This class is used to display the {@link ViewPager} used to swipe between the
@@ -69,6 +70,17 @@ public class HomeActivity extends AppCompatBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_base);
+        Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
+
+        // Initialize the theme resources
+        ThemeUtils mResources = new ThemeUtils(this);
+        // Set the overflow style
+        mResources.setOverflowStyle(this);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+        }
         // initialize only if it is the first time
         if (savedInstanceState == null) {
             // check permissions before initialization
@@ -83,12 +95,6 @@ public class HomeActivity extends AppCompatBase {
             }
             init();
         }
-    }
-
-
-    @Override
-    public View getContentView() {
-        return View.inflate(this, R.layout.activity_base, null);
     }
 
 
@@ -116,7 +122,7 @@ public class HomeActivity extends AppCompatBase {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
             MusicUtils.onPostDelete(this);
-            fragment.refresh();
+            fragment.refreshCurrent();
         }
     }
 

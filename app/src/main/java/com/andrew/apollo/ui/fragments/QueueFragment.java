@@ -46,7 +46,6 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 
@@ -57,7 +56,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, PhoneFragmentCallback,
+public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, FragmentCallback,
         OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
 
     /**

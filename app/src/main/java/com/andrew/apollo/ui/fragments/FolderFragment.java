@@ -33,7 +33,6 @@ import com.andrew.apollo.adapters.FolderAdapter;
 import com.andrew.apollo.loaders.FolderLoader;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
-import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.io.File;
@@ -43,7 +42,7 @@ import java.util.List;
  * decompiled from Apollo 1.6 APK
  */
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>,
-        OnItemClickListener, PhoneFragmentCallback {
+        OnItemClickListener, FragmentCallback {
 
     /**
      * context menu group ID

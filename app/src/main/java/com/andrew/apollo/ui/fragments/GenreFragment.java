@@ -42,7 +42,6 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
-import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -53,7 +52,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>,
-        OnItemClickListener, PhoneFragmentCallback {
+        OnItemClickListener, FragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments

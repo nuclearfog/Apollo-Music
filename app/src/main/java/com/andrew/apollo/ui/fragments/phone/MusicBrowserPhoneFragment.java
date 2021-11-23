@@ -36,6 +36,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.adapters.PagerAdapter.MusicFragments;
+import com.andrew.apollo.ui.fragments.FragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.SortOrder;
@@ -370,23 +371,27 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     @Override
     public void onCenterItemClick(int index) {
         Fragment fragment = mPagerAdapter.getItem(index);
-        if (fragment instanceof PhoneFragmentCallback) {
-            ((PhoneFragmentCallback) fragment).setCurrentTrack();
+        if (fragment instanceof FragmentCallback) {
+            ((FragmentCallback) fragment).setCurrentTrack();
         }
     }
 
     /**
-     * reload all sub fragments
+     * refresh current page
      */
     public void refreshCurrent() {
         refresh(mViewPager.getCurrentItem());
     }
 
-
+    /**
+     * refresh page
+     *
+     * @param index index of the page
+     */
     private void refresh(int index) {
         Fragment fragment = mPagerAdapter.getItem(index);
-        if (fragment instanceof PhoneFragmentCallback) {
-            ((PhoneFragmentCallback) fragment).refresh();
+        if (fragment instanceof FragmentCallback) {
+            ((FragmentCallback) fragment).refresh();
         }
     }
 }

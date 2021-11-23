@@ -54,6 +54,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.andrew.apollo.BuildConfig;
@@ -62,7 +63,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
-import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
+import com.andrew.apollo.ui.fragments.FragmentCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
@@ -92,6 +93,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Message to refresh the time
      */
     private static final int MSG_ID = 0x65059CC4;
+
+    private static final String MIME_TYPE = "audio/*";
 
     /**
      * The service token
@@ -921,7 +924,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.setDataAndType(fileUri, "audio/*");
+                shareIntent.setDataAndType(fileUri, MIME_TYPE);
                 shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1)
@@ -938,7 +941,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void refreshQueue() {
         if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-            ((PhoneFragmentCallback) mPagerAdapter.getItem(0)).refresh();
+            Fragment fragment = mPagerAdapter.getItem(0);
+            if (fragment instanceof FragmentCallback) {
+                ((FragmentCallback) fragment).refresh();
+            }
         }
     }
 
@@ -947,7 +953,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void setQueueTrack() {
         if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-            ((PhoneFragmentCallback) mPagerAdapter.getItem(0)).setCurrentTrack();
+            Fragment fragment = mPagerAdapter.getItem(0);
+            if (fragment instanceof FragmentCallback) {
+                ((FragmentCallback) fragment).setCurrentTrack();
+            }
         }
     }
 

@@ -22,6 +22,7 @@ import com.andrew.apollo.dragdrop.DragSortListView;
 import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.widgets.ProfileTabCarousel;
 import com.andrew.apollo.widgets.VerticalScrollListener;
 
@@ -31,7 +32,7 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
  * @author nuclearfog
  */
 public abstract class ProfileFragment extends Fragment implements OnItemClickListener,
-        DropListener, RemoveListener {
+        DropListener, RemoveListener, FragmentCallback {
 
     /**
      * list view of this fragment

@@ -47,7 +47,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.AppCompatBase;
-import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
+import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -61,7 +61,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>,
-        OnScrollListener, OnItemClickListener, MusicStateListener, BrowserCallback {
+        OnScrollListener, OnItemClickListener, MusicStateListener, PhoneFragmentCallback {
 
     /**
      * Used to keep context menu items from bleeding into other fragments

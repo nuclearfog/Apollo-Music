@@ -1,5 +1,11 @@
 package com.andrew.apollo.ui.fragments;
 
+import static com.andrew.apollo.Config.FOLDER;
+import static com.andrew.apollo.Config.ID;
+import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.Config.NAME;
+import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -27,23 +33,17 @@ import com.andrew.apollo.adapters.FolderAdapter;
 import com.andrew.apollo.loaders.FolderLoader;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
-import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
+import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.io.File;
 import java.util.List;
 
-import static com.andrew.apollo.Config.FOLDER;
-import static com.andrew.apollo.Config.ID;
-import static com.andrew.apollo.Config.MIME_TYPE;
-import static com.andrew.apollo.Config.NAME;
-import static com.andrew.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
-
 /**
  * decompiled from Apollo 1.6 APK
  */
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>,
-        OnItemClickListener, BrowserCallback {
+        OnItemClickListener, PhoneFragmentCallback {
 
     /**
      * context menu group ID

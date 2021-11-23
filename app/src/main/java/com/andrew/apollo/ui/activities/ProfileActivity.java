@@ -496,7 +496,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
                     mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
                     refreshFragment(ARTIST_ALBUM);
-                } else {
+                }
+            } else if (type == Type.ALBUM) {
+                if (mViewPager.getCurrentItem() == ALBUM_SONG) {
                     mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
                     refreshFragment(ALBUM_SONG);
                 }
@@ -511,7 +513,9 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
                 } else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
                     mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
                     refreshFragment(ARTIST_ALBUM);
-                } else {
+                }
+            } else if (type == Type.ALBUM) {
+                if (mViewPager.getCurrentItem() == ALBUM_SONG) {
                     mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
                     refreshFragment(ALBUM_SONG);
                 }
@@ -538,12 +542,16 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         }
         // sort by track duration
         else if (item.getItemId() == R.id.menu_sort_by_duration) {
-            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
-                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-                refreshFragment(ARTIST_SONG);
-            } else {
-                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-                refreshFragment(ALBUM_SONG);
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
+                    refreshFragment(ARTIST_SONG);
+                }
+            } else if (type == Type.ALBUM) {
+                if (mViewPager.getCurrentItem() == ALBUM_SONG) {
+                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
+                    refreshFragment(ALBUM_SONG);
+                }
             }
         }
         // sort by date added
@@ -560,12 +568,16 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         }
         // sort by file name
         else if (item.getItemId() == R.id.menu_sort_by_filename) {
-            if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
-                mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-                refreshFragment(ARTIST_SONG);
-            } else {
-                mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-                refreshAll();
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_SONG) {
+                    mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
+                    refreshFragment(ARTIST_SONG);
+                }
+            } else if (type == Type.ALBUM) {
+                if (mViewPager.getCurrentItem() == ALBUM_SONG) {
+                    mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
+                    refreshFragment(ALBUM_SONG);
+                }
             }
         }
         // clear popular playlist

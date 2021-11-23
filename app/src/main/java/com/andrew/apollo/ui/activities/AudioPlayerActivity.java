@@ -62,7 +62,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
-import com.andrew.apollo.ui.fragments.phone.MusicBrowserPhoneFragment.BrowserCallback;
+import com.andrew.apollo.ui.fragments.phone.PhoneFragmentCallback;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
@@ -938,7 +938,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void refreshQueue() {
         if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-            ((BrowserCallback) mPagerAdapter.getItem(0)).refresh();
+            ((PhoneFragmentCallback) mPagerAdapter.getItem(0)).refresh();
         }
     }
 
@@ -947,7 +947,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      */
     private void setQueueTrack() {
         if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-            ((BrowserCallback) mPagerAdapter.getItem(0)).setCurrentTrack();
+            ((PhoneFragmentCallback) mPagerAdapter.getItem(0)).setCurrentTrack();
         }
     }
 

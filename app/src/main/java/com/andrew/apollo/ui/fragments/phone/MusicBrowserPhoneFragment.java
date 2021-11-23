@@ -300,7 +300,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
         else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
             if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
                 mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_SONGS);
-                refresh(ALBUMS_INDEX);
+                refresh(ARTIST_INDEX);
             } else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
                 mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_NUMBER_OF_SONGS);
                 refresh(ALBUMS_INDEX);
@@ -370,8 +370,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
     @Override
     public void onCenterItemClick(int index) {
         Fragment fragment = mPagerAdapter.getItem(index);
-        if (fragment instanceof BrowserCallback) {
-            ((BrowserCallback) fragment).setCurrentTrack();
+        if (fragment instanceof PhoneFragmentCallback) {
+            ((PhoneFragmentCallback) fragment).setCurrentTrack();
         }
     }
 
@@ -385,24 +385,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 
     private void refresh(int index) {
         Fragment fragment = mPagerAdapter.getItem(index);
-        if (fragment instanceof BrowserCallback) {
-            ((BrowserCallback) fragment).refresh();
+        if (fragment instanceof PhoneFragmentCallback) {
+            ((PhoneFragmentCallback) fragment).refresh();
         }
-    }
-
-    /**
-     * Callbacks to interact with fragments
-     */
-    public interface BrowserCallback {
-
-        /**
-         * reload content after change
-         */
-        void refresh();
-
-        /**
-         * scroll to current item
-         */
-        void setCurrentTrack();
     }
 }

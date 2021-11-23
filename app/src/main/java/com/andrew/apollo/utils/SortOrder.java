@@ -152,5 +152,8 @@ public final class SortOrder {
 
         /* Artist album sort order year */
         String ALBUM_YEAR = MediaStore.Audio.Artists.Albums.FIRST_YEAR + " DESC";
+
+        /* Artist album sort order track count */
+        String ALBUM_TRACK_COUNT = MediaStore.Audio.Artists.Albums.NUMBER_OF_SONGS + " DESC";
     }
 }

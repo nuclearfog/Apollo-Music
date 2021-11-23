@@ -584,6 +584,15 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         else if (item.getItemId() == R.id.menu_clear_popular) {
             PopularStore.getInstance(this).removeAll();
             refreshFragment(PLAYLIST_SONG);
+        }
+        // sort by track count
+        else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
+            if (type == Type.ARTIST) {
+                if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
+                    mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_TRACK_COUNT);
+                    refreshFragment(ARTIST_ALBUM);
+                }
+            }
         } else {
             return super.onOptionsItemSelected(item);
         }

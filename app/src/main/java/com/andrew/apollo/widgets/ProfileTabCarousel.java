@@ -37,7 +37,6 @@ import com.andrew.apollo.utils.ApolloUtils;
  * {@link ProfileActivity}. If the second tab is visible, a fraction of it will
  * overflow slightly onto the screen.
  */
-@SuppressLint("NewApi")
 public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener {
 
     /**
@@ -163,11 +162,13 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
         super(context, attrs);
         setOnTouchListener(this);
         Resources mResources = context.getResources();
-        mTabDisplayLabelHeight = mResources
-                .getDimensionPixelSize(R.dimen.profile_photo_shadow_height);
+        mTabDisplayLabelHeight = mResources.getDimensionPixelSize(R.dimen.profile_photo_shadow_height);
         mTabShadowHeight = mResources.getDimensionPixelSize(R.dimen.profile_carousel_label_height);
         tabWidthScreenWidthFraction = mResources.getFraction(R.fraction.tab_width_screen_percentage, 1, 1);
         tabHeightScreenWidthFraction = mResources.getFraction(R.fraction.tab_height_screen_percentage, 1, 1);
+        // disable scroll effects which can cause bugs
+        setHorizontalFadingEdgeEnabled(false);
+        setOverScrollMode(OVER_SCROLL_NEVER);
     }
 
     /**

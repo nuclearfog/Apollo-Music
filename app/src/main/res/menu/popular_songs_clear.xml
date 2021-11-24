@@ -6,6 +6,6 @@
         android:id="@+id/menu_clear_popular"
         android:orderInCategory="2"
         android:title="@string/menu_clear_popular"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
 </menu>

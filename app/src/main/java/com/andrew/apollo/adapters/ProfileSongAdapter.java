@@ -81,12 +81,7 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
     private static final int LAYOUT = R.layout.list_item_simple;
 
     /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
-
-    /**
-     * Fake header
+     * invisible placeholder view used to determine the space used by the carousel view
      */
     private View mHeader;
 
@@ -108,15 +103,12 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
      */
     public ProfileSongAdapter(Context context, int setting, boolean enableDrag) {
         super(context, LAYOUT);
-        // Used to create the custom layout
-        // Cache the header
-        mHeader = View.inflate(context, R.layout.faux_carousel, null);
+        // create placeholder view
+        mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
+        mHeader.setVisibility(View.INVISIBLE);
         // Know what to put in line two
-        mDisplaySetting = setting;
-        //
-        enableDnD = enableDrag;
-        // inflater from context
-        inflater = LayoutInflater.from(context);
+        this.mDisplaySetting = setting;
+        this.enableDnD = enableDrag;
     }
 
     /**
@@ -132,13 +124,16 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(LAYOUT, parent, false);
-            if (enableDnD)
-                convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
             holder = new MusicHolder(convertView);
             // Hide the third line of text
             holder.mLineThree.setVisibility(View.GONE);
             convertView.setTag(holder);
+            if (enableDnD) {
+                View dragDropView = convertView.findViewById(R.id.edit_track_list_item_handle);
+                dragDropView.setVisibility(View.VISIBLE);
+            }
         } else {
             holder = (MusicHolder) convertView.getTag();
         }

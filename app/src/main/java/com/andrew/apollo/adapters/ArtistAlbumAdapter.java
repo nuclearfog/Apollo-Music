@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
@@ -62,34 +61,27 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
     private static final int LAYOUT = R.layout.list_item_detailed;
 
     /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
-
-    /**
-     * Fake header
-     */
-    private View mHeader;
-
-    /**
      * Image cache and image fetcher
      */
     private ImageFetcher mImageFetcher;
+
+    /**
+     * Placeholder view
+     */
+    private View mHeader;
 
     /**
      * Constructor of <code>ArtistAlbumAdapter</code>
      *
      * @param context The {@link Context} to use
      */
-    public ArtistAlbumAdapter(FragmentActivity context) {
-        super(context, 0);
-        // Used to create the custom layout
-        // Cache the header
-        mHeader = View.inflate(context, R.layout.faux_carousel, null);
+    public ArtistAlbumAdapter(Context context) {
+        super(context, LAYOUT);
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
-        // layout inflater from fragment
-        inflater = context.getLayoutInflater();
+        // create placeholder view
+        mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
+        mHeader.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -105,6 +97,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
         // Recycle MusicHolder's items
         MusicHolder holder;
         if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             convertView = inflater.inflate(LAYOUT, parent, false);
             holder = new MusicHolder(convertView);
             convertView.setTag(holder);

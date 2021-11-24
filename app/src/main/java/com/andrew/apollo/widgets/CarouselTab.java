@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.widgets;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -34,7 +33,6 @@ import com.andrew.apollo.utils.MusicUtils;
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressLint("NewApi")
 public class CarouselTab extends FrameLayoutWithOverlay {
 
     private ImageFetcher mFetcher;

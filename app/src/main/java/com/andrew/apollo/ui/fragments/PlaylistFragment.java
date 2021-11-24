@@ -53,7 +53,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.menu.RenamePlaylist;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -100,9 +100,9 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof AppCompatBase) {
+        if (context instanceof ActivityBase) {
             // Register the music status listener
-            ((AppCompatBase) context).setMusicStateListenerListener(this);
+            ((ActivityBase) context).setMusicStateListenerListener(this);
         }
     }
 

@@ -59,6 +59,10 @@ public final class Config {
      */
     public static final String USER_AGENT = "Apollo";
 
+    public static final String MIME_IMAGE = "image/*";
+
+    public static final String MIME_AUDIO = "audio/*";
+
     /* This class is never initiated. */
     private Config() {
     }

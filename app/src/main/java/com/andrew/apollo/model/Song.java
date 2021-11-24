@@ -105,15 +105,6 @@ public class Song extends Music {
     }
 
     /**
-     * track position in a playlist
-     *
-     * @return playlist position
-     */
-    public int getPlaylistPos() {
-        return playlistPos;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

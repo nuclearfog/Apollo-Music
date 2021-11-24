@@ -14,13 +14,13 @@
   limitations under the License.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_action_bar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_action_bar_height"
-    android:layout_gravity="bottom"
     android:background="@color/action_bar_color"
+    android:layout_gravity="bottom"
     tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
 
     <ImageView
@@ -54,9 +54,9 @@
         android:id="@+id/bottom_action_bar_line_one"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/bab_line_one"
-        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
         android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+        android:textColor="@color/bab_line_one"
         app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
         app:layout_constraintTop_toBottomOf="@id/colorstrip"
         app:layout_constraintBottom_toTopOf="@id/bottom_action_bar_line_two"
@@ -68,9 +68,9 @@
         android:id="@+id/bottom_action_bar_line_two"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/bab_line_two"
-        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
         android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+        android:textColor="@color/bab_line_two"
         app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
         app:layout_constraintTop_toBottomOf="@id/bottom_action_bar_line_one"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -26,7 +26,7 @@ import com.andrew.apollo.utils.ThemeUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ThemesAppCompat extends AppCompatBase {
+public class ThemesActivity extends ActivityBase {
 
     /**
      * {@inheritDoc}
@@ -35,8 +35,7 @@ public class ThemesAppCompat extends AppCompatBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
-        Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+        Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
         // Initialize the theme resources
         ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style
@@ -58,7 +57,7 @@ public class ThemesAppCompat extends AppCompatBase {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.theme_shop, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     /**

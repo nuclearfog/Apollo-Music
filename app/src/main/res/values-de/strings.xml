@@ -112,6 +112,7 @@
     <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="settings_version_title">Version</string>
     <string name="share_track_using">Titel teilen</string>
+    <string name="menu_clear_popular">Liste leeren</string>
     <string name="color_picker_title">Farbschema</string>
     <string name="current_color">Momentan</string>
     <string name="new_color">Neu</string>

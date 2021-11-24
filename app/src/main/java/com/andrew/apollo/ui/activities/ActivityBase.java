@@ -58,7 +58,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class AppCompatBase extends AppCompatActivity implements ServiceConnection,
+public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection,
         OnClickListener, OnQueryTextListener, PlayStatusListener {
 
     /**

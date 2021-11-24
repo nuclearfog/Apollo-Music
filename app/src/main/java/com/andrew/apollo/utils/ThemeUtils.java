@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -187,7 +188,7 @@ public class ThemeUtils {
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         // Theme the action bar background
-        Drawable background = getDrawable(R.drawable.action_bar);
+        Drawable background = new ColorDrawable(getColor(R.color.action_bar));
         actionBar.setBackgroundDrawable(background);
         // Theme the title
         setTitle(title);

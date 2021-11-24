@@ -13,23 +13,48 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/activity_base_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="@dimen/toolbar_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/activity_base_content"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/pager_background" />
+        android:background="@drawable/pager_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activity_base_toolbar"
+        app:layout_constraintBottom_toTopOf="@id/activity_base_Actionbar"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <include layout="@layout/bottom_action_bar" />
+    <ImageView
+        android:id="@+id/activity_base_shadow"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/shadow_height"
+        android:src="@drawable/top_shadow"
+        app:layout_constraintStart_toStartOf="@id/activity_base_content"
+        app:layout_constraintTop_toTopOf="@id/activity_base_content"
+        app:layout_constraintEnd_toEndOf="@id/activity_base_content"
+        tools:ignore="ContentDescription" />
 
-</LinearLayout>
+    <include
+        android:id="@+id/activity_base_Actionbar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/bottom_action_bar_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/bottom_action_bar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

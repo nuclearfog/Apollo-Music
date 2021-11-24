@@ -2258,7 +2258,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         public MultiPlayer(MusicPlaybackService service) {
             mService = new WeakReference<>(service);
             mCurrentMediaPlayer = createPlayer();
-            mCurrentMediaPlayer.setScreenOnWhilePlaying(true);
         }
 
         /**
@@ -2438,7 +2437,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
          */
         private MediaPlayer createPlayer() {
             MediaPlayer player = new MediaPlayer();
-            player.setScreenOnWhilePlaying(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 AudioAttributes attr = new AudioAttributes.Builder()
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)

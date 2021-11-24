@@ -164,7 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
 
                 case THEME_SEL:
-                    Intent themeChooserIntent = new Intent(requireContext(), ThemesAppCompat.class);
+                    Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
                     startActivity(themeChooserIntent);
                     return true;
             }

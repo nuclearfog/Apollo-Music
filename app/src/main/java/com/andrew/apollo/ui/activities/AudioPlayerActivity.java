@@ -11,6 +11,7 @@
 
 package com.andrew.apollo.ui.activities;
 
+import static com.andrew.apollo.Config.MIME_AUDIO;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
@@ -93,8 +94,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
      * Message to refresh the time
      */
     private static final int MSG_ID = 0x65059CC4;
-
-    private static final String MIME_TYPE = "audio/*";
 
     /**
      * The service token
@@ -924,7 +923,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.setDataAndType(fileUri, MIME_TYPE);
+                shareIntent.setDataAndType(fileUri, MIME_AUDIO);
                 shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1)

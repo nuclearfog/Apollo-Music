@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends AppCompatBase implements LoaderCallbacks<List<Music>>,
+public class SearchActivity extends ActivityBase implements LoaderCallbacks<List<Music>>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
     /**
@@ -88,8 +88,8 @@ public class SearchActivity extends AppCompatBase implements LoaderCallbacks<Lis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.list_search);
-        Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+        setContentView(R.layout.grid_search);
+        Toolbar toolbar = findViewById(R.id.grid_search_toolbar);
         // Initialize the theme resources
         ThemeUtils mResources = new ThemeUtils(this);
         // Set the overflow style

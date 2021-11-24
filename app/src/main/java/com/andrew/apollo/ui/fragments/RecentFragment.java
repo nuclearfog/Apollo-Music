@@ -47,7 +47,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -118,9 +118,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
         super.onAttach(context);
         // init preferences
         preference = PreferenceUtils.getInstance(context);
-        if (context instanceof AppCompatBase) {
+        if (context instanceof ActivityBase) {
             // Register the music status listener
-            ((AppCompatBase) context).setMusicStateListenerListener(this);
+            ((ActivityBase) context).setMusicStateListenerListener(this);
         }
     }
 

@@ -19,6 +19,6 @@
     <gradient
         android:angle="270"
         android:endColor="@color/transparent"
-        android:startColor="@color/black" />
+        android:startColor="@color/action_bar" />
 
 </shape>

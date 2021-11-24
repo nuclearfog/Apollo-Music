@@ -12,6 +12,7 @@
 package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.Config.FOLDER;
+import static com.andrew.apollo.Config.MIME_IMAGE;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
 import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
@@ -76,7 +77,7 @@ import java.util.Random;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends AppCompatBase implements OnPageChangeListener,
+public class ProfileActivity extends ActivityBase implements OnPageChangeListener,
         Listener, OnClickListener, DeleteDialogCallback {
 
     /**
@@ -412,7 +413,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         } else if (type == Type.MOST_PLAYED) {
             getMenuInflater().inflate(R.menu.popular_songs_clear, menu);
         }
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     /**
@@ -752,7 +753,7 @@ public class ProfileActivity extends AppCompatBase implements OnPageChangeListen
         removeFromCache();
         // Now open the gallery
         Intent intent = new Intent(Intent.ACTION_PICK, null);
-        intent.setType("image/*");
+        intent.setType(MIME_IMAGE);
         startActivityForResult(intent, NEW_PHOTO);
     }
 

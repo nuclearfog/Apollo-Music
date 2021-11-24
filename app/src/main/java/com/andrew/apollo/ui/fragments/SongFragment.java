@@ -42,7 +42,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.recycler.RecycleHolder;
-import com.andrew.apollo.ui.activities.AppCompatBase;
+import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 
@@ -100,8 +100,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         // Register the music status listener
-        if (context instanceof AppCompatBase) {
-            ((AppCompatBase) context).setMusicStateListenerListener(this);
+        if (context instanceof ActivityBase) {
+            ((ActivityBase) context).setMusicStateListenerListener(this);
         }
     }
 

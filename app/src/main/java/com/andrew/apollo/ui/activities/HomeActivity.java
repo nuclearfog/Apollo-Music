@@ -39,7 +39,7 @@ import com.andrew.apollo.utils.ThemeUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class HomeActivity extends AppCompatBase {
+public class HomeActivity extends ActivityBase {
 
     /**
      * request code for permission result

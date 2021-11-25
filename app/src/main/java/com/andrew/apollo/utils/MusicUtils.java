@@ -65,6 +65,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -1354,36 +1356,8 @@ public final class MusicUtils {
      * @param activity activity of the fragment
      */
     public static void saveQueue(FragmentActivity activity) {
-        final WeakReference<FragmentActivity> callback = new WeakReference<>(activity);
-        final Context context = activity.getApplicationContext();
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                // fetch all track IDs of the qurrent queue
-                NowPlayingCursor queue = new NowPlayingCursor(context);
-                queue.moveToFirst();
-                final long[] ids = new long[queue.getCount()];
-                for (int i = 0; i < ids.length && !queue.isAfterLast(); i++) {
-                    ids[i] = queue.getLong(0);
-                    queue.moveToNext();
-                }
-                queue.close();
-
-                // build playlist creator dialog on main thread
-                FragmentActivity activity = callback.get();
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), "CreatePlaylist");
-                        }
-                    });
-                }
-            }
-        });
-        thread.start();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new QueueWorker(activity));
     }
 
     /**
@@ -1617,6 +1591,9 @@ public final class MusicUtils {
         }
     }
 
+    /**
+     *
+     */
     public static final class ServiceToken {
         public ContextWrapper mWrappedContext;
 
@@ -1627,6 +1604,47 @@ public final class MusicUtils {
          */
         public ServiceToken(ContextWrapper context) {
             mWrappedContext = context;
+        }
+    }
+
+    /**
+     * background worker to create a dialog for saving the current queue to a playlist
+     */
+    private static class QueueWorker implements Runnable {
+
+        private WeakReference<FragmentActivity> activity;
+
+
+        QueueWorker(FragmentActivity activity) {
+            this.activity = new WeakReference<>(activity);
+        }
+
+
+        @Override
+        public void run() {
+            Activity activity = this.activity.get();
+            if (activity != null) {
+                // fetch all track IDs of the qurrent queue
+                NowPlayingCursor queue = new NowPlayingCursor(activity.getApplicationContext());
+                queue.moveToFirst();
+                final long[] ids = new long[queue.getCount()];
+                for (int i = 0; i < ids.length && !queue.isAfterLast(); i++) {
+                    ids[i] = queue.getLong(0);
+                    queue.moveToNext();
+                }
+                queue.close();
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentActivity activity = QueueWorker.this.activity.get();
+                        if (activity != null) {
+                            CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), "CreatePlaylist");
+                        }
+                    }
+                });
+
+            }
         }
     }
 }

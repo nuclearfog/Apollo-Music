@@ -15,7 +15,6 @@ import static com.andrew.apollo.Config.MIME_TYPE;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ import androidx.loader.content.Loader;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
-import com.andrew.apollo.loaders.AsyncHandler;
 import com.andrew.apollo.loaders.SearchLoader;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.MusicUtils;
@@ -100,59 +98,70 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        final Context context = getApplicationContext();
         // Check for a voice query
         if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
         } else if (MusicUtils.isConnected()) {
-            AsyncHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    String requestedMimeType = "";
-                    if (mIntent.getExtras() != null) {
-                        requestedMimeType = mIntent.getExtras().getString(MIME_TYPE);
-                    }
-                    // First, check the artist MIME type
-                    if (MediaStore.Audio.Artists.CONTENT_TYPE.equals(requestedMimeType)) {
-                        // Shuffle the artist track list
-                        mShouldShuffle = true;
-                        // Get the artist song list
-                        mList = MusicUtils.getSongListForArtist(context, getId());
-                    } else if (MediaStore.Audio.Albums.CONTENT_TYPE.equals(requestedMimeType)) {
-                        // Shuffle the album track list
-                        mShouldShuffle = true;
-                        // Get the album song list
-                        mList = MusicUtils.getSongListForAlbum(context, getId());
-                    } else if (MediaStore.Audio.Genres.CONTENT_TYPE.equals(requestedMimeType)) {
-                        // Shuffle the genre track list
-                        mShouldShuffle = true;
-                        // Get the genre song list
-                        mList = MusicUtils.getSongListForGenre(context, getId());
-                    } else if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(requestedMimeType)) {
-                        // Don't shuffle the playlist track list
-                        mShouldShuffle = false;
-                        // Get the playlist song list
-                        mList = MusicUtils.getSongListForPlaylist(context, getId());
-                    } else if (ProfileActivity.PAGE_FAVORIT.equals(requestedMimeType)) {
-                        // Don't shuffle the Favorites track list
-                        mShouldShuffle = false;
-                        // Get the Favorites song list
-                        mList = MusicUtils.getSongListForFavorites(context);
-                    } else if (ProfileActivity.PAGE_MOST_PLAYED.equals(requestedMimeType)) {
-                        // Don't shuffle the popular track list
-                        mShouldShuffle = false;
-                        // Get the popular song list
-                        mList = MusicUtils.getPopularSongList(context);
-                    } else if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
+            //sHandler.post(new AsyncHandler(this));
+            String requestedMimeType = "";
+            if (mIntent.getExtras() != null) {
+                requestedMimeType = mIntent.getExtras().getString(MIME_TYPE, "");
+            }
+
+            switch (requestedMimeType) {
+                case MediaStore.Audio.Artists.CONTENT_TYPE:
+                    // Shuffle the artist track list
+                    mShouldShuffle = true;
+                    // Get the artist song list
+                    mList = MusicUtils.getSongListForArtist(getApplicationContext(), getId());
+                    break;
+
+                case MediaStore.Audio.Albums.CONTENT_TYPE:
+                    // Shuffle the album track list
+                    mShouldShuffle = true;
+                    // Get the album song list
+                    mList = MusicUtils.getSongListForAlbum(getApplicationContext(), getId());
+                    break;
+
+                case MediaStore.Audio.Genres.CONTENT_TYPE:
+                    // Shuffle the genre track list
+                    mShouldShuffle = true;
+                    // Get the genre song list
+                    mList = MusicUtils.getSongListForGenre(getApplicationContext(), getId());
+                    break;
+
+                case MediaStore.Audio.Playlists.CONTENT_TYPE:
+                    // Don't shuffle the playlist track list
+                    mShouldShuffle = false;
+                    // Get the playlist song list
+                    mList = MusicUtils.getSongListForPlaylist(getApplicationContext(), getId());
+                    break;
+
+                case ProfileActivity.PAGE_FAVORIT:
+                    // Don't shuffle the Favorites track list
+                    mShouldShuffle = false;
+                    // Get the Favorites song list
+                    mList = MusicUtils.getSongListForFavorites(getApplicationContext());
+                    break;
+
+                case ProfileActivity.PAGE_MOST_PLAYED:
+                    // Don't shuffle the popular track list
+                    mShouldShuffle = false;
+                    // Get the popular song list
+                    mList = MusicUtils.getPopularSongList(getApplicationContext());
+                    break;
+
+                default:
+                    if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
                         // Don't shuffle the last added track list
                         mShouldShuffle = false;
                         // Get the Last added song list
-                        mList = MusicUtils.getSongListForLastAdded(context);
+                        mList = MusicUtils.getSongListForLastAdded(getApplicationContext());
                     }
-                    // Finish up
-                    allDone();
-                }
-            });
+                    break;
+            }
+            // Finish up
+            allDone();
         }
     }
 

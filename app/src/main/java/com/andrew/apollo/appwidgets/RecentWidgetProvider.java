@@ -13,6 +13,7 @@ package com.andrew.apollo.appwidgets;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +35,8 @@ import com.andrew.apollo.ui.activities.HomeActivity;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.ui.activities.ShortcutActivity;
 import com.andrew.apollo.utils.MusicUtils;
+
+import java.lang.ref.WeakReference;
 
 /**
  * App-Widget used to display a list of recently listened albums.
@@ -161,18 +164,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
             if (MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
                 performUpdate(service, null);
             } else if (MusicPlaybackService.META_CHANGED.equals(what)) {
-                synchronized (service) {
-                    sWorkerQueue.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(service);
-                            ComponentName componentName = new ComponentName(service, RecentWidgetProvider.class);
-                            appWidgetManager.notifyAppWidgetViewDataChanged(
-                                    appWidgetManager.getAppWidgetIds(componentName),
-                                    R.id.app_widget_recents_list);
-                        }
-                    });
-                }
+                sWorkerQueue.post(new Updater(service));
             }
         }
     }
@@ -256,5 +248,29 @@ public class RecentWidgetProvider extends AppWidgetBase {
         // Next track
         pendingIntent = buildPendingIntent(context, MusicPlaybackService.NEXT_ACTION, serviceName);
         views.setOnClickPendingIntent(R.id.app_widget_recents_next, pendingIntent);
+    }
+
+    /**
+     *
+     */
+    private static class Updater implements Runnable {
+
+        private WeakReference<Service> service;
+
+        Updater(Service service) {
+            this.service = new WeakReference<>(service);
+        }
+
+        @Override
+        public void run() {
+            Service service = this.service.get();
+            if (service == null)
+                return;
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(service);
+            ComponentName componentName = new ComponentName(service, RecentWidgetProvider.class);
+            appWidgetManager.notifyAppWidgetViewDataChanged(
+                    appWidgetManager.getAppWidgetIds(componentName),
+                    com.andrew.apollo.R.id.app_widget_recents_list);
+        }
     }
 }

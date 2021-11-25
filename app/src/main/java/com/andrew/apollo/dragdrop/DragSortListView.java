@@ -32,6 +32,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.PreferenceUtils;
 
@@ -775,7 +778,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 
         if (divider != null && dividerHeight != 0) {
             ViewGroup expItem = (ViewGroup) getChildAt(expPosition - getFirstVisiblePosition());
-            if (expItem != null) {
+            if (expItem != null && expItem.getChildAt(0) != null) {
                 int l = getPaddingLeft();
                 int r = getWidth() - getPaddingRight();
                 int t;
@@ -1454,7 +1457,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
         public void run() {
             DragSortListView mList = this.controller.get();
 
-            if (mList == null)
+            if (mList == null || mList.mScrollProfile == null)
                 return;
             if (mList.mAbort) {
                 mList.mScrolling = false;
@@ -1507,6 +1510,9 @@ public class DragSortListView extends ListView implements OnScrollListener {
         }
     }
 
+    /**
+     *
+     */
     private class AdapterWrapper extends HeaderViewListAdapter {
 
         private final ListAdapter mAdapter;
@@ -1520,7 +1526,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
          * {@inheritDoc}
          */
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             RelativeLayout view;
             View child;
             if (convertView instanceof RelativeLayout) {
@@ -1528,7 +1534,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
                 View oldChild = view.getChildAt(0);
                 try {
                     child = mAdapter.getView(position, oldChild, view);
-                    if (child != oldChild) {
+                    if (child != oldChild && view.getChildCount() > 0) {
                         view.removeViewAt(0);
                         view.addView(child);
                     }
@@ -1542,6 +1548,10 @@ public class DragSortListView extends ListView implements OnScrollListener {
                 view.setLayoutParams(params);
                 try {
                     child = mAdapter.getView(position, null, view);
+                    // remove from old parent if any
+                    if (child.getParent() instanceof ViewGroup) {
+                        ((ViewGroup) child.getParent()).removeView(child);
+                    }
                     view.addView(child);
                 } catch (Exception e) {
                     e.printStackTrace();

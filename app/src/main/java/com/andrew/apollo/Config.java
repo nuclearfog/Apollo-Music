@@ -59,9 +59,20 @@ public final class Config {
      */
     public static final String USER_AGENT = "Apollo";
 
+    /**
+     * MIME type for album/artist images
+     */
     public static final String MIME_IMAGE = "image/*";
 
+    /**
+     * MIME type for sharing songs
+     */
     public static final String MIME_AUDIO = "audio/*";
+
+    /**
+     * maximal scroll speed when dragging a list element
+     */
+    public static final float DRAG_DROP_MAX_SPEED = 3.0f;
 
     /* This class is never initiated. */
     private Config() {

@@ -33,6 +33,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
+import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SongAdapter;
 import com.andrew.apollo.dragdrop.DragSortListView;
@@ -298,11 +299,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
      */
     @Override
     public float getSpeed(float w) {
-        if (w > 0.8f) {
-            return mAdapter.getCount() / 0.001f;
-        } else {
-            return 10.0f * w;
-        }
+        return Config.DRAG_DROP_MAX_SPEED * w;
     }
 
     /**

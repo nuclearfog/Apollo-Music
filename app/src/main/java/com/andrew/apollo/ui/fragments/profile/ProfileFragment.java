@@ -17,9 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
+import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.dragdrop.DragSortListView;
 import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
+import com.andrew.apollo.dragdrop.DragSortListView.DragScrollProfile;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
@@ -32,7 +34,7 @@ import com.andrew.apollo.widgets.VerticalScrollListener;
  * @author nuclearfog
  */
 public abstract class ProfileFragment extends Fragment implements OnItemClickListener,
-        DropListener, RemoveListener, FragmentCallback {
+        DropListener, RemoveListener, FragmentCallback, DragScrollProfile {
 
     /**
      * list view of this fragment
@@ -82,6 +84,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
         mList.setOnItemClickListener(this);
         mList.setDropListener(this);
         mList.setRemoveListener(this);
+        mList.setDragScrollProfile(this);
         // To help make scrolling smooth
         mList.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
         return rootView;
@@ -111,6 +114,14 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
     @Override
     public final void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         onItemClick(view, position, id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public float getSpeed(float w) {
+        return Config.DRAG_DROP_MAX_SPEED * w;
     }
 
     /**

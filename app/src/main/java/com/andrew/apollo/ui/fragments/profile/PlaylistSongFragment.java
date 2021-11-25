@@ -32,7 +32,6 @@ import androidx.loader.content.Loader;
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
-import com.andrew.apollo.dragdrop.DragSortListView.DragScrollProfile;
 import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.loaders.PlaylistSongLoader;
@@ -51,7 +50,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>,
-        DropListener, RemoveListener, DragScrollProfile {
+        DropListener, RemoveListener {
 
     /**
      * Used to keep context menu items from bleeding into other fragments
@@ -231,16 +230,6 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
         // Clear the data in the adapter
         mAdapter.clear();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public float getSpeed(float w) {
-        if (w > 0.8f)
-            return mAdapter.getCount() / 0.001f;
-        return 10.0f * w;
     }
 
     /**

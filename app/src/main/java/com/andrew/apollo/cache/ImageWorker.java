@@ -156,12 +156,13 @@ public abstract class ImageWorker {
      * @param albumName  The album name for the Last.fm API.
      * @param albumId    The album art index, to check for missing artwork.
      * @param imageviews The {@link ImageView} used to set the cached {@link Bitmap}.
+     *                   a second image is optional and will be used to add blurring effect
      * @param imageType  The type of image URL to fetch for.
      */
     @SuppressWarnings("SameParameterValue")
     protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageviews) {
         if (key != null && mImageCache != null && imageviews.length > 0) {
-            // First, check the memory for the image
+            // First, check the cache for the image
             Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
             if (lruBitmap != null) {
                 // Bitmap found in memory cache
@@ -171,7 +172,9 @@ public abstract class ImageWorker {
                     Bitmap blur = BitmapUtils.createBlurredBitmap(lruBitmap);
                     imageviews[1].setImageBitmap(blur);
                 }
-            } else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
+            }
+            // check storage for image or download
+            else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
                 // Otherwise run the worker task
                 BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(this, imageType, imageviews);
                 AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);

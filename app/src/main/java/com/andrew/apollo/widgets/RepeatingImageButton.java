@@ -27,10 +27,11 @@ import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
 
+import java.lang.ref.WeakReference;
+
 /**
- * A {@link AppCompatImageButton} that will repeatedly call a 'listener' method as long
- * as the button is pressed, otherwise functions like a typecal
- * {@link AppCompatImageButton}
+ * A {@link RepeatingImageButton} that will repeatedly call a 'listener' method as long
+ * as the button is pressed, otherwise functions like a typecal ImageView
  */
 public class RepeatingImageButton extends AppCompatImageButton implements OnClickListener {
 
@@ -41,15 +42,8 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
     private int mRepeatCount;
 
     private RepeatListener mListener;
-    private Runnable mRepeater = new Runnable() {
-        @Override
-        public void run() {
-            doRepeat(false);
-            if (isPressed()) {
-                postDelayed(this, sInterval);
-            }
-        }
-    };
+
+    private Repeater repeater;
 
     /**
      * @param context The {@link Context} to use
@@ -62,6 +56,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
         setFocusable(true);
         setLongClickable(true);
         setOnClickListener(this);
+        repeater = new Repeater(this);
         updateState();
     }
 
@@ -78,16 +73,6 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
     }
 
     /**
-     * Sets the listener to be called while the button is pressed and the
-     * interval in milliseconds with which it will be called.
-     *
-     * @param l The listener that will be called
-     */
-    public void setRepeatListener(RepeatListener l) {
-        mListener = l;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -97,7 +82,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
         }
         mStartTime = SystemClock.elapsedRealtime();
         mRepeatCount = 0;
-        post(mRepeater);
+        post(repeater);
         return true;
     }
 
@@ -109,7 +94,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             /* Remove the repeater, but call the hook one more time */
-            removeCallbacks(mRepeater);
+            removeCallbacks(repeater);
             if (mStartTime != 0) {
                 doRepeat(true);
                 mStartTime = 0;
@@ -145,13 +130,23 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
                 /* Remove the repeater, but call the hook one more time */
-                removeCallbacks(mRepeater);
+                removeCallbacks(repeater);
                 if (mStartTime != 0) {
                     doRepeat(true);
                     mStartTime = 0;
                 }
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    /**
+     * Sets the listener to be called while the button is pressed and the
+     * interval in milliseconds with which it will be called.
+     *
+     * @param l The listener that will be called
+     */
+    public void setRepeatListener(RepeatListener l) {
+        mListener = l;
     }
 
     /**
@@ -184,5 +179,28 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
          * @param repeatcount The number of repeat counts
          */
         void onRepeat(View v, long duration, int repeatcount);
+    }
+
+    /**
+     *
+     */
+    private static class Repeater implements Runnable {
+
+        private WeakReference<RepeatingImageButton> button;
+
+        Repeater(RepeatingImageButton button) {
+            this.button = new WeakReference<>(button);
+        }
+
+        @Override
+        public void run() {
+            RepeatingImageButton button = this.button.get();
+            if (button != null) {
+                button.doRepeat(false);
+                if (button.isPressed()) {
+                    button.postDelayed(this, sInterval);
+                }
+            }
+        }
     }
 }

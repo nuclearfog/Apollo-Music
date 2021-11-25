@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.menu;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -28,8 +30,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.MusicUtils;
-
-import static android.content.Context.INPUT_METHOD_SERVICE;
 
 /**
  * A simple base class for the playlist dialogs.
@@ -78,19 +78,6 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
         mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
         // Set the cancel button action
         mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel), this);
-
-        mPlaylist.post(new Runnable() {
-
-            @Override
-            public void run() {
-                // Open up the soft keyboard
-                openKeyboard();
-                // Request focus to the edit text
-                mPlaylist.requestFocus();
-                // Select the playlist name
-                mPlaylist.selectAll();
-            }
-        });
 
         initObjects(savedInstanceState);
         mPlaylistDialog.setTitle(mPrompt);
@@ -142,16 +129,6 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
     @Override
     public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
         /* Nothing to do */
-    }
-
-    /**
-     * Opens the soft keyboard
-     */
-    protected void openKeyboard() {
-        InputMethodManager mInputMethodManager = (InputMethodManager) requireActivity()
-                .getSystemService(INPUT_METHOD_SERVICE);
-        mInputMethodManager.toggleSoftInputFromWindow(mPlaylist.getApplicationWindowToken(),
-                InputMethodManager.SHOW_FORCED, 0);
     }
 
     /**

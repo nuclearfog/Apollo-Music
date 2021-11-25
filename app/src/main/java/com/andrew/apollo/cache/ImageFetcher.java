@@ -299,9 +299,8 @@ public class ImageFetcher extends ImageWorker {
     /**
      * Used to fetch album images.
      */
-    public void loadAlbumImage(String artistName, String albumName, long albumId, ImageView imageView) {
-        loadImage(generateAlbumCacheKey(albumName, artistName), artistName, albumName, albumId, imageView,
-                ImageType.ALBUM);
+    public void loadAlbumImage(String artistName, String albumName, long albumId, ImageView... imageViews) {
+        loadImage(generateAlbumCacheKey(albumName, artistName), artistName, albumName, albumId, ImageType.ALBUM, imageViews);
     }
 
     /**
@@ -309,8 +308,7 @@ public class ImageFetcher extends ImageWorker {
      */
     public void loadCurrentArtwork(ImageView imageView) {
         loadImage(generateAlbumCacheKey(MusicUtils.getAlbumName(), MusicUtils.getArtistName()),
-                MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(),
-                imageView, ImageType.ALBUM);
+                MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(), ImageType.ALBUM, imageView);
     }
 
     /**
@@ -318,7 +316,7 @@ public class ImageFetcher extends ImageWorker {
      */
     public void loadArtistImage(String key, ImageView imageView) {
         // fixme last FM does not return artist images anymore so try to download an album artwork instead
-        loadImage(key, key, null, -1, imageView, ImageType.ALBUM);
+        loadImage(key, key, null, -1, ImageType.ALBUM, imageView);
     }
 
     /**

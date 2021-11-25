@@ -22,6 +22,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.AnimationUtils;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -30,14 +31,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.activities.ProfileActivity;
-import com.andrew.apollo.utils.ApolloUtils;
 
 /**
  * A custom {@link HorizontalScrollView} that displays up to two "tabs" in the
  * {@link ProfileActivity}. If the second tab is visible, a fraction of it will
  * overflow slightly onto the screen.
  */
-public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener {
+public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnGlobalLayoutListener {
 
     /**
      * Number of tabs
@@ -231,13 +231,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
             return;
         }
         mScrollToCurrentTab = false;
-        ApolloUtils.doAfterLayout(this, new Runnable() {
-            @Override
-            public void run() {
-                scrollTo(mCurrentTab == TAB_INDEX_FIRST ? 0 : mAllowedHorizontalScrollLength, 0);
-                updateAlphaLayers();
-            }
-        });
+        getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 
     /**
@@ -282,6 +276,17 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
             mListener.onTouchDown();
         }
         return mInterceptTouch;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onGlobalLayout() {
+        /* Layout pass done, unregister for further events */
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        scrollTo(mCurrentTab == TAB_INDEX_FIRST ? 0 : mAllowedHorizontalScrollLength, 0);
+        updateAlphaLayers();
     }
 
     /**
@@ -441,7 +446,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
     public void setAlbumProfileHeader(Context context, String albumName, String artistName) {
         mFirstTab.setLabel(getResources().getString(R.string.page_songs));
         mFirstTab.setAlbumPhoto(context, albumName, artistName);
-        mFirstTab.blurPhoto(artistName, albumName);
+
         mSecondTab.setVisibility(View.GONE);
         mEnableSwipe = false;
     }

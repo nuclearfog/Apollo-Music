@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.Toast;
@@ -221,24 +220,6 @@ public final class ApolloUtils {
                         dialog.dismiss();
                     }
                 }).create();
-    }
-
-    /**
-     * Runs a piece of code after the next layout run
-     *
-     * @param view     The {@link View} used.
-     * @param runnable The {@link Runnable} used after the next layout run
-     */
-    public static void doAfterLayout(final View view, final Runnable runnable) {
-        OnGlobalLayoutListener listener = new OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                /* Layout pass done, unregister for further events */
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                runnable.run();
-            }
-        };
-        view.getViewTreeObserver().addOnGlobalLayoutListener(listener);
     }
 
     /**

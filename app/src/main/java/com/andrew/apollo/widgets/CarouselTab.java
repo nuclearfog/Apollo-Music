@@ -11,11 +11,8 @@
 
 package com.andrew.apollo.widgets;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -27,7 +24,6 @@ import androidx.core.content.ContextCompat;
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.BitmapUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
 /**
@@ -93,42 +89,6 @@ public class CarouselTab extends FrameLayoutWithOverlay {
     }
 
     /**
-     * Used to blur the artist image in the album profile.
-     *
-     * @param artist The artist nmae used to fetch the cached artist image.
-     * @param album  The album name used to fetch the album art in case the
-     *               artist image is missing.
-     */
-    public void blurPhoto(final String artist, final String album) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                // First check for the artist image
-                Bitmap artistImage = mFetcher.getCachedBitmap(artist);
-                // Second check for cached artwork
-                if (artistImage == null) {
-                    artistImage = mFetcher.getCachedArtwork(album, artist);
-                }
-                // If all else, use the default image
-                if (artistImage == null) {
-                    artistImage = BitmapFactory.decodeResource(getResources(), R.drawable.theme_preview);
-                }
-                final Bitmap blur = BitmapUtils.createBlurredBitmap(artistImage);
-
-                if (getContext() instanceof Activity) {
-                    Activity parent = (Activity) getContext();
-                    parent.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPhoto.setImageBitmap(blur);
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    /**
      * Used to set the album art in the album profile.
      *
      * @param context The {@link Context} to use.
@@ -136,8 +96,8 @@ public class CarouselTab extends FrameLayoutWithOverlay {
      */
     public void setAlbumPhoto(Context context, String album, String artist) {
         if (!TextUtils.isEmpty(album)) {
+            mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt, mPhoto);
             mAlbumArt.setVisibility(View.VISIBLE);
-            mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt);
         } else {
             setDefault(context);
         }

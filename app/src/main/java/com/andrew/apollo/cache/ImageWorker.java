@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.utils.BitmapUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.RejectedExecutionException;
@@ -154,23 +155,27 @@ public abstract class ImageWorker {
      * @param artistName The artist name for the Last.fm API.
      * @param albumName  The album name for the Last.fm API.
      * @param albumId    The album art index, to check for missing artwork.
-     * @param imageView  The {@link ImageView} used to set the cached
-     *                   {@link Bitmap}.
+     * @param imageviews The {@link ImageView} used to set the cached {@link Bitmap}.
      * @param imageType  The type of image URL to fetch for.
      */
     @SuppressWarnings("SameParameterValue")
-    protected void loadImage(String key, String artistName, String albumName, long albumId, ImageView imageView, ImageType imageType) {
-        if (key != null && mImageCache != null && imageView != null) {
+    protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageviews) {
+        if (key != null && mImageCache != null && imageviews.length > 0) {
             // First, check the memory for the image
             Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
             if (lruBitmap != null) {
                 // Bitmap found in memory cache
-                imageView.setImageBitmap(lruBitmap);
-            } else if (executePotentialWork(key, imageView) && !mImageCache.isDiskCachePaused()) {
+                imageviews[0].setImageBitmap(lruBitmap);
+                // add blurring to the second image if defined
+                if (imageviews.length > 1) {
+                    Bitmap blur = BitmapUtils.createBlurredBitmap(lruBitmap);
+                    imageviews[1].setImageBitmap(blur);
+                }
+            } else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
                 // Otherwise run the worker task
-                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(this, imageView, imageType);
+                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(this, imageType, imageviews);
                 AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);
-                imageView.setImageDrawable(asyncDrawable);
+                imageviews[0].setImageDrawable(asyncDrawable);
                 try {
                     ApolloUtils.execute(false, bitmapWorkerTask, key, artistName, albumName, String.valueOf(albumId));
                 } catch (RejectedExecutionException e) {
@@ -240,7 +245,7 @@ public abstract class ImageWorker {
     /**
      * The actual {@link AsyncTask} that will process the image.
      */
-    private static class BitmapWorkerTask extends AsyncTask<String, Void, TransitionDrawable> {
+    private static class BitmapWorkerTask extends AsyncTask<String, Void, Drawable[]> {
 
         /**
          * callback reference to update image
@@ -250,7 +255,7 @@ public abstract class ImageWorker {
         /**
          * The {@link ImageView} used to set the result
          */
-        private WeakReference<ImageView> mImageReference;
+        private WeakReference<ImageView[]> mImageReference;
 
         /**
          * Type of URL to download
@@ -268,9 +273,9 @@ public abstract class ImageWorker {
          * @param imageView The {@link ImageView} to use.
          * @param imageType The type of image URL to fetch for.
          */
-        public BitmapWorkerTask(ImageWorker callback, ImageView imageView, ImageType imageType) {
+        public BitmapWorkerTask(ImageWorker callback, ImageType imageType, ImageView... imageView) {
             super();
-            imageView.setBackgroundResource(R.drawable.default_artwork);
+            imageView[0].setBackgroundResource(R.drawable.default_artwork);
             mImageReference = new WeakReference<>(imageView);
             this.callback = new WeakReference<>(callback);
             mImageType = imageType;
@@ -280,7 +285,7 @@ public abstract class ImageWorker {
          * {@inheritDoc}
          */
         @Override
-        protected TransitionDrawable doInBackground(String... params) {
+        protected Drawable[] doInBackground(String... params) {
             try {
                 ImageWorker worker = callback.get();
                 if (worker == null)
@@ -293,7 +298,7 @@ public abstract class ImageWorker {
                 Bitmap bitmap = null;
 
                 // First, check the disk cache for the image
-                if (mKey != null && worker.mImageCache != null && !isCancelled() && getAttachedImageView() != null) {
+                if (mKey != null && worker.mImageCache != null && !isCancelled()) {
                     bitmap = worker.mImageCache.getCachedBitmap(mKey);
                 }
 
@@ -301,13 +306,12 @@ public abstract class ImageWorker {
                 long mAlbumId = Long.parseLong(params[3]);
 
                 // Second, if we're fetching artwork, check the device for the image
-                if (bitmap == null && mAlbumId >= 0 && mKey != null && !isCancelled()
-                        && getAttachedImageView() != null && worker.mImageCache != null) {
+                if (bitmap == null && mAlbumId >= 0 && mKey != null && !isCancelled() && worker.mImageCache != null) {
                     bitmap = worker.mImageCache.getCachedArtwork(worker.mContext, mKey, mAlbumId);
                 }
 
                 // Third, by now we need to download the image
-                if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled() && getAttachedImageView() != null) {
+                if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled()) {
                     // Now define what the artist name, album name, and url are.
                     String mArtistName = params[1];
                     String mAlbumName = params[2] != null ? params[2] : mArtistName;
@@ -328,12 +332,14 @@ public abstract class ImageWorker {
                     layerTwo.setFilterBitmap(false);
                     layerTwo.setDither(false);
                     worker.mArrayDrawable[1] = layerTwo;
-
-                    // Finally, return the image
                     TransitionDrawable result = new TransitionDrawable(worker.mArrayDrawable);
                     result.setCrossFadeEnabled(true);
                     result.startTransition(FADE_IN_TIME);
-                    return result;
+
+                    Bitmap blur = BitmapUtils.createBlurredBitmap(bitmap);
+                    BitmapDrawable layerBlur = new BitmapDrawable(worker.mResources, blur);
+
+                    return new Drawable[]{result, layerBlur};
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -345,29 +351,14 @@ public abstract class ImageWorker {
          * {@inheritDoc}
          */
         @Override
-        protected void onPostExecute(TransitionDrawable result) {
-            if (isCancelled()) {
-                result = null;
+        protected void onPostExecute(Drawable[] result) {
+            ImageView[] imageviews = mImageReference.get();
+            if (result != null && imageviews != null) {
+                imageviews[0].setImageDrawable(result[0]);
+                if (imageviews.length > 1) {
+                    imageviews[1].setImageDrawable(result[1]);
+                }
             }
-            ImageView imageView = getAttachedImageView();
-            if (result != null && imageView != null) {
-                imageView.setImageDrawable(result);
-            }
-        }
-
-        /**
-         * @return The {@link ImageView} associated with this task as long as
-         * the ImageView's task still points to this task as well.
-         * Returns null otherwise.
-         */
-        @Nullable
-        private ImageView getAttachedImageView() {
-            ImageView imageView = mImageReference.get();
-            BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-            if (this == bitmapWorkerTask) {
-                return imageView;
-            }
-            return null;
         }
     }
 }

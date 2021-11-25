@@ -11,7 +11,6 @@
 
 package com.andrew.apollo.cache;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
 import android.content.ContentUris;
@@ -274,7 +273,6 @@ public final class ImageCache implements ComponentCallbacks2 {
      *
      * @param context The {@link Context} to use
      */
-    @SuppressLint("NewApi")
     public void initLruCache(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         int lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);

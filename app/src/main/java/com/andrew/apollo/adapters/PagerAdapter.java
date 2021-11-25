@@ -21,23 +21,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.ui.fragments.AlbumFragment;
-import com.andrew.apollo.ui.fragments.ArtistFragment;
-import com.andrew.apollo.ui.fragments.FolderFragment;
-import com.andrew.apollo.ui.fragments.GenreFragment;
-import com.andrew.apollo.ui.fragments.PlaylistFragment;
-import com.andrew.apollo.ui.fragments.QueueFragment;
-import com.andrew.apollo.ui.fragments.RecentFragment;
-import com.andrew.apollo.ui.fragments.SongFragment;
-import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
-import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
-import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
-import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
-import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
-import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
-import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
-import com.andrew.apollo.ui.fragments.profile.PopularSongFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +51,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      * @param fragment The full qualified name of fragment class.
      * @param params   The instantiate params.
      */
-    public void add(MusicFragments fragment, @Nullable Bundle params) {
+    public void add(Fragment fragment, @Nullable Bundle params) {
         if (params != null)
-            fragment.instance.setArguments(params);
-        fragments.add(fragment.instance);
+            fragment.setArguments(params);
+        fragments.add(fragment);
         notifyDataSetChanged();
     }
 
@@ -106,72 +89,5 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public void clear() {
         fragments.clear();
         notifyDataSetChanged();
-    }
-
-    /**
-     * An enumeration of all the main fragments supported.
-     */
-    public enum MusicFragments {
-
-        /**
-         * The playlist fragment
-         */
-        PLAYLIST(new PlaylistFragment()),
-        /**
-         * The recent fragment
-         */
-        RECENT(new RecentFragment()),
-        /**
-         * The artist fragment
-         */
-        ARTIST(new ArtistFragment()),
-        /**
-         * The album fragment
-         */
-        ALBUM(new AlbumFragment()),
-        /**
-         * The song fragment
-         */
-        SONG(new SongFragment()),
-        /**
-         * The genre fragment
-         */
-        GENRE(new GenreFragment()),
-
-        /**
-         * The folder fragment
-         */
-        FOLDER(new FolderFragment()),
-
-        ALBUMSONG(new AlbumSongFragment()),
-
-        GENRESONG(new GenreSongFragment()),
-
-        ARTISTSONG(new ArtistSongFragment()),
-
-        ARTISTALBUM(new ArtistAlbumFragment()),
-
-        FOLDERSONG(new FolderSongFragment()),
-
-        PLAYLISTSONG(new PlaylistSongFragment()),
-
-        FAVORITE(new FavoriteSongFragment()),
-
-        LASTADDED(new LastAddedFragment()),
-
-        POPULAR(new PopularSongFragment()),
-
-        QUEUE(new QueueFragment());
-
-        public final Fragment instance;
-
-        /**
-         * Constructor of <code>MusicFragments</code>
-         *
-         * @param fragment The fragment class
-         */
-        MusicFragments(Fragment fragment) {
-            instance = fragment;
-        }
     }
 }

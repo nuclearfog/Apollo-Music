@@ -12,7 +12,6 @@
 package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.Config.MIME_AUDIO;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.QUEUE;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 import android.animation.ObjectAnimator;
@@ -65,6 +64,7 @@ import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.ui.fragments.FragmentCallback;
+import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
@@ -590,7 +590,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
         mViewPager.setOffscreenPageLimit(1);
         // Initialize the pager adapter and attach
         mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
-        mPagerAdapter.add(QUEUE, null);
+        mPagerAdapter.add(new QueueFragment(), null);
         mViewPager.setAdapter(mPagerAdapter);
         // Play and pause button
         mPlayPauseButton = findViewById(R.id.action_button_play);

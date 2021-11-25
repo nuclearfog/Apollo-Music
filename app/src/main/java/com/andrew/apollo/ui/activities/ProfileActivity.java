@@ -13,15 +13,6 @@ package com.andrew.apollo.ui.activities;
 
 import static com.andrew.apollo.Config.FOLDER;
 import static com.andrew.apollo.Config.MIME_IMAGE;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ALBUMSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTALBUM;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.ARTISTSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FAVORITE;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.FOLDERSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.GENRESONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.LASTADDED;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.PLAYLISTSONG;
-import static com.andrew.apollo.adapters.PagerAdapter.MusicFragments.POPULAR;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 import android.annotation.SuppressLint;
@@ -60,6 +51,15 @@ import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.menu.PhotoSelectionDialog;
 import com.andrew.apollo.menu.PhotoSelectionDialog.ProfileType;
 import com.andrew.apollo.provider.PopularStore;
+import com.andrew.apollo.ui.fragments.profile.AlbumSongFragment;
+import com.andrew.apollo.ui.fragments.profile.ArtistAlbumFragment;
+import com.andrew.apollo.ui.fragments.profile.ArtistSongFragment;
+import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
+import com.andrew.apollo.ui.fragments.profile.FolderSongFragment;
+import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
+import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
+import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
+import com.andrew.apollo.ui.fragments.profile.PopularSongFragment;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
@@ -262,7 +262,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
                 // Album profile fragments
-                mPagerAdapter.add(ALBUMSONG, mArguments);
+                mPagerAdapter.add(new AlbumSongFragment(), mArguments);
                 if (actionBar != null) {
                     // Action bar title = album name
                     actionBar.setTitle(mProfileName);
@@ -277,7 +277,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Genre profile fragments
-                mPagerAdapter.add(GENRESONG, mArguments);
+                mPagerAdapter.add(new GenreSongFragment(), mArguments);
                 // Action bar title = playlist name
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -288,8 +288,8 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setArtistProfileHeader(this, mArtistName);
                 // Artist profile fragments
-                mPagerAdapter.add(ARTISTSONG, mArguments);
-                mPagerAdapter.add(ARTISTALBUM, mArguments);
+                mPagerAdapter.add(new ArtistSongFragment(), mArguments);
+                mPagerAdapter.add(new ArtistAlbumFragment(), mArguments);
                 if (actionBar != null) {
                     actionBar.setDisplayHomeAsUpEnabled(true);
                     actionBar.setTitle(mArtistName);
@@ -298,7 +298,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 
             case FOLDER:
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-                mPagerAdapter.add(FOLDERSONG, mArguments);
+                mPagerAdapter.add(new FolderSongFragment(), mArguments);
                 if (actionBar != null) {
                     actionBar.setTitle(this.mProfileName);
                 }
@@ -308,7 +308,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Favorite fragment
-                mPagerAdapter.add(FAVORITE, null);
+                mPagerAdapter.add(new FavoriteSongFragment(), null);
                 // Action bar title = Favorites
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -319,7 +319,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Playlist profile fragments
-                mPagerAdapter.add(PLAYLISTSONG, mArguments);
+                mPagerAdapter.add(new PlaylistSongFragment(), mArguments);
                 // Action bar title = playlist name
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -330,7 +330,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // Last added fragment
-                mPagerAdapter.add(LASTADDED, null);
+                mPagerAdapter.add(new LastAddedFragment(), null);
                 // Action bar title = Last added
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);
@@ -341,7 +341,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                 // Add the carousel images
                 mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
                 // most played fragment
-                mPagerAdapter.add(POPULAR, null);
+                mPagerAdapter.add(new PopularSongFragment(), null);
                 // Action bar title = Last added
                 if (actionBar != null) {
                     actionBar.setTitle(mProfileName);

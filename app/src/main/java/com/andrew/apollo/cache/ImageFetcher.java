@@ -350,15 +350,6 @@ public class ImageFetcher extends ImageWorker {
     /**
      * @param keyAlbum  The key (album name) used to find the album art to return
      * @param keyArtist The key (artist name) used to find the album art to return
-     */
-    public Bitmap getCachedArtwork(String keyAlbum, String keyArtist) {
-        long id = MusicUtils.getIdForAlbum(mContext, keyAlbum, keyArtist);
-        return getCachedArtwork(keyAlbum, keyArtist, id);
-    }
-
-    /**
-     * @param keyAlbum  The key (album name) used to find the album art to return
-     * @param keyArtist The key (artist name) used to find the album art to return
      * @param keyId     The key (album id) used to find the album art to return
      */
     public Bitmap getCachedArtwork(String keyAlbum, String keyArtist, long keyId) {

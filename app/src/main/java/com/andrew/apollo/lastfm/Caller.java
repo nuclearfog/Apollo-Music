@@ -26,9 +26,6 @@ import static com.andrew.apollo.lastfm.StringUtilities.encode;
 import static com.andrew.apollo.lastfm.StringUtilities.map;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
-
-import androidx.annotation.Keep;
 
 import com.andrew.apollo.lastfm.Result.Status;
 
@@ -73,11 +70,14 @@ import io.michaelrocks.paranoid.Obfuscate;
 @Obfuscate
 public class Caller {
 
-    @Keep
-    private static final String TAG = "LastFm.Caller";
-
+    /**
+     *
+     */
     private static final String PARAM_API_KEY = "api_key";
 
+    /**
+     *
+     */
     private static final String DEFAULT_API_ROOT = "https://ws.audioscrobbler.com/2.0/";
 
     /**
@@ -138,17 +138,16 @@ public class Caller {
             lastResult = Result.createHttpErrorResult(HttpStatus.SC_SERVICE_UNAVAILABLE, ioEx.getLocalizedMessage());
             return lastResult;
         }
-
         try {
             lastResult = createResultFromInputStream(inputStream);
         } catch (IOException ioEx) {
             ioEx.printStackTrace();
-            Log.e(TAG, "Failed to read document");
             lastResult = new Result(ioEx.getLocalizedMessage());
+            ioEx.printStackTrace();
         } catch (SAXException saxEx) {
             saxEx.printStackTrace();
-            Log.e(TAG, "Failed to parse document");
             lastResult = new Result(saxEx.getLocalizedMessage());
+            saxEx.printStackTrace();
         }
         return lastResult;
     }

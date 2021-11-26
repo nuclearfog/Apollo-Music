@@ -39,7 +39,6 @@ import android.view.SubMenu;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
@@ -74,9 +73,6 @@ import java.util.concurrent.Executors;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class MusicUtils {
-
-    @Keep
-    public static final String TAG = "MusicUtils";
 
     /**
      * selection to remove track from playlist
@@ -167,7 +163,7 @@ public final class MusicUtils {
         }
         mContextWrapper.unbindService(mBinder);
         if (mConnectionMap.isEmpty()) {
-            Log.v(TAG, "All connections closed, cleaning Service");
+            Log.v("Utils", "All connections closed, cleaning Service");
             // destroying instance
             mService = null;
         }

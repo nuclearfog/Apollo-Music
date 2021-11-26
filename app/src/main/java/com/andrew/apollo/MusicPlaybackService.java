@@ -53,7 +53,6 @@ import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files;
 import android.util.Log;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -86,8 +85,10 @@ import java.util.TreeSet;
  */
 public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
 
-    @Keep
-    private static final String TAG = "MusicPlaybackService";
+    /**
+     *
+     */
+    private static final String TAG = "music_playback_service";
     /**
      * For backwards compatibility reasons, also provide sticky
      * broadcasts under the music package

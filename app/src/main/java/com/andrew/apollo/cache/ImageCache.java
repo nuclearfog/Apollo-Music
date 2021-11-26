@@ -26,7 +26,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.StatFs;
 import android.util.Log;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,8 +43,10 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class ImageCache implements ComponentCallbacks2 {
 
-    @Keep
-    private static final String TAG = "ImageCache";
+    /**
+     *
+     */
+    private static final String TAG = "image_cache";
 
     /**
      * Default memory cache size as a percent of device memory class

@@ -16,7 +16,6 @@ package com.andrew.apollo.cache;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import java.util.LinkedHashMap;
@@ -31,8 +30,8 @@ import java.util.Map;
  */
 public class LruCache<K, V> {
 
-    @Keep
-    private static final String TAG = "LruCache";
+
+    private static final String TAG = "lru_cache";
 
     private LinkedHashMap<K, V> map;
 

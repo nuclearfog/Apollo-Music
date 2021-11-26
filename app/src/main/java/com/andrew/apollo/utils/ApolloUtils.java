@@ -337,6 +337,7 @@ public final class ApolloUtils {
             result.append(id);
             result.append(';');
         }
+        // remove last separator
         if (result.length() > 0)
             result.deleteCharAt(result.length() - 1);
         return result.toString();
@@ -351,7 +352,12 @@ public final class ApolloUtils {
         String[] ids = idsStr.split(";");
         long[] result = new long[ids.length];
         for (int i = 0; i < ids.length ; i++) {
-            result[i] = Long.parseLong(ids[i]);
+            String id = ids[i];
+            if (!id.isEmpty()) {
+                result[i] = Long.parseLong(id);
+            } else {
+                result[i] = -1;
+            }
         }
         return result;
     }

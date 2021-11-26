@@ -906,7 +906,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
     private void fade(View v, boolean visible) {
         float alpha = visible ? 1.0f : 0.0f;
         ObjectAnimator fade = ObjectAnimator.ofFloat(v, "alpha", alpha);
-        fade.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.accelerate_decelerate_interpolator));
+        fade.setInterpolator(AnimationUtils.loadInterpolator(getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator));
         fade.setDuration(400);
         fade.start();
     }

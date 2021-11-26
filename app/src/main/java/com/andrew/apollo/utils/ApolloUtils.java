@@ -245,7 +245,7 @@ public final class ApolloUtils {
      * @param mimeType    The MIME type of the shortcut
      * @param activity    The {@link FragmentActivity} to use to
      */
-    public static void createShortcutIntent(String displayName, String artistName, long[] ids, String mimeType, FragmentActivity activity) {
+    public static void createShortcutIntent(String displayName, String artistName, String mimeType, FragmentActivity activity, long[] ids) {
         try {
             Bitmap bitmap;
             ImageFetcher fetcher = getImageFetcher(activity);

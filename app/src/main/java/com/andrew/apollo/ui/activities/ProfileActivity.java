@@ -112,7 +112,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
     /**
      * mime type of the {@link com.andrew.apollo.ui.fragments.profile.LastAddedFragment}
      */
-    public static final String PAGE_LAST_ADDED = "playlist";
+    public static final String PAGE_LAST_ADDED = "last_added";
     /**
      * mime type of the {@link com.andrew.apollo.ui.fragments.profile.LastAddedFragment}
      */
@@ -215,7 +215,11 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
             // Get the artist name
             mArtistName = mArguments.getString(Config.ARTIST_NAME, "");
             // Get the ID
-            ids = ApolloUtils.readSerializedIDs(mArguments.getString(Config.IDS, ""));
+            if (mArguments.containsKey(Config.IDS)) {
+                ids = ApolloUtils.readSerializedIDs(mArguments.getString(Config.IDS, ""));
+            } else {
+                ids = new long[] {mArguments.getLong(Config.ID)};
+            }
             // get album yeas
             year = mArguments.getString(Config.ALBUM_YEAR, "");
             // get folder name if defined
@@ -406,9 +410,9 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
             // Place the artist, album, genre, or playlist onto the Home
             // screen. Definitely one of my favorite features.
             if (type == Type.ARTIST) {
-                ApolloUtils.createShortcutIntent(mArtistName, mArtistName, ids, mType, this);
+                ApolloUtils.createShortcutIntent(mArtistName, mArtistName, mType, this, ids);
             } else {
-                ApolloUtils.createShortcutIntent(mProfileName, mArtistName, ids, mType, this);
+                ApolloUtils.createShortcutIntent(mProfileName, mArtistName, mType, this, ids);
             }
         }
         // shuffle tracks

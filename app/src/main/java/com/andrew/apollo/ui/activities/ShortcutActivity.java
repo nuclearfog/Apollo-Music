@@ -105,7 +105,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
             //sHandler.post(new AsyncHandler(this));
             String requestedMimeType = mIntent.getStringExtra(MIME_TYPE);
             long id = mIntent.getLongExtra(ID, -1);
-            if (requestedMimeType == null || id < 0) {
+            if (requestedMimeType == null) {
                 return;
             }
             switch (requestedMimeType) {
@@ -161,13 +161,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                     mList = MusicUtils.getSongListForFolder(getApplicationContext(), folder);
                     break;
 
-                default:
-                    if (getString(R.string.playlist_last_added).equals(requestedMimeType)) {
-                        // Don't shuffle the last added track list
-                        mShouldShuffle = false;
-                        // Get the Last added song list
-                        mList = MusicUtils.getSongListForLastAdded(getApplicationContext());
-                    }
+                case ProfileActivity.PAGE_LAST_ADDED:
+                    // Don't shuffle the last added track list
+                    mShouldShuffle = false;
+                    // Get the Last added song list
+                    mList = MusicUtils.getSongListForLastAdded(getApplicationContext());
                     break;
             }
             // Finish up

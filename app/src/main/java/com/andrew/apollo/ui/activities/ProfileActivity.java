@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio;
@@ -37,7 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -126,47 +124,6 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
     private static final String[] GET_MEDIA = {MediaColumns.DATA};
 
     /**
-     * constants defining fragment type
-     */
-    private enum Type {
-        ARTIST,
-        ALBUM,
-        GENRE,
-        PLAYLIST,
-        FOLDER,
-        FAVORITE,
-        LAST_ADDED,
-        MOST_PLAYED;
-
-        public static Type getEnum(String mime) {
-            switch (mime) {
-                case Audio.Artists.CONTENT_TYPE:
-                    return ARTIST;
-                case Audio.Albums.CONTENT_TYPE:
-                    return ALBUM;
-                case Audio.Genres.CONTENT_TYPE:
-                    return GENRE;
-                case Audio.Playlists.CONTENT_TYPE:
-                    return PLAYLIST;
-                case PAGE_FOLDERS:
-                    return FOLDER;
-                case PAGE_FAVORIT:
-                    return FAVORITE;
-                case PAGE_MOST_PLAYED:
-                    return MOST_PLAYED;
-                default:
-                case PAGE_LAST_ADDED:
-                    return LAST_ADDED;
-            }
-        }
-    }
-
-    /**
-     * The Bundle to pass into the Fragments
-     */
-    private Bundle mArguments;
-
-    /**
      * View pager
      */
     private ViewPager mViewPager;
@@ -187,6 +144,11 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
     private Type type;
 
     /**
+     * ID used for albums, artist genres etc
+     */
+    private long[] ids = {0};
+
+    /**
      * MIME type of the profile
      */
     private String mType = "";
@@ -200,6 +162,11 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
      * The main profile title
      */
     private String mProfileName = "";
+
+    /**
+     * name of th emusic folder if defined
+     */
+    private String folderName = "";
 
     /**
      * random generator for folder shuffle
@@ -230,6 +197,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
         if (getSupportActionBar() != null) {
             mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
         }
+        String year = "";
         // Temporary until I can work out a nice landscape layout
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Get the preferences
@@ -237,7 +205,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
         // Initialze the image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(this);
         // Initialize the Bundle
-        mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+        Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
         // Get the MIME type
         if (mArguments != null) {
             // get mime type
@@ -246,6 +214,12 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
             mProfileName = mArguments.getString(Config.NAME, "");
             // Get the artist name
             mArtistName = mArguments.getString(Config.ARTIST_NAME, "");
+            // Get the ID
+            ids = ApolloUtils.readSerializedIDs(mArguments.getString(Config.IDS, ""));
+            // get album yeas
+            year = mArguments.getString(Config.ALBUM_YEAR, "");
+            // get folder name if defined
+            folderName = mArguments.getString(FOLDER, "");
         }
         // Initialize the pager adapter
         mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
@@ -268,7 +242,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                     actionBar.setTitle(mProfileName);
                     if (mArguments != null) {
                         // Action bar subtitle = year released
-                        actionBar.setSubtitle(mArguments.getString(Config.ALBUM_YEAR));
+                        actionBar.setSubtitle(year);
                     }
                 }
                 break;
@@ -376,18 +350,13 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Theme the add to home screen icon
         MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
-        MenuItem pinnAction = menu.findItem(R.id.menu_add_to_homescreen);
 
-        Drawable pinIcon = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_pinn_to_home, null);
-        pinnAction.setIcon(pinIcon);
-        String title;
         if (type == Type.FAVORITE || type == Type.LAST_ADDED
                 || type == Type.PLAYLIST || type == Type.MOST_PLAYED) {
-            title = getString(R.string.menu_play_all);
+            shuffle.setTitle(R.string.menu_play_all);
         } else {
-            title = getString(R.string.menu_shuffle);
+            shuffle.setTitle(R.string.menu_shuffle);
         }
-        shuffle.setTitle(title);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -436,34 +405,32 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
         else if (item.getItemId() == R.id.menu_add_to_homescreen) {
             // Place the artist, album, genre, or playlist onto the Home
             // screen. Definitely one of my favorite features.
-            long id = mArguments.getLong(Config.ID);
             if (type == Type.ARTIST) {
-                ApolloUtils.createShortcutIntent(mArtistName, mArtistName, id, mType, this);
+                ApolloUtils.createShortcutIntent(mArtistName, mArtistName, ids, mType, this);
             } else {
-                ApolloUtils.createShortcutIntent(mProfileName, mArtistName, id, mType, this);
+                ApolloUtils.createShortcutIntent(mProfileName, mArtistName, ids, mType, this);
             }
         }
         // shuffle tracks
         else if (item.getItemId() == R.id.menu_shuffle) {
-            long id = mArguments.getLong(Config.ID);
             switch (type) {
                 case ARTIST:
-                    long[] list = MusicUtils.getSongListForArtist(this, id);
+                    long[] list = MusicUtils.getSongListForArtist(this, ids[0]);
                     MusicUtils.playAll(list, 0, true);
                     break;
 
                 case ALBUM:
-                    list = MusicUtils.getSongListForAlbum(this, id);
+                    list = MusicUtils.getSongListForAlbum(this, ids[0]);
                     MusicUtils.playAll(list, 0, true);
                     break;
 
                 case GENRE:
-                    list = MusicUtils.getSongListForGenre(this, id);
+                    list = MusicUtils.getSongListForGenres(this, ids);
                     MusicUtils.playAll(list, 0, true);
                     break;
 
                 case PLAYLIST:
-                    MusicUtils.playPlaylist(this, id);
+                    MusicUtils.playPlaylist(this, ids[0]);
                     break;
 
                 case FAVORITE:
@@ -479,7 +446,6 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
                     break;
 
                 case FOLDER:
-                    String folderName = mArguments.getString(FOLDER, "");
                     list = MusicUtils.getSongListForFolder(this, folderName);
                     if (list.length > 0) {
                         // play list at random position
@@ -605,8 +571,8 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
      */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putAll(getIntent().getExtras());
         super.onSaveInstanceState(outState);
-        outState.putAll(mArguments);
     }
 
     /**
@@ -862,6 +828,41 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
         }
     }
 
+    /**
+     * constants defining fragment type
+     */
+    private enum Type {
+        ARTIST,
+        ALBUM,
+        GENRE,
+        PLAYLIST,
+        FOLDER,
+        FAVORITE,
+        LAST_ADDED,
+        MOST_PLAYED;
+
+        public static Type getEnum(String mime) {
+            switch (mime) {
+                case Audio.Artists.CONTENT_TYPE:
+                    return ARTIST;
+                case Audio.Albums.CONTENT_TYPE:
+                    return ALBUM;
+                case Audio.Genres.CONTENT_TYPE:
+                    return GENRE;
+                case Audio.Playlists.CONTENT_TYPE:
+                    return PLAYLIST;
+                case PAGE_FOLDERS:
+                    return FOLDER;
+                case PAGE_FAVORIT:
+                    return FAVORITE;
+                case PAGE_MOST_PLAYED:
+                    return MOST_PLAYED;
+                default:
+                case PAGE_LAST_ADDED:
+                    return LAST_ADDED;
+            }
+        }
+    }
 
     /**
      * callback for sub fragments to refreshAll

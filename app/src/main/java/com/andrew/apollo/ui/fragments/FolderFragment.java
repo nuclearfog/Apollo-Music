@@ -157,7 +157,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
         File mFolder = mAdapter.getItem(position);
         Bundle bundle = new Bundle();
         bundle.putLong(ID, 0L);
-        bundle.putString(NAME, mFolder.getName());
+        bundle.putString(NAME, mFolder.getPath());
         bundle.putString(MIME_TYPE, PAGE_FOLDERS);
         bundle.putString(FOLDER, mFolder.toString());
         Intent intent = new Intent(requireContext(), ProfileActivity.class);

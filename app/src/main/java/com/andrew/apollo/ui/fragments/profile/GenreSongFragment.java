@@ -36,6 +36,7 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
+import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 
@@ -177,7 +178,9 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
     @NonNull
     @Override
     public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-        long[] genreId = args != null ? args.getLongArray(Config.IDS) : new long[0];
+        long[] genreId = {};
+        if (args != null)
+            genreId = ApolloUtils.readSerializedIDs(args.getString(Config.IDS, ""));
         return new GenreSongLoader(requireContext(), genreId);
     }
 

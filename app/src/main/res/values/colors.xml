@@ -68,7 +68,4 @@
     <color name="alert">#CC0000</color>
     <color name="confirm">#FF8800</color>
 
-    <!-- default_artwork_background color -->
-    <color name="default_album_color">#484345</color>
-
 </resources>

@@ -50,6 +50,8 @@ import com.andrew.apollo.widgets.ColorPickerView;
 import com.andrew.apollo.widgets.ColorSchemeDialog;
 import com.devspark.appmsg.AppMsg;
 
+import java.io.File;
+
 /**
  * Mostly general and UI helpers.
  *
@@ -239,11 +241,11 @@ public final class ApolloUtils {
      * placed on the default launcher homescreen
      *
      * @param displayName The shortcut name
-     * @param id          The ID of the artist, album, playlist, or genre
+     * @param ids         The ID of the artist, album, playlist, or genre
      * @param mimeType    The MIME type of the shortcut
      * @param activity    The {@link FragmentActivity} to use to
      */
-    public static void createShortcutIntent(String displayName, String artistName, Long id, String mimeType, FragmentActivity activity) {
+    public static void createShortcutIntent(String displayName, String artistName, long[] ids, String mimeType, FragmentActivity activity) {
         try {
             Bitmap bitmap;
             ImageFetcher fetcher = getImageFetcher(activity);
@@ -260,10 +262,18 @@ public final class ApolloUtils {
             shortcutIntent.setAction(Intent.ACTION_VIEW);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            shortcutIntent.putExtra(Config.ID, id);
+            shortcutIntent.putExtra(Config.ID, ids[0]);
+            shortcutIntent.putExtra(Config.IDS, ApolloUtils.serializeIDs(ids));
             shortcutIntent.putExtra(Config.NAME, displayName);
             shortcutIntent.putExtra(Config.MIME_TYPE, mimeType);
-
+            // check if displayname is a path
+            if (displayName.startsWith("/")) {
+                File file = new File(displayName);
+                if (file.exists()) {
+                    // use file name as label
+                    displayName = file.getName();
+                }
+            }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 // Intent that actually sets the shortcut
                 Intent intent = new Intent();
@@ -279,7 +289,7 @@ public final class ApolloUtils {
                 ShortcutManager sManager = activity.getSystemService(ShortcutManager.class);
                 if (sManager.isRequestPinShortcutSupported()) {
                     Icon icon = Icon.createWithBitmap(bitmap);
-                    String shortcutId = displayName + "|" + artistName + "|" + id;
+                    String shortcutId = displayName + "|" + artistName + "|" + ids[0];
                     ShortcutInfo sInfo = new ShortcutInfo.Builder(activity, shortcutId).setIcon(icon)
                             .setIntent(shortcutIntent).setShortLabel(displayName).build();
                     sManager.requestPinShortcut(sInfo, null);
@@ -313,6 +323,37 @@ public final class ApolloUtils {
                 });
         colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (OnClickListener) null);
         return colorPickerView;
+    }
+
+    /**
+     * serialize ID array into a string
+     *
+     * @param ids IDs to serialize
+     * @return serialized ID array
+     */
+    public static String serializeIDs(long[] ids) {
+        StringBuilder result = new StringBuilder();
+        for (long id : ids) {
+            result.append(id);
+            result.append(';');
+        }
+        if (result.length() > 0)
+            result.deleteCharAt(result.length() - 1);
+        return result.toString();
+    }
+
+    /**
+     * read serialized ID array
+     * @param idsStr serialized string to read
+     * @return  ID array
+     */
+    public static long[] readSerializedIDs(String idsStr) {
+        String[] ids = idsStr.split(";");
+        long[] result = new long[ids.length];
+        for (int i = 0; i < ids.length ; i++) {
+            result[i] = Long.parseLong(ids[i]);
+        }
+        return result;
     }
 
     /**

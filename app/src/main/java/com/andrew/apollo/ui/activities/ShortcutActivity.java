@@ -11,7 +11,7 @@
 
 package com.andrew.apollo.ui.activities;
 
-import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.Config.*;
 
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -27,11 +27,11 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
-import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.format.Capitalize;
 import com.andrew.apollo.loaders.SearchLoader;
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 
@@ -99,42 +99,43 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         // Check for a voice query
-        if (mIntent.getAction() != null && mIntent.getAction().equals(Config.PLAY_FROM_SEARCH)) {
+        if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
             LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
         } else if (MusicUtils.isConnected()) {
             //sHandler.post(new AsyncHandler(this));
-            String requestedMimeType = "";
-            if (mIntent.getExtras() != null) {
-                requestedMimeType = mIntent.getExtras().getString(MIME_TYPE, "");
+            String requestedMimeType = mIntent.getStringExtra(MIME_TYPE);
+            long id = mIntent.getLongExtra(ID, -1);
+            if (requestedMimeType == null || id < 0) {
+                return;
             }
-
             switch (requestedMimeType) {
                 case MediaStore.Audio.Artists.CONTENT_TYPE:
                     // Shuffle the artist track list
                     mShouldShuffle = true;
                     // Get the artist song list
-                    mList = MusicUtils.getSongListForArtist(getApplicationContext(), getId());
+                    mList = MusicUtils.getSongListForArtist(getApplicationContext(), id);
                     break;
 
                 case MediaStore.Audio.Albums.CONTENT_TYPE:
                     // Shuffle the album track list
                     mShouldShuffle = true;
                     // Get the album song list
-                    mList = MusicUtils.getSongListForAlbum(getApplicationContext(), getId());
+                    mList = MusicUtils.getSongListForAlbum(getApplicationContext(), id);
                     break;
 
                 case MediaStore.Audio.Genres.CONTENT_TYPE:
                     // Shuffle the genre track list
                     mShouldShuffle = true;
                     // Get the genre song list
-                    mList = MusicUtils.getSongListForGenre(getApplicationContext(), getId());
+                    long[] ids = ApolloUtils.readSerializedIDs(mIntent.getStringExtra(IDS));
+                    mList = MusicUtils.getSongListForGenres(getApplicationContext(), ids);
                     break;
 
                 case MediaStore.Audio.Playlists.CONTENT_TYPE:
                     // Don't shuffle the playlist track list
                     mShouldShuffle = false;
                     // Get the playlist song list
-                    mList = MusicUtils.getSongListForPlaylist(getApplicationContext(), getId());
+                    mList = MusicUtils.getSongListForPlaylist(getApplicationContext(), id);
                     break;
 
                 case ProfileActivity.PAGE_FAVORIT:
@@ -149,6 +150,15 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
                     mShouldShuffle = false;
                     // Get the popular song list
                     mList = MusicUtils.getPopularSongList(getApplicationContext());
+                    break;
+
+                case ProfileActivity.PAGE_FOLDERS:
+                    // Don't shuffle the folders track list
+                    mShouldShuffle = false;
+                    // get folder path
+                    String folder = "%" + mIntent.getStringExtra(NAME);
+                    // Get folder song list
+                    mList = MusicUtils.getSongListForFolder(getApplicationContext(), folder);
                     break;
 
                 default:
@@ -250,18 +260,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
      */
     @Override
     public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-    }
-
-    /**
-     * Used to find the Id supplied
-     *
-     * @return The Id passed into the activity
-     */
-    private long getId() {
-        Bundle param = mIntent.getExtras();
-        if (param != null)
-            return param.getLong(Config.ID);
-        return -1;
     }
 
     /**

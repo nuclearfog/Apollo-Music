@@ -42,6 +42,7 @@ import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
+import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -173,7 +174,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
         Genre mGenre = mAdapter.getItem(position);
         // Create a new bundle to transfer the artist info
         Bundle bundle = new Bundle();
-        bundle.putLongArray(Config.IDS, mGenre.getGenreIds());
+        bundle.putString(Config.IDS, ApolloUtils.serializeIDs(mGenre.getGenreIds()));
         bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
         bundle.putString(Config.NAME, mGenre.getName());
         // Create the intent to launch the profile activity

@@ -551,18 +551,18 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForArtist(Context context, long id) {
         Cursor cursor = CursorFactory.makeArtistSongCursor(context, id);
+        long[] mList = EMPTY_LIST;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                long[] mList = new long[cursor.getCount()];
+                mList = new long[cursor.getCount()];
                 for (int i = 0; i < mList.length; i++) {
                     mList[i] = cursor.getLong(0);
                     cursor.moveToNext();
                 }
-                cursor.close();
-                return mList;
             }
+            cursor.close();
         }
-        return EMPTY_LIST;
+        return mList;
     }
 
     /**
@@ -609,17 +609,18 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForGenre(Context context, long id) {
         Cursor cursor = CursorFactory.makeGenreSongCursor(context, id);
+        long[] ids = EMPTY_LIST;
         if (cursor != null) {
-            cursor.moveToFirst();
-            long[] ids = new long[cursor.getCount()];
-            for (int i = 0; i < ids.length; i++) {
-                ids[i] = cursor.getLong(0);
-                cursor.moveToNext();
+            if (cursor.moveToFirst()) {
+                ids = new long[cursor.getCount()];
+                for (int i = 0; i < ids.length; i++) {
+                    ids[i] = cursor.getLong(0);
+                    cursor.moveToNext();
+                }
             }
             cursor.close();
-            return ids;
         }
-        return EMPTY_LIST;
+        return ids;
     }
 
     /**
@@ -731,6 +732,7 @@ public final class MusicUtils {
                 mTrackList[i] = cursor.getLong(0);
                 cursor.moveToNext();
             }
+            cursor.close();
             if (mTrackList.length == 0) {
                 return;
             }
@@ -748,7 +750,6 @@ public final class MusicUtils {
                 int pos = random.nextInt(mTrackList.length - 1);
                 service.open(mTrackList, pos);
                 service.play();
-                cursor.close();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -809,6 +810,7 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForFolder(Context context, String folder) {
         Cursor cursor = CursorFactory.makeFolderSongCursor(context, folder);
+        long[] result = EMPTY_LIST;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 // use dynamic array because the result size differs from cursor size
@@ -822,15 +824,14 @@ public final class MusicUtils {
                     }
                 } while (cursor.moveToNext());
                 // convert to array
-                long[] result = new long[ids.size()];
+                result = new long[ids.size()];
                 for (int pos = 0; pos < ids.size(); pos++) {
                     result[pos] = ids.get(pos);
                 }
-                return result;
             }
             cursor.close();
         }
-        return EMPTY_LIST;
+        return result;
     }
 
     /**
@@ -949,9 +950,8 @@ public final class MusicUtils {
                 // thrown when the app does not own the playlist
                 // todo add error message
                 err.printStackTrace();
-            } finally {
-                cursor.close();
             }
+            cursor.close();
         }
     }
 
@@ -1141,17 +1141,17 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForPlaylist(Context context, long playlistId) {
         Cursor cursor = CursorFactory.makePlaylistSongCursor(context, playlistId);
+        long[] ids = EMPTY_LIST;
         if (cursor != null) {
             cursor.moveToFirst();
-            long[] ids = new long[cursor.getCount()];
+            ids = new long[cursor.getCount()];
             for (int i = 0; i < ids.length; i++) {
                 ids[i] = cursor.getLong(0);
                 cursor.moveToNext();
             }
             cursor.close();
-            return ids;
         }
-        return EMPTY_LIST;
+        return ids;
     }
 
     /**
@@ -1172,8 +1172,9 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForFavorites(Context context) {
         Cursor cursor = CursorFactory.makeFavoritesCursor(context);
+        long[] ids = EMPTY_LIST;
         if (cursor != null) {
-            long[] ids = new long[cursor.getCount()];
+            ids = new long[cursor.getCount()];
             if (cursor.moveToFirst()) {
                 for (int i = 0; i < ids.length; i++) {
                     ids[i] = cursor.getLong(0);
@@ -1181,9 +1182,8 @@ public final class MusicUtils {
                 }
             }
             cursor.close();
-            return ids;
         }
-        return EMPTY_LIST;
+        return ids;
     }
 
     /**
@@ -1202,16 +1202,16 @@ public final class MusicUtils {
     @NonNull
     public static long[] getSongListForLastAdded(Context context) {
         Cursor cursor = CursorFactory.makeLastAddedCursor(context);
+        long[] list = EMPTY_LIST;
         if (cursor != null) {
-            long[] list = new long[cursor.getCount()];
+            list = new long[cursor.getCount()];
             for (int i = 0; i < list.length; i++) {
                 cursor.moveToNext();
                 list[i] = cursor.getLong(0);
             }
             cursor.close();
-            return list;
         }
-        return EMPTY_LIST;
+        return list;
     }
 
     /**
@@ -1223,16 +1223,16 @@ public final class MusicUtils {
     @NonNull
     public static long[] getPopularSongList(Context context) {
         Cursor cursor = CursorFactory.makePopularCursor(context);
+        long[] list = EMPTY_LIST;
         if (cursor != null) {
-            long[] list = new long[cursor.getCount()];
+            list = new long[cursor.getCount()];
             for (int i = 0; i < list.length; i++) {
                 cursor.moveToNext();
                 list[i] = cursor.getLong(0);
             }
             cursor.close();
-            return list;
         }
-        return EMPTY_LIST;
+        return list;
     }
 
     /**

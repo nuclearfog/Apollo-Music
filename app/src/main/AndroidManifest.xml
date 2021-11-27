@@ -38,6 +38,8 @@
     <!-- The main service uses a sticky broadcast -->
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <queries>
         <intent>
             <action android:name="com.andrew.apollo.THEMES" />

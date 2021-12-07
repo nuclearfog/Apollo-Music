@@ -13,11 +13,59 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/audio_player_controls_main_layout_height"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/audio_player_controls_padding"
     android:baselineAligned="false">
+
+    <TextView
+        android:id="@+id/audio_player_current_time"
+        android:layout_width="@dimen/audio_player_time_width"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/audio_player_current_time"
+        android:textSize="@dimen/text_size_micro"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/player_progress"
+        app:layout_constraintBottom_toBottomOf="@id/player_progress"
+        app:layout_constraintEnd_toStartOf="@id/player_progress" />
+
+    <SeekBar
+        android:id="@+id/player_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginBottom="@dimen/audio_player_seek_bar_margin_bottom"
+        android:max="1000"
+        android:thumb="@null"
+        app:layout_constraintStart_toEndOf="@id/audio_player_current_time"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/audio_player_controls_barrier"
+        app:layout_constraintEnd_toStartOf="@id/audio_player_total_time" />
+
+    <TextView
+        android:id="@+id/audio_player_total_time"
+        android:layout_width="@dimen/audio_player_time_width"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/audio_player_total_time"
+        android:textSize="@dimen/text_size_micro"
+        android:singleLine="true"
+        app:layout_constraintStart_toEndOf="@id/player_progress"
+        app:layout_constraintTop_toTopOf="@id/player_progress"
+        app:layout_constraintBottom_toBottomOf="@id/player_progress"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/audio_player_controls_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="audio_player_total_time,player_progress,audio_player_current_time"/>
 
     <com.andrew.apollo.widgets.ShuffleButton
         android:id="@+id/action_button_shuffle"
@@ -27,7 +75,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/btn_playback_shuffle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player_controls_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_previous" />
 
@@ -39,7 +87,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/btn_playback_previous"
         app:layout_constraintStart_toEndOf="@id/action_button_shuffle"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player_controls_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_play" />
 
@@ -53,7 +101,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/btn_playback_play"
         app:layout_constraintStart_toEndOf="@id/action_button_previous"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player_controls_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_next" />
 
@@ -65,7 +113,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/btn_playback_next"
         app:layout_constraintStart_toEndOf="@id/action_button_play"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player_controls_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_repeat" />
 
@@ -79,7 +127,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/btn_playback_repeat"
         app:layout_constraintStart_toEndOf="@id/action_button_next"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_player_controls_barrier"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -8,8 +8,8 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
-        classpath 'io.michaelrocks:paranoid-gradle-plugin:0.3.5'
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath 'io.michaelrocks:paranoid-gradle-plugin:0.3.7'
         classpath 'gradle.plugin.ru.cleverpumpkin.proguard-dictionaries-generator:plugin:1.0.8'
     }
 }

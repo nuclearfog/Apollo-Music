@@ -643,6 +643,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // Remove the audio focus listener and lock screen controls
         mAudioManager.abandonAudioFocus(this);
         mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
+        mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
         // Remove any callbacks from the handler
         mPlayerHandler.removeCallbacksAndMessages(null);
         // Close the cursor
@@ -1808,7 +1809,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     public void play() {
         int status = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         if (status == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            mAudioManager.registerMediaButtonEventReceiver(new ComponentName(this, MediaButtonIntentReceiver.class));
             if (mPlayer.isInitialized()) {
                 long duration = mPlayer.duration();
                 if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {

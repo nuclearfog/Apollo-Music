@@ -266,11 +266,6 @@
                 android:resource="@xml/app_widget_recents" />
         </receiver>
 
-        <!-- The service serving the RemoteViews to the recently listened App Widget -->
-        <service
-            android:name="com.andrew.apollo.appwidgets.RecentWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <!-- Media button receiver -->
         <receiver
             android:name=".MediaButtonIntentReceiver"
@@ -280,6 +275,11 @@
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
+
+        <!-- The service serving the RemoteViews to the recently listened App Widget -->
+        <service
+            android:name="com.andrew.apollo.appwidgets.RecentWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- Music service -->
         <service

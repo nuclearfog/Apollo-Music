@@ -21,7 +21,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -56,16 +55,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.andrew.apollo.appwidgets.AppWidgetBase;
-import com.andrew.apollo.appwidgets.AppWidgetLarge;
-import com.andrew.apollo.appwidgets.AppWidgetLargeAlternate;
-import com.andrew.apollo.appwidgets.AppWidgetSmall;
-import com.andrew.apollo.appwidgets.RecentWidgetProvider;
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.provider.RecentStore;
+import com.andrew.apollo.receiver.MediaButtonIntentReceiver;
+import com.andrew.apollo.receiver.UnmountBroadcastReceiver;
+import com.andrew.apollo.receiver.WidgetBroadcastReceiver;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
@@ -316,19 +313,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private IBinder mBinder = new ServiceStub(this);
 
     /**
-     * App widgets to update
-     */
-    private AppWidgetBase[] widgets = {
-            new AppWidgetSmall(),
-            new AppWidgetLarge(),
-            new AppWidgetLargeAlternate(),
-            new RecentWidgetProvider()
-    };
-
-    /**
      * Broadcast receiver for widget actions
      */
-    private BroadcastReceiver mIntentReceiver = new WidgetBroadcastReceiver();
+    private WidgetBroadcastReceiver mIntentReceiver;
 
     /**
      * broadcast listener for unmounting external storage
@@ -369,7 +356,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
     /**
      * Monitors the audio state
-     */
+     *///todo
     private AudioManager mAudioManager;
 
     /**
@@ -508,6 +495,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         mImageFetcher = ImageFetcher.getInstance(this);
         // Initialize the image cache
         mImageFetcher.setImageCache(ImageCache.getInstance(this));
+//todo
+        mIntentReceiver = new WidgetBroadcastReceiver(this);
+        mUnmountReceiver = new UnmountBroadcastReceiver(this);
 
         // Start up the thread running the service. Note that we create a
         // separate thread because the service normally runs in the process's
@@ -706,7 +696,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      *
      */
-    private void handleCommandIntent(Intent intent) {
+    public void handleCommandIntent(Intent intent) {
         String action = intent.getAction();
         String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
 
@@ -776,14 +766,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * open.
      */
     public void registerExternalStorageListener() {
-        if (mUnmountReceiver == null) {
-            mUnmountReceiver = new UnmountBroadcastReceiver();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_MEDIA_EJECT);
-            filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-            filter.addDataScheme("file");
-            registerReceiver(mUnmountReceiver, filter);
-        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_MEDIA_EJECT);
+        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addDataScheme("file");
+        registerReceiver(mUnmountReceiver, filter);
     }
 
     /**
@@ -1225,10 +1212,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
                 mNotificationHelper.updateNotification();
             }
         }
-        // Update the app-widgets
-        for (AppWidgetBase widget : widgets) {
-            widget.notifyChange(this, what);
-        }
+        mIntentReceiver.updateWidgets(this, what);
     }
 
     /**
@@ -2028,6 +2012,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         notifyChange(REFRESH);
     }
 
+
+
+
     private static final class MusicPlayerHandler extends Handler {
         private WeakReference<MusicPlaybackService> mService;
         private float mCurrentVolume = 1.0f;
@@ -2136,57 +2123,22 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
     }
 
-    /**
-     * widget Broadcast listener
-     */
-    private final class WidgetBroadcastReceiver extends BroadcastReceiver {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String command = intent.getStringExtra(CMDNAME);
-            int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
-
-            if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
-                widgets[0].performUpdate(MusicPlaybackService.this, small);
-            } else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
-                widgets[1].performUpdate(MusicPlaybackService.this, small);
-            } else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
-                widgets[2].performUpdate(MusicPlaybackService.this, small);
-            } else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
-                widgets[3].performUpdate(MusicPlaybackService.this, small);
-            } else {
-                handleCommandIntent(intent);
-            }
-        }
+    public void onEject() {
+        saveQueue(true);
+        mQueueIsSaveable = false;
+        closeExternalStorageFiles();
     }
 
-    /**
-     * Custom broadcast listener for unmounting external storage
-     */
-    private final class UnmountBroadcastReceiver extends BroadcastReceiver {
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
-                saveQueue(true);
-                mQueueIsSaveable = false;
-                closeExternalStorageFiles();
-            } else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-                mMediaMountedCount++;
-                getCardId();
-                reloadQueue();
-                mQueueIsSaveable = true;
-                notifyChange(QUEUE_CHANGED);
-                notifyChange(META_CHANGED);
-            }
-        }
+    public void onUnmount() {
+        mMediaMountedCount++;
+        getCardId();
+        reloadQueue();
+        mQueueIsSaveable = true;
+        notifyChange(QUEUE_CHANGED);
+        notifyChange(META_CHANGED);
     }
+
 
     /**
      *

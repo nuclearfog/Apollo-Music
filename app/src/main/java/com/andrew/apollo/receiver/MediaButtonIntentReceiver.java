@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo;
+package com.andrew.apollo.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,6 +22,8 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.view.KeyEvent;
 
+import com.andrew.apollo.BuildConfig;
+import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.ui.activities.HomeActivity;
 
 import static androidx.legacy.content.WakefulBroadcastReceiver.startWakefulService;

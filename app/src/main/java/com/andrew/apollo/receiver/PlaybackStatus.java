@@ -1,4 +1,4 @@
-package com.andrew.apollo.utils;
+package com.andrew.apollo.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

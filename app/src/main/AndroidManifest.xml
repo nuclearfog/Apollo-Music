@@ -268,7 +268,7 @@
 
         <!-- Media button receiver -->
         <receiver
-            android:name=".MediaButtonIntentReceiver"
+            android:name=".receiver.MediaButtonIntentReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

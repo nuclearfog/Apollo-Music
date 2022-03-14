@@ -226,7 +226,7 @@ public final class MusicUtils {
      * MusicPlaybackService #openCurrentAndNext()} is used, the user won't
      * be able to travel to the previously skipped track. To remedy this,
      * {@link MusicPlaybackService #openCurrent()} is called in {@link
-     * MusicPlaybackService#prev()}. {@code #startService(Intent intent)}
+     * MusicPlaybackService}. {@code #startService(Intent intent)}
      * is called here to specifically invoke the onStartCommand used by
      * {@link MusicPlaybackService}, which states if the current position
      * less than 2000 ms, start the track over, otherwise move to the

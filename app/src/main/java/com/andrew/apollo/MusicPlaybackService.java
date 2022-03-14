@@ -680,23 +680,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
     }
 
     /**
-     *
-     */
-    private void getCardId() {
-        try {
-            Cursor cursor = CursorFactory.makeCardCursor(this);
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    mCardId = cursor.getInt(0);
-                }
-                cursor.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * @return The album art for the current album.
      */
     public Bitmap getAlbumArt() {
@@ -808,6 +791,23 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
             }
         }
         return -1;
+    }
+
+    /**
+     *
+     */
+    private void getCardId() {
+        try {
+            Cursor cursor = CursorFactory.makeCardCursor(this);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    mCardId = cursor.getInt(0);
+                }
+                cursor.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1924,37 +1924,37 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
         @Override
         public void onPlay() {
-            super.onPlay();
             play();
         }
 
         @Override
         public void onPause() {
-            super.onPause();
             pause();
         }
 
         @Override
         public void onStop() {
-            super.onStop();
             stop();
         }
 
         @Override
         public void onSkipToNext() {
-            super.onSkipToNext();
             gotoNext(true);
         }
 
         @Override
         public void onSkipToPrevious() {
-            super.onSkipToPrevious();
             if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
                 prev();
             } else {
                 seek(0);
                 play();
             }
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            seek(pos);
         }
     }
 

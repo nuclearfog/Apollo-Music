@@ -22,7 +22,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,14 +31,13 @@ import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
-import android.media.RemoteControlClient;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -50,20 +48,22 @@ import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media.MediaBrowserServiceCompat;
 
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.provider.RecentStore;
-import com.andrew.apollo.receiver.MediaButtonIntentReceiver;
 import com.andrew.apollo.receiver.UnmountBroadcastReceiver;
 import com.andrew.apollo.receiver.WidgetBroadcastReceiver;
-import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
@@ -80,7 +80,7 @@ import java.util.TreeSet;
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
-public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
+public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener {
 
     /**
      *
@@ -120,8 +120,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      */
     public static final String MUSIC_PACKAGE_NAME = "com.android.music";
     /**
-     * Called to indicate a general service commmand. Used in
-     * {@link MediaButtonIntentReceiver}
+     * Called to indicate a general service commmand.
      */
     public static final String SERVICECMD = APOLLO_PACKAGE_NAME + ".musicservicecommand";
     /**
@@ -160,10 +159,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      */
     public static final String NOW_IN_FOREGROUND = "nowinforeground";
-    /**
-     *
-     */
-    public static final String FROM_MEDIA_BUTTON = "frommediabutton";
     /**
      * Used to easily notify a list that it should refresh. i.e. A playlist changes
      */
@@ -355,11 +350,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     private Cursor mAlbumCursor;
 
     /**
-     * Monitors the audio state
-     *///todo
-    private AudioManager mAudioManager;
-
-    /**
      * Used to know when the service is active
      */
     private boolean mServiceInUse = false;
@@ -378,13 +368,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * Used to track what type of audio focus loss caused the playback to pause
      */
     private boolean mPausedByTransientLossOfFocus = false;
-
-    /**
-     * Lock screen controls
-     */
-    private RemoteControlClient mRemoteControlClient;
-
-    private ComponentName mMediaButtonReceiverComponent;
 
     private PreferenceUtils settings;
 
@@ -406,8 +389,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
     private int mServiceStartId = -1;
 
-    private MusicPlayerHandler mPlayerHandler;
+    private MediaSessionCompat mSession;
 
+    private MusicPlayerHandler mPlayerHandler;
     /**
      * Image cache
      */
@@ -495,7 +479,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         mImageFetcher = ImageFetcher.getInstance(this);
         // Initialize the image cache
         mImageFetcher.setImageCache(ImageCache.getInstance(this));
-//todo
+
+        // initialize broadcast receiver
         mIntentReceiver = new WidgetBroadcastReceiver(this);
         mUnmountReceiver = new UnmountBroadcastReceiver(this);
 
@@ -506,44 +491,47 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PLAY
+                | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE
+                | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
+
         // Initialize the handler
         mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
-
-        // Initialize the audio manager and register any headset controls for playback
-        mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mMediaButtonReceiverComponent = new ComponentName(this, MediaButtonIntentReceiver.class);
-        mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
-
-        // Use the remote control APIs to set the playback state
-        setUpRemoteControlClient();
+        mSession = new MediaSessionCompat(getApplicationContext(), TAG);
+        mSession.setCallback(new MediaCallback(), mPlayerHandler);
+        mSession.setPlaybackState(state);
+        mSession.setActive(true);
 
         // Initialize the preferences
         settings = PreferenceUtils.getInstance(this);
         getCardId();
 
-        registerExternalStorageListener();
-
-        // Initialize the media player
-        mPlayer = new MultiPlayer(this);
-        mPlayer.setHandler(mPlayerHandler);
+        // register external storage listener
+        IntentFilter filterStorage = new IntentFilter();
+        filterStorage.addAction(Intent.ACTION_MEDIA_EJECT);
+        filterStorage.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filterStorage.addDataScheme("file");
+        registerReceiver(mUnmountReceiver, filterStorage);
 
         // Initialize the intent filter and each action
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SERVICECMD);
-        filter.addAction(TOGGLEPAUSE_ACTION);
-        filter.addAction(PAUSE_ACTION);
-        filter.addAction(STOP_ACTION);
-        filter.addAction(NEXT_ACTION);
-        filter.addAction(PREVIOUS_ACTION);
-        filter.addAction(REPEAT_ACTION);
-        filter.addAction(SHUFFLE_ACTION);
-
-        // Attach the broadcast listener
-        registerReceiver(mIntentReceiver, filter);
+        IntentFilter filterAction = new IntentFilter();
+        filterAction.addAction(SERVICECMD);
+        filterAction.addAction(TOGGLEPAUSE_ACTION);
+        filterAction.addAction(PAUSE_ACTION);
+        filterAction.addAction(STOP_ACTION);
+        filterAction.addAction(NEXT_ACTION);
+        filterAction.addAction(PREVIOUS_ACTION);
+        filterAction.addAction(REPEAT_ACTION);
+        filterAction.addAction(SHUFFLE_ACTION);
+        registerReceiver(mIntentReceiver, filterAction);
 
         // Initialize the delayed shutdown intent
         Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
         shutdownIntent.setAction(SHUTDOWN);
+
+        // Initialize the media player
+        mPlayer = new MultiPlayer(this);
+        mPlayer.setHandler(mPlayerHandler);
 
         // Create notification channel on Android 8+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -568,56 +556,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * {@inheritDoc}
      */
     @Override
-    public void onAudioFocusChange(int focusChange) {
-        mPlayerHandler.obtainMessage(FOCUSCHANGE, focusChange, 0).sendToTarget();
-    }
-
-    /**
-     * Initializes the remote control client
-     */
-    private void setUpRemoteControlClient() {
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        mediaButtonIntent.setComponent(mMediaButtonReceiverComponent);
-        int intentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            intentFlags |= PendingIntent.FLAG_IMMUTABLE;
-        PendingIntent controlIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, intentFlags);
-        mRemoteControlClient = new RemoteControlClient(controlIntent);
-        mAudioManager.registerRemoteControlClient(mRemoteControlClient);
-
-        // Flags for the media transport control that this client supports.
-        int flags = RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS
-                | RemoteControlClient.FLAG_KEY_MEDIA_NEXT
-                | RemoteControlClient.FLAG_KEY_MEDIA_PLAY
-                | RemoteControlClient.FLAG_KEY_MEDIA_PAUSE
-                | RemoteControlClient.FLAG_KEY_MEDIA_PLAY_PAUSE
-                | RemoteControlClient.FLAG_KEY_MEDIA_STOP;
-
-        if (ApolloUtils.hasJellyBeanMR2()) {
-            flags |= RemoteControlClient.FLAG_KEY_MEDIA_POSITION_UPDATE;
-
-            mRemoteControlClient.setOnGetPlaybackPositionListener(
-                    new RemoteControlClient.OnGetPlaybackPositionListener() {
-                        @Override
-                        public long onGetPlaybackPosition() {
-                            return position();
-                        }
-                    });
-            mRemoteControlClient.setPlaybackPositionUpdateListener(
-                    new RemoteControlClient.OnPlaybackPositionUpdateListener() {
-                        @Override
-                        public void onPlaybackPositionUpdate(long newPositionMs) {
-                            seek(newPositionMs);
-                        }
-                    });
-        }
-        mRemoteControlClient.setTransportControlFlags(flags);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void onDestroy() {
         // Remove any sound effects
         Intent audioEffectsIntent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
@@ -630,10 +568,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         mPlayerHandler.removeCallbacksAndMessages(null);
         // Release the player
         mPlayer.release();
-        // Remove the audio focus listener and lock screen controls
-        mAudioManager.abandonAudioFocus(this);
-        mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
-        mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+        // release player callbacks
+        mSession.release();
+
         // Remove any callbacks from the handler
         mPlayerHandler.removeCallbacksAndMessages(null);
         // Close the cursor
@@ -646,6 +583,30 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
         mNotificationHelper.cancelNotification();
         super.onDestroy();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nullable
+    @Override
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        mPlayerHandler.obtainMessage(FOCUSCHANGE, focusChange, 0).sendToTarget();
     }
 
     /**
@@ -676,21 +637,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         // just started but not bound to and nothing is playing
         scheduleDelayedShutdown();
         return START_STICKY;
-    }
-
-    /**
-     *
-     */
-    private void releaseServiceUiAndStop() {
-        if (isPlaying() || mPausedByTransientLossOfFocus || mPlayerHandler.hasMessages(TRACK_ENDED)) {
-            return;
-        }
-        stopForeground(true);
-        mAudioManager.abandonAudioFocus(this);
-        if (!mServiceInUse) {
-            saveQueue(true);
-            stopSelf(mServiceStartId);
-        }
     }
 
     /**
@@ -751,26 +697,117 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     * Called when we receive a ACTION_MEDIA_EJECT notification.
+     * @return The album art for the current album.
      */
-    public void closeExternalStorageFiles() {
+    public Bitmap getAlbumArt() {
+        // Return the cached artwork
+        return mImageFetcher.getArtwork(getAlbumName(), getAlbumId(), getArtistName());
+    }
+
+    /**
+     * @return True if music is playing, false otherwise
+     */
+    public boolean isPlaying() {
+        return mIsSupposedToBePlaying;
+    }
+
+    /**
+     *
+     */
+    public void onEject() {
+        saveQueue(true);
+        mQueueIsSaveable = false;
         stop(true);
         notifyChange(QUEUE_CHANGED);
         notifyChange(META_CHANGED);
     }
 
     /**
-     * Registers an intent to listen for ACTION_MEDIA_EJECT notifications. The
-     * intent will call closeExternalStorageFiles() if the external media is
-     * going to be ejected, so applications can clean up any files they have
-     * open.
+     * callback used to notify if an external storage was unmounted
      */
-    public void registerExternalStorageListener() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_MEDIA_EJECT);
-        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-        filter.addDataScheme("file");
-        registerReceiver(mUnmountReceiver, filter);
+    public void onUnmount() {
+        mMediaMountedCount++;
+        getCardId();
+        reloadQueue();
+        mQueueIsSaveable = true;
+        notifyChange(QUEUE_CHANGED);
+        notifyChange(META_CHANGED);
+    }
+
+    /**
+     * Returns the shuffle mode
+     *
+     * @return The current shuffle mode (all, party, none)
+     */
+    public int getShuffleMode() {
+        return mShuffleMode;
+    }
+
+    /**
+     * Returns the repeat mode
+     *
+     * @return The current repeat mode (all, one, none)
+     */
+    public int getRepeatMode() {
+        return mRepeatMode;
+    }
+
+    /**
+     * Returns the album name
+     *
+     * @return The current song album Name
+     */
+    @SuppressLint("InlinedApi")
+    public String getAlbumName() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+            }
+            return "";
+        }
+    }
+
+    /**
+     * Returns the song name
+     *
+     * @return The current song name
+     */
+    public String getTrackName() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Returns the artist name
+     *
+     * @return The current song artist name
+     */
+    @SuppressLint("InlinedApi")
+    public String getArtistName() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Returns the album ID
+     *
+     * @return The current song album ID
+     */
+    public long getAlbumId() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(Media.ALBUM_ID));
+            }
+        }
+        return -1;
     }
 
     /**
@@ -1163,11 +1200,24 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
+     *
+     */
+    private void releaseServiceUiAndStop() {
+        if (isPlaying() || mPausedByTransientLossOfFocus || mPlayerHandler.hasMessages(TRACK_ENDED)) {
+            return;
+        }
+        stopForeground(true);
+        //mediaSession.abandonAudioFocus(this);
+        if (!mServiceInUse) {
+            saveQueue(true);
+            stopSelf(mServiceStartId);
+        }
+    }
+
+    /**
      * Notify the change-receivers that something has changed.
      */
     private void notifyChange(String what) {
-        // Update the lockscreen controls
-        updateRemoteControlClient(what);
 
         if (what.equals(POSITION_CHANGED)) {
             return;
@@ -1218,45 +1268,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      *
      */
-    public void updateNotification() {
+    private void updateNotification() {
         mNotificationHelper.updateNotification();
-    }
-
-    /**
-     * Updates the lockscreen controls.
-     *
-     * @param what The broadcast
-     */
-    private void updateRemoteControlClient(String what) {
-        int playState = mIsSupposedToBePlaying ? RemoteControlClient.PLAYSTATE_PLAYING : RemoteControlClient.PLAYSTATE_PAUSED;
-        if (ApolloUtils.hasJellyBeanMR2() && (what.equals(PLAYSTATE_CHANGED) || what.equals(POSITION_CHANGED))) {
-            mRemoteControlClient.setPlaybackState(playState, position(), 1.0f);
-        } else if (what.equals(PLAYSTATE_CHANGED)) {
-            mRemoteControlClient.setPlaybackState(playState);
-        } else if (what.equals(META_CHANGED) || what.equals(QUEUE_CHANGED)) {
-            Bitmap albumArt = getAlbumArt();
-            if (albumArt != null) {
-                // RemoteControlClient wants to recycle the bitmaps thrown at it, so we need
-                // to make sure not to hand out our cache copy
-                Bitmap.Config config = albumArt.getConfig();
-                if (config == null) {
-                    config = Bitmap.Config.ARGB_8888;
-                }
-                albumArt = albumArt.copy(config, false);
-            }
-            mRemoteControlClient
-                    .editMetadata(true)
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, getArtistName())
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, getAlbumArtistName())
-                    .putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, getAlbumName())
-                    .putString(MediaMetadataRetriever.METADATA_KEY_TITLE, getTrackName())
-                    .putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, duration())
-                    .putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, albumArt)
-                    .apply();
-            if (ApolloUtils.hasJellyBeanMR2()) {
-                mRemoteControlClient.setPlaybackState(playState, position(), 1.0f);
-            }
-        }
     }
 
     /**
@@ -1339,7 +1352,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @param path The path of the file to open
      */
-    public boolean openFile(String path) {
+    private boolean openFile(String path) {
         synchronized (this) {
             if (path == null) {
                 return false;
@@ -1382,7 +1395,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return The current media player audio session ID
      */
-    public int getAudioSessionId() {
+    private int getAudioSessionId() {
         synchronized (this) {
             return mPlayer.getAudioSessionId();
         }
@@ -1393,17 +1406,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
      */
-    public int getMediaMountedCount() {
+    private int getMediaMountedCount() {
         return mMediaMountedCount;
-    }
-
-    /**
-     * Returns the shuffle mode
-     *
-     * @return The current shuffle mode (all, party, none)
-     */
-    public int getShuffleMode() {
-        return mShuffleMode;
     }
 
     /**
@@ -1411,7 +1415,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @param shufflemode The shuffle mode to use
      */
-    public void setShuffleMode(int shufflemode) {
+    private void setShuffleMode(int shufflemode) {
         synchronized (this) {
             if (mShuffleMode == shufflemode && !mPlayList.isEmpty()) {
                 return;
@@ -1449,26 +1453,105 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     * Returns the repeat mode
+     * Returns the path to current song
      *
-     * @return The current repeat mode (all, one, none)
+     * @return The path to the current song
      */
-    public int getRepeatMode() {
-        return mRepeatMode;
+    private String getPath() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
+            }
+            return "";
+        }
     }
 
     /**
-     * Sets the repeat mode
+     * Sets the position of a track in the queue
      *
-     * @param repeatmode The repeat mode to use
+     * @param index The position to place the track
      */
-    public void setRepeatMode(int repeatmode) {
+    private void setQueuePosition(int index) {
         synchronized (this) {
-            mRepeatMode = repeatmode;
-            setNextTrack();
-            saveQueue(false);
-            notifyChange(REPEATMODE_CHANGED);
+            stop(false);
+            mPlayPos = index;
+            openCurrentAndNext();
+            play();
+            notifyChange(META_CHANGED);
+            if (mShuffleMode == SHUFFLE_AUTO) {
+                doAutoShuffleUpdate();
+            }
         }
+    }
+
+    /**
+     * Returns the position in the queue
+     *
+     * @return the current position in the queue
+     */
+    private int getQueuePosition() {
+        synchronized (this) {
+            return mPlayPos;
+        }
+    }
+
+    /**
+     * Returns the artist ID
+     *
+     * @return The current song artist ID
+     */
+    private long getArtistId() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
+            }
+        }
+        return -1;
+    }
+
+
+    @SuppressLint("InlinedApi")
+    private long getDurationMillis() {
+        synchronized (this) {
+            if (mCursor != null && mCursor.moveToFirst()) {
+                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the current audio ID
+     *
+     * @return The current track ID
+     */
+    private long getAudioId() {
+        synchronized (this) {
+            if (mPlayPos >= 0 && mPlayer.isInitialized()) {
+                return mPlayList.get(mPlayPos);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Seeks the current track to a specific time
+     *
+     * @param position The time to seek to
+     * @return The time to play the track at
+     */
+    private long seek(long position) {
+        if (mPlayer.isInitialized()) {
+            if (position < 0) {
+                position = 0;
+            } else if (position > mPlayer.duration()) {
+                position = mPlayer.duration();
+            }
+            mPlayer.seek(position);
+            notifyChange(POSITION_CHANGED);
+            return position;
+        }
+        return -1;
     }
 
     /**
@@ -1477,7 +1560,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param id The id to be removed
      * @return how many instances of the track were removed
      */
-    public int removeTrack(long id) {
+    private int removeTrack(long id) {
         int numremoved = 0;
         synchronized (this) {
             for (int pos = 0; pos < mPlayList.size(); pos++) {
@@ -1501,7 +1584,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param last  The last file to be removed
      * @return the number of tracks deleted
      */
-    public int removeTracks(int first, int last) {
+    private int removeTracks(int first, int last) {
         int numremoved = removeTracksInternal(first, last);
         if (numremoved > 0) {
             notifyChange(QUEUE_CHANGED);
@@ -1510,185 +1593,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     * Returns the position in the queue
-     *
-     * @return the current position in the queue
-     */
-    public int getQueuePosition() {
-        synchronized (this) {
-            return mPlayPos;
-        }
-    }
-
-    /**
-     * Sets the position of a track in the queue
-     *
-     * @param index The position to place the track
-     */
-    public void setQueuePosition(int index) {
-        synchronized (this) {
-            stop(false);
-            mPlayPos = index;
-            openCurrentAndNext();
-            play();
-            notifyChange(META_CHANGED);
-            if (mShuffleMode == SHUFFLE_AUTO) {
-                doAutoShuffleUpdate();
-            }
-        }
-    }
-
-    /**
-     * Returns the path to current song
-     *
-     * @return The path to the current song
-     */
-    public String getPath() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
-            }
-            return "";
-        }
-    }
-
-    /**
-     * Returns the album name
-     *
-     * @return The current song album Name
-     */
-    @SuppressLint("InlinedApi")
-    public String getAlbumName() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
-            }
-            return "";
-        }
-    }
-
-    /**
-     * Returns the song name
-     *
-     * @return The current song name
-     */
-    public String getTrackName() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Returns the artist name
-     *
-     * @return The current song artist name
-     */
-    @SuppressLint("InlinedApi")
-    public String getArtistName() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Returns the artist name
-     *
-     * @return The current song artist name
-     */
-    public String getAlbumArtistName() {
-        synchronized (this) {
-            if (mAlbumCursor != null && mAlbumCursor.moveToFirst()) {
-                return mAlbumCursor.getString(2);
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Returns the album ID
-     *
-     * @return The current song album ID
-     */
-    public long getAlbumId() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getLong(mCursor.getColumnIndexOrThrow(Media.ALBUM_ID));
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Returns the artist ID
-     *
-     * @return The current song artist ID
-     */
-    public long getArtistId() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
-            }
-        }
-        return -1;
-    }
-
-
-    @SuppressLint("InlinedApi")
-    public long getDurationMillis() {
-        synchronized (this) {
-            if (mCursor != null && mCursor.moveToFirst()) {
-                return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Returns the current audio ID
-     *
-     * @return The current track ID
-     */
-    public long getAudioId() {
-        synchronized (this) {
-            if (mPlayPos >= 0 && mPlayer.isInitialized()) {
-                return mPlayList.get(mPlayPos);
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Seeks the current track to a specific time
-     *
-     * @param position The time to seek to
-     * @return The time to play the track at
-     */
-    public long seek(long position) {
-        if (mPlayer.isInitialized()) {
-            if (position < 0) {
-                position = 0;
-            } else if (position > mPlayer.duration()) {
-                position = mPlayer.duration();
-            }
-            mPlayer.seek(position);
-            notifyChange(POSITION_CHANGED);
-            return position;
-        }
-        return -1;
-    }
-
-    /**
      * Returns the current position in time of the currenttrack
      *
      * @return The current playback position in miliseconds
      */
-    public long position() {
+    private long position() {
         if (mPlayer.isInitialized()) {
             return mPlayer.position();
         }
@@ -1700,7 +1609,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return The duration of the current track in miliseconds
      */
-    public long duration() {
+    private long duration() {
         if (mPlayer.isInitialized()) {
             return mPlayer.duration();
         }
@@ -1712,7 +1621,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      *
      * @return The queue as a long[]
      */
-    public long[] getQueue() {
+    private long[] getQueue() {
         synchronized (this) {
             int len = mPlayList.size();
             long[] list = new long[len];
@@ -1724,16 +1633,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     * @return True if music is playing, false otherwise
-     */
-    public boolean isPlaying() {
-        return mIsSupposedToBePlaying;
-    }
-
-    /**
      * True if the current track is a "favorite", false otherwise
      */
-    public boolean isFavorite() {
+    private boolean isFavorite() {
         if (mFavoritesCache != null) {
             synchronized (this) {
                 return mFavoritesCache.exists(getAudioId());
@@ -1743,12 +1645,26 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
+     * Sets the repeat mode
+     *
+     * @param repeatmode The repeat mode to use
+     */
+    private void setRepeatMode(int repeatmode) {
+        synchronized (this) {
+            mRepeatMode = repeatmode;
+            setNextTrack();
+            saveQueue(false);
+            notifyChange(REPEATMODE_CHANGED);
+        }
+    }
+
+    /**
      * Opens a list for playback
      *
      * @param list     The list of tracks to open
      * @param position The position to start playback at
      */
-    public void open(long[] list, int position) {
+    private void open(long[] list, int position) {
         synchronized (this) {
             if (mShuffleMode == SHUFFLE_AUTO) {
                 mShuffleMode = SHUFFLE_NORMAL;
@@ -1783,40 +1699,37 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * Stops playback.
      */
-    public void stop() {
+    private void stop() {
         stop(true);
     }
 
     /**
      * Resumes or starts playback.
      */
-    public void play() {
-        int status = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        if (status == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            if (mPlayer.isInitialized()) {
-                long duration = mPlayer.duration();
-                if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
-                    gotoNext(true);
-                }
-                mPlayer.start();
-                mPlayerHandler.removeMessages(FADEDOWN);
-                mPlayerHandler.sendEmptyMessage(FADEUP);
-                if (!mIsSupposedToBePlaying) {
-                    mIsSupposedToBePlaying = true;
-                    notifyChange(PLAYSTATE_CHANGED);
-                }
-                cancelShutdown();
-                updateNotification();
-            } else if (mPlayList.isEmpty()) {
-                setShuffleMode(SHUFFLE_AUTO);
+    private void play() {
+        if (mPlayer.isInitialized()) {
+            long duration = mPlayer.duration();
+            if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
+                gotoNext(true);
             }
+            mPlayer.start();
+            mPlayerHandler.removeMessages(FADEDOWN);
+            mPlayerHandler.sendEmptyMessage(FADEUP);
+            if (!mIsSupposedToBePlaying) {
+                mIsSupposedToBePlaying = true;
+                notifyChange(PLAYSTATE_CHANGED);
+            }
+            cancelShutdown();
+            updateNotification();
+        } else if (mPlayList.isEmpty()) {
+            setShuffleMode(SHUFFLE_AUTO);
         }
     }
 
     /**
      * Temporarily pauses playback.
      */
-    public void pause() {
+    private void pause() {
         synchronized (this) {
             mPlayerHandler.removeMessages(FADEUP);
             if (mIsSupposedToBePlaying) {
@@ -1831,7 +1744,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * Changes from the current track to the next track
      */
-    public void gotoNext(boolean force) {
+    private void gotoNext(boolean force) {
         synchronized (this) {
             if (mPlayList.isEmpty()) {
                 scheduleDelayedShutdown();
@@ -1857,7 +1770,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * Changes from the current track to the previous played track
      */
-    public void prev() {
+    private void prev() {
         synchronized (this) {
             if (mShuffleMode == SHUFFLE_NORMAL) {
                 // Go to previously-played track and remove it from the history
@@ -1892,7 +1805,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     /**
      * Toggles the current song as a favorite.
      */
-    public void toggleFavorite() {
+    private void toggleFavorite() {
         if (mFavoritesCache != null) {
             synchronized (this) {
                 long trackId = getAudioId();
@@ -1912,7 +1825,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param from The position the item is currently at
      * @param to   The position the item is being moved to
      */
-    public void moveQueueItem(int from, int to) {
+    private void moveQueueItem(int from, int to) {
         synchronized (this) {
             if (from >= mPlayList.size()) {
                 from = mPlayList.size() - 1;
@@ -1942,7 +1855,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
      * @param list   The list to queue
      * @param action The action to take
      */
-    public void enqueue(long[] list, int action) {
+    private void enqueue(long[] list, int action) {
         synchronized (this) {
             if (action == NEXT && mPlayPos + 1 < mPlayList.size()) {
                 addToPlayList(list, mPlayPos + 1);
@@ -1998,24 +1911,106 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     * @return The album art for the current album.
-     */
-    public Bitmap getAlbumArt() {
-        // Return the cached artwork
-        return mImageFetcher.getArtwork(getAlbumName(), getAlbumId(), getArtistName());
-    }
-
-    /**
      * Called when one of the lists should refresh or requery.
      */
-    public void refresh() {
+    private void refresh() {
         notifyChange(REFRESH);
     }
 
+    /**
+     * callback class for media keys like play/pause
+     */
+    private class MediaCallback extends MediaSessionCompat.Callback {
 
+        @Override
+        public void onPlay() {
+            super.onPlay();
+            play();
+        }
 
+        @Override
+        public void onPause() {
+            super.onPause();
+            pause();
+        }
 
-    private static final class MusicPlayerHandler extends Handler {
+        @Override
+        public void onStop() {
+            super.onStop();
+            stop();
+        }
+
+        @Override
+        public void onSkipToNext() {
+            super.onSkipToNext();
+            gotoNext(true);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            super.onSkipToPrevious();
+            if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+                prev();
+            } else {
+                seek(0);
+                play();
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private static class Shuffler {
+
+        private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
+
+        private TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
+
+        private Random mRandom = new Random();
+
+        private int mPrevious;
+
+        /**
+         * Constructor of <code>Shuffler</code>
+         */
+        public Shuffler() {
+            super();
+        }
+
+        /**
+         * @param interval The duration the queue
+         * @return The position of the next track to play
+         */
+        public int nextInt(int interval) {
+            int next;
+            do {
+                next = mRandom.nextInt(interval);
+            } while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
+            mPrevious = next;
+            mHistoryOfNumbers.add(mPrevious);
+            mPreviousNumbers.add(mPrevious);
+            cleanUpHistory();
+            return next;
+        }
+
+        /**
+         * Removes old tracks and cleans up the history preparing for new tracks
+         * to be added to the mapping
+         */
+        private void cleanUpHistory() {
+            if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MAX_HISTORY_SIZE) {
+                for (int i = 0; i < Math.max(1, MAX_HISTORY_SIZE / 2); i++) {
+                    mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private static class MusicPlayerHandler extends Handler {
         private WeakReference<MusicPlaybackService> mService;
         private float mCurrentVolume = 1.0f;
 
@@ -2123,76 +2118,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
         }
     }
 
-
-    public void onEject() {
-        saveQueue(true);
-        mQueueIsSaveable = false;
-        closeExternalStorageFiles();
-    }
-
-    public void onUnmount() {
-        mMediaMountedCount++;
-        getCardId();
-        reloadQueue();
-        mQueueIsSaveable = true;
-        notifyChange(QUEUE_CHANGED);
-        notifyChange(META_CHANGED);
-    }
-
-
     /**
-     *
+     * custom MediaPlayer implementation containing two MediaPlayer to switch fast tracks
      */
-    private static final class Shuffler {
-
-        private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
-
-        private TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
-
-        private Random mRandom = new Random();
-
-        private int mPrevious;
-
-        /**
-         * Constructor of <code>Shuffler</code>
-         */
-        public Shuffler() {
-            super();
-        }
-
-        /**
-         * @param interval The duration the queue
-         * @return The position of the next track to play
-         */
-        public int nextInt(int interval) {
-            int next;
-            do {
-                next = mRandom.nextInt(interval);
-            } while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
-            mPrevious = next;
-            mHistoryOfNumbers.add(mPrevious);
-            mPreviousNumbers.add(mPrevious);
-            cleanUpHistory();
-            return next;
-        }
-
-        /**
-         * Removes old tracks and cleans up the history preparing for new tracks
-         * to be added to the mapping
-         */
-        private void cleanUpHistory() {
-            if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MAX_HISTORY_SIZE) {
-                for (int i = 0; i < Math.max(1, MAX_HISTORY_SIZE / 2); i++) {
-                    mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
-                }
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    private static final class MultiPlayer implements OnErrorListener, OnCompletionListener {
+    private static class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
         private final WeakReference<MusicPlaybackService> mService;
 
@@ -2439,9 +2368,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
     }
 
     /**
-     *
+     * callback used to communicate with activities
      */
-    private static final class ServiceStub extends IApolloService.Stub {
+    private static class ServiceStub extends IApolloService.Stub {
 
         private final WeakReference<MusicPlaybackService> mService;
 

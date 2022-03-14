@@ -17,6 +17,10 @@
  */
 package com.viewpagerindicator;
 
+import static android.view.MotionEvent.ACTION_MASK;
+import static android.view.MotionEvent.ACTION_POINTER_DOWN;
+import static android.view.MotionEvent.ACTION_POINTER_UP;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -39,10 +43,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
-
-import static android.view.MotionEvent.ACTION_MASK;
-import static android.view.MotionEvent.ACTION_POINTER_DOWN;
-import static android.view.MotionEvent.ACTION_POINTER_UP;
 
 /**
  * A TitlePageIndicator is a PageIndicator which displays the title of left view

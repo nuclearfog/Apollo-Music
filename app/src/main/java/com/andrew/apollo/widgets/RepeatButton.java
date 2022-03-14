@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.widgets;
 
+import static android.graphics.PorterDuff.Mode.MULTIPLY;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuffColorFilter;
@@ -30,8 +32,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
-
-import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 /**
  * A custom {@link AppCompatImageButton} that represents the "repeat" button.

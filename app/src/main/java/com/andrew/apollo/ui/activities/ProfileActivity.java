@@ -218,7 +218,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
             if (mArguments.containsKey(Config.IDS)) {
                 ids = ApolloUtils.readSerializedIDs(mArguments.getString(Config.IDS, ""));
             } else {
-                ids = new long[] {mArguments.getLong(Config.ID)};
+                ids = new long[]{mArguments.getLong(Config.ID)};
             }
             // get album yeas
             year = mArguments.getString(Config.ALBUM_YEAR, "");

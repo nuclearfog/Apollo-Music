@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.ui.fragments;
 
+import static android.content.Intent.CATEGORY_DEFAULT;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -45,8 +47,6 @@ import com.andrew.apollo.utils.ThemeUtils;
 import com.devspark.appmsg.AppMsg;
 
 import java.util.List;
-
-import static android.content.Intent.CATEGORY_DEFAULT;
 
 /**
  * Used to show all of the available themes on a user's device.

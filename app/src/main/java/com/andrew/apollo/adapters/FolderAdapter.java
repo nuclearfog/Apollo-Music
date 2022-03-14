@@ -1,5 +1,7 @@
 package com.andrew.apollo.adapters;
 
+import static android.view.View.GONE;
+
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -13,8 +15,6 @@ import androidx.annotation.Nullable;
 import com.andrew.apollo.R;
 
 import java.io.File;
-
-import static android.view.View.GONE;
 
 /**
  * decompiled from Apollo.APK version 1.6

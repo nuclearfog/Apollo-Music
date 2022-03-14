@@ -1,5 +1,7 @@
 package com.andrew.apollo.loaders;
 
+import static com.andrew.apollo.utils.CursorFactory.NP_COLUMNS;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.AbstractCursor;
@@ -11,8 +13,6 @@ import com.andrew.apollo.utils.MusicUtils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.andrew.apollo.utils.CursorFactory.NP_COLUMNS;
 
 /**
  * A custom {@link Cursor} used to return the queue and allow for easy dragging

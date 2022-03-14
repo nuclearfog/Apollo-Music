@@ -11,6 +11,8 @@
 
 package com.andrew.apollo.widgets;
 
+import static android.graphics.PorterDuff.Mode.MULTIPLY;
+
 import android.content.Context;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -28,8 +30,6 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.widgets.theme.HoloSelector;
-
-import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)

@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="left"
-        app:constraint_referenced_ids="audio_player_informations,audio_player_controls"/>
+        app:constraint_referenced_ids="audio_player_informations,audio_player_controls" />
 
     <include
         android:id="@+id/audio_player_informations"

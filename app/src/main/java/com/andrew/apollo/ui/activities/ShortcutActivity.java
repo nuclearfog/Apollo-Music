@@ -11,7 +11,11 @@
 
 package com.andrew.apollo.ui.activities;
 
-import static com.andrew.apollo.Config.*;
+import static com.andrew.apollo.Config.ID;
+import static com.andrew.apollo.Config.IDS;
+import static com.andrew.apollo.Config.MIME_TYPE;
+import static com.andrew.apollo.Config.NAME;
+import static com.andrew.apollo.Config.PLAY_FROM_SEARCH;
 
 import android.app.SearchManager;
 import android.content.ComponentName;

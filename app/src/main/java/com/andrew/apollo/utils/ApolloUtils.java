@@ -334,13 +334,14 @@ public final class ApolloUtils {
 
     /**
      * read serialized ID array
+     *
      * @param idsStr serialized string to read
-     * @return  ID array
+     * @return ID array
      */
     public static long[] readSerializedIDs(String idsStr) {
         String[] ids = idsStr.split(";");
         long[] result = new long[ids.length];
-        for (int i = 0; i < ids.length ; i++) {
+        for (int i = 0; i < ids.length; i++) {
             String id = ids[i];
             if (!id.isEmpty()) {
                 result[i] = Long.parseLong(id);

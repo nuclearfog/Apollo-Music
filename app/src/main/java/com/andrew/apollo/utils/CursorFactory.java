@@ -1,5 +1,9 @@
 package com.andrew.apollo.utils;
 
+import static android.provider.MediaStore.VOLUME_EXTERNAL;
+import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
+import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
+
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -28,10 +32,6 @@ import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.provider.RecentStore.RecentStoreColumns;
 
 import java.util.List;
-
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.NAME;
-import static com.andrew.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
 /**
  * class to create MediaStore cursor to access all music files

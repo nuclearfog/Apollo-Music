@@ -75,25 +75,6 @@ public final class ApolloUtils {
     }
 
     /**
-     * Execute an {@link AsyncTask} on a thread pool
-     *
-     * @param forceSerial True to force the task to run in serial order
-     * @param task        Task to execute
-     * @param args        Optional arguments to pass to
-     *                    {@link AsyncTask#execute(Object[])}
-     * @param <T>         Task argument type
-     */
-    //@SuppressLint("NewApi")
-    @SafeVarargs
-    public static <T> void execute(boolean forceSerial, AsyncTask<T, ?, ?> task, T... args) {
-        if (forceSerial) {
-            task.execute(args);
-        } else {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args);
-        }
-    }
-
-    /**
      * Used to determine if there is an active data connection and what type of
      * connection it is if there is one
      *

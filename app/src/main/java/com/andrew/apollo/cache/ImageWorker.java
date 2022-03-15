@@ -180,7 +180,7 @@ public abstract class ImageWorker {
                 AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);
                 imageviews[0].setImageDrawable(asyncDrawable);
                 try {
-                    ApolloUtils.execute(false, bitmapWorkerTask, key, artistName, albumName, String.valueOf(albumId));
+                    bitmapWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, key, artistName, albumName, String.valueOf(albumId));
                 } catch (RejectedExecutionException e) {
                     // Executor has exhausted queue space, show default artwork
                     e.printStackTrace();

@@ -230,7 +230,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
         // Unregister the receiver
         try {
             unregisterReceiver(mPlaybackStatus);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // Remove any music status listeners

@@ -24,7 +24,7 @@ import android.provider.MediaStore.Audio.Playlists;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.format.Capitalize;
+import com.andrew.apollo.utils.Capitalize;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 

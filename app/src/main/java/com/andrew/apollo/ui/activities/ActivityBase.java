@@ -34,7 +34,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 
 import com.andrew.apollo.MusicPlaybackService;
-import com.andrew.apollo.MusicStateListener;
 import com.andrew.apollo.R;
 import com.andrew.apollo.receiver.PlaybackStatus;
 import com.andrew.apollo.receiver.PlaybackStatus.PlayStatusListener;
@@ -373,5 +372,22 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
         if (status != null) {
             mMusicStateListener.add(status);
         }
+    }
+
+    /**
+     * Listens for playback changes to send the the fragments bound to this activity
+     */
+    public interface MusicStateListener {
+
+        /**
+         * Called when {@link MusicPlaybackService#REFRESH} is invoked
+         */
+        void restartLoader();
+
+        /**
+         * Called when {@link MusicPlaybackService#META_CHANGED} is invoked
+         */
+        void onMetaChanged();
+
     }
 }

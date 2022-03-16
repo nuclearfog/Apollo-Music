@@ -10,7 +10,8 @@ interface IApolloService
     void pause();
     void play();
     void prev();
-    void next();
+    void goToNext();
+    void goToPrev();
     void enqueue(in long [] list, int action);
     void setQueuePosition(int index);
     void setShuffleMode(int shufflemode);

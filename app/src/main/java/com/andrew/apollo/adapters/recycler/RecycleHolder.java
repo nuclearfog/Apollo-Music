@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.recycler;
+package com.andrew.apollo.adapters.recycler;
 
 import android.view.View;
 import android.widget.AbsListView.RecyclerListener;

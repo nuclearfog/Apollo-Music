@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.appwidgets;
+package com.andrew.apollo.widgets;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;

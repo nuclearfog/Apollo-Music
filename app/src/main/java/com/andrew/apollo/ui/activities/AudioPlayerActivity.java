@@ -780,7 +780,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
             long newpos = mStartSeekPos - delta;
             if (newpos < 0) {
                 // move to previous track
-                MusicUtils.previous(this);
+                MusicUtils.previous();
                 long duration = MusicUtils.duration();
                 mStartSeekPos += duration;
                 newpos += duration;

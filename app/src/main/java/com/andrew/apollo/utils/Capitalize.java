@@ -1,4 +1,4 @@
-package com.andrew.apollo.format;
+package com.andrew.apollo.utils;
 
 import android.text.TextUtils;
 

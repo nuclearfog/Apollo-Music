@@ -19,11 +19,11 @@ import androidx.fragment.app.Fragment;
 
 import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
-import com.andrew.apollo.dragdrop.DragSortListView;
-import com.andrew.apollo.dragdrop.DragSortListView.DragScrollProfile;
-import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
-import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
-import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.views.dragdrop.DragSortListView;
+import com.andrew.apollo.views.dragdrop.DragSortListView.DragScrollProfile;
+import com.andrew.apollo.views.dragdrop.DragSortListView.DropListener;
+import com.andrew.apollo.views.dragdrop.DragSortListView.RemoveListener;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
 import com.andrew.apollo.views.ProfileTabCarousel;
 import com.andrew.apollo.views.VerticalScrollListener;

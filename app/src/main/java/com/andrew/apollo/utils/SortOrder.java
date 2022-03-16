@@ -55,8 +55,7 @@ public final class SortOrder {
         String ALBUM_Z_A = ALBUM_A_Z + " DESC";
 
         /* Album sort order songs */
-        String ALBUM_NUMBER_OF_SONGS = MediaStore.Audio.Albums.NUMBER_OF_SONGS
-                + " DESC";
+        String ALBUM_NUMBER_OF_SONGS = MediaStore.Audio.Albums.NUMBER_OF_SONGS + " DESC";
 
         /* Album sort order artist */
         String ALBUM_ARTIST = MediaStore.Audio.Albums.ARTIST;

@@ -42,7 +42,7 @@ import com.andrew.apollo.BuildConfig;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ThemesAdapter;
 import com.andrew.apollo.adapters.ThemesAdapter.ThemeHolder;
-import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.devspark.appmsg.AppMsg;
 

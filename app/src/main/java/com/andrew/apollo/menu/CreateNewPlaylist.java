@@ -17,7 +17,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.format.Capitalize;
+import com.andrew.apollo.utils.Capitalize;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 

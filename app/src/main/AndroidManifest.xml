@@ -212,7 +212,7 @@
 
         <!-- 4x1 App Widget -->
         <receiver
-            android:name="com.andrew.apollo.appwidgets.AppWidgetSmall"
+            android:name="com.andrew.apollo.widgets.AppWidgetSmall"
             android:exported="false"
             android:label="@string/app_widget_small">
             <intent-filter>
@@ -226,7 +226,7 @@
 
         <!-- 4x2  App Widget -->
         <receiver
-            android:name="com.andrew.apollo.appwidgets.AppWidgetLarge"
+            android:name="com.andrew.apollo.widgets.AppWidgetLarge"
             android:exported="false"
             android:label="@string/app_widget_large">
             <intent-filter>
@@ -240,7 +240,7 @@
 
         <!-- 4x2 alternate App Widget -->
         <receiver
-            android:name="com.andrew.apollo.appwidgets.AppWidgetLargeAlternate"
+            android:name="com.andrew.apollo.widgets.AppWidgetLargeAlternate"
             android:exported="false"
             android:label="@string/app_widget_large_alt">
             <intent-filter>
@@ -254,7 +254,7 @@
 
         <!-- Resizable recently listened App Widget -->
         <receiver
-            android:name="com.andrew.apollo.appwidgets.RecentWidgetProvider"
+            android:name="com.andrew.apollo.widgets.RecentWidgetProvider"
             android:exported="false"
             android:label="@string/app_widget_recent">
             <intent-filter>
@@ -268,7 +268,7 @@
 
         <!-- The service serving the RemoteViews to the recently listened App Widget -->
         <service
-            android:name="com.andrew.apollo.appwidgets.RecentWidgetService"
+            android:name="com.andrew.apollo.widgets.RecentWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- Music service -->

@@ -564,13 +564,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
         sendBroadcast(audioEffectsIntent);
         // remove any pending alarms
         mAlarmManager.cancel(mShutdownIntent);
-        // Remove all pending messages before kill the player
-        mPlayerHandler.removeCallbacksAndMessages(null);
         // Release the player
         mPlayer.release();
         // release player callbacks
         mSession.release();
-
         // Remove any callbacks from the handler
         mPlayerHandler.removeCallbacksAndMessages(null);
         // Close the cursor
@@ -640,7 +637,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
     }
 
     /**
-     *
+     * used by widgets or other intents to
      */
     public void handleCommandIntent(Intent intent) {
         String action = intent.getAction();
@@ -649,12 +646,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
         if (CMDNEXT.equals(command) || NEXT_ACTION.equals(action)) {
             gotoNext(true);
         } else if (CMDPREVIOUS.equals(command) || PREVIOUS_ACTION.equals(action)) {
-            if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-                prev();
-            } else {
-                seek(0);
-                play();
-            }
+            goToPrev();
         } else if (CMDTOGGLEPAUSE.equals(command) || TOGGLEPAUSE_ACTION.equals(action)) {
             if (isPlaying()) {
                 pause();
@@ -1768,6 +1760,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
     }
 
     /**
+     * restart current track or go to preview track
+     */
+    private void goToPrev() {
+        if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+            prev();
+        } else {
+            seek(0);
+            play();
+        }
+    }
+
+    /**
      * Changes from the current track to the previous played track
      */
     private void prev() {
@@ -1915,47 +1919,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      */
     private void refresh() {
         notifyChange(REFRESH);
-    }
-
-    /**
-     * callback class for media keys like play/pause
-     */
-    private class MediaCallback extends MediaSessionCompat.Callback {
-
-        @Override
-        public void onPlay() {
-            play();
-        }
-
-        @Override
-        public void onPause() {
-            pause();
-        }
-
-        @Override
-        public void onStop() {
-            stop();
-        }
-
-        @Override
-        public void onSkipToNext() {
-            gotoNext(true);
-        }
-
-        @Override
-        public void onSkipToPrevious() {
-            if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-                prev();
-            } else {
-                seek(0);
-                play();
-            }
-        }
-
-        @Override
-        public void onSeekTo(long pos) {
-            seek(pos);
-        }
     }
 
     /**
@@ -2442,10 +2405,20 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
          * {@inheritDoc}
          */
         @Override
-        public void next() {
+        public void goToNext() {
             MusicPlaybackService service = mService.get();
             if (service != null)
                 service.gotoNext(true);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void goToPrev() {
+            MusicPlaybackService service = mService.get();
+            if (service != null)
+                service.goToPrev();
         }
 
         /**

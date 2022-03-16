@@ -9,15 +9,13 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.format;
+package com.andrew.apollo.utils;
 
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.widget.TextView;
-
-import com.andrew.apollo.utils.PreferenceUtils;
 
 /**
  * Highlights the text in a text field.

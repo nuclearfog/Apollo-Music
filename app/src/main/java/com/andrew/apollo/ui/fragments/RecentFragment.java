@@ -38,7 +38,6 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
-import com.andrew.apollo.MusicStateListener;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.AlbumAdapter;
 import com.andrew.apollo.loaders.RecentLoader;
@@ -46,8 +45,9 @@ import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
-import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ActivityBase;
+import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;

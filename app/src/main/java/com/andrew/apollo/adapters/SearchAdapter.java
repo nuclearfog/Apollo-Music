@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.format.PrefixHighlighter;
+import com.andrew.apollo.utils.PrefixHighlighter;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.model.Music;

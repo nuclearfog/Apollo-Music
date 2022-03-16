@@ -66,7 +66,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.action_button_previous) {
-            MusicUtils.previous(getContext());
+            MusicUtils.previous();
         } else if (view.getId() == R.id.action_button_next) {
             MusicUtils.next();
         }

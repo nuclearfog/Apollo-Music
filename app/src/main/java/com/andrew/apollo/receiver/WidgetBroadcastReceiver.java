@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.andrew.apollo.MusicPlaybackService;
-import com.andrew.apollo.appwidgets.AppWidgetBase;
-import com.andrew.apollo.appwidgets.AppWidgetLarge;
-import com.andrew.apollo.appwidgets.AppWidgetLargeAlternate;
-import com.andrew.apollo.appwidgets.AppWidgetSmall;
-import com.andrew.apollo.appwidgets.RecentWidgetProvider;
+import com.andrew.apollo.widgets.AppWidgetBase;
+import com.andrew.apollo.widgets.AppWidgetLarge;
+import com.andrew.apollo.widgets.AppWidgetLargeAlternate;
+import com.andrew.apollo.widgets.AppWidgetSmall;
+import com.andrew.apollo.widgets.RecentWidgetProvider;
 
 import java.lang.ref.WeakReference;
 

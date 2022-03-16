@@ -206,12 +206,12 @@ public final class MusicUtils {
     }
 
     /**
-     * Changes to the next track
+     * switch to next track
      */
     public static void next() {
         try {
             if (mService != null) {
-                mService.next();
+                mService.goToNext();
             }
         } catch (RemoteException err) {
             err.printStackTrace();
@@ -219,36 +219,64 @@ public final class MusicUtils {
     }
 
     /**
-     * Changes to the previous track.
-     * <p>
-     * NOTE The AIDL isn't used here in order to properly use the previous
-     * action. When the user is shuffling, because {@link
-     * MusicPlaybackService #openCurrentAndNext()} is used, the user won't
-     * be able to travel to the previously skipped track. To remedy this,
-     * {@link MusicPlaybackService #openCurrent()} is called in {@link
-     * MusicPlaybackService}. {@code #startService(Intent intent)}
-     * is called here to specifically invoke the onStartCommand used by
-     * {@link MusicPlaybackService}, which states if the current position
-     * less than 2000 ms, start the track over, otherwise move to the
-     * previously listened track.
+     * switch to previous track or repeat current track
      */
-    public static void previous(Context context) {
-        Intent previous = new Intent(context, MusicPlaybackService.class);
-        previous.setAction(MusicPlaybackService.PREVIOUS_ACTION);
-        context.startService(previous);
+    public static void previous() {
+        try {
+            if (mService != null) {
+                mService.goToPrev();
+            }
+        } catch (RemoteException err) {
+            err.printStackTrace();
+        }
     }
 
     /**
-     * Plays or pauses the music.
+     * plays the music.
      */
-    public static void playOrPause() {
+    public static void play() {
         try {
             if (mService != null) {
-                if (mService.isPlaying()) {
-                    mService.pause();
-                } else {
-                    mService.play();
-                }
+                mService.play();
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    /**
+     * pauses the music.
+     */
+    public static void pause() {
+        try {
+            if (mService != null) {
+                mService.pause();
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    /**
+     * stops the music.
+     */
+    public static void stop() {
+        try {
+            if (mService != null) {
+                mService.stop();
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    /**
+     * stops the music.
+     */
+    public static void goToNext() {
+        try {
+            if (mService != null) {
+                mService.goToNext();
             }
         } catch (Exception err) {
             err.printStackTrace();

@@ -40,7 +40,7 @@ import com.andrew.apollo.adapters.GenreAdapter;
 import com.andrew.apollo.loaders.GenreLoader;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Genre;
-import com.andrew.apollo.recycler.RecycleHolder;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;

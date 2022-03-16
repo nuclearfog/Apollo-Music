@@ -25,7 +25,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -46,8 +45,8 @@ import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.ui.activities.HomeActivity;
 import com.andrew.apollo.ui.activities.ShortcutActivity;
-import com.andrew.apollo.widgets.ColorPickerView;
-import com.andrew.apollo.widgets.ColorSchemeDialog;
+import com.andrew.apollo.views.ColorPickerView;
+import com.andrew.apollo.views.ColorSchemeDialog;
 import com.devspark.appmsg.AppMsg;
 
 import java.io.File;

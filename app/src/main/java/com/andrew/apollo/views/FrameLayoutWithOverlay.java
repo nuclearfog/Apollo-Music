@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.widgets;
+package com.andrew.apollo.views;
 
 import android.content.Context;
 import android.util.AttributeSet;

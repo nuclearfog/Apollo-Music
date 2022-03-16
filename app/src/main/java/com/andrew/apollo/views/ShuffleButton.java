@@ -9,12 +9,11 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.widgets;
+package com.andrew.apollo.views;
 
 import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -23,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
@@ -31,29 +29,27 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.widgets.theme.HoloSelector;
+import com.andrew.apollo.views.theme.HoloSelector;
 
 /**
- * A custom {@link AppCompatImageButton} that represents the "repeat" button.
- *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RepeatButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
+public class ShuffleButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**
-     * Highlight color
+     * highlight color
      */
-    private int color = Color.WHITE;
+    private int color = -1;
 
     /**
      * @param context The {@link Context} to use
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public RepeatButton(Context context, AttributeSet attrs) {
+    public ShuffleButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Set the selector
+        // Theme the selector
         setBackground(new HoloSelector(context));
-        // Control playback (cycle repeat modes)
+        // Control playback (cycle shuffle)
         setOnClickListener(this);
         // Show the cheat sheet
         setOnLongClickListener(this);
@@ -64,15 +60,15 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
      */
     @Override
     public void onClick(View v) {
-        MusicUtils.cycleRepeat();
-        updateRepeatState();
+        MusicUtils.cycleShuffle();
+        updateShuffleState();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean onLongClick(@NonNull View view) {
+    public boolean onLongClick(View view) {
         if (TextUtils.isEmpty(view.getContentDescription())) {
             return false;
         } else {
@@ -91,30 +87,24 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
     }
 
     /**
-     * Sets the correct drawable for the repeat state.
+     * Sets the correct drawable for the shuffle state.
      */
-    public void updateRepeatState() {
+    public void updateShuffleState() {
         String info;
         Drawable button;
-        switch (MusicUtils.getRepeatMode()) {
-            case MusicPlaybackService.REPEAT_ALL:
-                info = getResources().getString(R.string.accessibility_repeat_all);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
-                if (button != null)
-                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
-                break;
-
-            case MusicPlaybackService.REPEAT_CURRENT:
-                info = getResources().getString(R.string.accessibility_repeat_one);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
+        switch (MusicUtils.getShuffleMode()) {
+            case MusicPlaybackService.SHUFFLE_NORMAL:
+            case MusicPlaybackService.SHUFFLE_AUTO:
+                info = getResources().getString(R.string.accessibility_shuffle_all);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
                 if (button != null)
                     button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
                 break;
 
             default:
-            case MusicPlaybackService.REPEAT_NONE:
-                info = getResources().getString(R.string.accessibility_repeat);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
+            case MusicPlaybackService.SHUFFLE_NONE:
+                info = getResources().getString(R.string.accessibility_shuffle);
+                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
                 break;
         }
         setContentDescription(info);

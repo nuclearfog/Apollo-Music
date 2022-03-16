@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.widgets;
+package com.andrew.apollo.views;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -24,7 +24,7 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.widgets.theme.HoloSelector;
+import com.andrew.apollo.views.theme.HoloSelector;
 
 /**
  * A custom {@link ImageButton} that represents the "play and pause" button.

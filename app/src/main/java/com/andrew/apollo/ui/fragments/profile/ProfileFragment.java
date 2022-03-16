@@ -25,8 +25,8 @@ import com.andrew.apollo.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.dragdrop.DragSortListView.RemoveListener;
 import com.andrew.apollo.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ProfileActivity.FragmentCallback;
-import com.andrew.apollo.widgets.ProfileTabCarousel;
-import com.andrew.apollo.widgets.VerticalScrollListener;
+import com.andrew.apollo.views.ProfileTabCarousel;
+import com.andrew.apollo.views.VerticalScrollListener;
 
 /**
  * this fragment hosts a {@link ListView} with a {@link ProfileTabCarousel} header

@@ -73,11 +73,11 @@ import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.ThemeUtils;
-import com.andrew.apollo.widgets.PlayPauseButton;
-import com.andrew.apollo.widgets.RepeatButton;
-import com.andrew.apollo.widgets.RepeatingImageButton;
-import com.andrew.apollo.widgets.RepeatingImageButton.RepeatListener;
-import com.andrew.apollo.widgets.ShuffleButton;
+import com.andrew.apollo.views.PlayPauseButton;
+import com.andrew.apollo.views.RepeatButton;
+import com.andrew.apollo.views.RepeatingImageButton;
+import com.andrew.apollo.views.RepeatingImageButton.RepeatListener;
+import com.andrew.apollo.views.ShuffleButton;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

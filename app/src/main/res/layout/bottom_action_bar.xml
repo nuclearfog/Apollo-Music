@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.andrew.apollo.widgets.theme.Colorstrip
+    <com.andrew.apollo.views.theme.Colorstrip
         android:id="@+id/colorstrip"
         android:layout_width="0dp"
         android:layout_height="@dimen/colorstrip_height"
@@ -92,23 +92,23 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
-            <com.andrew.apollo.widgets.RepeatingImageButton
+            <com.andrew.apollo.views.RepeatingImageButton
                 android:id="@+id/action_button_previous"
                 style="@style/BottomActionBarItem.Previous" />
 
-            <com.andrew.apollo.widgets.PlayPauseButton
+            <com.andrew.apollo.views.PlayPauseButton
                 android:id="@+id/action_button_play"
                 style="@style/BottomActionBarItem.Play" />
 
-            <com.andrew.apollo.widgets.RepeatingImageButton
+            <com.andrew.apollo.views.RepeatingImageButton
                 android:id="@+id/action_button_next"
                 style="@style/BottomActionBarItem.Next" />
 
-            <com.andrew.apollo.widgets.ShuffleButton
+            <com.andrew.apollo.views.ShuffleButton
                 android:id="@+id/action_button_shuffle"
                 style="@style/BottomActionBarItem.Shuffle" />
 
-            <com.andrew.apollo.widgets.RepeatButton
+            <com.andrew.apollo.views.RepeatButton
                 android:id="@+id/action_button_repeat"
                 style="@style/BottomActionBarItem.Repeat" />
 

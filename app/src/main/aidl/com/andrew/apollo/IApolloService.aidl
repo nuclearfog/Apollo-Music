@@ -1,10 +1,11 @@
 package com.andrew.apollo;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 interface IApolloService
 {
-    void openFile(String path);
+    void openFile(in Uri uri);
     void open(in long [] list, int position);
     void stop();
     void pause();

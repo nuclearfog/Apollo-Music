@@ -263,20 +263,6 @@ public final class MusicUtils {
     }
 
     /**
-     * stops the music.
-     */
-    public static void stop() {
-        IApolloService service = mService;
-        if (service != null) {
-            try {
-                service.stop();
-            } catch (Exception err) {
-                err.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Cycles through the repeat options.
      */
     public static void cycleRepeat() {
@@ -688,18 +674,8 @@ public final class MusicUtils {
     public static void playFile(Uri uri) {
         IApolloService service = mService;
         if (uri != null && service != null) {
-            // If this is a file:// URI, just use the path directly instead
-            // of going through the open-from-filedescriptor codepath.
-            String filename;
-            if ("file".equals(uri.getScheme())) {
-                filename = uri.getPath();
-            } else {
-                filename = uri.toString();
-            }
             try {
-                service.stop();
-                service.openFile(filename);
-                service.play();
+                service.openFile(uri);
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -1034,22 +1010,6 @@ public final class MusicUtils {
                 service.enqueue(list, MusicPlaybackService.LAST);
                 String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
                 AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
-            } catch (RemoteException err) {
-                err.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * add single item to queue
-     *
-     * @param item Id of the media item
-     */
-    public static void addToQueue(long item) {
-        IApolloService service = mService;
-        if (service != null) {
-            try {
-                service.enqueue(new long[]{item}, MusicPlaybackService.LAST);
             } catch (RemoteException err) {
                 err.printStackTrace();
             }

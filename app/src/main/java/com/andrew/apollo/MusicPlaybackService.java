@@ -498,7 +498,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
         // Initialize the handler
         mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
         mSession = new MediaSessionCompat(getApplicationContext(), TAG);
-        mSession.setCallback(new MediaCallback(), mPlayerHandler);
+        mSession.setCallback(new MediaCallback(this), mPlayerHandler);
         mSession.setPlaybackState(state);
         mSession.setActive(true);
 
@@ -783,6 +783,128 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
             }
         }
         return -1;
+    }
+
+    /**
+     * Stops playback.
+     */
+    public void stop() {
+        stop(true);
+    }
+
+    /**
+     * Resumes or starts playback.
+     */
+    public void play() {
+        if (mPlayer.isInitialized()) {
+            long duration = mPlayer.duration();
+            if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
+                gotoNext(true);
+            }
+            mPlayer.start();
+            mPlayerHandler.removeMessages(FADEDOWN);
+            mPlayerHandler.sendEmptyMessage(FADEUP);
+            if (!mIsSupposedToBePlaying) {
+                mIsSupposedToBePlaying = true;
+                notifyChange(PLAYSTATE_CHANGED);
+            }
+            cancelShutdown();
+            updateNotification();
+        } else if (mPlayList.isEmpty()) {
+            setShuffleMode(SHUFFLE_AUTO);
+        }
+    }
+
+    /**
+     * Temporarily pauses playback.
+     */
+    public void pause() {
+        synchronized (this) {
+            mPlayerHandler.removeMessages(FADEUP);
+            if (mIsSupposedToBePlaying) {
+                mPlayer.pause();
+                scheduleDelayedShutdown();
+                mIsSupposedToBePlaying = false;
+                notifyChange(PLAYSTATE_CHANGED);
+            }
+        }
+    }
+
+    /**
+     * Changes from the current track to the next track
+     */
+    public void gotoNext(boolean force) {
+        synchronized (this) {
+            if (mPlayList.isEmpty()) {
+                scheduleDelayedShutdown();
+                return;
+            }
+            int pos = getNextPosition(force);
+            if (pos < 0) {
+                scheduleDelayedShutdown();
+                if (mIsSupposedToBePlaying) {
+                    mIsSupposedToBePlaying = false;
+                    notifyChange(PLAYSTATE_CHANGED);
+                }
+                return;
+            }
+            stop(false);
+            mPlayPos = pos;
+            openCurrentAndNext();
+            play();
+            notifyChange(META_CHANGED);
+        }
+    }
+
+    /**
+     * restart current track or go to preview track
+     */
+    public void goToPrev() {
+        if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+            prev();
+        } else {
+            seek(0);
+            play();
+        }
+    }
+
+    /**
+     * Seeks the current track to a specific time
+     *
+     * @param position The time to seek to
+     * @return The time to play the track at
+     */
+    public long seek(long position) {
+        if (mPlayer.isInitialized()) {
+            if (position < 0) {
+                position = 0;
+            } else if (position > mPlayer.duration()) {
+                position = mPlayer.duration();
+            }
+            mPlayer.seek(position);
+            notifyChange(POSITION_CHANGED);
+            return position;
+        }
+        return -1;
+    }
+
+    /**
+     * open file uri
+     *
+     * @param uri URI of the local file
+     */
+    public void openFile(Uri uri) {
+        // If this is a file:// URI, just use the path directly instead
+        // of going through the open-from-filedescriptor codepath.
+        String filename;
+        if ("file".equals(uri.getScheme())) {
+            filename = uri.getPath();
+        } else {
+            filename = uri.toString();
+        }
+        stop();
+        openFile(filename);
+        play();
     }
 
     /**
@@ -1527,26 +1649,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
     }
 
     /**
-     * Seeks the current track to a specific time
-     *
-     * @param position The time to seek to
-     * @return The time to play the track at
-     */
-    private long seek(long position) {
-        if (mPlayer.isInitialized()) {
-            if (position < 0) {
-                position = 0;
-            } else if (position > mPlayer.duration()) {
-                position = mPlayer.duration();
-            }
-            mPlayer.seek(position);
-            notifyChange(POSITION_CHANGED);
-            return position;
-        }
-        return -1;
-    }
-
-    /**
      * Removes all instances of the track with the given ID from the playlist.
      *
      * @param id The id to be removed
@@ -1685,89 +1787,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
             if (oldId != getAudioId()) {
                 notifyChange(META_CHANGED);
             }
-        }
-    }
-
-    /**
-     * Stops playback.
-     */
-    private void stop() {
-        stop(true);
-    }
-
-    /**
-     * Resumes or starts playback.
-     */
-    private void play() {
-        if (mPlayer.isInitialized()) {
-            long duration = mPlayer.duration();
-            if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
-                gotoNext(true);
-            }
-            mPlayer.start();
-            mPlayerHandler.removeMessages(FADEDOWN);
-            mPlayerHandler.sendEmptyMessage(FADEUP);
-            if (!mIsSupposedToBePlaying) {
-                mIsSupposedToBePlaying = true;
-                notifyChange(PLAYSTATE_CHANGED);
-            }
-            cancelShutdown();
-            updateNotification();
-        } else if (mPlayList.isEmpty()) {
-            setShuffleMode(SHUFFLE_AUTO);
-        }
-    }
-
-    /**
-     * Temporarily pauses playback.
-     */
-    private void pause() {
-        synchronized (this) {
-            mPlayerHandler.removeMessages(FADEUP);
-            if (mIsSupposedToBePlaying) {
-                mPlayer.pause();
-                scheduleDelayedShutdown();
-                mIsSupposedToBePlaying = false;
-                notifyChange(PLAYSTATE_CHANGED);
-            }
-        }
-    }
-
-    /**
-     * Changes from the current track to the next track
-     */
-    private void gotoNext(boolean force) {
-        synchronized (this) {
-            if (mPlayList.isEmpty()) {
-                scheduleDelayedShutdown();
-                return;
-            }
-            int pos = getNextPosition(force);
-            if (pos < 0) {
-                scheduleDelayedShutdown();
-                if (mIsSupposedToBePlaying) {
-                    mIsSupposedToBePlaying = false;
-                    notifyChange(PLAYSTATE_CHANGED);
-                }
-                return;
-            }
-            stop(false);
-            mPlayPos = pos;
-            openCurrentAndNext();
-            play();
-            notifyChange(META_CHANGED);
-        }
-    }
-
-    /**
-     * restart current track or go to preview track
-     */
-    private void goToPrev() {
-        if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-            prev();
-        } else {
-            seek(0);
-            play();
         }
     }
 
@@ -2345,10 +2364,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
          * {@inheritDoc}
          */
         @Override
-        public void openFile(String path) {
+        public void openFile(Uri uri) {
             MusicPlaybackService service = mService.get();
-            if (service != null && path != null)
-                service.openFile(path);
+            if (service != null && uri != null)
+                service.openFile(uri);
         }
 
         /**

@@ -2,10 +2,7 @@ package com.andrew.apollo;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-
-import com.andrew.apollo.utils.MusicUtils;
 
 /**
  * callback class used by media buttons to control playback
@@ -15,50 +12,44 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class MediaCallback extends MediaSessionCompat.Callback {
 
+    private MusicPlaybackService service;
+
+    public MediaCallback(MusicPlaybackService service) {
+        this.service = service;
+    }
+
     @Override
     public void onPlay() {
-        MusicUtils.play();
+        service.play();
     }
 
     @Override
     public void onPause() {
-        MusicUtils.pause();
+        service.pause();
     }
 
     @Override
     public void onStop() {
-        MusicUtils.stop();
+        service.stop();
     }
 
     @Override
     public void onSkipToNext() {
-        MusicUtils.next();
+        service.gotoNext(true);
     }
 
     @Override
     public void onSkipToPrevious() {
-        MusicUtils.previous();
+        service.goToPrev();
     }
 
     @Override
     public void onSeekTo(long pos) {
-        MusicUtils.seek(pos);
+        service.seek(pos);
     }
 
     @Override
     public void onPlayFromUri(Uri uri, Bundle extras) {
-        MusicUtils.playFile(uri);
-    }
-
-    @Override
-    public void onAddQueueItem(MediaDescriptionCompat description) {
-        if (description.getMediaId() != null) {
-            try {
-                long id = Long.parseLong(description.getMediaId());
-                MusicUtils.addToQueue(id);
-            } catch (NumberFormatException e) {
-                //
-            }
-        }
+        service.openFile(uri);
     }
 }

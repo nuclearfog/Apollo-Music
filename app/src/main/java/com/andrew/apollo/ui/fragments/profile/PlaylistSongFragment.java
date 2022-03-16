@@ -190,7 +190,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
                     return true;
 
                 case FragmentMenuItems.REMOVE_FROM_PLAYLIST:
-                    if (MusicUtils.removeFromPlaylist(requireContext(), mSong.getId(), mPlaylistId)) {
+                    if (MusicUtils.removeFromPlaylist(requireActivity(), mSong.getId(), mPlaylistId)) {
                         mAdapter.remove(mSong);
                     }
                     return true;
@@ -238,7 +238,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
     @Override
     public void remove(int which) {
         Song song = mAdapter.getItem(which);
-        if (song != null && MusicUtils.removeFromPlaylist(requireContext(), song.getId(), mPlaylistId)) {
+        if (song != null && MusicUtils.removeFromPlaylist(requireActivity(), song.getId(), mPlaylistId)) {
             mAdapter.remove(song);
         } else {
             // if we end here, nothing changed, revert layout changes

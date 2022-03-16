@@ -103,6 +103,7 @@ public final class MusicUtils {
     /**
      * weak reference to the service to avoid memory leaks
      */
+    @Nullable
     private static volatile IApolloService mService;
 
     /**
@@ -209,12 +210,13 @@ public final class MusicUtils {
      * switch to next track
      */
     public static void next() {
-        try {
-            if (mService != null) {
-                mService.goToNext();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.goToNext();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -222,12 +224,13 @@ public final class MusicUtils {
      * switch to previous track or repeat current track
      */
     public static void previous() {
-        try {
-            if (mService != null) {
-                mService.goToPrev();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.goToPrev();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -235,12 +238,13 @@ public final class MusicUtils {
      * plays the music.
      */
     public static void play() {
-        try {
-            if (mService != null) {
-                mService.play();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.play();
+            } catch (Exception err) {
+                err.printStackTrace();
             }
-        } catch (Exception err) {
-            err.printStackTrace();
         }
     }
 
@@ -248,12 +252,13 @@ public final class MusicUtils {
      * pauses the music.
      */
     public static void pause() {
-        try {
-            if (mService != null) {
-                mService.pause();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.pause();
+            } catch (Exception err) {
+                err.printStackTrace();
             }
-        } catch (Exception err) {
-            err.printStackTrace();
         }
     }
 
@@ -261,25 +266,13 @@ public final class MusicUtils {
      * stops the music.
      */
     public static void stop() {
-        try {
-            if (mService != null) {
-                mService.stop();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.stop();
+            } catch (Exception err) {
+                err.printStackTrace();
             }
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    /**
-     * stops the music.
-     */
-    public static void goToNext() {
-        try {
-            if (mService != null) {
-                mService.goToNext();
-            }
-        } catch (Exception err) {
-            err.printStackTrace();
         }
     }
 
@@ -287,27 +280,28 @@ public final class MusicUtils {
      * Cycles through the repeat options.
      */
     public static void cycleRepeat() {
-        try {
-            if (mService != null) {
-                switch (mService.getRepeatMode()) {
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                switch (service.getRepeatMode()) {
                     case MusicPlaybackService.REPEAT_NONE:
-                        mService.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
+                        service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
                         break;
 
                     case MusicPlaybackService.REPEAT_ALL:
-                        mService.setRepeatMode(MusicPlaybackService.REPEAT_CURRENT);
-                        if (mService.getShuffleMode() != MusicPlaybackService.SHUFFLE_NONE) {
-                            mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
+                        service.setRepeatMode(MusicPlaybackService.REPEAT_CURRENT);
+                        if (service.getShuffleMode() != MusicPlaybackService.SHUFFLE_NONE) {
+                            service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                         }
                         break;
 
                     default:
-                        mService.setRepeatMode(MusicPlaybackService.REPEAT_NONE);
+                        service.setRepeatMode(MusicPlaybackService.REPEAT_NONE);
                         break;
                 }
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -315,25 +309,26 @@ public final class MusicUtils {
      * Cycles through the shuffle options.
      */
     public static void cycleShuffle() {
-        try {
-            if (mService != null) {
-                switch (mService.getShuffleMode()) {
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                switch (service.getShuffleMode()) {
                     case MusicPlaybackService.SHUFFLE_NONE:
-                        mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-                        if (mService.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
-                            mService.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
+                        service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+                        if (service.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
+                            service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
                         }
                         break;
                     case MusicPlaybackService.SHUFFLE_NORMAL:
                     case MusicPlaybackService.SHUFFLE_AUTO:
-                        mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
+                        service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                         break;
                     default:
                         break;
                 }
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -341,9 +336,10 @@ public final class MusicUtils {
      * @return True if we're playing music, false otherwise.
      */
     public static boolean isPlaying() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.isPlaying();
+                return service.isPlaying();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -355,9 +351,10 @@ public final class MusicUtils {
      * @return The current shuffle mode.
      */
     public static int getShuffleMode() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getShuffleMode();
+                return service.getShuffleMode();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -369,9 +366,10 @@ public final class MusicUtils {
      * @return The current repeat mode.
      */
     public static int getRepeatMode() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getRepeatMode();
+                return service.getRepeatMode();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -383,9 +381,10 @@ public final class MusicUtils {
      * @return The current track name.
      */
     public static String getTrackName() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getTrackName();
+                return service.getTrackName();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -397,9 +396,10 @@ public final class MusicUtils {
      * @return The current artist name.
      */
     public static String getArtistName() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getArtistName();
+                return service.getArtistName();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -411,9 +411,10 @@ public final class MusicUtils {
      * @return The current album name.
      */
     public static String getAlbumName() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getAlbumName();
+                return service.getAlbumName();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -425,9 +426,10 @@ public final class MusicUtils {
      * @return The current album Id.
      */
     public static long getCurrentAlbumId() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getAlbumId();
+                return service.getAlbumId();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -439,9 +441,10 @@ public final class MusicUtils {
      * @return The current song Id.
      */
     public static long getCurrentAudioId() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getAudioId();
+                return service.getAudioId();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -453,9 +456,10 @@ public final class MusicUtils {
      * @return The current artist Id.
      */
     public static long getCurrentArtistId() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getArtistId();
+                return service.getArtistId();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -467,9 +471,10 @@ public final class MusicUtils {
      * @return The audio session Id.
      */
     public static int getAudioSessionId() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.getAudioSessionId();
+                return service.getAudioSessionId();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -482,12 +487,13 @@ public final class MusicUtils {
      */
     @NonNull
     public static long[] getQueue() {
-        try {
-            if (mService != null) {
-                return mService.getQueue();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                return service.getQueue();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
         return EMPTY_LIST;
     }
@@ -497,12 +503,13 @@ public final class MusicUtils {
      * @return removes track from a playlist or the queue.
      */
     public static int removeTrack(long id) {
-        try {
-            if (mService != null) {
-                return mService.removeTrack(id);
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                return service.removeTrack(id);
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
         return 0;
     }
@@ -513,12 +520,13 @@ public final class MusicUtils {
      * @param pos index of the track
      */
     public static void removeQueueItem(int pos) {
-        try {
-            if (mService != null) {
-                mService.removeTracks(pos, pos);
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.removeTracks(pos, pos);
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -526,12 +534,13 @@ public final class MusicUtils {
      * @return The position of the current track in the queue.
      */
     public static int getQueuePosition() {
-        try {
-            if (mService != null) {
-                return mService.getQueuePosition();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                return service.getQueuePosition();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
         return 0;
     }
@@ -540,9 +549,10 @@ public final class MusicUtils {
      * @param position The position to move the queue to
      */
     public static void setQueuePosition(int position) {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                mService.setQueuePosition(position);
+                service.setQueuePosition(position);
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -556,8 +566,8 @@ public final class MusicUtils {
      * @return true if track was removed
      */
     public static boolean removeTracks(int which) {
+        IApolloService service = mService;
         try {
-            IApolloService service = mService;
             if (service != null && service.removeTracks(which, which) > 0) {
                 return true;
             }
@@ -702,27 +712,28 @@ public final class MusicUtils {
      * @param forceShuffle True to force a shuffle, false otherwise.
      */
     public static void playAll(long[] list, int position, boolean forceShuffle) {
-        if (list.length > 0 && mService != null) {
+        IApolloService service = mService;
+        if (list.length > 0 && service != null) {
             try {
                 if (forceShuffle) {
-                    mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
                 } else {
-                    mService.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
+                    service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
                 }
-                long currentId = mService.getAudioId();
+                long currentId = service.getAudioId();
                 int currentQueuePosition = getQueuePosition();
                 if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
                     long[] playlist = getQueue();
                     if (Arrays.equals(list, playlist)) {
-                        mService.play();
+                        service.play();
                         return;
                     }
                 }
                 if (position < 0) {
                     position = 0;
                 }
-                mService.open(list, forceShuffle ? 0 : position);
-                mService.play();
+                service.open(list, forceShuffle ? 0 : position);
+                service.play();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -747,8 +758,8 @@ public final class MusicUtils {
      * @param context The {@link Context} to use.
      */
     public static void shuffleAll(Context context) {
-        IApolloService service = mService;
         Cursor cursor = CursorFactory.makeTrackCursor(context);
+        IApolloService service = mService;
         if (service != null && cursor != null) {
             cursor.moveToFirst();
             long[] mTrackList = new long[cursor.getCount()];
@@ -996,19 +1007,18 @@ public final class MusicUtils {
     /**
      * Removes a single track from a given playlist
      *
-     * @param context    The {@link Context} to use.
      * @param trackId    The id of the song to remove.
      * @param playlistId The id of the playlist being removed from.
      */
     @SuppressLint("InlinedApi")
-    public static boolean removeFromPlaylist(Context context, long trackId, long playlistId) {
+    public static boolean removeFromPlaylist(Activity activity, long trackId, long playlistId) {
         String[] args = {Long.toString(trackId)};
         Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
-        ContentResolver resolver = context.getContentResolver();
+        ContentResolver resolver = activity.getContentResolver();
         int count = resolver.delete(uri, PLAYLIST_REMOVE_TRACK, args);
         if (count > 0) {
-            String message = context.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
-            AppMsg.makeText((Activity) context, message, AppMsg.STYLE_CONFIRM).show();
+            String message = activity.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
+            AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
             return true;
         }
         return false;
@@ -1018,11 +1028,28 @@ public final class MusicUtils {
      * @param list The list to enqueue.
      */
     public static void addToQueue(Activity activity, long[] list) {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                mService.enqueue(list, MusicPlaybackService.LAST);
+                service.enqueue(list, MusicPlaybackService.LAST);
                 String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
                 AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * add single item to queue
+     *
+     * @param item Id of the media item
+     */
+    public static void addToQueue(long item) {
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.enqueue(new long[]{item}, MusicPlaybackService.LAST);
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -1121,12 +1148,13 @@ public final class MusicUtils {
      * @param to   The index the item is moving to.
      */
     public static void moveQueueItem(int from, int to) {
-        try {
-            if (mService != null) {
-                mService.moveQueueItem(from, to);
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.moveQueueItem(from, to);
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -1134,12 +1162,13 @@ public final class MusicUtils {
      * Toggles the current song as a favorite.
      */
     public static void toggleFavorite() {
-        try {
-            if (mService != null) {
-                mService.toggleFavorite();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.toggleFavorite();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -1147,12 +1176,14 @@ public final class MusicUtils {
      * @return True if the current song is a favorite, false otherwise.
      */
     public static boolean isFavorite() {
-        try {
-            if (mService != null) {
-                return mService.isFavorite();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                return service.isFavorite();
+
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
         return false;
     }
@@ -1311,12 +1342,13 @@ public final class MusicUtils {
      * Called when one of the lists should refresh or requery.
      */
     public static void refresh() {
-        try {
-            if (mService != null) {
-                mService.refresh();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.refresh();
+            } catch (RemoteException err) {
+                err.printStackTrace();
             }
-        } catch (RemoteException err) {
-            err.printStackTrace();
         }
     }
 
@@ -1337,9 +1369,10 @@ public final class MusicUtils {
      * @param position The position to seek to
      */
     public static void seek(long position) {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                mService.seek(position);
+                service.seek(position);
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -1350,9 +1383,10 @@ public final class MusicUtils {
      * @return The current position time of the track
      */
     public static long position() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.position();
+                return service.position();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -1364,9 +1398,10 @@ public final class MusicUtils {
      * @return The total duration of the current track
      */
     public static long duration() {
-        if (mService != null) {
+        IApolloService service = mService;
+        if (service != null) {
             try {
-                return mService.duration();
+                return service.duration();
             } catch (RemoteException err) {
                 err.printStackTrace();
             }
@@ -1388,10 +1423,13 @@ public final class MusicUtils {
      * Clears the qeueue
      */
     public static void clearQueue() {
-        try {
-            mService.removeTracks(0, Integer.MAX_VALUE);
-        } catch (RemoteException err) {
-            err.printStackTrace();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                service.removeTracks(0, Integer.MAX_VALUE);
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
         }
     }
 
@@ -1423,11 +1461,13 @@ public final class MusicUtils {
      * @return path to the music file
      */
     public static String getPlaybackFilePath() {
-        try {
-            if (mService != null)
-                return mService.getPath();
-        } catch (RemoteException err) {
-            err.printStackTrace();
+        IApolloService service = mService;
+        if (service != null) {
+            try {
+                return service.getPath();
+            } catch (RemoteException err) {
+                err.printStackTrace();
+            }
         }
         return null;
     }

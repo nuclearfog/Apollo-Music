@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.views;
+package com.andrew.apollo.ui.views;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -26,7 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
-import com.andrew.apollo.views.ColorPickerView.OnColorChangedListener;
+import com.andrew.apollo.ui.views.ColorPickerView.OnColorChangedListener;
 
 import java.util.Locale;
 

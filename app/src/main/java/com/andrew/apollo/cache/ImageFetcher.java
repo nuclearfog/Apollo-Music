@@ -251,7 +251,7 @@ public class ImageFetcher extends ImageWorker {
      * {@inheritDoc}
      */
     @Override
-    protected Bitmap processBitmap(String url) {
+    public Bitmap processBitmap(String url) {
         if (url == null) {
             return null;
         }
@@ -269,7 +269,7 @@ public class ImageFetcher extends ImageWorker {
      * {@inheritDoc}
      */
     @Override
-    protected String processImageUrl(String artistName, String albumName, ImageType imageType) {
+    public String processImageUrl(String artistName, String albumName, ImageType imageType) {
         switch (imageType) {
             case ARTIST:
                 if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {

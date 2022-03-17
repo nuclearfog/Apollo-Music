@@ -9,7 +9,7 @@
  * language governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.views;
+package com.andrew.apollo.ui.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,6 +28,8 @@ import android.graphics.Shader.TileMode;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.andrew.apollo.ui.drawables.AlphaPatternDrawable;
 
 /**
  * Displays a color picker to the user and allow them to select a color. A

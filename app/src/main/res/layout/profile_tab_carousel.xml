@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<com.andrew.apollo.views.ProfileTabCarousel xmlns:android="http://schemas.android.com/apk/res/android"
+<com.andrew.apollo.ui.views.ProfileTabCarousel xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -54,4 +54,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.andrew.apollo.views.ProfileTabCarousel>
+</com.andrew.apollo.ui.views.ProfileTabCarousel>

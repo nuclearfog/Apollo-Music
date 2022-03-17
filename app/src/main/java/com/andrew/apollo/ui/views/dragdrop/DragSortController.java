@@ -1,4 +1,4 @@
-package com.andrew.apollo.views.dragdrop;
+package com.andrew.apollo.ui.views.dragdrop;
 
 import android.annotation.SuppressLint;
 import android.graphics.Point;

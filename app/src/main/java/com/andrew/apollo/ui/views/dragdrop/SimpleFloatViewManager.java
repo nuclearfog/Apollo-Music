@@ -1,4 +1,4 @@
-package com.andrew.apollo.views.dragdrop;
+package com.andrew.apollo.ui.views.dragdrop;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;

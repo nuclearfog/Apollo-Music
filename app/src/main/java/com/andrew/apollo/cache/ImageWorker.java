@@ -12,23 +12,16 @@
 package com.andrew.apollo.cache;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.andrew.apollo.R;
-import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.ui.drawables.AsyncDrawable;
 import com.andrew.apollo.utils.BitmapUtils;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
@@ -38,21 +31,6 @@ import java.util.concurrent.RejectedExecutionException;
  * placeholder image.
  */
 public abstract class ImageWorker {
-
-    /**
-     * Default transition drawable fade time
-     */
-    private static final int FADE_IN_TIME = 200;
-
-    /**
-     * The resources to use
-     */
-    private Resources mResources;
-
-    /**
-     * Layer drawable used to cross fade the result from the worker
-     */
-    private Drawable[] mArrayDrawable;
 
     /**
      * The Context to use
@@ -71,13 +49,6 @@ public abstract class ImageWorker {
      */
     protected ImageWorker(Context context) {
         mContext = context.getApplicationContext();
-        mResources = mContext.getResources();
-        // Create the transparent layer for the transition drawable
-        ColorDrawable mCurrentDrawable = new ColorDrawable(mResources.getColor(R.color.transparent));
-        // A transparent image (layer 0) and the new result (layer 1)
-        mArrayDrawable = new Drawable[2];
-        mArrayDrawable[0] = mCurrentDrawable;
-        // XXX The second layer is set in the worker task.
     }
 
     /**
@@ -85,11 +56,11 @@ public abstract class ImageWorker {
      * work in progress on this image view. Returns false if the work in
      * progress deals with the same data. The work is not stopped in that case.
      */
-    public static boolean executePotentialWork(Object data, ImageView imageView) {
-        BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+    public static boolean executePotentialWork(String key, ImageView imageView) {
+        AsyncDrawable.BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
         if (bitmapWorkerTask != null) {
-            Object bitmapData = bitmapWorkerTask.mKey;
-            if (bitmapData == null || !bitmapData.equals(data)) {
+            String bitmapData = bitmapWorkerTask.tag;
+            if (bitmapData == null || !bitmapData.equals(key)) {
                 bitmapWorkerTask.cancel(true);
             } else {
                 // The same work is already in progress
@@ -101,13 +72,13 @@ public abstract class ImageWorker {
 
     /**
      * Used to determine if the current image drawable has an instance of
-     * {@link BitmapWorkerTask}
+     * {@link AsyncDrawable.BitmapWorkerTask}
      *
      * @param imageView Any {@link ImageView}.
      * @return Retrieve the currently active work task (if any) associated with
      * this {@link ImageView}. null if there is no such task.
      */
-    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+    private static AsyncDrawable.BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
         if (imageView != null) {
             Drawable drawable = imageView.getDrawable();
             if (drawable instanceof AsyncDrawable) {
@@ -148,6 +119,15 @@ public abstract class ImageWorker {
         }
     }
 
+    @Nullable
+    public ImageCache getImageCache() {
+        return mImageCache;
+    }
+
+    public Context getContext() {
+        return mContext;
+    }
+
     /**
      * Called to fetch the artist or ablum art.
      *
@@ -176,7 +156,7 @@ public abstract class ImageWorker {
             // check storage for image or download
             else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
                 // Otherwise run the worker task
-                BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(this, imageType, imageviews);
+                AsyncDrawable.BitmapWorkerTask bitmapWorkerTask = new AsyncDrawable.BitmapWorkerTask(this, key, imageType, imageviews);
                 AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);
                 imageviews[0].setImageDrawable(asyncDrawable);
                 try {
@@ -197,7 +177,7 @@ public abstract class ImageWorker {
      * @param key The key to identify which image to process, as provided by
      * @return The processed {@link Bitmap}.
      */
-    protected abstract Bitmap processBitmap(String key);
+    public abstract Bitmap processBitmap(String key);
 
     /**
      * Subclasses should override this to define any processing or work that
@@ -208,160 +188,12 @@ public abstract class ImageWorker {
      * @param imageType  The type of image URL to fetch for.
      * @return The image URL for an artist image or album image.
      */
-    protected abstract String processImageUrl(String artistName, String albumName, ImageType imageType);
+    public abstract String processImageUrl(String artistName, String albumName, ImageType imageType);
 
     /**
      * Used to define what type of image URL to fetch for, artist or album.
      */
     public enum ImageType {
         ARTIST, ALBUM
-    }
-
-    /**
-     * A custom {@link BitmapDrawable} that will be attached to the
-     * {@link ImageView} while the work is in progress. Contains a reference to
-     * the actual worker task, so that it can be stopped if a new binding is
-     * required, and makes sure that only the last started worker process can
-     * bind its result, independently of the finish order.
-     */
-    private static final class AsyncDrawable extends ColorDrawable {
-
-        private WeakReference<BitmapWorkerTask> mBitmapWorkerTaskReference;
-
-        /**
-         * Constructor of <code>AsyncDrawable</code>
-         */
-        public AsyncDrawable(BitmapWorkerTask mBitmapWorkerTask) {
-            super(Color.TRANSPARENT);
-            mBitmapWorkerTaskReference = new WeakReference<>(mBitmapWorkerTask);
-        }
-
-        /**
-         * @return The {@link BitmapWorkerTask} associated with this drawable
-         */
-        @Nullable
-        public BitmapWorkerTask getBitmapWorkerTask() {
-            return mBitmapWorkerTaskReference.get();
-        }
-    }
-
-    /**
-     * The actual {@link AsyncTask} that will process the image.
-     */
-    private static class BitmapWorkerTask extends AsyncTask<String, Void, Drawable[]> {
-
-        /**
-         * callback reference to update image
-         */
-        private WeakReference<ImageWorker> callback;
-
-        /**
-         * The {@link ImageView} used to set the result
-         */
-        private WeakReference<ImageView[]> mImageReference;
-
-        /**
-         * Type of URL to download
-         */
-        private ImageType mImageType;
-
-        /**
-         * The key used to store cached entries
-         */
-        private String mKey;
-
-        /**
-         * Constructor of <code>BitmapWorkerTask</code>
-         *
-         * @param imageView The {@link ImageView} to use.
-         * @param imageType The type of image URL to fetch for.
-         */
-        public BitmapWorkerTask(ImageWorker callback, ImageType imageType, ImageView... imageView) {
-            super();
-            imageView[0].setBackgroundResource(R.drawable.default_artwork);
-            mImageReference = new WeakReference<>(imageView);
-            this.callback = new WeakReference<>(callback);
-            mImageType = imageType;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected Drawable[] doInBackground(String... params) {
-            try {
-                ImageWorker worker = callback.get();
-                if (worker == null)
-                    return null;
-
-                // Define the key
-                mKey = params[0];
-
-                // The result
-                Bitmap bitmap = null;
-
-                // First, check the disk cache for the image
-                if (mKey != null && worker.mImageCache != null && !isCancelled()) {
-                    bitmap = worker.mImageCache.getCachedBitmap(mKey);
-                }
-
-                // Define the album id now
-                long mAlbumId = Long.parseLong(params[3]);
-
-                // Second, if we're fetching artwork, check the device for the image
-                if (bitmap == null && mAlbumId >= 0 && mKey != null && !isCancelled() && worker.mImageCache != null) {
-                    bitmap = worker.mImageCache.getCachedArtwork(worker.mContext, mKey, mAlbumId);
-                }
-
-                // Third, by now we need to download the image
-                if (bitmap == null && ApolloUtils.isOnline(worker.mContext) && !isCancelled()) {
-                    // Now define what the artist name, album name, and url are.
-                    String mArtistName = params[1];
-                    String mAlbumName = params[2] != null ? params[2] : mArtistName;
-                    String mUrl = worker.processImageUrl(mArtistName, mAlbumName, mImageType);
-                    if (mUrl != null) {
-                        bitmap = worker.processBitmap(mUrl);
-                    }
-                }
-
-                // Fourth, add the new image to the cache
-                if (bitmap != null && mKey != null && worker.mImageCache != null) {
-                    worker.addBitmapToCache(mKey, bitmap);
-                }
-
-                // Add the second layer to the translation drawable
-                if (bitmap != null) {
-                    BitmapDrawable layerTwo = new BitmapDrawable(worker.mResources, bitmap);
-                    layerTwo.setFilterBitmap(false);
-                    layerTwo.setDither(false);
-                    worker.mArrayDrawable[1] = layerTwo;
-                    TransitionDrawable result = new TransitionDrawable(worker.mArrayDrawable);
-                    result.setCrossFadeEnabled(true);
-                    result.startTransition(FADE_IN_TIME);
-
-                    Bitmap blur = BitmapUtils.createBlurredBitmap(bitmap);
-                    BitmapDrawable layerBlur = new BitmapDrawable(worker.mResources, blur);
-
-                    return new Drawable[]{result, layerBlur};
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void onPostExecute(Drawable[] result) {
-            ImageView[] imageviews = mImageReference.get();
-            if (result != null && imageviews != null) {
-                imageviews[0].setImageDrawable(result[0]);
-                if (imageviews.length > 1) {
-                    imageviews[1].setImageDrawable(result[1]);
-                }
-            }
-        }
     }
 }

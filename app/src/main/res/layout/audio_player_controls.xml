@@ -66,7 +66,7 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="audio_player_total_time,player_progress,audio_player_current_time" />
 
-    <com.andrew.apollo.views.ShuffleButton
+    <com.andrew.apollo.ui.views.ShuffleButton
         android:id="@+id/action_button_shuffle"
         android:layout_width="@dimen/audio_player_controls_end_button_width"
         android:layout_height="@dimen/audio_player_controls_end_button_height"
@@ -78,7 +78,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_previous" />
 
-    <com.andrew.apollo.views.RepeatingImageButton
+    <com.andrew.apollo.ui.views.RepeatingImageButton
         android:id="@+id/action_button_previous"
         android:layout_width="@dimen/audio_player_controls_main_button_width"
         android:layout_height="@dimen/audio_player_controls_main_button_height"
@@ -90,7 +90,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_play" />
 
-    <com.andrew.apollo.views.PlayPauseButton
+    <com.andrew.apollo.ui.views.PlayPauseButton
         android:id="@+id/action_button_play"
         android:layout_width="@dimen/audio_player_controls_main_button_width"
         android:layout_height="@dimen/audio_player_controls_main_button_height"
@@ -104,7 +104,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_next" />
 
-    <com.andrew.apollo.views.RepeatingImageButton
+    <com.andrew.apollo.ui.views.RepeatingImageButton
         android:id="@+id/action_button_next"
         android:layout_width="@dimen/audio_player_controls_main_button_width"
         android:layout_height="@dimen/audio_player_controls_main_button_height"
@@ -116,7 +116,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/action_button_repeat" />
 
-    <com.andrew.apollo.views.RepeatButton
+    <com.andrew.apollo.ui.views.RepeatButton
         android:id="@+id/action_button_repeat"
         android:layout_width="@dimen/audio_player_controls_end_button_width"
         android:layout_height="@dimen/audio_player_controls_end_button_height"

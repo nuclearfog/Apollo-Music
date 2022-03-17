@@ -20,7 +20,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/pager_background">
 
-    <com.andrew.apollo.views.theme.Colorstrip
+    <com.andrew.apollo.ui.views.theme.Colorstrip
         android:id="@+id/colorstrip"
         android:layout_width="0dp"
         android:layout_height="@dimen/colorstrip_height"

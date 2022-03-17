@@ -20,7 +20,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/color_scheme_dialog_row_padding">
 
-    <com.andrew.apollo.views.ColorPickerView
+    <com.andrew.apollo.ui.views.ColorPickerView
         android:id="@+id/color_picker_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

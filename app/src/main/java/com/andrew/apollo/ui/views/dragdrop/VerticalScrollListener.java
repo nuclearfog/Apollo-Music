@@ -9,12 +9,14 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.views;
+package com.andrew.apollo.ui.views.dragdrop;
 
 import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+
+import com.andrew.apollo.ui.views.ProfileTabCarousel;
 
 @SuppressLint("NewApi")
 public class VerticalScrollListener implements OnScrollListener {

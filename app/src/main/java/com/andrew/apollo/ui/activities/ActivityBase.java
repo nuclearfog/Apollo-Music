@@ -41,10 +41,10 @@ import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.views.PlayPauseButton;
-import com.andrew.apollo.views.RepeatButton;
-import com.andrew.apollo.views.ShuffleButton;
-import com.andrew.apollo.views.theme.HoloSelector;
+import com.andrew.apollo.ui.views.PlayPauseButton;
+import com.andrew.apollo.ui.views.RepeatButton;
+import com.andrew.apollo.ui.views.ShuffleButton;
+import com.andrew.apollo.ui.views.theme.HoloSelector;
 
 import java.util.LinkedList;
 import java.util.List;

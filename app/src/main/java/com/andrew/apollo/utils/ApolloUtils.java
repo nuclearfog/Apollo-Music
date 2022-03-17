@@ -45,8 +45,8 @@ import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
 import com.andrew.apollo.ui.activities.HomeActivity;
 import com.andrew.apollo.ui.activities.ShortcutActivity;
-import com.andrew.apollo.views.ColorPickerView;
-import com.andrew.apollo.views.ColorSchemeDialog;
+import com.andrew.apollo.ui.views.ColorPickerView;
+import com.andrew.apollo.ui.views.ColorSchemeDialog;
 import com.devspark.appmsg.AppMsg;
 
 import java.io.File;

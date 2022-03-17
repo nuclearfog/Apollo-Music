@@ -29,9 +29,9 @@ import androidx.core.content.ContextCompat;
 
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
+import com.andrew.apollo.ui.views.theme.HoloSelector;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.ui.views.theme.HoloSelector;
 
 /**
  * A custom {@link AppCompatImageButton} that represents the "repeat" button.

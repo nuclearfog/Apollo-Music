@@ -35,12 +35,12 @@ import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SearchAdapter;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.MusicSearchLoader;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.model.Music;
 import com.andrew.apollo.model.Song;
-import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;

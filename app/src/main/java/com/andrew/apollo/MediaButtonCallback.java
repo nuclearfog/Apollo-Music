@@ -10,11 +10,11 @@ import android.support.v4.media.session.MediaSessionCompat;
  *
  * @author nuclearfog
  */
-public class MediaCallback extends MediaSessionCompat.Callback {
+public class MediaButtonCallback extends MediaSessionCompat.Callback {
 
     private MusicPlaybackService service;
 
-    public MediaCallback(MusicPlaybackService service) {
+    public MediaButtonCallback(MusicPlaybackService service) {
         this.service = service;
     }
 

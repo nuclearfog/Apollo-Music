@@ -498,7 +498,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
         // Initialize the handler
         mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
         mSession = new MediaSessionCompat(getApplicationContext(), TAG);
-        mSession.setCallback(new MediaCallback(this), mPlayerHandler);
+        mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
         mSession.setPlaybackState(state);
         mSession.setActive(true);
 

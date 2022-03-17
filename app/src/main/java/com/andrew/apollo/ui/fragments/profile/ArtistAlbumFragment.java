@@ -34,9 +34,9 @@ import com.andrew.apollo.loaders.ArtistAlbumLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
+import com.andrew.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
-import com.andrew.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
 
 import java.util.List;
 

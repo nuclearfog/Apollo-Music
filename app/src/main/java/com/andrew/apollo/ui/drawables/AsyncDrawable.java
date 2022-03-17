@@ -78,15 +78,15 @@ public class AsyncDrawable extends ColorDrawable {
         /**
          * Constructor of <code>BitmapWorkerTask</code>
          *
-         * @param imageView The {@link ImageView} to use.
-         * @param imageType The type of image URL to fetch for.
+         * @param imageView  The {@link ImageView} to use.
+         * @param mImageType The type of image URL to fetch for.
          */
-        public BitmapWorkerTask(ImageWorker imageWorker, String tag, ImageWorker.ImageType imageType, ImageView... imageView) {
+        public BitmapWorkerTask(ImageWorker imageWorker, String tag, ImageWorker.ImageType mImageType, ImageView[] imageView) {
             super();
             callback = new WeakReference<>(imageWorker);
             mImageReference = new WeakReference<>(imageView);
             imageView[0].setBackgroundResource(R.drawable.default_artwork);
-            mImageType = imageType;
+            this.mImageType = mImageType;
             this.tag = tag;
         }
 

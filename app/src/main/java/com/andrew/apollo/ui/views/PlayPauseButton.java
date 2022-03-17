@@ -22,9 +22,9 @@ import android.widget.ImageButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.ui.views.theme.HoloSelector;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
-import com.andrew.apollo.ui.views.theme.HoloSelector;
 
 /**
  * A custom {@link ImageButton} that represents the "play and pause" button.

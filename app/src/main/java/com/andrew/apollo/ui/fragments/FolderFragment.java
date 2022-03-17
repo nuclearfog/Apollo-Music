@@ -30,8 +30,8 @@ import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.FolderAdapter;
-import com.andrew.apollo.loaders.FolderLoader;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
+import com.andrew.apollo.loaders.FolderLoader;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.MusicUtils;
 

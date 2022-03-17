@@ -119,11 +119,17 @@ public abstract class ImageWorker {
         }
     }
 
+    /**
+     * @return reference to the image cache
+     */
     @Nullable
     public ImageCache getImageCache() {
         return mImageCache;
     }
 
+    /**
+     * @return application context
+     */
     public Context getContext() {
         return mContext;
     }

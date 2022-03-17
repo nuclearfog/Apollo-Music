@@ -40,11 +40,11 @@ import androidx.loader.content.Loader;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAdapter;
+import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.ArtistLoader;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Artist;
-import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
 import com.andrew.apollo.utils.ApolloUtils;

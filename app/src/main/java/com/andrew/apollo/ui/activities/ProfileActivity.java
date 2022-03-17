@@ -58,14 +58,14 @@ import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
 import com.andrew.apollo.ui.fragments.profile.PopularSongFragment;
+import com.andrew.apollo.ui.views.ProfileTabCarousel;
+import com.andrew.apollo.ui.views.ProfileTabCarousel.Listener;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
 import com.andrew.apollo.utils.SortOrder;
 import com.andrew.apollo.utils.ThemeUtils;
-import com.andrew.apollo.ui.views.ProfileTabCarousel;
-import com.andrew.apollo.ui.views.ProfileTabCarousel.Listener;
 
 import java.util.Random;
 

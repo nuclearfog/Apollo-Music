@@ -1,7 +1,6 @@
-package com.andrew.apollo.ui.drawables;
+package com.andrew.apollo.cache;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,51 +8,77 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.cache.ImageWorker;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.BitmapUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
- * A custom {@link BitmapDrawable} that will be attached to the
+ * A custom {@link android.view.View} Objet tag that will be attached to the
  * {@link ImageView} while the work is in progress. Contains a reference to
  * the actual worker task, so that it can be stopped if a new binding is
  * required, and makes sure that only the last started worker process can
  * bind its result, independently of the finish order.
  */
-public class AsyncDrawable extends ColorDrawable {
+public class ImageAsyncTag {
 
     /**
      * Default transition drawable fade time
      */
     private static final int FADE_IN_TIME = 200;
 
-    private BitmapWorkerTask mBitmapWorkerTask;
+    /**
+     * background worker task
+     */
+    private BitmapWorkerTask bitmapWorkerTask;
+
+    /**
+     * key used to identify this tag
+     */
+    private String mKey;
 
     /**
      * Constructor of <code>AsyncDrawable</code>
      */
-    public AsyncDrawable(BitmapWorkerTask mBitmapWorkerTask) {
-        super(Color.TRANSPARENT);
-        this.mBitmapWorkerTask = mBitmapWorkerTask;
+    public ImageAsyncTag(ImageWorker imgWorker, @NonNull String mKey, ImageWorker.ImageType imageType, ImageView... imageViews) {
+        bitmapWorkerTask = new ImageAsyncTag.BitmapWorkerTask(imgWorker, imageType, imageViews);
+        this.mKey = mKey;
     }
 
     /**
-     * @return The {@link BitmapWorkerTask} associated with this drawable
+     * execute background task
      */
-    @Nullable
-    public BitmapWorkerTask getBitmapWorkerTask() {
-        return mBitmapWorkerTask;
+    public void run(String artistName, String albumName, long albumId) {
+        try {
+            bitmapWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mKey, artistName, albumName, Long.toString(albumId));
+        } catch (RejectedExecutionException e) {
+            // Executor has exhausted queue space, show default artwork
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * cancel worker task
+     */
+    public void cancel() {
+        bitmapWorkerTask.cancel(true);
+    }
+
+    /**
+     * @return unique tag key
+     */
+    public String getTag() {
+        return mKey;
     }
 
     /**
      * The actual {@link AsyncTask} that will process the image.
      */
-    public static class BitmapWorkerTask extends AsyncTask<String, Void, Drawable[]> {
+    private static class BitmapWorkerTask extends AsyncTask<String, Void, Drawable[]> {
 
         /**
          * callback reference to update image
@@ -71,23 +96,17 @@ public class AsyncDrawable extends ColorDrawable {
         private ImageWorker.ImageType mImageType;
 
         /**
-         * The key used to store cached entries
-         */
-        public final String tag;
-
-        /**
          * Constructor of <code>BitmapWorkerTask</code>
          *
          * @param imageView  The {@link ImageView} to use.
          * @param mImageType The type of image URL to fetch for.
          */
-        public BitmapWorkerTask(ImageWorker imageWorker, String tag, ImageWorker.ImageType mImageType, ImageView[] imageView) {
+        private BitmapWorkerTask(ImageWorker imageWorker, ImageWorker.ImageType mImageType, ImageView[] imageView) {
             super();
             callback = new WeakReference<>(imageWorker);
             mImageReference = new WeakReference<>(imageView);
             imageView[0].setBackgroundResource(R.drawable.default_artwork);
             this.mImageType = mImageType;
-            this.tag = tag;
         }
 
         /**

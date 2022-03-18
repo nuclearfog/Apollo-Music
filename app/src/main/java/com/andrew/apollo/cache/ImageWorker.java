@@ -13,16 +13,11 @@ package com.andrew.apollo.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.andrew.apollo.ui.drawables.AsyncDrawable;
 import com.andrew.apollo.utils.BitmapUtils;
-
-import java.util.concurrent.RejectedExecutionException;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading
@@ -57,36 +52,20 @@ public abstract class ImageWorker {
      * progress deals with the same data. The work is not stopped in that case.
      */
     public static boolean executePotentialWork(String key, ImageView imageView) {
-        AsyncDrawable.BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-        if (bitmapWorkerTask != null) {
-            String bitmapData = bitmapWorkerTask.tag;
-            if (bitmapData == null || !bitmapData.equals(key)) {
-                bitmapWorkerTask.cancel(true);
-            } else {
-                // The same work is already in progress
-                return false;
+        if (imageView != null) {
+            Object drawable = imageView.getTag();
+            if (drawable instanceof ImageAsyncTag) {
+                ImageAsyncTag asyncDrawable = (ImageAsyncTag) drawable;
+                if (!asyncDrawable.getTag().equals(key)) {
+                    // cancel worker to load a new image
+                    asyncDrawable.cancel();
+                } else {
+                    // The same work is already in progress
+                    return false;
+                }
             }
         }
         return true;
-    }
-
-    /**
-     * Used to determine if the current image drawable has an instance of
-     * {@link AsyncDrawable.BitmapWorkerTask}
-     *
-     * @param imageView Any {@link ImageView}.
-     * @return Retrieve the currently active work task (if any) associated with
-     * this {@link ImageView}. null if there is no such task.
-     */
-    private static AsyncDrawable.BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
-        if (imageView != null) {
-            Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof AsyncDrawable) {
-                AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-                return asyncDrawable.getBitmapWorkerTask();
-            }
-        }
-        return null;
     }
 
     /**
@@ -162,15 +141,9 @@ public abstract class ImageWorker {
             // check storage for image or download
             else if (executePotentialWork(key, imageviews[0]) && !mImageCache.isDiskCachePaused()) {
                 // Otherwise run the worker task
-                AsyncDrawable.BitmapWorkerTask bitmapWorkerTask = new AsyncDrawable.BitmapWorkerTask(this, key, imageType, imageviews);
-                AsyncDrawable asyncDrawable = new AsyncDrawable(bitmapWorkerTask);
-                imageviews[0].setImageDrawable(asyncDrawable);
-                try {
-                    bitmapWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, key, artistName, albumName, String.valueOf(albumId));
-                } catch (RejectedExecutionException e) {
-                    // Executor has exhausted queue space, show default artwork
-                    e.printStackTrace();
-                }
+                ImageAsyncTag asyncTag = new ImageAsyncTag(this, key, imageType, imageviews);
+                imageviews[0].setTag(asyncTag);
+                asyncTag.run(artistName, albumName, albumId);
             }
         }
     }

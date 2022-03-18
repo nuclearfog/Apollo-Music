@@ -81,7 +81,6 @@ import java.util.TreeSet;
  * and when the user moves Apollo into the background.
  */
 public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener {
-
     /**
      *
      */
@@ -306,91 +305,32 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      * Service stub
      */
     private IBinder mBinder = new ServiceStub(this);
-
+    /**
+     * app wide settings
+     */
+    private PreferenceUtils settings;
     /**
      * Broadcast receiver for widget actions
      */
     private WidgetBroadcastReceiver mIntentReceiver;
-
     /**
      * broadcast listener for unmounting external storage
      */
     private BroadcastReceiver mUnmountReceiver = null;
-
     /**
      * The media player
      */
     private MultiPlayer mPlayer;
-
     /**
      * The path of the current file to play
      */
     private String mFileToPlay;
-
     /**
-     * Alarm intent for removing the notification when nothing is playing
-     * for some time
+     * MediaSession to init media button support
      */
-    private AlarmManager mAlarmManager;
-    private PendingIntent mShutdownIntent;
-    private boolean mShutdownScheduled;
-
-    /**
-     * The cursor used to retrieve info on the current track and run the
-     * necessary queries to play audio files
-     */
-    @Nullable
-    private Cursor mCursor;
-
-    /**
-     * The cursor used to retrieve info on the album the current track is
-     * part of, if any.
-     */
-    @Nullable
-    private Cursor mAlbumCursor;
-
-    /**
-     * Used to know when the service is active
-     */
-    private boolean mServiceInUse = false;
-
-    /**
-     * Used to know if something should be playing or not
-     */
-    private boolean mIsSupposedToBePlaying = false;
-
-    /**
-     * Used to indicate if the queue can be saved
-     */
-    private boolean mQueueIsSaveable = true;
-
-    /**
-     * Used to track what type of audio focus loss caused the playback to pause
-     */
-    private boolean mPausedByTransientLossOfFocus = false;
-
-    private PreferenceUtils settings;
-
-    // We use this to distinguish between different cards when saving/restoring
-    // playlists
-    private int mCardId;
-
-    private int mShuffleIndex = -1;
-
-    private int mPlayPos = -1;
-
-    private int mNextPlayPos = -1;
-
-    private int mMediaMountedCount = 0;
-
-    private int mShuffleMode = SHUFFLE_NONE;
-
-    private int mRepeatMode = REPEAT_ALL;
-
-    private int mServiceStartId = -1;
-
     private MediaSessionCompat mSession;
-
+    /**
+     */
     private MusicPlayerHandler mPlayerHandler;
     /**
      * Image cache
@@ -408,11 +348,59 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      * Favorites database
      */
     private FavoritesStore mFavoritesCache;
-
     /**
      * most played tracks database
      */
     private PopularStore mPopularCache;
+    /**
+     * Alarm intent for removing the notification when nothing is playing
+     * for some time
+     */
+    private AlarmManager mAlarmManager;
+    private PendingIntent mShutdownIntent;
+    private boolean mShutdownScheduled;
+    /**
+     * The cursor used to retrieve info on the current track and run the
+     * necessary queries to play audio files
+     */
+    @Nullable
+    private Cursor mCursor;
+    /**
+     * The cursor used to retrieve info on the album the current track is
+     * part of, if any.
+     */
+    @Nullable
+    private Cursor mAlbumCursor;
+    /**
+     * Used to know when the service is active
+     */
+    private boolean mServiceInUse = false;
+    /**
+     * Used to know if something should be playing or not
+     */
+    private boolean mIsSupposedToBePlaying = false;
+    /**
+     * Used to indicate if the queue can be saved
+     */
+    private boolean mQueueIsSaveable = true;
+    /**
+     * Used to track what type of audio focus loss caused the playback to pause
+     */
+    private boolean mPausedByTransientLossOfFocus = false;
+    /**
+     * used to distinguish between different cards when saving/restoring playlists
+     */
+    private int mCardId;
+
+    private int mServiceStartId = -1;
+    private int mShuffleMode = SHUFFLE_NONE;
+    private int mRepeatMode = REPEAT_ALL;
+
+    private int mShuffleIndex = -1;
+    private int mPlayPos = -1;
+    private int mNextPlayPos = -1;
+    private int mMediaMountedCount = 0;
+
 
     /**
      * {@inheritDoc}

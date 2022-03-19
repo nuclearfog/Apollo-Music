@@ -310,6 +310,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      */
     private PreferenceUtils settings;
     /**
+     * audio manager to gain audio focus
+     */
+    private AudioManager mAudio;
+    /**
      * Broadcast receiver for widget actions
      */
     private WidgetBroadcastReceiver mIntentReceiver;
@@ -489,6 +493,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
         mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
         mSession.setPlaybackState(state);
         mSession.setActive(true);
+
+        mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         // Initialize the preferences
         settings = PreferenceUtils.getInstance(this);
@@ -784,22 +790,27 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      * Resumes or starts playback.
      */
     public void play() {
-        if (mPlayer.isInitialized()) {
-            long duration = mPlayer.duration();
-            if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
-                gotoNext(true);
+        if (mAudio != null) {
+            int returnCode = mAudio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
+                if (mPlayer.isInitialized()) {
+                    long duration = mPlayer.duration();
+                    if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
+                        gotoNext(true);
+                    }
+                    mPlayer.start();
+                    mPlayerHandler.removeMessages(FADEDOWN);
+                    mPlayerHandler.sendEmptyMessage(FADEUP);
+                    if (!mIsSupposedToBePlaying) {
+                        mIsSupposedToBePlaying = true;
+                        notifyChange(PLAYSTATE_CHANGED);
+                    }
+                    cancelShutdown();
+                    updateNotification();
+                } else if (mPlayList.isEmpty()) {
+                    setShuffleMode(SHUFFLE_AUTO);
+                }
             }
-            mPlayer.start();
-            mPlayerHandler.removeMessages(FADEDOWN);
-            mPlayerHandler.sendEmptyMessage(FADEUP);
-            if (!mIsSupposedToBePlaying) {
-                mIsSupposedToBePlaying = true;
-                notifyChange(PLAYSTATE_CHANGED);
-            }
-            cancelShutdown();
-            updateNotification();
-        } else if (mPlayList.isEmpty()) {
-            setShuffleMode(SHUFFLE_AUTO);
         }
     }
 

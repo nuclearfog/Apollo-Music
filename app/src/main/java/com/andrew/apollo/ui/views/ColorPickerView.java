@@ -455,9 +455,7 @@ public class ColorPickerView extends View {
 
                 case PANEL_ALPHA:
 
-                    if (!mShowAlphaPanel || mAlphaRect == null) {
-                        update = false;
-                    } else {
+                    if (mShowAlphaPanel && mAlphaRect != null) {
 
                         int alpha = (int) (mAlpha - x * 10);
 

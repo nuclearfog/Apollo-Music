@@ -234,11 +234,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
                                     MusicUtils.refresh();
                                 }
                             }).setNegativeButton(R.string.cancel, new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).setMessage(R.string.cannot_be_undone).show();
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).setMessage(R.string.cannot_be_undone).show();
                     return true;
             }
         }

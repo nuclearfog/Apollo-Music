@@ -334,6 +334,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
      */
     private MediaSessionCompat mSession;
     /**
+     *
      */
     private MusicPlayerHandler mPlayerHandler;
     /**

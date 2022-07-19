@@ -17,34 +17,34 @@
 -->
 <!--todo fix translation-->
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingQuantity">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> альбом</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> альбоми</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> альбомів</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> пісня</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> пісні</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> пісень</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композиція додана в список.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції додано в список.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій додано в список.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композицію вилучено зі списку відтворення.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції вилучено зі списку відтворення.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій вилучено зі списку відтворення.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композиція додана в чергу.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції додано в чергу.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій додано в чергу.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> композиція видалена.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції видалено.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій видалено.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> альбом</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> альбоми</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> альбомів</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> пісня</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> пісні</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> пісень</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композиція додана в список.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції додано в список.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій додано в список.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композицію вилучено зі списку відтворення.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції вилучено зі списку відтворення.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій вилучено зі списку відтворення.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> композиція додана в чергу.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції додано в чергу.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій додано в чергу.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> композиція видалена.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> композиції видалено.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> композицій видалено.</item>
+	</plurals>
 </resources>

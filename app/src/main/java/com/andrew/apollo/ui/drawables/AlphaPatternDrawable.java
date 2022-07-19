@@ -30,100 +30,100 @@ import android.graphics.drawable.Drawable;
  */
 public class AlphaPatternDrawable extends Drawable {
 
-    private Paint mPaint = new Paint();
+	private Paint mPaint = new Paint();
 
-    private Paint mPaintWhite = new Paint();
+	private Paint mPaintWhite = new Paint();
 
-    private Paint mPaintGray = new Paint();
+	private Paint mPaintGray = new Paint();
 
-    private int mRectangleSize;
+	private int mRectangleSize;
 
-    private int numRectanglesHorizontal;
+	private int numRectanglesHorizontal;
 
-    private int numRectanglesVertical;
+	private int numRectanglesVertical;
 
-    /* Bitmap in which the pattern will be cached. */
-    private Bitmap mBitmap;
+	/* Bitmap in which the pattern will be cached. */
+	private Bitmap mBitmap;
 
-    /**/
-    public AlphaPatternDrawable(int rectangleSize) {
-        mRectangleSize = rectangleSize;
-        mPaintWhite.setColor(0xffffffff);
-        mPaintGray.setColor(0xffcbcbcb);
-    }
+	/**/
+	public AlphaPatternDrawable(int rectangleSize) {
+		mRectangleSize = rectangleSize;
+		mPaintWhite.setColor(0xffffffff);
+		mPaintGray.setColor(0xffcbcbcb);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void draw(Canvas canvas) {
-        canvas.drawBitmap(mBitmap, null, getBounds(), mPaint);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void draw(Canvas canvas) {
+		canvas.drawBitmap(mBitmap, null, getBounds(), mPaint);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getOpacity() {
-        return TRANSLUCENT;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getOpacity() {
+		return TRANSLUCENT;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setAlpha(int alpha) {
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setAlpha(int alpha) {
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setColorFilter(ColorFilter cf) {
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setColorFilter(ColorFilter cf) {
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onBoundsChange(Rect bounds) {
-        super.onBoundsChange(bounds);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onBoundsChange(Rect bounds) {
+		super.onBoundsChange(bounds);
 
-        int mHeight = bounds.height();
-        int mWidth = bounds.width();
+		int mHeight = bounds.height();
+		int mWidth = bounds.width();
 
-        numRectanglesHorizontal = mWidth / mRectangleSize;
-        numRectanglesVertical = mHeight / mRectangleSize;
+		numRectanglesHorizontal = mWidth / mRectangleSize;
+		numRectanglesVertical = mHeight / mRectangleSize;
 
-        generatePatternBitmap();
-    }
+		generatePatternBitmap();
+	}
 
-    /**
-     * This will generate a bitmap with the pattern as big as the rectangle we
-     * were allow to draw on. We do this to cache the bitmap so we don't need to
-     * recreate it each time draw() is called since it takes a few milliseconds.
-     */
-    private void generatePatternBitmap() {
+	/**
+	 * This will generate a bitmap with the pattern as big as the rectangle we
+	 * were allow to draw on. We do this to cache the bitmap so we don't need to
+	 * recreate it each time draw() is called since it takes a few milliseconds.
+	 */
+	private void generatePatternBitmap() {
 
-        if (getBounds().width() <= 0 || getBounds().height() <= 0) {
-            return;
-        }
-        mBitmap = Bitmap.createBitmap(getBounds().width(), getBounds().height(), Config.ARGB_8888);
-        Canvas mCanvas = new Canvas(mBitmap);
+		if (getBounds().width() <= 0 || getBounds().height() <= 0) {
+			return;
+		}
+		mBitmap = Bitmap.createBitmap(getBounds().width(), getBounds().height(), Config.ARGB_8888);
+		Canvas mCanvas = new Canvas(mBitmap);
 
-        Rect mRect = new Rect();
-        boolean mVerticalStartWhite = true;
-        for (int i = 0; i <= numRectanglesVertical; i++) {
-            boolean mIsWhite = mVerticalStartWhite;
-            for (int j = 0; j <= numRectanglesHorizontal; j++) {
-                mRect.top = i * mRectangleSize;
-                mRect.left = j * mRectangleSize;
-                mRect.bottom = mRect.top + mRectangleSize;
-                mRect.right = mRect.left + mRectangleSize;
-                mCanvas.drawRect(mRect, mIsWhite ? mPaintWhite : mPaintGray);
-                mIsWhite = !mIsWhite;
-            }
-            mVerticalStartWhite = !mVerticalStartWhite;
-        }
-    }
+		Rect mRect = new Rect();
+		boolean mVerticalStartWhite = true;
+		for (int i = 0; i <= numRectanglesVertical; i++) {
+			boolean mIsWhite = mVerticalStartWhite;
+			for (int j = 0; j <= numRectanglesHorizontal; j++) {
+				mRect.top = i * mRectangleSize;
+				mRect.left = j * mRectangleSize;
+				mRect.bottom = mRect.top + mRectangleSize;
+				mRect.right = mRect.left + mRectangleSize;
+				mCanvas.drawRect(mRect, mIsWhite ? mPaintWhite : mPaintGray);
+				mIsWhite = !mIsWhite;
+			}
+			mVerticalStartWhite = !mVerticalStartWhite;
+		}
+	}
 }

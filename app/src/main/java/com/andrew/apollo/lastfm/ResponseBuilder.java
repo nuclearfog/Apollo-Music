@@ -30,29 +30,29 @@ package com.andrew.apollo.lastfm;
  */
 public final class ResponseBuilder {
 
-    private ResponseBuilder() {
-    }
+	private ResponseBuilder() {
+	}
 
 
-    private static <T> ItemFactory<T> getItemFactory(Class<T> itemClass) {
-        return ItemFactoryBuilder.getFactoryBuilder().getItemFactory(itemClass);
-    }
+	private static <T> ItemFactory<T> getItemFactory(Class<T> itemClass) {
+		return ItemFactoryBuilder.getFactoryBuilder().getItemFactory(itemClass);
+	}
 
 
-    public static <T> T buildItem(Result result, Class<T> itemClass) {
-        return buildItem(result, getItemFactory(itemClass));
-    }
+	public static <T> T buildItem(Result result, Class<T> itemClass) {
+		return buildItem(result, getItemFactory(itemClass));
+	}
 
 
-    public static <T> T buildItem(Result result, ItemFactory<T> factory) {
-        if (!result.isSuccessful()) {
-            return null;
-        }
-        return buildItem(result.getContentElement(), factory);
-    }
+	public static <T> T buildItem(Result result, ItemFactory<T> factory) {
+		if (!result.isSuccessful()) {
+			return null;
+		}
+		return buildItem(result.getContentElement(), factory);
+	}
 
 
-    private static <T> T buildItem(DomElement element, ItemFactory<T> factory) {
-        return factory.createItemFromElement(element);
-    }
+	private static <T> T buildItem(DomElement element, ItemFactory<T> factory) {
+		return factory.createItemFromElement(element);
+	}
 }

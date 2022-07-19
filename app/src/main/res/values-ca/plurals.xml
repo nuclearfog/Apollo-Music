@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> àlbum</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> àlbums</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> cançó</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> cançons</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha afegit a la llista de reproducció.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han afegit a la llista de reproducció.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha tret de la llista de reproducció.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han tret de la llista de reproducció.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha afegit a la cua.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han afegit a la cua.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> cançó s\'ha esborrat.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> cançons s\'han esborrat.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> àlbum</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> àlbums</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> cançó</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> cançons</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha afegit a la llista de reproducció.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han afegit a la llista de reproducció.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha tret de la llista de reproducció.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han tret de la llista de reproducció.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> cançó s\'ha afegit a la cua.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> cançons s\'han afegit a la cua.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> cançó s\'ha esborrat.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> cançons s\'han esborrat.</item>
+	</plurals>
 </resources>

@@ -16,34 +16,34 @@
      limitations under the License.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingQuantity">
-    <plurals name="Nalbums">
-        <item quantity="one">1 album</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> alba</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> alb</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one">1 skladba</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> skladby</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> skladeb</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one">Do seznamu skladeb byla přidána jedna skladba.</item>
-        <item quantity="few">Do seznamu skladeb byly přidány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
-        <item quantity="other">Do seznamu skladeb bylo přidáno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one">Skladba ze seznamu skladeb odebrána.</item>
-        <item quantity="few">Ze seznamu skladeb odebrány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
-        <item quantity="other">Ze seznamu skladeb odebráno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one">Do fronty byla přidána jedna skladba.</item>
-        <item quantity="few">Do fronty byly přidány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
-        <item quantity="other">Do fronty bylo přidáno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one">Smazána jedna skladba.</item>
-        <item quantity="few">Smazány <xliff:g id="songs_to_delete" example="2">%d</xliff:g> skladby.</item>
-        <item quantity="other">Smazáno <xliff:g id="songs_to_delete" example="27">%d</xliff:g> skladeb.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one">1 album</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> alba</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> alb</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one">1 skladba</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> skladby</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> skladeb</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one">Do seznamu skladeb byla přidána jedna skladba.</item>
+		<item quantity="few">Do seznamu skladeb byly přidány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
+		<item quantity="other">Do seznamu skladeb bylo přidáno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one">Skladba ze seznamu skladeb odebrána.</item>
+		<item quantity="few">Ze seznamu skladeb odebrány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
+		<item quantity="other">Ze seznamu skladeb odebráno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one">Do fronty byla přidána jedna skladba.</item>
+		<item quantity="few">Do fronty byly přidány <xliff:g id="number" example="2">%d</xliff:g> skladby.</item>
+		<item quantity="other">Do fronty bylo přidáno <xliff:g id="number" example="27">%d</xliff:g> skladeb.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one">Smazána jedna skladba.</item>
+		<item quantity="few">Smazány <xliff:g id="songs_to_delete" example="2">%d</xliff:g> skladby.</item>
+		<item quantity="other">Smazáno <xliff:g id="songs_to_delete" example="27">%d</xliff:g> skladeb.</item>
+	</plurals>
 </resources>

@@ -14,106 +14,106 @@
   limitations under the License.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottom_action_bar"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/bottom_action_bar_height"
-    android:background="@color/action_bar_color"
-    android:layout_gravity="bottom"
-    tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/bottom_action_bar"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/bottom_action_bar_height"
+	android:background="@color/action_bar_color"
+	android:layout_gravity="bottom"
+	tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
 
-    <ImageView
-        android:id="@+id/bottom_action_bar_background"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
-        app:layout_constraintTop_toBottomOf="@id/colorstrip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<ImageView
+		android:id="@+id/bottom_action_bar_background"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+		app:layout_constraintTop_toBottomOf="@id/colorstrip"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.andrew.apollo.ui.views.theme.Colorstrip
-        android:id="@+id/colorstrip"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/colorstrip_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<com.andrew.apollo.ui.views.theme.Colorstrip
+		android:id="@+id/colorstrip"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/colorstrip_height"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
-        android:id="@+id/bottom_action_bar_album_art"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/default_artwork"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/colorstrip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1.0" />
+	<ImageView
+		android:id="@+id/bottom_action_bar_album_art"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:src="@drawable/default_artwork"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/colorstrip"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintDimensionRatio="1.0" />
 
-    <TextView
-        android:id="@+id/bottom_action_bar_line_one"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
-        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
-        android:textColor="@color/bab_line_one"
-        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
-        app:layout_constraintTop_toBottomOf="@id/colorstrip"
-        app:layout_constraintBottom_toTopOf="@id/bottom_action_bar_line_two"
-        app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
-        app:layout_constraintVertical_chainStyle="packed"
-        style="@style/BottomActionBarLineOne" />
+	<TextView
+		android:id="@+id/bottom_action_bar_line_one"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+		android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+		android:textColor="@color/bab_line_one"
+		app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+		app:layout_constraintTop_toBottomOf="@id/colorstrip"
+		app:layout_constraintBottom_toTopOf="@id/bottom_action_bar_line_two"
+		app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
+		app:layout_constraintVertical_chainStyle="packed"
+		style="@style/BottomActionBarLineOne" />
 
-    <TextView
-        android:id="@+id/bottom_action_bar_line_two"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
-        android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
-        android:textColor="@color/bab_line_two"
-        app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
-        app:layout_constraintTop_toBottomOf="@id/bottom_action_bar_line_one"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
-        app:layout_constraintVertical_chainStyle="packed"
-        style="@style/BottomActionBarLineTwo" />
+	<TextView
+		android:id="@+id/bottom_action_bar_line_two"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/bottom_action_bar_info_padding_left"
+		android:layout_marginStart="@dimen/bottom_action_bar_info_padding_left"
+		android:textColor="@color/bab_line_two"
+		app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
+		app:layout_constraintTop_toBottomOf="@id/bottom_action_bar_line_one"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/bottom_action_bar_scrollview"
+		app:layout_constraintVertical_chainStyle="packed"
+		style="@style/BottomActionBarLineTwo" />
 
-    <HorizontalScrollView
-        android:id="@+id/bottom_action_bar_scrollview"
-        android:layout_width="@dimen/bottom_action_bar_button_container_width"
-        android:layout_height="0dp"
-        android:scrollbars="none"
-        app:layout_constraintTop_toTopOf="@id/colorstrip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+	<HorizontalScrollView
+		android:id="@+id/bottom_action_bar_scrollview"
+		android:layout_width="@dimen/bottom_action_bar_button_container_width"
+		android:layout_height="0dp"
+		android:scrollbars="none"
+		app:layout_constraintTop_toTopOf="@id/colorstrip"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+		<LinearLayout
+			android:orientation="horizontal"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent">
 
-            <com.andrew.apollo.ui.views.RepeatingImageButton
-                android:id="@+id/action_button_previous"
-                style="@style/BottomActionBarItem.Previous" />
+			<com.andrew.apollo.ui.views.RepeatingImageButton
+				android:id="@+id/action_button_previous"
+				style="@style/BottomActionBarItem.Previous" />
 
-            <com.andrew.apollo.ui.views.PlayPauseButton
-                android:id="@+id/action_button_play"
-                style="@style/BottomActionBarItem.Play" />
+			<com.andrew.apollo.ui.views.PlayPauseButton
+				android:id="@+id/action_button_play"
+				style="@style/BottomActionBarItem.Play" />
 
-            <com.andrew.apollo.ui.views.RepeatingImageButton
-                android:id="@+id/action_button_next"
-                style="@style/BottomActionBarItem.Next" />
+			<com.andrew.apollo.ui.views.RepeatingImageButton
+				android:id="@+id/action_button_next"
+				style="@style/BottomActionBarItem.Next" />
 
-            <com.andrew.apollo.ui.views.ShuffleButton
-                android:id="@+id/action_button_shuffle"
-                style="@style/BottomActionBarItem.Shuffle" />
+			<com.andrew.apollo.ui.views.ShuffleButton
+				android:id="@+id/action_button_shuffle"
+				style="@style/BottomActionBarItem.Shuffle" />
 
-            <com.andrew.apollo.ui.views.RepeatButton
-                android:id="@+id/action_button_repeat"
-                style="@style/BottomActionBarItem.Repeat" />
+			<com.andrew.apollo.ui.views.RepeatButton
+				android:id="@+id/action_button_repeat"
+				style="@style/BottomActionBarItem.Repeat" />
 
-        </LinearLayout>
+		</LinearLayout>
 
-    </HorizontalScrollView>
+	</HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,179 +53,179 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>,
-        OnItemClickListener, FragmentCallback {
+		OnItemClickListener, FragmentCallback {
 
-    /**
-     * Used to keep context menu items from bleeding into other fragments
-     */
-    private static final int GROUP_ID = 0x2D9C34D;
+	/**
+	 * Used to keep context menu items from bleeding into other fragments
+	 */
+	private static final int GROUP_ID = 0x2D9C34D;
 
-    /**
-     * LoaderCallbacks identifier
-     */
-    private static final int LOADER_ID = 0x78BD76B9;
+	/**
+	 * LoaderCallbacks identifier
+	 */
+	private static final int LOADER_ID = 0x78BD76B9;
 
-    /**
-     * The adapter for the list
-     */
-    private GenreAdapter mAdapter;
+	/**
+	 * The adapter for the list
+	 */
+	private GenreAdapter mAdapter;
 
-    /**
-     * Genre song list
-     */
-    @NonNull
-    private long[] mGenreList = {};
+	/**
+	 * Genre song list
+	 */
+	@NonNull
+	private long[] mGenreList = {};
 
-    /**
-     * Empty constructor as per the {@link Fragment} documentation
-     */
-    public GenreFragment() {
-    }
+	/**
+	 * Empty constructor as per the {@link Fragment} documentation
+	 */
+	public GenreFragment() {
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Create the adapter
-        mAdapter = new GenreAdapter(requireContext());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// Create the adapter
+		mAdapter = new GenreAdapter(requireContext());
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Init views
-        View mRootView = inflater.inflate(R.layout.list_base, container, false);
-        ListView mList = mRootView.findViewById(R.id.list_base);
-        TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
-        //set listview
-        mList.setEmptyView(emptyHolder);
-        mList.setAdapter(mAdapter);
-        mList.setRecyclerListener(new RecycleHolder());
-        mList.setOnCreateContextMenuListener(this);
-        mList.setOnItemClickListener(this);
-        return mRootView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// Init views
+		View mRootView = inflater.inflate(R.layout.list_base, container, false);
+		ListView mList = mRootView.findViewById(R.id.list_base);
+		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
+		//set listview
+		mList.setEmptyView(emptyHolder);
+		mList.setAdapter(mAdapter);
+		mList.setRecyclerListener(new RecycleHolder());
+		mList.setOnCreateContextMenuListener(this);
+		mList.setOnItemClickListener(this);
+		return mRootView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // Enable the options menu
-        setHasOptionsMenu(true);
-        // Start the loader
-        LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		// Enable the options menu
+		setHasOptionsMenu(true);
+		// Start the loader
+		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        // Get the position of the selected item
-        if (menuInfo instanceof AdapterContextMenuInfo) {
-            AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-            // Create a new genre
-            Genre mGenre = mAdapter.getItem(info.position);
-            if (mGenre != null) {
-                // Create a list of the genre's songs
-                mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
-                // Play the genre
-                menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-                // Add the genre to the queue
-                menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-                return;
-            }
-        }
-        // remove old selection if an error occurs
-        mGenreList = new long[0];
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		// Get the position of the selected item
+		if (menuInfo instanceof AdapterContextMenuInfo) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+			// Create a new genre
+			Genre mGenre = mAdapter.getItem(info.position);
+			if (mGenre != null) {
+				// Create a list of the genre's songs
+				mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
+				// Play the genre
+				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				// Add the genre to the queue
+				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				return;
+			}
+		}
+		// remove old selection if an error occurs
+		mGenreList = new long[0];
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        if (item.getGroupId() == GROUP_ID) {
-            switch (item.getItemId()) {
-                case FragmentMenuItems.PLAY_SELECTION:
-                    MusicUtils.playAll(mGenreList, 0, false);
-                    return true;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onContextItemSelected(@NonNull MenuItem item) {
+		if (item.getGroupId() == GROUP_ID) {
+			switch (item.getItemId()) {
+				case FragmentMenuItems.PLAY_SELECTION:
+					MusicUtils.playAll(mGenreList, 0, false);
+					return true;
 
-                case FragmentMenuItems.ADD_TO_QUEUE:
-                    MusicUtils.addToQueue(requireActivity(), mGenreList);
-                    return true;
-            }
-        }
-        return super.onContextItemSelected(item);
-    }
+				case FragmentMenuItems.ADD_TO_QUEUE:
+					MusicUtils.addToQueue(requireActivity(), mGenreList);
+					return true;
+			}
+		}
+		return super.onContextItemSelected(item);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Genre mGenre = mAdapter.getItem(position);
-        // Create a new bundle to transfer the artist info
-        Bundle bundle = new Bundle();
-        bundle.putString(Config.IDS, ApolloUtils.serializeIDs(mGenre.getGenreIds()));
-        bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
-        bundle.putString(Config.NAME, mGenre.getName());
-        // Create the intent to launch the profile activity
-        Intent intent = new Intent(requireContext(), ProfileActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Genre mGenre = mAdapter.getItem(position);
+		// Create a new bundle to transfer the artist info
+		Bundle bundle = new Bundle();
+		bundle.putString(Config.IDS, ApolloUtils.serializeIDs(mGenre.getGenreIds()));
+		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
+		bundle.putString(Config.NAME, mGenre.getName());
+		// Create the intent to launch the profile activity
+		Intent intent = new Intent(requireContext(), ProfileActivity.class);
+		intent.putExtras(bundle);
+		startActivity(intent);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Loader<List<Genre>> onCreateLoader(int id, Bundle args) {
-        return new GenreLoader(requireContext());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public Loader<List<Genre>> onCreateLoader(int id, Bundle args) {
+		return new GenreLoader(requireContext());
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
-        // disable loader
-        LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-        // Start fresh
-        mAdapter.clear();
-        // Add the data to the adapter
-        for (Genre genre : data) {
-            mAdapter.add(genre);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
+		// disable loader
+		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+		// Start fresh
+		mAdapter.clear();
+		// Add the data to the adapter
+		for (Genre genre : data) {
+			mAdapter.add(genre);
+		}
 
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onLoaderReset(@NonNull Loader<List<Genre>> loader) {
-        // Clear the data in the adapter
-        mAdapter.clear();
-    }
-
-
-    @Override
-    public void refresh() {
-        LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onLoaderReset(@NonNull Loader<List<Genre>> loader) {
+		// Clear the data in the adapter
+		mAdapter.clear();
+	}
 
 
-    @Override
-    public void setCurrentTrack() {
-        // do nothing
-    }
+	@Override
+	public void refresh() {
+		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+	}
+
+
+	@Override
+	public void setCurrentTrack() {
+		// do nothing
+	}
 }

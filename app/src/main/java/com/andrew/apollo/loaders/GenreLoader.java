@@ -32,59 +32,59 @@ import java.util.regex.Pattern;
  */
 public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 
-    /**
-     * regex pattern to split genre group separated by
-     */
-    private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
+	/**
+	 * regex pattern to split genre group separated by
+	 */
+	private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
 
-    /**
-     * Constructor of <code>GenreLoader</code>
-     *
-     * @param context The {@link Context} to use
-     */
-    public GenreLoader(Context context) {
-        super(context);
-    }
+	/**
+	 * Constructor of <code>GenreLoader</code>
+	 *
+	 * @param context The {@link Context} to use
+	 */
+	public GenreLoader(Context context) {
+		super(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Genre> loadInBackground() {
-        TreeSet<Genre> result = new TreeSet<>();
-        // Create the Cursor
-        Cursor mCursor = CursorFactory.makeGenreCursor(getContext());
-        // Gather the data
-        if (mCursor != null) {
-            if (mCursor.moveToFirst()) {
-                HashMap<String, List<Long>> group = new HashMap<>();
-                do {
-                    // get Column information
-                    long id = mCursor.getLong(0);
-                    String name = mCursor.getString(1);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Genre> loadInBackground() {
+		TreeSet<Genre> result = new TreeSet<>();
+		// Create the Cursor
+		Cursor mCursor = CursorFactory.makeGenreCursor(getContext());
+		// Gather the data
+		if (mCursor != null) {
+			if (mCursor.moveToFirst()) {
+				HashMap<String, List<Long>> group = new HashMap<>();
+				do {
+					// get Column information
+					long id = mCursor.getLong(0);
+					String name = mCursor.getString(1);
 
-                    // Split genre groups into single genre names
-                    String[] genres = SEPARATOR.split(name);
+					// Split genre groups into single genre names
+					String[] genres = SEPARATOR.split(name);
 
-                    // solve conflicts. add multiple genre IDs for the same genre name.
-                    for (String genre : genres) {
-                        List<Long> ids = group.get(genre);
-                        if (ids == null) {
-                            ids = new LinkedList<>();
-                            group.put(genre, ids);
-                        }
-                        ids.add(id);
-                    }
-                } while (mCursor.moveToNext());
+					// solve conflicts. add multiple genre IDs for the same genre name.
+					for (String genre : genres) {
+						List<Long> ids = group.get(genre);
+						if (ids == null) {
+							ids = new LinkedList<>();
+							group.put(genre, ids);
+						}
+						ids.add(id);
+					}
+				} while (mCursor.moveToNext());
 
-                // add all elements to sorted list
-                for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
-                    Genre genre = new Genre(entry.getValue(), entry.getKey());
-                    result.add(genre);
-                }
-            }
-            mCursor.close();
-        }
-        return new ArrayList<>(result);
-    }
+				// add all elements to sorted list
+				for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
+					Genre genre = new Genre(entry.getValue(), entry.getKey());
+					result.add(genre);
+				}
+			}
+			mCursor.close();
+		}
+		return new ArrayList<>(result);
+	}
 }

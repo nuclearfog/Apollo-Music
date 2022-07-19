@@ -14,123 +14,123 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/appwidget_bg"
-    tools:ignore="ContentDescription,RtlSymmetry">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/appwidget_bg"
+	tools:ignore="ContentDescription,RtlSymmetry">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/app_widget_large_alternate_image"
-            android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
-            android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
-            android:background="@drawable/default_artwork" />
+		<ImageView
+			android:id="@+id/app_widget_large_alternate_image"
+			android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
+			android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
+			android:background="@drawable/default_artwork" />
 
-        <LinearLayout
-            android:id="@+id/app_widget_large_alternate_info_container"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/notification_info_container_padding_left"
-            android:paddingStart="@dimen/notification_info_container_padding_left"
-            android:gravity="center">
+		<LinearLayout
+			android:id="@+id/app_widget_large_alternate_info_container"
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:paddingLeft="@dimen/notification_info_container_padding_left"
+			android:paddingStart="@dimen/notification_info_container_padding_left"
+			android:gravity="center">
 
-            <TextView
-                android:id="@+id/app_widget_large_alternate_line_one"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
-                android:textStyle="bold"
-                style="@style/NotificationText" />
+			<TextView
+				android:id="@+id/app_widget_large_alternate_line_one"
+				android:textColor="@color/white"
+				android:textSize="@dimen/text_size_medium"
+				android:textStyle="bold"
+				style="@style/NotificationText" />
 
-            <TextView
-                android:id="@+id/app_widget_large_alternate_line_two"
-                android:textColor="@color/transparent_white"
-                android:textSize="@dimen/text_size_small"
-                style="@style/NotificationText" />
+			<TextView
+				android:id="@+id/app_widget_large_alternate_line_two"
+				android:textColor="@color/transparent_white"
+				android:textSize="@dimen/text_size_small"
+				style="@style/NotificationText" />
 
-            <TextView
-                android:id="@+id/app_widget_large_alternate_line_three"
-                android:textColor="@color/transparent_white"
-                android:textSize="@dimen/text_size_small"
-                style="@style/NotificationText" />
+			<TextView
+				android:id="@+id/app_widget_large_alternate_line_three"
+				android:textColor="@color/transparent_white"
+				android:textSize="@dimen/text_size_small"
+				style="@style/NotificationText" />
 
-        </LinearLayout>
+		</LinearLayout>
 
-    </LinearLayout>
+	</LinearLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/transparent_white"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp" />
+	<ImageView
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/transparent_white"
+		android:layout_marginTop="2dp"
+		android:layout_marginBottom="2dp" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/app_widget_bottom_margin"
-        android:gravity="center_vertical"
-        android:layout_gravity="fill_horizontal"
-        android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
-        android:showDividers="middle">
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/app_widget_bottom_margin"
+		android:gravity="center_vertical"
+		android:layout_gravity="fill_horizontal"
+		android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
+		android:showDividers="middle">
 
-        <ImageButton
-            android:id="@+id/app_widget_large_alternate_shuffle"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/notification_expanded_button_height"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/notification_expanded_button_padding"
-            android:contentDescription="@string/accessibility_shuffle"
-            android:src="@drawable/btn_playback_shuffle" />
+		<ImageButton
+			android:id="@+id/app_widget_large_alternate_shuffle"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/notification_expanded_button_height"
+			android:layout_weight="1"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/notification_expanded_button_padding"
+			android:contentDescription="@string/accessibility_shuffle"
+			android:src="@drawable/btn_playback_shuffle" />
 
-        <ImageButton
-            android:id="@+id/app_widget_large_alternate_previous"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/notification_expanded_button_height"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/notification_expanded_button_padding"
-            android:contentDescription="@string/accessibility_prev"
-            android:src="@drawable/btn_playback_previous" />
+		<ImageButton
+			android:id="@+id/app_widget_large_alternate_previous"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/notification_expanded_button_height"
+			android:layout_weight="1"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/notification_expanded_button_padding"
+			android:contentDescription="@string/accessibility_prev"
+			android:src="@drawable/btn_playback_previous" />
 
-        <ImageButton
-            android:id="@+id/app_widget_large_alternate_play"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/notification_expanded_button_height"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/notification_expanded_button_padding"
-            android:src="@drawable/btn_playback_pause" />
+		<ImageButton
+			android:id="@+id/app_widget_large_alternate_play"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/notification_expanded_button_height"
+			android:layout_weight="1"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/notification_expanded_button_padding"
+			android:src="@drawable/btn_playback_pause" />
 
-        <ImageButton
-            android:id="@+id/app_widget_large_alternate_next"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/notification_expanded_button_height"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/notification_expanded_button_padding"
-            android:contentDescription="@string/accessibility_next"
-            android:src="@drawable/btn_playback_next" />
+		<ImageButton
+			android:id="@+id/app_widget_large_alternate_next"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/notification_expanded_button_height"
+			android:layout_weight="1"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/notification_expanded_button_padding"
+			android:contentDescription="@string/accessibility_next"
+			android:src="@drawable/btn_playback_next" />
 
-        <ImageButton
-            android:id="@+id/app_widget_large_alternate_repeat"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/notification_expanded_button_height"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/notification_expanded_button_padding"
-            android:contentDescription="@string/accessibility_repeat"
-            android:src="@drawable/btn_playback_repeat" />
+		<ImageButton
+			android:id="@+id/app_widget_large_alternate_repeat"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/notification_expanded_button_height"
+			android:layout_weight="1"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/notification_expanded_button_padding"
+			android:contentDescription="@string/accessibility_repeat"
+			android:src="@drawable/btn_playback_repeat" />
 
-    </LinearLayout>
+	</LinearLayout>
 
 </LinearLayout>

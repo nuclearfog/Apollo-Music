@@ -36,78 +36,78 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class ShuffleButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
-    /**
-     * highlight color
-     */
-    private int color = -1;
+	/**
+	 * highlight color
+	 */
+	private int color = -1;
 
-    /**
-     * @param context The {@link Context} to use
-     * @param attrs   The attributes of the XML tag that is inflating the view.
-     */
-    public ShuffleButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        // Theme the selector
-        setBackground(new HoloSelector(context));
-        // Control playback (cycle shuffle)
-        setOnClickListener(this);
-        // Show the cheat sheet
-        setOnLongClickListener(this);
-    }
+	/**
+	 * @param context The {@link Context} to use
+	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 */
+	public ShuffleButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// Theme the selector
+		setBackground(new HoloSelector(context));
+		// Control playback (cycle shuffle)
+		setOnClickListener(this);
+		// Show the cheat sheet
+		setOnLongClickListener(this);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClick(View v) {
-        MusicUtils.cycleShuffle();
-        updateShuffleState();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onClick(View v) {
+		MusicUtils.cycleShuffle();
+		updateShuffleState();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onLongClick(View view) {
-        if (TextUtils.isEmpty(view.getContentDescription())) {
-            return false;
-        } else {
-            ApolloUtils.showCheatSheet(view);
-            return true;
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onLongClick(View view) {
+		if (TextUtils.isEmpty(view.getContentDescription())) {
+			return false;
+		} else {
+			ApolloUtils.showCheatSheet(view);
+			return true;
+		}
+	}
 
-    /**
-     * sets the highlight color
-     *
-     * @param color ARGB color value
-     */
-    public void setColor(int color) {
-        this.color = color;
-    }
+	/**
+	 * sets the highlight color
+	 *
+	 * @param color ARGB color value
+	 */
+	public void setColor(int color) {
+		this.color = color;
+	}
 
-    /**
-     * Sets the correct drawable for the shuffle state.
-     */
-    public void updateShuffleState() {
-        String info;
-        Drawable button;
-        switch (MusicUtils.getShuffleMode()) {
-            case MusicPlaybackService.SHUFFLE_NORMAL:
-            case MusicPlaybackService.SHUFFLE_AUTO:
-                info = getResources().getString(R.string.accessibility_shuffle_all);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
-                if (button != null)
-                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
-                break;
+	/**
+	 * Sets the correct drawable for the shuffle state.
+	 */
+	public void updateShuffleState() {
+		String info;
+		Drawable button;
+		switch (MusicUtils.getShuffleMode()) {
+			case MusicPlaybackService.SHUFFLE_NORMAL:
+			case MusicPlaybackService.SHUFFLE_AUTO:
+				info = getResources().getString(R.string.accessibility_shuffle_all);
+				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
+				if (button != null)
+					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				break;
 
-            default:
-            case MusicPlaybackService.SHUFFLE_NONE:
-                info = getResources().getString(R.string.accessibility_shuffle);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
-                break;
-        }
-        setContentDescription(info);
-        setImageDrawable(button);
-    }
+			default:
+			case MusicPlaybackService.SHUFFLE_NONE:
+				info = getResources().getString(R.string.accessibility_shuffle);
+				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
+				break;
+		}
+		setContentDescription(info);
+		setImageDrawable(button);
+	}
 }

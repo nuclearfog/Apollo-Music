@@ -14,12 +14,12 @@
   limitations under the License.
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialLayout="@layout/app_widget_recents"
-    android:minHeight="@dimen/app_widget_scrollable_min_height"
-    android:minResizeHeight="@dimen/app_widget_scrollable_min_resize_height"
-    android:minResizeWidth="@dimen/app_widget_large_min_width"
-    android:minWidth="@dimen/app_widget_large_min_width"
-    android:previewImage="@drawable/app_widget_recents"
-    android:resizeMode="vertical|horizontal"
-    android:updatePeriodMillis="0"
-    android:widgetCategory="keyguard|home_screen" />
+	android:initialLayout="@layout/app_widget_recents"
+	android:minHeight="@dimen/app_widget_scrollable_min_height"
+	android:minResizeHeight="@dimen/app_widget_scrollable_min_resize_height"
+	android:minResizeWidth="@dimen/app_widget_large_min_width"
+	android:minWidth="@dimen/app_widget_large_min_width"
+	android:previewImage="@drawable/app_widget_recents"
+	android:resizeMode="vertical|horizontal"
+	android:updatePeriodMillis="0"
+	android:widgetCategory="keyguard|home_screen" />

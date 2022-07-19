@@ -34,66 +34,66 @@ import org.w3c.dom.Document;
  */
 public class Result {
 
-    protected Status status;
-    protected String errorMessage = null;
-    protected int errorCode = -1;
-    protected int httpErrorCode = -1;
-    protected Document resultDocument;
+	protected Status status;
+	protected String errorMessage = null;
+	protected int errorCode = -1;
+	protected int httpErrorCode = -1;
+	protected Document resultDocument;
 
-    protected Result(Document resultDocument) {
-        status = Status.OK;
-        this.resultDocument = resultDocument;
-    }
-
-
-    protected Result(String errorMessage) {
-        status = Status.FAILED;
-        this.errorMessage = errorMessage;
-    }
-
-    static Result createOkResult(Document resultDocument) {
-        return new Result(resultDocument);
-    }
-
-    static Result createHttpErrorResult(int httpErrorCode, String errorMessage) {
-        Result r = new Result(errorMessage);
-        r.httpErrorCode = httpErrorCode;
-        return r;
-    }
-
-    static Result createRestErrorResult(int errorCode, String errorMessage) {
-        Result r = new Result(errorMessage);
-        r.errorCode = errorCode;
-        return r;
-    }
-
-    /**
-     * Returns if the operation was successful. Same as
-     * <code>getStatus() == Status.OK</code>.
-     *
-     * @return <code>true</code> if the operation was successful
-     */
-    public boolean isSuccessful() {
-        return status == Status.OK;
-    }
+	protected Result(Document resultDocument) {
+		status = Status.OK;
+		this.resultDocument = resultDocument;
+	}
 
 
-    public DomElement getContentElement() {
-        if (!isSuccessful()) {
-            return null;
-        }
-        return new DomElement(resultDocument.getDocumentElement()).getChild("*");
-    }
+	protected Result(String errorMessage) {
+		status = Status.FAILED;
+		this.errorMessage = errorMessage;
+	}
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "Result[isSuccessful=" + isSuccessful() + ", errorCode=" + errorCode
-                + ", httpErrorCode=" + httpErrorCode + ", errorMessage=" + errorMessage
-                + ", status=" + status + "]";
-    }
+	static Result createOkResult(Document resultDocument) {
+		return new Result(resultDocument);
+	}
 
-    public enum Status {
-        OK, FAILED
-    }
+	static Result createHttpErrorResult(int httpErrorCode, String errorMessage) {
+		Result r = new Result(errorMessage);
+		r.httpErrorCode = httpErrorCode;
+		return r;
+	}
+
+	static Result createRestErrorResult(int errorCode, String errorMessage) {
+		Result r = new Result(errorMessage);
+		r.errorCode = errorCode;
+		return r;
+	}
+
+	/**
+	 * Returns if the operation was successful. Same as
+	 * <code>getStatus() == Status.OK</code>.
+	 *
+	 * @return <code>true</code> if the operation was successful
+	 */
+	public boolean isSuccessful() {
+		return status == Status.OK;
+	}
+
+
+	public DomElement getContentElement() {
+		if (!isSuccessful()) {
+			return null;
+		}
+		return new DomElement(resultDocument.getDocumentElement()).getChild("*");
+	}
+
+	@NonNull
+	@Override
+	public String toString() {
+		return "Result[isSuccessful=" + isSuccessful() + ", errorCode=" + errorCode
+				+ ", httpErrorCode=" + httpErrorCode + ", errorMessage=" + errorMessage
+				+ ", status=" + status + "]";
+	}
+
+	public enum Status {
+		OK, FAILED
+	}
 }

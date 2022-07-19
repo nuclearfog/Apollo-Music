@@ -19,119 +19,119 @@ package com.andrew.apollo.model;
  */
 public class Song extends Music {
 
-    /**
-     * The song artist
-     */
-    private String mArtistName = "";
+	/**
+	 * The song artist
+	 */
+	private String mArtistName = "";
 
-    /**
-     * The song album
-     */
-    private String mAlbumName = "";
+	/**
+	 * The song album
+	 */
+	private String mAlbumName = "";
 
-    /**
-     * The song duration in seconds
-     */
-    private int mDuration = -1;
+	/**
+	 * The song duration in seconds
+	 */
+	private int mDuration = -1;
 
-    /**
-     * playlist position of the track
-     */
-    private int playlistPos = -1;
+	/**
+	 * playlist position of the track
+	 */
+	private int playlistPos = -1;
 
-    /**
-     * Constructor of <code>Song</code>
-     *
-     * @param songId     The Id of the song
-     * @param songName   The name of the song
-     * @param artistName The song artist
-     * @param albumName  The song album
-     * @param length     The duration of a song in milliseconds
-     */
-    public Song(long songId, String songName, String artistName, String albumName, long length) {
-        super(songId, songName);
-        if (artistName != null)
-            mArtistName = artistName;
-        if (albumName != null)
-            mAlbumName = albumName;
-        if (length > 0)
-            mDuration = (int) length / 1000;
-    }
+	/**
+	 * Constructor of <code>Song</code>
+	 *
+	 * @param songId     The Id of the song
+	 * @param songName   The name of the song
+	 * @param artistName The song artist
+	 * @param albumName  The song album
+	 * @param length     The duration of a song in milliseconds
+	 */
+	public Song(long songId, String songName, String artistName, String albumName, long length) {
+		super(songId, songName);
+		if (artistName != null)
+			mArtistName = artistName;
+		if (albumName != null)
+			mAlbumName = albumName;
+		if (length > 0)
+			mDuration = (int) length / 1000;
+	}
 
-    /**
-     * @param playlistPos playlist position of the track
-     */
-    public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
-        this(songId, songName, artistName, albumName, length);
-        this.playlistPos = playlistPos;
-    }
+	/**
+	 * @param playlistPos playlist position of the track
+	 */
+	public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
+		this(songId, songName, artistName, albumName, length);
+		this.playlistPos = playlistPos;
+	}
 
-    /**
-     * get artist of this song
-     *
-     * @return artist name
-     */
-    public String getArtist() {
-        return mArtistName;
-    }
+	/**
+	 * get artist of this song
+	 *
+	 * @return artist name
+	 */
+	public String getArtist() {
+		return mArtistName;
+	}
 
-    /**
-     * album name of the track
-     *
-     * @return album name
-     */
-    public String getAlbum() {
-        return mAlbumName;
-    }
+	/**
+	 * album name of the track
+	 *
+	 * @return album name
+	 */
+	public String getAlbum() {
+		return mAlbumName;
+	}
 
-    /**
-     * track duration in seconds
-     *
-     * @return duration in seconds
-     */
-    public int duration() {
-        return mDuration;
-    }
+	/**
+	 * track duration in seconds
+	 *
+	 * @return duration in seconds
+	 */
+	public int duration() {
+		return mDuration;
+	}
 
-    /**
-     * track duration in milliseconds
-     *
-     * @return duration in milliseconds
-     */
-    public long durationMillis() {
-        if (mDuration > 0)
-            return (long) mDuration * 1000;
-        return -1;
-    }
+	/**
+	 * track duration in milliseconds
+	 *
+	 * @return duration in milliseconds
+	 */
+	public long durationMillis() {
+		if (mDuration > 0)
+			return (long) mDuration * 1000;
+		return -1;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + mAlbumName.hashCode();
-        result = prime * result + mArtistName.hashCode();
-        result = prime * result + mDuration;
-        result = prime * result + (int) id;
-        result = prime * result + playlistPos;
-        result = prime * result + name.hashCode();
-        return result;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int prime = 31;
+		int result = 1;
+		result = prime * result + mAlbumName.hashCode();
+		result = prime * result + mArtistName.hashCode();
+		result = prime * result + mDuration;
+		result = prime * result + (int) id;
+		result = prime * result + playlistPos;
+		result = prime * result + name.hashCode();
+		return result;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this)
-            return true;
-        if (obj instanceof Song) {
-            Song other = (Song) obj;
-            return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
-                    name.equals(other.name) && mDuration == other.mDuration && id == other.id && other.playlistPos == playlistPos;
-        }
-        return false;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (obj instanceof Song) {
+			Song other = (Song) obj;
+			return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
+					name.equals(other.name) && mDuration == other.mDuration && id == other.id && other.playlistPos == playlistPos;
+		}
+		return false;
+	}
 }

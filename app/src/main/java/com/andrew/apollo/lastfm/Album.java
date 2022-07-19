@@ -31,66 +31,66 @@ import java.util.Map;
  */
 public class Album extends MusicEntry {
 
-    protected final static ItemFactory<Album> FACTORY = new AlbumFactory();
+	protected final static ItemFactory<Album> FACTORY = new AlbumFactory();
 
-    private String artist;
+	private String artist;
 
-    private Album() {
-        super("", "");
-        this.artist = "";
-    }
+	private Album() {
+		super("", "");
+		this.artist = "";
+	}
 
-    /**
-     * Get the metadata for an album on Last.fm using the album name or a
-     * musicbrainz id. See playlist.fetch on how to get the album playlist.
-     *
-     * @param artist      Artist's name
-     * @param albumOrMbid Album name or MBID
-     * @return Album metadata
-     */
-    public static Album getInfo(String artist, String albumOrMbid) {
-        return getInfo(artist, albumOrMbid, null);
-    }
+	/**
+	 * Get the metadata for an album on Last.fm using the album name or a
+	 * musicbrainz id. See playlist.fetch on how to get the album playlist.
+	 *
+	 * @param artist      Artist's name
+	 * @param albumOrMbid Album name or MBID
+	 * @return Album metadata
+	 */
+	public static Album getInfo(String artist, String albumOrMbid) {
+		return getInfo(artist, albumOrMbid, null);
+	}
 
-    /**
-     * Get the metadata for an album on Last.fm using the album name or a
-     * musicbrainz id. See playlist.fetch on how to get the album playlist.
-     *
-     * @param artist      Artist's name
-     * @param albumOrMbid Album name or MBID
-     * @param username    The username for the context of the request. If supplied,
-     *                    the user's playcount for this album is included in the
-     *                    response.
-     * @return Album metadata
-     */
-    public static Album getInfo(String artist, String albumOrMbid, String username) {
-        Map<String, String> params = new HashMap<>();
-        params.put("artist", artist);
-        params.put("album", albumOrMbid);
-        MapUtilities.nullSafePut(params, "username", username);
-        Result result = Caller.getInstance().call("album.getInfo", params);
-        return ResponseBuilder.buildItem(result, Album.class);
-    }
+	/**
+	 * Get the metadata for an album on Last.fm using the album name or a
+	 * musicbrainz id. See playlist.fetch on how to get the album playlist.
+	 *
+	 * @param artist      Artist's name
+	 * @param albumOrMbid Album name or MBID
+	 * @param username    The username for the context of the request. If supplied,
+	 *                    the user's playcount for this album is included in the
+	 *                    response.
+	 * @return Album metadata
+	 */
+	public static Album getInfo(String artist, String albumOrMbid, String username) {
+		Map<String, String> params = new HashMap<>();
+		params.put("artist", artist);
+		params.put("album", albumOrMbid);
+		MapUtilities.nullSafePut(params, "username", username);
+		Result result = Caller.getInstance().call("album.getInfo", params);
+		return ResponseBuilder.buildItem(result, Album.class);
+	}
 
-    private final static class AlbumFactory implements ItemFactory<Album> {
+	private final static class AlbumFactory implements ItemFactory<Album> {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Album createItemFromElement(DomElement element) {
-            if (element == null) {
-                return null;
-            }
-            Album album = new Album();
-            MusicEntry.loadStandardInfo(album, element);
-            if (element.hasChild("artist")) {
-                album.artist = element.getChild("artist").getChildText("name");
-                if (album.artist == null) {
-                    album.artist = element.getChildText("artist");
-                }
-            }
-            return album;
-        }
-    }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Album createItemFromElement(DomElement element) {
+			if (element == null) {
+				return null;
+			}
+			Album album = new Album();
+			MusicEntry.loadStandardInfo(album, element);
+			if (element.hasChild("artist")) {
+				album.artist = element.getChild("artist").getChildText("name");
+				if (album.artist == null) {
+					album.artist = element.getChildText("artist");
+				}
+			}
+			return album;
+		}
+	}
 }

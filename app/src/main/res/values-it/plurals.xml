@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> album</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> canzone</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> canzoni</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone aggiunta alla playlist.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni aggiunte alla playlist.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone rimossa dalla playlist.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni rimosse dalla playlist.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone aggiunta alla coda.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni aggiunte alla coda.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> canzone è stata eliminata.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> canzoni sono state eliminate.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> album</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> canzone</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> canzoni</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone aggiunta alla playlist.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni aggiunte alla playlist.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone rimossa dalla playlist.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni rimosse dalla playlist.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> canzone aggiunta alla coda.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canzoni aggiunte alla coda.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> canzone è stata eliminata.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> canzoni sono state eliminate.</item>
+	</plurals>
 </resources>

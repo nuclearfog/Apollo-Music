@@ -14,13 +14,13 @@
   limitations under the License.
 -->
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/menu_add_to_homescreen"
-        android:icon="@drawable/ic_action_pinn_to_home"
-        android:orderInCategory="2"
-        android:title="@string/menu_add_to_homescreen"
-        app:showAsAction="ifRoom" />
+	<item
+		android:id="@+id/menu_add_to_homescreen"
+		android:icon="@drawable/ic_action_pinn_to_home"
+		android:orderInCategory="2"
+		android:title="@string/menu_add_to_homescreen"
+		app:showAsAction="ifRoom" />
 
 </menu>

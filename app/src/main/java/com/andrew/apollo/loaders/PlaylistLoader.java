@@ -29,60 +29,60 @@ import java.util.List;
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 
-    /**
-     * Constructor of <code>PlaylistLoader</code>
-     *
-     * @param context The {@link Context} to use
-     */
-    public PlaylistLoader(Context context) {
-        super(context);
-    }
+	/**
+	 * Constructor of <code>PlaylistLoader</code>
+	 *
+	 * @param context The {@link Context} to use
+	 */
+	public PlaylistLoader(Context context) {
+		super(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Playlist> loadInBackground() {
-        List<Playlist> result = new LinkedList<>();
-        // Add the default playlists to the adapter
-        makeDefaultPlaylists(result);
-        // Create the Cursor
-        Cursor mCursor = CursorFactory.makePlaylistCursor(getContext());
-        // Gather the data
-        if (mCursor != null) {
-            if (mCursor.moveToFirst()) {
-                do {
-                    // Copy the playlist id
-                    long id = mCursor.getLong(0);
-                    // Copy the playlist name
-                    String name = mCursor.getString(1);
-                    // Create a new playlist
-                    Playlist playlist = new Playlist(id, name);
-                    // Add everything up
-                    result.add(playlist);
-                } while (mCursor.moveToNext());
-            }
-            mCursor.close();
-        }
-        return result;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Playlist> loadInBackground() {
+		List<Playlist> result = new LinkedList<>();
+		// Add the default playlists to the adapter
+		makeDefaultPlaylists(result);
+		// Create the Cursor
+		Cursor mCursor = CursorFactory.makePlaylistCursor(getContext());
+		// Gather the data
+		if (mCursor != null) {
+			if (mCursor.moveToFirst()) {
+				do {
+					// Copy the playlist id
+					long id = mCursor.getLong(0);
+					// Copy the playlist name
+					String name = mCursor.getString(1);
+					// Create a new playlist
+					Playlist playlist = new Playlist(id, name);
+					// Add everything up
+					result.add(playlist);
+				} while (mCursor.moveToNext());
+			}
+			mCursor.close();
+		}
+		return result;
+	}
 
-    /**
-     * Adds the favorites and last added playlists
-     *
-     * @param mPlaylistList list with playlists
-     */
-    private void makeDefaultPlaylists(List<Playlist> mPlaylistList) {
-        Resources resources = getContext().getResources();
-        /* Favorites list */
-        Playlist favorites = new Playlist(Playlist.FAVORITE_ID, resources.getString(R.string.playlist_favorites));
-        mPlaylistList.add(favorites);
-        /* Last added list */
-        Playlist mostPlayed = new Playlist(Playlist.POPULAR_ID, resources.getString(R.string.playlist_most_played));
-        mPlaylistList.add(mostPlayed);
-        /* Last added list */
-        Playlist lastAdded = new Playlist(Playlist.LAST_ADDED_ID, resources.getString(R.string.playlist_last_added));
-        mPlaylistList.add(lastAdded);
+	/**
+	 * Adds the favorites and last added playlists
+	 *
+	 * @param mPlaylistList list with playlists
+	 */
+	private void makeDefaultPlaylists(List<Playlist> mPlaylistList) {
+		Resources resources = getContext().getResources();
+		/* Favorites list */
+		Playlist favorites = new Playlist(Playlist.FAVORITE_ID, resources.getString(R.string.playlist_favorites));
+		mPlaylistList.add(favorites);
+		/* Last added list */
+		Playlist mostPlayed = new Playlist(Playlist.POPULAR_ID, resources.getString(R.string.playlist_most_played));
+		mPlaylistList.add(mostPlayed);
+		/* Last added list */
+		Playlist lastAdded = new Playlist(Playlist.LAST_ADDED_ID, resources.getString(R.string.playlist_last_added));
+		mPlaylistList.add(lastAdded);
 
-    }
+	}
 }

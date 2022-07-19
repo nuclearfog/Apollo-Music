@@ -14,35 +14,35 @@
   limitations under the License.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="@dimen/item_theme_image_padding"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintDimensionRatio="2.0"
-        tools:ignore="ContentDescription" />
+	<ImageView
+		android:id="@+id/image"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:padding="@dimen/item_theme_image_padding"
+		android:adjustViewBounds="true"
+		android:scaleType="fitCenter"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintDimensionRatio="2.0"
+		tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/line_one"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent_black"
-        android:padding="@dimen/item_theme_text_padding"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_dayum"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image"
-        app:layout_constraintBottom_toBottomOf="@+id/image"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<TextView
+		android:id="@+id/line_one"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:background="@color/transparent_black"
+		android:padding="@dimen/item_theme_text_padding"
+		android:textColor="@color/white"
+		android:textSize="@dimen/text_size_dayum"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/image"
+		app:layout_constraintBottom_toBottomOf="@+id/image"
+		app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

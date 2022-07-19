@@ -58,336 +58,336 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection,
-        OnClickListener, OnQueryTextListener, PlayStatusListener {
+		OnClickListener, OnQueryTextListener, PlayStatusListener {
 
-    /**
-     * Playstate and meta change listener
-     */
-    private List<MusicStateListener> mMusicStateListener = new LinkedList<>();
+	/**
+	 * Playstate and meta change listener
+	 */
+	private List<MusicStateListener> mMusicStateListener = new LinkedList<>();
 
-    /**
-     * The service token
-     */
-    private ServiceToken mToken;
-    /**
-     * Play and pause button (BAB)
-     */
-    private PlayPauseButton mPlayPauseButton;
-    /**
-     * Repeat button (BAB)
-     */
-    private RepeatButton mRepeatButton;
-    /**
-     * Shuffle button (BAB)
-     */
-    private ShuffleButton mShuffleButton;
-    /**
-     * Track name (BAB)
-     */
-    private TextView mTrackName;
-    /**
-     * Artist name (BAB)
-     */
-    private TextView mArtistName;
-    /**
-     * Album art (BAB)
-     */
-    private ImageView mAlbumArt;
-    /**
-     * Broadcast receiver
-     */
-    private PlaybackStatus mPlaybackStatus;
+	/**
+	 * The service token
+	 */
+	private ServiceToken mToken;
+	/**
+	 * Play and pause button (BAB)
+	 */
+	private PlayPauseButton mPlayPauseButton;
+	/**
+	 * Repeat button (BAB)
+	 */
+	private RepeatButton mRepeatButton;
+	/**
+	 * Shuffle button (BAB)
+	 */
+	private ShuffleButton mShuffleButton;
+	/**
+	 * Track name (BAB)
+	 */
+	private TextView mTrackName;
+	/**
+	 * Artist name (BAB)
+	 */
+	private TextView mArtistName;
+	/**
+	 * Album art (BAB)
+	 */
+	private ImageView mAlbumArt;
+	/**
+	 * Broadcast receiver
+	 */
+	private PlaybackStatus mPlaybackStatus;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Fade it in
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        // Control the media volume
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        // Bind Apollo's service
-        mToken = MusicUtils.bindToService(this, this);
-        // Initialize the broadcast receiver
-        mPlaybackStatus = new PlaybackStatus(this);
-        // Theme the action bar
-        // Initialize the bottom action bar
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// Fade it in
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		// Control the media volume
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		// Bind Apollo's service
+		mToken = MusicUtils.bindToService(this, this);
+		// Initialize the broadcast receiver
+		mPlaybackStatus = new PlaybackStatus(this);
+		// Theme the action bar
+		// Initialize the bottom action bar
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        initBottomActionBar();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		initBottomActionBar();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        // Set the playback drawables
-        updatePlaybackControls();
-        // Current info
-        updateBottomActionBarInfo();
-        // Update the favorites icon
-        invalidateOptionsMenu();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		// Set the playback drawables
+		updatePlaybackControls();
+		// Current info
+		updateBottomActionBarInfo();
+		// Update the favorites icon
+		invalidateOptionsMenu();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Search view
-        getMenuInflater().inflate(R.menu.search, menu);
-        // Settings
-        getMenuInflater().inflate(R.menu.activity_base, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        // Add voice search
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-        searchView.setSearchableInfo(searchableInfo);
-        // Perform the search
-        searchView.setOnQueryTextListener(this);
-        return super.onCreateOptionsMenu(menu);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Search view
+		getMenuInflater().inflate(R.menu.search, menu);
+		// Settings
+		getMenuInflater().inflate(R.menu.activity_base, menu);
+		SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+		// Add voice search
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
+		searchView.setSearchableInfo(searchableInfo);
+		// Perform the search
+		searchView.setOnQueryTextListener(this);
+		return super.onCreateOptionsMenu(menu);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_settings) {// Settings
-            NavUtils.openSettings(this);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_settings) {// Settings
+			NavUtils.openSettings(this);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Set the playback drawables
-        updatePlaybackControls();
-        // Current info
-        updateBottomActionBarInfo();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Set the playback drawables
+		updatePlaybackControls();
+		// Current info
+		updateBottomActionBarInfo();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter();
-        // Play and pause changes
-        filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
-        // Shuffle and repeat changes
-        filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
-        filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
-        // Track changes
-        filter.addAction(MusicPlaybackService.META_CHANGED);
-        // Update a list, probably the playlist fragment's
-        filter.addAction(MusicPlaybackService.REFRESH);
-        registerReceiver(mPlaybackStatus, filter);
-        MusicUtils.notifyForegroundStateChanged(this, true);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		IntentFilter filter = new IntentFilter();
+		// Play and pause changes
+		filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
+		// Shuffle and repeat changes
+		filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
+		filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
+		// Track changes
+		filter.addAction(MusicPlaybackService.META_CHANGED);
+		// Update a list, probably the playlist fragment's
+		filter.addAction(MusicPlaybackService.REFRESH);
+		registerReceiver(mPlaybackStatus, filter);
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-        MusicUtils.notifyForegroundStateChanged(this, false);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStop() {
+		super.onStop();
+		MusicUtils.notifyForegroundStateChanged(this, false);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onDestroy() {
-        // Unbind from the service
-        if (mToken != null) {
-            MusicUtils.unbindFromService(mToken);
-        }
-        // Unregister the receiver
-        try {
-            unregisterReceiver(mPlaybackStatus);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // Remove any music status listeners
-        mMusicStateListener.clear();
-        super.onDestroy();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		// Unbind from the service
+		if (mToken != null) {
+			MusicUtils.unbindFromService(mToken);
+		}
+		// Unregister the receiver
+		try {
+			unregisterReceiver(mPlaybackStatus);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// Remove any music status listeners
+		mMusicStateListener.clear();
+		super.onDestroy();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.bottom_action_bar_album_art) {
-            if (MusicUtils.getCurrentAudioId() != -1) {
-                NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
-            } else {
-                MusicUtils.shuffleAll(this);
-            }
-        } else if (v.getId() == R.id.bottom_action_bar_background) {
-            if (MusicUtils.getCurrentAudioId() != -1) {
-                Intent intent = new Intent(this, AudioPlayerActivity.class);
-                startActivity(intent);
-            } else {
-                MusicUtils.shuffleAll(this);
-            }
-        }
-    }
-
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // Open the search activity
-        NavUtils.openSearch(this, query);
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.bottom_action_bar_album_art) {
+			if (MusicUtils.getCurrentAudioId() != -1) {
+				NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
+			} else {
+				MusicUtils.shuffleAll(this);
+			}
+		} else if (v.getId() == R.id.bottom_action_bar_background) {
+			if (MusicUtils.getCurrentAudioId() != -1) {
+				Intent intent = new Intent(this, AudioPlayerActivity.class);
+				startActivity(intent);
+			} else {
+				MusicUtils.shuffleAll(this);
+			}
+		}
+	}
 
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // Nothing to do
-        return false;
-    }
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		// Open the search activity
+		NavUtils.openSearch(this, query);
+		return true;
+	}
 
 
-    @Override
-    public final void onMetaChange() {
-        // Current info
-        updateBottomActionBarInfo();
-        // Update the favorites icon
-        invalidateOptionsMenu();
-        // Let the listener know to the meta changed
-        for (MusicStateListener listener : mMusicStateListener) {
-            if (listener != null) {
-                listener.onMetaChanged();
-            }
-        }
-    }
+	@Override
+	public boolean onQueryTextChange(String newText) {
+		// Nothing to do
+		return false;
+	}
 
 
-    @Override
-    public final void onStateChange() {
-        // Set the play and pause image
-        mPlayPauseButton.updateState();
-    }
+	@Override
+	public final void onMetaChange() {
+		// Current info
+		updateBottomActionBarInfo();
+		// Update the favorites icon
+		invalidateOptionsMenu();
+		// Let the listener know to the meta changed
+		for (MusicStateListener listener : mMusicStateListener) {
+			if (listener != null) {
+				listener.onMetaChanged();
+			}
+		}
+	}
 
 
-    @Override
-    public final void onModeChange() {
-        // Set the repeat image
-        mRepeatButton.updateRepeatState();
-        // Set the shuffle image
-        mShuffleButton.updateShuffleState();
-    }
+	@Override
+	public final void onStateChange() {
+		// Set the play and pause image
+		mPlayPauseButton.updateState();
+	}
 
 
-    @Override
-    public final void refresh() {
-        // Let the listener know to update a list
-        for (MusicStateListener listener : mMusicStateListener) {
-            if (listener != null) {
-                listener.restartLoader();
-            }
-        }
-    }
+	@Override
+	public final void onModeChange() {
+		// Set the repeat image
+		mRepeatButton.updateRepeatState();
+		// Set the shuffle image
+		mShuffleButton.updateShuffleState();
+	}
 
-    /**
-     * Initializes the items in the bottom action bar.
-     */
-    private void initBottomActionBar() {
-        // Play and pause button
-        mPlayPauseButton = findViewById(R.id.action_button_play);
-        // Shuffle button
-        mShuffleButton = findViewById(R.id.action_button_shuffle);
-        // Repeat button
-        mRepeatButton = findViewById(R.id.action_button_repeat);
-        // Track name
-        mTrackName = findViewById(R.id.bottom_action_bar_line_one);
-        // Artist name
-        mArtistName = findViewById(R.id.bottom_action_bar_line_two);
-        // Album art
-        mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
-        // background of bottom action bar
-        View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
-        // set bottom action bar color
-        bottomActionBar.setBackground(new HoloSelector(this));
-        // Display the now playing screen or shuffle if this isn't anything playing
-        bottomActionBar.setOnClickListener(this);
-        // Open to the currently playing album profile
-        mAlbumArt.setOnClickListener(this);
-    }
 
-    /**
-     * Sets the track name, album name, and album art.
-     */
-    private void updateBottomActionBarInfo() {
-        // Set the track name
-        mTrackName.setText(MusicUtils.getTrackName());
-        // Set the artist name
-        mArtistName.setText(MusicUtils.getArtistName());
-        // Set the album art
-        ApolloUtils.getImageFetcher(this).loadCurrentArtwork(mAlbumArt);
-    }
+	@Override
+	public final void refresh() {
+		// Let the listener know to update a list
+		for (MusicStateListener listener : mMusicStateListener) {
+			if (listener != null) {
+				listener.restartLoader();
+			}
+		}
+	}
 
-    /**
-     * Sets the correct drawable states for the playback controls.
-     */
-    private void updatePlaybackControls() {
-        // Set the play and pause image
-        mPlayPauseButton.updateState();
-        // Set the shuffle image
-        mShuffleButton.updateShuffleState();
-        // Set the repeat image
-        mRepeatButton.updateRepeatState();
-    }
+	/**
+	 * Initializes the items in the bottom action bar.
+	 */
+	private void initBottomActionBar() {
+		// Play and pause button
+		mPlayPauseButton = findViewById(R.id.action_button_play);
+		// Shuffle button
+		mShuffleButton = findViewById(R.id.action_button_shuffle);
+		// Repeat button
+		mRepeatButton = findViewById(R.id.action_button_repeat);
+		// Track name
+		mTrackName = findViewById(R.id.bottom_action_bar_line_one);
+		// Artist name
+		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
+		// Album art
+		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
+		// background of bottom action bar
+		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
+		// set bottom action bar color
+		bottomActionBar.setBackground(new HoloSelector(this));
+		// Display the now playing screen or shuffle if this isn't anything playing
+		bottomActionBar.setOnClickListener(this);
+		// Open to the currently playing album profile
+		mAlbumArt.setOnClickListener(this);
+	}
 
-    /**
-     * @param status The {@link MusicStateListener} to use
-     */
-    public void setMusicStateListenerListener(MusicStateListener status) {
-        if (status != null) {
-            mMusicStateListener.add(status);
-        }
-    }
+	/**
+	 * Sets the track name, album name, and album art.
+	 */
+	private void updateBottomActionBarInfo() {
+		// Set the track name
+		mTrackName.setText(MusicUtils.getTrackName());
+		// Set the artist name
+		mArtistName.setText(MusicUtils.getArtistName());
+		// Set the album art
+		ApolloUtils.getImageFetcher(this).loadCurrentArtwork(mAlbumArt);
+	}
 
-    /**
-     * Listens for playback changes to send the the fragments bound to this activity
-     */
-    public interface MusicStateListener {
+	/**
+	 * Sets the correct drawable states for the playback controls.
+	 */
+	private void updatePlaybackControls() {
+		// Set the play and pause image
+		mPlayPauseButton.updateState();
+		// Set the shuffle image
+		mShuffleButton.updateShuffleState();
+		// Set the repeat image
+		mRepeatButton.updateRepeatState();
+	}
 
-        /**
-         * Called when {@link MusicPlaybackService#REFRESH} is invoked
-         */
-        void restartLoader();
+	/**
+	 * @param status The {@link MusicStateListener} to use
+	 */
+	public void setMusicStateListenerListener(MusicStateListener status) {
+		if (status != null) {
+			mMusicStateListener.add(status);
+		}
+	}
 
-        /**
-         * Called when {@link MusicPlaybackService#META_CHANGED} is invoked
-         */
-        void onMetaChanged();
+	/**
+	 * Listens for playback changes to send the the fragments bound to this activity
+	 */
+	public interface MusicStateListener {
 
-    }
+		/**
+		 * Called when {@link MusicPlaybackService#REFRESH} is invoked
+		 */
+		void restartLoader();
+
+		/**
+		 * Called when {@link MusicPlaybackService#META_CHANGED} is invoked
+		 */
+		void onMetaChanged();
+
+	}
 }

@@ -33,39 +33,39 @@ import java.util.Map;
  */
 public final class StringUtilities {
 
-    /**
-     * URL Encodes the given String <code>s</code> using the UTF-8 character
-     * encoding.
-     *
-     * @param s a String
-     * @return url encoded string
-     */
-    public static String encode(String s) {
-        if (s == null) {
-            return null;
-        }
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            //ignore
-        }
-        return null;
-    }
+	/**
+	 * URL Encodes the given String <code>s</code> using the UTF-8 character
+	 * encoding.
+	 *
+	 * @param s a String
+	 * @return url encoded string
+	 */
+	public static String encode(String s) {
+		if (s == null) {
+			return null;
+		}
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			//ignore
+		}
+		return null;
+	}
 
-    /**
-     * Creates a Map out of an array with Strings.
-     *
-     * @param strings input strings, key-value alternating
-     * @return a parameter map
-     */
-    public static Map<String, String> map(String... strings) {
-        if (strings.length % 2 != 0) {
-            throw new IllegalArgumentException("strings.duration % 2 != 0");
-        }
-        Map<String, String> sMap = new HashMap<>();
-        for (int i = 0; i < strings.length; i += 2) {
-            sMap.put(strings[i], strings[i + 1]);
-        }
-        return sMap;
-    }
+	/**
+	 * Creates a Map out of an array with Strings.
+	 *
+	 * @param strings input strings, key-value alternating
+	 * @return a parameter map
+	 */
+	public static Map<String, String> map(String... strings) {
+		if (strings.length % 2 != 0) {
+			throw new IllegalArgumentException("strings.duration % 2 != 0");
+		}
+		Map<String, String> sMap = new HashMap<>();
+		for (int i = 0; i < strings.length; i += 2) {
+			sMap.put(strings[i], strings[i + 1]);
+		}
+		return sMap;
+	}
 }

@@ -32,71 +32,71 @@ import com.andrew.apollo.ui.fragments.PlaylistFragment;
  */
 public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 
-    /**
-     * item layout reource
-     */
-    private static final int LAYOUT = R.layout.list_item_simple;
+	/**
+	 * item layout reource
+	 */
+	private static final int LAYOUT = R.layout.list_item_simple;
 
-    /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
+	/**
+	 * fragment layout inflater
+	 */
+	private LayoutInflater inflater;
 
-    /**
-     * Constructor of <code>PlaylistAdapter</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public PlaylistAdapter(Context context) {
-        super(context, LAYOUT);
-        inflater = LayoutInflater.from(context);
-    }
+	/**
+	 * Constructor of <code>PlaylistAdapter</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public PlaylistAdapter(Context context) {
+		super(context, LAYOUT);
+		inflater = LayoutInflater.from(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        // Recycle ViewHolder's items
-        MusicHolder holder;
-        if (convertView == null) {
-            convertView = inflater.inflate(LAYOUT, parent, false);
-            holder = new MusicHolder(convertView);
-            // Hide the second and third lines of text
-            holder.mLineTwo.setVisibility(View.GONE);
-            holder.mLineThree.setVisibility(View.GONE);
-            // Make line one slightly larger
-            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        // Retrieve the data holder
-        Playlist playlist = getItem(position);
-        if (playlist != null) {
-            // Set each playlist name (line one)
-            holder.mLineOne.setText(playlist.getName());
-        }
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+		// Recycle ViewHolder's items
+		MusicHolder holder;
+		if (convertView == null) {
+			convertView = inflater.inflate(LAYOUT, parent, false);
+			holder = new MusicHolder(convertView);
+			// Hide the second and third lines of text
+			holder.mLineTwo.setVisibility(View.GONE);
+			holder.mLineThree.setVisibility(View.GONE);
+			// Make line one slightly larger
+			holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		// Retrieve the data holder
+		Playlist playlist = getItem(position);
+		if (playlist != null) {
+			// Set each playlist name (line one)
+			holder.mLineOne.setText(playlist.getName());
+		}
+		return convertView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getItemId(int position) {
-        Playlist list = getItem(position);
-        if (list != null)
-            return list.getId();
-        return super.getItemId(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getItemId(int position) {
+		Playlist list = getItem(position);
+		if (list != null)
+			return list.getId();
+		return super.getItemId(position);
+	}
 }

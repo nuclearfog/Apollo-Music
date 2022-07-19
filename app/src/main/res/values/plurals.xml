@@ -15,39 +15,39 @@
      limitations under the License.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingTranslation">
-    <!-- Used to indicate the number of albums for an artist -->
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> albums</item>
-    </plurals>
+	<!-- Used to indicate the number of albums for an artist -->
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> albums</item>
+	</plurals>
 
-    <!-- Used to indicate the number of songs for an album -->
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> song</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> songs</item>
-    </plurals>
+	<!-- Used to indicate the number of songs for an album -->
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> song</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> songs</item>
+	</plurals>
 
-    <!-- Toasts after adding song(s) to playlists -->
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song added to playlist.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs added to playlist.</item>
-    </plurals>
+	<!-- Toasts after adding song(s) to playlists -->
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song added to playlist.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs added to playlist.</item>
+	</plurals>
 
-    <!-- Toasts after removing song(s) from playlists -->
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song removed from playlist.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs removed from playlist.</item>
-    </plurals>
+	<!-- Toasts after removing song(s) from playlists -->
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song removed from playlist.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs removed from playlist.</item>
+	</plurals>
 
-    <!-- Toasts after adding song(s) to queue -->
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song added to the queue.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs added to the queue.</item>
-    </plurals>
+	<!-- Toasts after adding song(s) to queue -->
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> song added to the queue.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> songs added to the queue.</item>
+	</plurals>
 
-    <!-- Toast confirming that song(s) was/were deleted. -->
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> song was deleted.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> songs were deleted.</item>
-    </plurals>
+	<!-- Toast confirming that song(s) was/were deleted. -->
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> song was deleted.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> songs were deleted.</item>
+	</plurals>
 </resources>

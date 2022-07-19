@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one">1 album</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> albums</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one">1 nummer</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> nummers</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one">1 nummer toegevoegd aan afspeellijst.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers toegevoegd aan afspeellijst.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one">1 nummer verwijderd uit afspeellijst.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers verwijderd uit afspeellijst.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one">1 nummer toegevoegd aan wachtrij.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers toegevoegd aan wachtrij.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one">1 nummer verwijderd.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> nummers verwijderd.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one">1 album</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> albums</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one">1 nummer</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> nummers</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one">1 nummer toegevoegd aan afspeellijst.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers toegevoegd aan afspeellijst.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one">1 nummer verwijderd uit afspeellijst.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers verwijderd uit afspeellijst.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one">1 nummer toegevoegd aan wachtrij.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> nummers toegevoegd aan wachtrij.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one">1 nummer verwijderd.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> nummers verwijderd.</item>
+	</plurals>
 </resources>

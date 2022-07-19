@@ -18,75 +18,75 @@ package com.andrew.apollo.model;
  */
 public class Artist extends Music {
 
-    /**
-     * The number of albums for the artist
-     */
-    private int mAlbumNumber;
+	/**
+	 * The number of albums for the artist
+	 */
+	private int mAlbumNumber;
 
-    /**
-     * The number of songs for the artist
-     */
-    private int mSongNumber;
+	/**
+	 * The number of songs for the artist
+	 */
+	private int mSongNumber;
 
-    /**
-     * Constructor of <code>Artist</code>
-     *
-     * @param artistId    The Id of the artist
-     * @param artistName  The artist name
-     * @param songNumber  The number of songs for the artist
-     * @param albumNumber The number of albums for the artist
-     */
-    public Artist(long artistId, String artistName, int songNumber, int albumNumber) {
-        super(artistId, artistName);
-        mSongNumber = songNumber;
-        mAlbumNumber = albumNumber;
-    }
+	/**
+	 * Constructor of <code>Artist</code>
+	 *
+	 * @param artistId    The Id of the artist
+	 * @param artistName  The artist name
+	 * @param songNumber  The number of songs for the artist
+	 * @param albumNumber The number of albums for the artist
+	 */
+	public Artist(long artistId, String artistName, int songNumber, int albumNumber) {
+		super(artistId, artistName);
+		mSongNumber = songNumber;
+		mAlbumNumber = albumNumber;
+	}
 
-    /**
-     * get album count of the artist
-     *
-     * @return number of albums by artist
-     */
-    public int getAlbumCount() {
-        return mAlbumNumber;
-    }
+	/**
+	 * get album count of the artist
+	 *
+	 * @return number of albums by artist
+	 */
+	public int getAlbumCount() {
+		return mAlbumNumber;
+	}
 
-    /**
-     * get track count of the artist
-     *
-     * @return number of the tracks by artist
-     */
-    public int getTrackCount() {
-        return mSongNumber;
-    }
+	/**
+	 * get track count of the artist
+	 *
+	 * @return number of the tracks by artist
+	 */
+	public int getTrackCount() {
+		return mSongNumber;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + mAlbumNumber;
-        result = prime * result + (int) id;
-        result = prime * result + name.hashCode();
-        result = prime * result + mSongNumber;
-        return result;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int prime = 31;
+		int result = 1;
+		result = prime * result + mAlbumNumber;
+		result = prime * result + (int) id;
+		result = prime * result + name.hashCode();
+		result = prime * result + mSongNumber;
+		return result;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj instanceof Artist) {
-            Artist artist = (Artist) obj;
-            return id == artist.id && mAlbumNumber == artist.mAlbumNumber &&
-                    mSongNumber == artist.mSongNumber && name.equals(artist.name);
-        }
-        return false;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj instanceof Artist) {
+			Artist artist = (Artist) obj;
+			return id == artist.id && mAlbumNumber == artist.mAlbumNumber &&
+					mSongNumber == artist.mSongNumber && name.equals(artist.name);
+		}
+		return false;
+	}
 }

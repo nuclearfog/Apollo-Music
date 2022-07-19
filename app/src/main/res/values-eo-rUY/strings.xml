@@ -16,5 +16,5 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="save">Konservi</string>
+	<string name="save">Konservi</string>
 </resources>

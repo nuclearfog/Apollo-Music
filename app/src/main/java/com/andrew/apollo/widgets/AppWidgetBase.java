@@ -23,24 +23,24 @@ import com.andrew.apollo.MusicPlaybackService;
 
 public abstract class AppWidgetBase extends AppWidgetProvider {
 
-    @SuppressLint("UnspecifiedImmutableFlag")
-    protected PendingIntent buildPendingIntent(Context context, String action, ComponentName serviceName) {
-        Intent intent = new Intent(action);
-        intent.setComponent(serviceName);
-        intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        return PendingIntent.getService(context, 0, intent, 0);
-    }
+	@SuppressLint("UnspecifiedImmutableFlag")
+	protected PendingIntent buildPendingIntent(Context context, String action, ComponentName serviceName) {
+		Intent intent = new Intent(action);
+		intent.setComponent(serviceName);
+		intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+			return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+		return PendingIntent.getService(context, 0, intent, 0);
+	}
 
-    /**
-     * Update all active widget instances by pushing changes
-     */
-    public abstract void performUpdate(MusicPlaybackService service, int[] appWidgetIds);
+	/**
+	 * Update all active widget instances by pushing changes
+	 */
+	public abstract void performUpdate(MusicPlaybackService service, int[] appWidgetIds);
 
-    /**
-     * Handle a change notification coming over from
-     * {@link MusicPlaybackService}
-     */
-    public abstract void notifyChange(MusicPlaybackService service, String what);
+	/**
+	 * Handle a change notification coming over from
+	 * {@link MusicPlaybackService}
+	 */
+	public abstract void notifyChange(MusicPlaybackService service, String what);
 }

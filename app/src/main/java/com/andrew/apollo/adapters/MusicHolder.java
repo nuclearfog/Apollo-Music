@@ -25,58 +25,58 @@ import com.andrew.apollo.R;
  */
 public class MusicHolder {
 
-    /**
-     * This is the artist or album image
-     */
-    public final ImageView mImage;
+	/**
+	 * This is the artist or album image
+	 */
+	public final ImageView mImage;
 
-    /**
-     * This is the first line displayed in the list or grid
-     * <p>
-     * {@code #getView()} of a specific adapter for more detailed info
-     */
-    public final TextView mLineOne;
+	/**
+	 * This is the first line displayed in the list or grid
+	 * <p>
+	 * {@code #getView()} of a specific adapter for more detailed info
+	 */
+	public final TextView mLineOne;
 
-    /**
-     * This is displayed on the right side of the first line in the list or grid
-     * <p>
-     * {@code #getView()} of a specific adapter for more detailed info
-     */
-    public final TextView mLineOneRight;
+	/**
+	 * This is displayed on the right side of the first line in the list or grid
+	 * <p>
+	 * {@code #getView()} of a specific adapter for more detailed info
+	 */
+	public final TextView mLineOneRight;
 
-    /**
-     * This is the second line displayed in the list or grid
-     * <p>
-     * {@code #getView()} of a specific adapter for more detailed info
-     */
-    public final TextView mLineTwo;
+	/**
+	 * This is the second line displayed in the list or grid
+	 * <p>
+	 * {@code #getView()} of a specific adapter for more detailed info
+	 */
+	public final TextView mLineTwo;
 
-    /**
-     * This is the third line displayed in the list or grid
-     * <p>
-     * {@code #getView()} of a specific adapter for more detailed info
-     */
-    public final TextView mLineThree;
+	/**
+	 * This is the third line displayed in the list or grid
+	 * <p>
+	 * {@code #getView()} of a specific adapter for more detailed info
+	 */
+	public final TextView mLineThree;
 
-    /**
-     * Constructor of <code>ViewHolder</code>
-     */
-    public MusicHolder(View view) {
-        super();
+	/**
+	 * Constructor of <code>ViewHolder</code>
+	 */
+	public MusicHolder(View view) {
+		super();
 
-        // Initialize mImage
-        mImage = view.findViewById(R.id.image);
+		// Initialize mImage
+		mImage = view.findViewById(R.id.image);
 
-        // Initialize mLineOne
-        mLineOne = view.findViewById(R.id.line_one);
+		// Initialize mLineOne
+		mLineOne = view.findViewById(R.id.line_one);
 
-        // Initialize mLineOneRight
-        mLineOneRight = view.findViewById(R.id.line_one_right);
+		// Initialize mLineOneRight
+		mLineOneRight = view.findViewById(R.id.line_one_right);
 
-        // Initialize mLineTwo
-        mLineTwo = view.findViewById(R.id.line_two);
+		// Initialize mLineTwo
+		mLineTwo = view.findViewById(R.id.line_two);
 
-        // Initialize mLineThree
-        mLineThree = view.findViewById(R.id.line_three);
-    }
+		// Initialize mLineThree
+		mLineThree = view.findViewById(R.id.line_three);
+	}
 }

@@ -16,40 +16,40 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
-        <item quantity="two"><xliff:g id="count">%d</xliff:g> albuma</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> albumi</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> albumov</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> skladba</item>
-        <item quantity="two"><xliff:g id="count">%d</xliff:g> skladbi</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> skladbe</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> skladb</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba dodana na seznam predvajanja.</item>
-        <item quantity="two"><xliff:g id="number" example="27">%d</xliff:g> skladbi dodani na seznam predvajanja.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> skladbe dodane na seznam predvajanja.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> skladb dodanih na seznam predvajanja.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba odstranjena s seznama predvajanja.</item>
-        <item quantity="two"><xliff:g id="number" example="27">%d</xliff:g> skladbi odstranjeni s seznama predvajanja.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> skladbe odstranjene s seznama predvajanja.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> skladb odstranjenih s seznama predvajanja.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba dodana v čakalno vrsto.</item>
-        <item quantity="two"><xliff:g id="number" example="1">%d</xliff:g> skladbi dodani v čakalno vrsto.</item>
-        <item quantity="few"><xliff:g id="number" example="1">%d</xliff:g> skladbe dodane v čakalno vrsto.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> skladb dodanih v čakalno vrsto.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> skladba je bila izbrisana.</item>
-        <item quantity="two"><xliff:g id="songs_to_delete">%d</xliff:g> skladbi sta bili izbrisani.</item>
-        <item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> skladbe so bile izbrisane.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> skladb je bilo izbrisanih.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> album</item>
+		<item quantity="two"><xliff:g id="count">%d</xliff:g> albuma</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> albumi</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> albumov</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> skladba</item>
+		<item quantity="two"><xliff:g id="count">%d</xliff:g> skladbi</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> skladbe</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> skladb</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba dodana na seznam predvajanja.</item>
+		<item quantity="two"><xliff:g id="number" example="27">%d</xliff:g> skladbi dodani na seznam predvajanja.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> skladbe dodane na seznam predvajanja.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> skladb dodanih na seznam predvajanja.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba odstranjena s seznama predvajanja.</item>
+		<item quantity="two"><xliff:g id="number" example="27">%d</xliff:g> skladbi odstranjeni s seznama predvajanja.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> skladbe odstranjene s seznama predvajanja.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> skladb odstranjenih s seznama predvajanja.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> skladba dodana v čakalno vrsto.</item>
+		<item quantity="two"><xliff:g id="number" example="1">%d</xliff:g> skladbi dodani v čakalno vrsto.</item>
+		<item quantity="few"><xliff:g id="number" example="1">%d</xliff:g> skladbe dodane v čakalno vrsto.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> skladb dodanih v čakalno vrsto.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> skladba je bila izbrisana.</item>
+		<item quantity="two"><xliff:g id="songs_to_delete">%d</xliff:g> skladbi sta bili izbrisani.</item>
+		<item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> skladbe so bile izbrisane.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> skladb je bilo izbrisanih.</item>
+	</plurals>
 </resources>

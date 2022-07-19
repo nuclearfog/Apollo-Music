@@ -48,225 +48,225 @@ import com.andrew.apollo.R;
  */
 public class ThemeUtils {
 
-    /**
-     * Default package name.
-     */
-    public static final String APOLLO_PACKAGE = BuildConfig.APPLICATION_ID;
-    /**
-     * Current theme package name.
-     */
-    public static final String PACKAGE_NAME = "theme_package_name";
-    /**
-     * Used to search the "Apps" section of the Play Store for "Apollo Themes".
-     */
-    private static final String SEARCH_URI = "https://market.android.com/search?q=%s&c=apps&featured=APP_STORE_SEARCH";
-    /**
-     * Used to search the Play Store for a specific theme.
-     */
-    private static final String APP_URI = "market://details?id=";
-    /**
-     * The keyword to use when search for different themes.
-     */
-    private static String sApolloSearch;
-    /**
-     * Used to get and set the theme package name.
-     */
-    private final SharedPreferences mPreferences;
+	/**
+	 * Default package name.
+	 */
+	public static final String APOLLO_PACKAGE = BuildConfig.APPLICATION_ID;
+	/**
+	 * Current theme package name.
+	 */
+	public static final String PACKAGE_NAME = "theme_package_name";
+	/**
+	 * Used to search the "Apps" section of the Play Store for "Apollo Themes".
+	 */
+	private static final String SEARCH_URI = "https://market.android.com/search?q=%s&c=apps&featured=APP_STORE_SEARCH";
+	/**
+	 * Used to search the Play Store for a specific theme.
+	 */
+	private static final String APP_URI = "market://details?id=";
+	/**
+	 * The keyword to use when search for different themes.
+	 */
+	private static String sApolloSearch;
+	/**
+	 * Used to get and set the theme package name.
+	 */
+	private final SharedPreferences mPreferences;
 
-    /**
-     * Custom action bar layout
-     */
-    private final View mActionBarLayout;
+	/**
+	 * Custom action bar layout
+	 */
+	private final View mActionBarLayout;
 
-    /**
-     * The theme resources.
-     */
-    private Resources themeRes, defRes;
+	/**
+	 * The theme resources.
+	 */
+	private Resources themeRes, defRes;
 
-    /**
-     * Constructor for <code>ThemeUtils</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public ThemeUtils(Context context) {
-        // Get the search query
-        sApolloSearch = context.getString(R.string.apollo_themes_shop_key);
-        // Get the preferences
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
-        // Get the theme package name
-        String mThemePackage = getThemePackageName();
-        // Initialze the package manager
-        PackageManager mPackageManager = context.getPackageManager();
-        defRes = context.getResources();
-        try {
-            // Find the theme resources
-            themeRes = mPackageManager.getResourcesForApplication(mThemePackage);
-        } catch (Exception e) {
-            // If the user isn't using a theme, then the resources should be
-            // Apollo's.
-            setThemePackageName(APOLLO_PACKAGE);
-            themeRes = defRes;
-        }
-        // Inflate the custom layout
-        mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
-    }
+	/**
+	 * Constructor for <code>ThemeUtils</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public ThemeUtils(Context context) {
+		// Get the search query
+		sApolloSearch = context.getString(R.string.apollo_themes_shop_key);
+		// Get the preferences
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+		// Get the theme package name
+		String mThemePackage = getThemePackageName();
+		// Initialze the package manager
+		PackageManager mPackageManager = context.getPackageManager();
+		defRes = context.getResources();
+		try {
+			// Find the theme resources
+			themeRes = mPackageManager.getResourcesForApplication(mThemePackage);
+		} catch (Exception e) {
+			// If the user isn't using a theme, then the resources should be
+			// Apollo's.
+			setThemePackageName(APOLLO_PACKAGE);
+			themeRes = defRes;
+		}
+		// Inflate the custom layout
+		mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
+	}
 
-    /**
-     * Used to search the Play Store for a specific app.
-     *
-     * @param context   The {@link Context} to use.
-     * @param themeName The theme name to search for.
-     */
-    public static void openAppPage(Context context, String themeName) {
-        Intent shopIntent = new Intent(Intent.ACTION_VIEW);
-        shopIntent.setData(Uri.parse(APP_URI + themeName));
-        shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        try {
-            context.startActivity(shopIntent);
-        } catch (ActivityNotFoundException err) {
-            // ignore
-        }
-    }
+	/**
+	 * Used to search the Play Store for a specific app.
+	 *
+	 * @param context   The {@link Context} to use.
+	 * @param themeName The theme name to search for.
+	 */
+	public static void openAppPage(Context context, String themeName) {
+		Intent shopIntent = new Intent(Intent.ACTION_VIEW);
+		shopIntent.setData(Uri.parse(APP_URI + themeName));
+		shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		try {
+			context.startActivity(shopIntent);
+		} catch (ActivityNotFoundException err) {
+			// ignore
+		}
+	}
 
-    /**
-     * Return the current theme package name.
-     *
-     * @return The default theme package name.
-     */
-    public final String getThemePackageName() {
-        return mPreferences.getString(PACKAGE_NAME, APOLLO_PACKAGE);
-    }
+	/**
+	 * Return the current theme package name.
+	 *
+	 * @return The default theme package name.
+	 */
+	public final String getThemePackageName() {
+		return mPreferences.getString(PACKAGE_NAME, APOLLO_PACKAGE);
+	}
 
-    /**
-     * Set the new theme package name.
-     *
-     * @param packageName The package name of the theme to be set.
-     */
-    public void setThemePackageName(String packageName) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(PACKAGE_NAME, packageName);
-        editor.apply();
-    }
+	/**
+	 * Set the new theme package name.
+	 *
+	 * @param packageName The package name of the theme to be set.
+	 */
+	public void setThemePackageName(String packageName) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putString(PACKAGE_NAME, packageName);
+		editor.apply();
+	}
 
-    /**
-     * Sets the corret overflow icon in the action bar depending on whether or
-     * not the current action bar color is dark or light.
-     *
-     * @param app The {@link Context} used to set the theme.
-     */
-    public void setOverflowStyle(Context app) {
-        app.setTheme(R.style.Apollo_Theme_Dark);
-    }
+	/**
+	 * Sets the corret overflow icon in the action bar depending on whether or
+	 * not the current action bar color is dark or light.
+	 *
+	 * @param app The {@link Context} used to set the theme.
+	 */
+	public void setOverflowStyle(Context app) {
+		app.setTheme(R.style.Apollo_Theme_Dark);
+	}
 
-    /**
-     * Sets the {@link MenuItem} icon for the favorites action.
-     *
-     * @param favorite The favorites action.
-     */
-    public void setFavoriteIcon(MenuItem favorite) {
-        Drawable favIcon = getDrawable(R.drawable.ic_action_favorite);
-        if (favIcon != null) {
-            if (MusicUtils.isFavorite()) {
-                favIcon.mutate().setColorFilter(themeRes.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
-            }
-            favorite.setIcon(favIcon);
-        }
-    }
+	/**
+	 * Sets the {@link MenuItem} icon for the favorites action.
+	 *
+	 * @param favorite The favorites action.
+	 */
+	public void setFavoriteIcon(MenuItem favorite) {
+		Drawable favIcon = getDrawable(R.drawable.ic_action_favorite);
+		if (favIcon != null) {
+			if (MusicUtils.isFavorite()) {
+				favIcon.mutate().setColorFilter(themeRes.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
+			}
+			favorite.setIcon(favIcon);
+		}
+	}
 
-    /**
-     * Builds a custom layout and applies it to the action bar, then themes the
-     * background, title, and subtitle.
-     *
-     * @param actionBar The {@link ActionBar} to use.
-     * @param titleID   The title for the action bar
-     */
-    public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
-        String title = getString(titleID);
-        // Set the custom layout
-        actionBar.setCustomView(mActionBarLayout);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
-        // Theme the action bar background
-        Drawable background = new ColorDrawable(getColor(R.color.action_bar));
-        actionBar.setBackgroundDrawable(background);
-        // Theme the title
-        setTitle(title);
-    }
+	/**
+	 * Builds a custom layout and applies it to the action bar, then themes the
+	 * background, title, and subtitle.
+	 *
+	 * @param actionBar The {@link ActionBar} to use.
+	 * @param titleID   The title for the action bar
+	 */
+	public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
+		String title = getString(titleID);
+		// Set the custom layout
+		actionBar.setCustomView(mActionBarLayout);
+		actionBar.setDisplayShowCustomEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
+		// Theme the action bar background
+		Drawable background = new ColorDrawable(getColor(R.color.action_bar));
+		actionBar.setBackgroundDrawable(background);
+		// Theme the title
+		setTitle(title);
+	}
 
-    /**
-     * Themes the action bar subtitle
-     */
-    public void setTitle(String title) {
-        if (!TextUtils.isEmpty(title)) {
-            // Get the title text view
-            TextView actionBarTitle = mActionBarLayout.findViewById(R.id.action_bar_title);
-            // Theme the title
-            int textColor = getColor(R.color.action_bar_title);
-            actionBarTitle.setTextColor(textColor);
-            // Set the title
-            actionBarTitle.setText(title);
-        }
-    }
+	/**
+	 * Themes the action bar subtitle
+	 */
+	public void setTitle(String title) {
+		if (!TextUtils.isEmpty(title)) {
+			// Get the title text view
+			TextView actionBarTitle = mActionBarLayout.findViewById(R.id.action_bar_title);
+			// Theme the title
+			int textColor = getColor(R.color.action_bar_title);
+			actionBarTitle.setTextColor(textColor);
+			// Set the title
+			actionBarTitle.setText(title);
+		}
+	}
 
-    /**
-     * Themes the action bar subtitle
-     *
-     * @param subtitle The subtitle to use
-     */
-    public void setSubtitle(String subtitle) {
-        if (!TextUtils.isEmpty(subtitle)) {
-            TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
-            actionBarSubtitle.setVisibility(View.VISIBLE);
-            // Theme the subtitle
-            int color = getColor(R.color.action_bar_subtitle);
-            actionBarSubtitle.setTextColor(color);
-            // Set the subtitle
-            actionBarSubtitle.setText(subtitle);
-        }
-    }
+	/**
+	 * Themes the action bar subtitle
+	 *
+	 * @param subtitle The subtitle to use
+	 */
+	public void setSubtitle(String subtitle) {
+		if (!TextUtils.isEmpty(subtitle)) {
+			TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
+			actionBarSubtitle.setVisibility(View.VISIBLE);
+			// Theme the subtitle
+			int color = getColor(R.color.action_bar_subtitle);
+			actionBarSubtitle.setTextColor(color);
+			// Set the subtitle
+			actionBarSubtitle.setText(subtitle);
+		}
+	}
 
-    /**
-     * Used to search the Play Store for "Apollo Themes".
-     *
-     * @param context The {@link Context} to use.
-     */
-    public void shopFor(Context context) {
-        Intent shopIntent = new Intent(Intent.ACTION_VIEW);
-        shopIntent.setData(Uri.parse(String.format(SEARCH_URI, Uri.encode(sApolloSearch))));
-        shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        try {
-            context.startActivity(shopIntent);
-        } catch (ActivityNotFoundException err) {
-            // ignore
-        }
-    }
-
-
-    private String getString(@StringRes int resId) {
-        try {
-            return themeRes.getString(resId);
-        } catch (Resources.NotFoundException err) {
-            return defRes.getString(resId);
-        }
-    }
+	/**
+	 * Used to search the Play Store for "Apollo Themes".
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public void shopFor(Context context) {
+		Intent shopIntent = new Intent(Intent.ACTION_VIEW);
+		shopIntent.setData(Uri.parse(String.format(SEARCH_URI, Uri.encode(sApolloSearch))));
+		shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		try {
+			context.startActivity(shopIntent);
+		} catch (ActivityNotFoundException err) {
+			// ignore
+		}
+	}
 
 
-    private Drawable getDrawable(@DrawableRes int resId) {
-        try {
-            return ResourcesCompat.getDrawable(themeRes, resId, null);
-        } catch (Resources.NotFoundException err) {
-            return ResourcesCompat.getDrawable(defRes, resId, null);
-        }
-    }
+	private String getString(@StringRes int resId) {
+		try {
+			return themeRes.getString(resId);
+		} catch (Resources.NotFoundException err) {
+			return defRes.getString(resId);
+		}
+	}
 
 
-    private int getColor(@ColorRes int resId) {
-        try {
-            return ResourcesCompat.getColor(themeRes, resId, null);
-        } catch (Resources.NotFoundException err) {
-            return ResourcesCompat.getColor(defRes, resId, null);
-        }
-    }
+	private Drawable getDrawable(@DrawableRes int resId) {
+		try {
+			return ResourcesCompat.getDrawable(themeRes, resId, null);
+		} catch (Resources.NotFoundException err) {
+			return ResourcesCompat.getDrawable(defRes, resId, null);
+		}
+	}
+
+
+	private int getColor(@ColorRes int resId) {
+		try {
+			return ResourcesCompat.getColor(themeRes, resId, null);
+		} catch (Resources.NotFoundException err) {
+			return ResourcesCompat.getColor(defRes, resId, null);
+		}
+	}
 }

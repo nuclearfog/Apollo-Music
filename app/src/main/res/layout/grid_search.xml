@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/grid_search_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/grid_search_container"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/grid_search_toolbar"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/toolbar_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<androidx.appcompat.widget.Toolbar
+		android:id="@+id/grid_search_toolbar"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/toolbar_height"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/grid_search_empty_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:layout_gravity="center"
-        android:text="@string/empty_search"
-        app:layout_constraintStart_toStartOf="@id/grid_search"
-        app:layout_constraintTop_toTopOf="@id/grid_search"
-        app:layout_constraintBottom_toBottomOf="@id/grid_search"
-        app:layout_constraintEnd_toEndOf="@id/grid_search" />
+	<TextView
+		android:id="@+id/grid_search_empty_info"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:visibility="invisible"
+		android:layout_gravity="center"
+		android:text="@string/empty_search"
+		app:layout_constraintStart_toStartOf="@id/grid_search"
+		app:layout_constraintTop_toTopOf="@id/grid_search"
+		app:layout_constraintBottom_toBottomOf="@id/grid_search"
+		app:layout_constraintEnd_toEndOf="@id/grid_search" />
 
-    <GridView
-        android:id="@+id/grid_search"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:cacheColorHint="@color/transparent"
-        android:drawSelectorOnTop="true"
-        android:fadingEdge="vertical"
-        android:fastScrollEnabled="true"
-        android:horizontalSpacing="@dimen/grid_item_spacing"
-        android:verticalSpacing="@dimen/grid_item_spacing"
-        android:layout_margin="@dimen/grid_search_grid_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grid_search_toolbar"
-        app:layout_constraintBottom_toTopOf="@id/grid_search_actionbar"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<GridView
+		android:id="@+id/grid_search"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:cacheColorHint="@color/transparent"
+		android:drawSelectorOnTop="true"
+		android:fadingEdge="vertical"
+		android:fastScrollEnabled="true"
+		android:horizontalSpacing="@dimen/grid_item_spacing"
+		android:verticalSpacing="@dimen/grid_item_spacing"
+		android:layout_margin="@dimen/grid_search_grid_margin"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/grid_search_toolbar"
+		app:layout_constraintBottom_toTopOf="@id/grid_search_actionbar"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
-        android:id="@+id/grid_search_shadow"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/shadow_height"
-        android:src="@drawable/top_shadow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grid_search_toolbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+	<ImageView
+		android:id="@+id/grid_search_shadow"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/shadow_height"
+		android:src="@drawable/top_shadow"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/grid_search_toolbar"
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:ignore="ContentDescription" />
 
-    <include
-        android:id="@+id/grid_search_actionbar"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/bottom_action_bar_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        layout="@layout/bottom_action_bar" />
+	<include
+		android:id="@+id/grid_search_actionbar"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/bottom_action_bar_height"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		layout="@layout/bottom_action_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

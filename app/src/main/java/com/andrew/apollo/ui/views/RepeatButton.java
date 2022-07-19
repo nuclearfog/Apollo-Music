@@ -40,84 +40,84 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class RepeatButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
-    /**
-     * Highlight color
-     */
-    private int color = Color.WHITE;
+	/**
+	 * Highlight color
+	 */
+	private int color = Color.WHITE;
 
-    /**
-     * @param context The {@link Context} to use
-     * @param attrs   The attributes of the XML tag that is inflating the view.
-     */
-    public RepeatButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        // Set the selector
-        setBackground(new HoloSelector(context));
-        // Control playback (cycle repeat modes)
-        setOnClickListener(this);
-        // Show the cheat sheet
-        setOnLongClickListener(this);
-    }
+	/**
+	 * @param context The {@link Context} to use
+	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 */
+	public RepeatButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// Set the selector
+		setBackground(new HoloSelector(context));
+		// Control playback (cycle repeat modes)
+		setOnClickListener(this);
+		// Show the cheat sheet
+		setOnLongClickListener(this);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClick(View v) {
-        MusicUtils.cycleRepeat();
-        updateRepeatState();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onClick(View v) {
+		MusicUtils.cycleRepeat();
+		updateRepeatState();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onLongClick(@NonNull View view) {
-        if (TextUtils.isEmpty(view.getContentDescription())) {
-            return false;
-        } else {
-            ApolloUtils.showCheatSheet(view);
-            return true;
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onLongClick(@NonNull View view) {
+		if (TextUtils.isEmpty(view.getContentDescription())) {
+			return false;
+		} else {
+			ApolloUtils.showCheatSheet(view);
+			return true;
+		}
+	}
 
-    /**
-     * sets the highlight color
-     *
-     * @param color ARGB color value
-     */
-    public void setColor(int color) {
-        this.color = color;
-    }
+	/**
+	 * sets the highlight color
+	 *
+	 * @param color ARGB color value
+	 */
+	public void setColor(int color) {
+		this.color = color;
+	}
 
-    /**
-     * Sets the correct drawable for the repeat state.
-     */
-    public void updateRepeatState() {
-        String info;
-        Drawable button;
-        switch (MusicUtils.getRepeatMode()) {
-            case MusicPlaybackService.REPEAT_ALL:
-                info = getResources().getString(R.string.accessibility_repeat_all);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
-                if (button != null)
-                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
-                break;
+	/**
+	 * Sets the correct drawable for the repeat state.
+	 */
+	public void updateRepeatState() {
+		String info;
+		Drawable button;
+		switch (MusicUtils.getRepeatMode()) {
+			case MusicPlaybackService.REPEAT_ALL:
+				info = getResources().getString(R.string.accessibility_repeat_all);
+				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
+				if (button != null)
+					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				break;
 
-            case MusicPlaybackService.REPEAT_CURRENT:
-                info = getResources().getString(R.string.accessibility_repeat_one);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
-                if (button != null)
-                    button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
-                break;
+			case MusicPlaybackService.REPEAT_CURRENT:
+				info = getResources().getString(R.string.accessibility_repeat_one);
+				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
+				if (button != null)
+					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				break;
 
-            default:
-            case MusicPlaybackService.REPEAT_NONE:
-                info = getResources().getString(R.string.accessibility_repeat);
-                button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
-                break;
-        }
-        setContentDescription(info);
-        setImageDrawable(button);
-    }
+			default:
+			case MusicPlaybackService.REPEAT_NONE:
+				info = getResources().getString(R.string.accessibility_repeat);
+				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
+				break;
+		}
+		setContentDescription(info);
+		setImageDrawable(button);
+	}
 }

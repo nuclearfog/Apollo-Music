@@ -16,15 +16,15 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- Main TitlePageIndicator titles -->
-    <string-array name="page_titles" translatable="false">
-        <item>@string/page_playlists</item>
-        <item>@string/page_recent</item>
-        <item>@string/page_artists</item>
-        <item>@string/page_albums</item>
-        <item>@string/page_songs</item>
-        <item>@string/page_genres</item>
-        <item>@string/page_folders</item>
-    </string-array>
+	<!-- Main TitlePageIndicator titles -->
+	<string-array name="page_titles" translatable="false">
+		<item>@string/page_playlists</item>
+		<item>@string/page_recent</item>
+		<item>@string/page_artists</item>
+		<item>@string/page_albums</item>
+		<item>@string/page_songs</item>
+		<item>@string/page_genres</item>
+		<item>@string/page_folders</item>
+	</string-array>
 
 </resources>

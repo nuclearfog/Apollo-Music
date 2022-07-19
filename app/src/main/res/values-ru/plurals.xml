@@ -17,34 +17,34 @@
 -->
 <!--todo fix translation-->
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingQuantity">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> альбом</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> альбома</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> альбомов</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> трек</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> трека</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> треков</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек добавлен в плейлист</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека добавлено в плейлист</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков добавлено в плейлист</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек удалён из плейлиста</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека удалено из плейлиста</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков удалено из плейлиста</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек добавлен в очередь</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека добавлено в очередь</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков добавлено в очередь</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete">%d</xliff:g> трек удалён</item>
-        <item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> трека удалено</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> треков удалено</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> альбом</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> альбома</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> альбомов</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> трек</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> трека</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> треков</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек добавлен в плейлист</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека добавлено в плейлист</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков добавлено в плейлист</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек удалён из плейлиста</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека удалено из плейлиста</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков удалено из плейлиста</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> трек добавлен в очередь</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> трека добавлено в очередь</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> треков добавлено в очередь</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete">%d</xliff:g> трек удалён</item>
+		<item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> трека удалено</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> треков удалено</item>
+	</plurals>
 </resources>

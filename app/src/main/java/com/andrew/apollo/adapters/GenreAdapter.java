@@ -33,71 +33,71 @@ import com.andrew.apollo.ui.fragments.GenreFragment;
  */
 public class GenreAdapter extends ArrayAdapter<Genre> {
 
-    /**
-     * item layout reource
-     */
-    private static final int LAYOUT = R.layout.list_item_simple;
+	/**
+	 * item layout reource
+	 */
+	private static final int LAYOUT = R.layout.list_item_simple;
 
-    /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
+	/**
+	 * fragment layout inflater
+	 */
+	private LayoutInflater inflater;
 
-    /**
-     * Constructor of <code>GenreAdapter</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public GenreAdapter(Context context) {
-        super(context, LAYOUT);
-        inflater = LayoutInflater.from(context);
-    }
+	/**
+	 * Constructor of <code>GenreAdapter</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public GenreAdapter(Context context) {
+		super(context, LAYOUT);
+		inflater = LayoutInflater.from(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Recycle ViewHolder's items
-        MusicHolder holder;
-        if (convertView == null) {
-            convertView = inflater.inflate(LAYOUT, parent, false);
-            holder = new MusicHolder(convertView);
-            // Hide the second and third lines of text
-            holder.mLineTwo.setVisibility(View.GONE);
-            holder.mLineThree.setVisibility(View.GONE);
-            // Make line one slightly larger
-            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        // Retrieve the data holder
-        Genre genre = getItem(position);
-        if (genre != null) {
-            // Set each genre name (line one)
-            holder.mLineOne.setText(genre.getName());
-        }
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		// Recycle ViewHolder's items
+		MusicHolder holder;
+		if (convertView == null) {
+			convertView = inflater.inflate(LAYOUT, parent, false);
+			holder = new MusicHolder(convertView);
+			// Hide the second and third lines of text
+			holder.mLineTwo.setVisibility(View.GONE);
+			holder.mLineThree.setVisibility(View.GONE);
+			// Make line one slightly larger
+			holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.text_size_large));
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		// Retrieve the data holder
+		Genre genre = getItem(position);
+		if (genre != null) {
+			// Set each genre name (line one)
+			holder.mLineOne.setText(genre.getName());
+		}
+		return convertView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getItemId(int position) {
-        Genre genre = getItem(position);
-        if (genre != null)
-            return genre.getId();
-        return super.getItemId(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getItemId(int position) {
+		Genre genre = getItem(position);
+		if (genre != null)
+			return genre.getId();
+		return super.getItemId(position);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 }

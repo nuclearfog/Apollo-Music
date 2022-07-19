@@ -24,37 +24,37 @@ import com.andrew.apollo.adapters.MusicHolder;
  */
 public class RecycleHolder implements RecyclerListener {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onMovedToScrapHeap(View view) {
-        MusicHolder holder;
-        if (view.getTag() instanceof MusicHolder) {
-            holder = (MusicHolder) view.getTag();
-        } else {
-            holder = new MusicHolder(view);
-            view.setTag(holder);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onMovedToScrapHeap(View view) {
+		MusicHolder holder;
+		if (view.getTag() instanceof MusicHolder) {
+			holder = (MusicHolder) view.getTag();
+		} else {
+			holder = new MusicHolder(view);
+			view.setTag(holder);
+		}
 
-        // set default artwork
-        if (holder.mImage != null) {
-            holder.mImage.setImageResource(R.drawable.default_artwork);
-        }
+		// set default artwork
+		if (holder.mImage != null) {
+			holder.mImage.setImageResource(R.drawable.default_artwork);
+		}
 
-        // Release mLineOne's reference
-        if (holder.mLineOne != null) {
-            holder.mLineOne.setText("");
-        }
+		// Release mLineOne's reference
+		if (holder.mLineOne != null) {
+			holder.mLineOne.setText("");
+		}
 
-        // Release mLineTwo's reference
-        if (holder.mLineTwo != null) {
-            holder.mLineTwo.setText("");
-        }
+		// Release mLineTwo's reference
+		if (holder.mLineTwo != null) {
+			holder.mLineTwo.setText("");
+		}
 
-        // Release mLineThree's reference
-        if (holder.mLineThree != null) {
-            holder.mLineThree.setText("");
-        }
-    }
+		// Release mLineThree's reference
+		if (holder.mLineThree != null) {
+			holder.mLineThree.setText("");
+		}
+	}
 }

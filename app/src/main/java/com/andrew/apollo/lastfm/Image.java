@@ -31,18 +31,18 @@ package com.andrew.apollo.lastfm;
  */
 public class Image extends ImageHolder {
 
-    final static ItemFactory<Image> FACTORY = new ImageFactory();
+	final static ItemFactory<Image> FACTORY = new ImageFactory();
 
-    private Image() {
-    }
+	private Image() {
+	}
 
-    private static class ImageFactory implements ItemFactory<Image> {
+	private static class ImageFactory implements ItemFactory<Image> {
 
-        @Override
-        public Image createItemFromElement(DomElement element) {
-            Image i = new Image();
-            loadImages(i, element);
-            return i;
-        }
-    }
+		@Override
+		public Image createItemFromElement(DomElement element) {
+			Image i = new Image();
+			loadImages(i, element);
+			return i;
+		}
+	}
 }

@@ -18,94 +18,94 @@ package com.andrew.apollo.model;
  */
 public class Album extends Music {
 
-    /**
-     * The album artist
-     */
-    private String mArtistName = "";
+	/**
+	 * The album artist
+	 */
+	private String mArtistName = "";
 
-    /**
-     * The number of songs in the album
-     */
-    private int mSongNumber;
+	/**
+	 * The number of songs in the album
+	 */
+	private int mSongNumber;
 
-    /**
-     * The year the album was released
-     */
-    private String mYear = "";
+	/**
+	 * The year the album was released
+	 */
+	private String mYear = "";
 
-    /**
-     * Constructor of <code>Album</code>
-     *
-     * @param albumId    The Id of the album
-     * @param albumName  The name of the album
-     * @param artistName The album artist
-     * @param songNumber The number of songs in the album
-     * @param albumYear  The year the album was released
-     */
-    public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
-        super(albumId, albumName);
-        if (albumYear != null)
-            mYear = albumYear;
-        if (artistName != null)
-            mArtistName = artistName;
-        mSongNumber = songNumber;
-    }
+	/**
+	 * Constructor of <code>Album</code>
+	 *
+	 * @param albumId    The Id of the album
+	 * @param albumName  The name of the album
+	 * @param artistName The album artist
+	 * @param songNumber The number of songs in the album
+	 * @param albumYear  The year the album was released
+	 */
+	public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
+		super(albumId, albumName);
+		if (albumYear != null)
+			mYear = albumYear;
+		if (artistName != null)
+			mArtistName = artistName;
+		mSongNumber = songNumber;
+	}
 
-    /**
-     * get artist name of the album
-     *
-     * @return name of the artist
-     */
-    public String getArtist() {
-        return mArtistName;
-    }
+	/**
+	 * get artist name of the album
+	 *
+	 * @return name of the artist
+	 */
+	public String getArtist() {
+		return mArtistName;
+	}
 
-    /**
-     * get number of tracks in this album
-     *
-     * @return number of tracks
-     */
-    public int getTrackCount() {
-        return mSongNumber;
-    }
+	/**
+	 * get number of tracks in this album
+	 *
+	 * @return number of tracks
+	 */
+	public int getTrackCount() {
+		return mSongNumber;
+	}
 
-    /**
-     * get release date
-     *
-     * @return release date string or empty string if not defined
-     */
-    public String getRelease() {
-        return mYear;
-    }
+	/**
+	 * get release date
+	 *
+	 * @return release date string or empty string if not defined
+	 */
+	public String getRelease() {
+		return mYear;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + (int) id;
-        result = prime * result + name.hashCode();
-        result = prime * result + mArtistName.hashCode();
-        result = prime * result + mSongNumber;
-        result = prime * result + mYear.hashCode();
-        return result;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode() {
+		int prime = 31;
+		int result = 1;
+		result = prime * result + (int) id;
+		result = prime * result + name.hashCode();
+		result = prime * result + mArtistName.hashCode();
+		result = prime * result + mSongNumber;
+		result = prime * result + mYear.hashCode();
+		return result;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj instanceof Album) {
-            Album album = (Album) obj;
-            return id == album.id && mSongNumber == album.mSongNumber &&
-                    name.equals(album.name) && mArtistName.equals(album.mArtistName) && mYear.equals(album.mYear);
-        }
-        return false;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj instanceof Album) {
+			Album album = (Album) obj;
+			return id == album.id && mSongNumber == album.mSongNumber &&
+					name.equals(album.name) && mArtistName.equals(album.mArtistName) && mYear.equals(album.mYear);
+		}
+		return false;
+	}
 }

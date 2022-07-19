@@ -14,78 +14,78 @@
   limitations under the License.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/pager_background">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@drawable/pager_background">
 
-    <com.andrew.apollo.ui.views.theme.Colorstrip
-        android:id="@+id/colorstrip"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/colorstrip_height"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<com.andrew.apollo.ui.views.theme.Colorstrip
+		android:id="@+id/colorstrip"
+		android:layout_width="0dp"
+		android:layout_height="@dimen/colorstrip_height"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/audio_player_pager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
-        app:layout_constraintTop_toBottomOf="@id/colorstrip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/player_base_barrier" />
+	<androidx.viewpager.widget.ViewPager
+		android:id="@+id/audio_player_pager"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:visibility="invisible"
+		app:layout_constraintStart_toStartOf="@id/audio_player_album_art"
+		app:layout_constraintTop_toBottomOf="@id/colorstrip"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/player_base_barrier" />
 
-    <ImageView
-        android:id="@+id/audio_player_album_art"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/accessibility_album_art"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/colorstrip"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/player_base_barrier"
-        app:layout_constraintDimensionRatio="1.0"
-        tools:ignore="ImageContrastCheck" />
+	<ImageView
+		android:id="@+id/audio_player_album_art"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:contentDescription="@string/accessibility_album_art"
+		android:scaleType="centerCrop"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/colorstrip"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/player_base_barrier"
+		app:layout_constraintDimensionRatio="1.0"
+		tools:ignore="ImageContrastCheck" />
 
-    <ImageView
-        android:id="@+id/audio_player_album_border"
-        android:layout_width="@dimen/shadow_height"
-        android:layout_height="0dp"
-        android:src="@drawable/right_shadow"
-        app:layout_constraintTop_toTopOf="@id/audio_player_album_art"
-        app:layout_constraintBottom_toBottomOf="@id/audio_player_album_art"
-        app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
-        tools:ignore="ContentDescription,ImageContrastCheck" />
+	<ImageView
+		android:id="@+id/audio_player_album_border"
+		android:layout_width="@dimen/shadow_height"
+		android:layout_height="0dp"
+		android:src="@drawable/right_shadow"
+		app:layout_constraintTop_toTopOf="@id/audio_player_album_art"
+		app:layout_constraintBottom_toBottomOf="@id/audio_player_album_art"
+		app:layout_constraintEnd_toEndOf="@id/audio_player_album_art"
+		tools:ignore="ContentDescription,ImageContrastCheck" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/player_base_barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="left"
-        app:constraint_referenced_ids="audio_player_informations,audio_player_controls" />
+	<androidx.constraintlayout.widget.Barrier
+		android:id="@+id/player_base_barrier"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:barrierDirection="left"
+		app:constraint_referenced_ids="audio_player_informations,audio_player_controls" />
 
-    <include
-        android:id="@+id/audio_player_informations"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        app:layout_constraintStart_toEndOf="@id/player_base_barrier"
-        app:layout_constraintTop_toTopOf="@id/colorstrip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_min="@dimen/audio_player_controls_informations_min_width"
-        layout="@layout/audio_player_informations" />
+	<include
+		android:id="@+id/audio_player_informations"
+		android:layout_height="wrap_content"
+		android:layout_width="0dp"
+		app:layout_constraintStart_toEndOf="@id/player_base_barrier"
+		app:layout_constraintTop_toTopOf="@id/colorstrip"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintWidth_min="@dimen/audio_player_controls_informations_min_width"
+		layout="@layout/audio_player_informations" />
 
-    <include
-        android:id="@+id/audio_player_controls"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/player_base_barrier"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_min="@dimen/audio_player_controls_informations_min_width"
-        layout="@layout/audio_player_controls" />
+	<include
+		android:id="@+id/audio_player_controls"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		app:layout_constraintStart_toEndOf="@id/player_base_barrier"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintWidth_min="@dimen/audio_player_controls_informations_min_width"
+		layout="@layout/audio_player_controls" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

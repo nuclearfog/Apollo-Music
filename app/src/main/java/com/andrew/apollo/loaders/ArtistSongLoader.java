@@ -27,52 +27,52 @@ import java.util.List;
  */
 public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
-    /**
-     * The Id of the artist the songs belong to.
-     */
-    private Long mArtistID;
+	/**
+	 * The Id of the artist the songs belong to.
+	 */
+	private Long mArtistID;
 
-    /**
-     * Constructor of <code>ArtistSongLoader</code>
-     *
-     * @param context  The {@link Context} to use.
-     * @param artistId The Id of the artist the songs belong to.
-     */
-    public ArtistSongLoader(Context context, Long artistId) {
-        super(context);
-        mArtistID = artistId;
-    }
+	/**
+	 * Constructor of <code>ArtistSongLoader</code>
+	 *
+	 * @param context  The {@link Context} to use.
+	 * @param artistId The Id of the artist the songs belong to.
+	 */
+	public ArtistSongLoader(Context context, Long artistId) {
+		super(context);
+		mArtistID = artistId;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Song> loadInBackground() {
-        List<Song> result = new LinkedList<>();
-        // Create the Cursor
-        Cursor mCursor = CursorFactory.makeArtistSongCursor(getContext(), mArtistID);
-        // Gather the data
-        if (mCursor != null) {
-            if (mCursor.moveToFirst()) {
-                do {
-                    // Copy the song Id
-                    long id = mCursor.getLong(0);
-                    // Copy the song name
-                    String songName = mCursor.getString(1);
-                    // Copy the artist name
-                    String artist = mCursor.getString(2);
-                    // Copy the album name
-                    String album = mCursor.getString(3);
-                    // Copy the duration
-                    long duration = mCursor.getLong(4);
-                    // Create a new song
-                    Song song = new Song(id, songName, artist, album, duration);
-                    // Add everything up
-                    result.add(song);
-                } while (mCursor.moveToNext());
-            }
-            mCursor.close();
-        }
-        return result;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Song> loadInBackground() {
+		List<Song> result = new LinkedList<>();
+		// Create the Cursor
+		Cursor mCursor = CursorFactory.makeArtistSongCursor(getContext(), mArtistID);
+		// Gather the data
+		if (mCursor != null) {
+			if (mCursor.moveToFirst()) {
+				do {
+					// Copy the song Id
+					long id = mCursor.getLong(0);
+					// Copy the song name
+					String songName = mCursor.getString(1);
+					// Copy the artist name
+					String artist = mCursor.getString(2);
+					// Copy the album name
+					String album = mCursor.getString(3);
+					// Copy the duration
+					long duration = mCursor.getLong(4);
+					// Create a new song
+					Song song = new Song(id, songName, artist, album, duration);
+					// Add everything up
+					result.add(song);
+				} while (mCursor.moveToNext());
+			}
+			mCursor.close();
+		}
+		return result;
+	}
 }

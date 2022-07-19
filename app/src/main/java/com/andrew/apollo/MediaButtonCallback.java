@@ -12,44 +12,44 @@ import android.support.v4.media.session.MediaSessionCompat;
  */
 public class MediaButtonCallback extends MediaSessionCompat.Callback {
 
-    private MusicPlaybackService service;
+	private MusicPlaybackService service;
 
-    public MediaButtonCallback(MusicPlaybackService service) {
-        this.service = service;
-    }
+	public MediaButtonCallback(MusicPlaybackService service) {
+		this.service = service;
+	}
 
-    @Override
-    public void onPlay() {
-        service.play();
-    }
+	@Override
+	public void onPlay() {
+		service.play();
+	}
 
-    @Override
-    public void onPause() {
-        service.pause();
-    }
+	@Override
+	public void onPause() {
+		service.pause();
+	}
 
-    @Override
-    public void onStop() {
-        service.stop();
-    }
+	@Override
+	public void onStop() {
+		service.stop();
+	}
 
-    @Override
-    public void onSkipToNext() {
-        service.gotoNext(true);
-    }
+	@Override
+	public void onSkipToNext() {
+		service.gotoNext(true);
+	}
 
-    @Override
-    public void onSkipToPrevious() {
-        service.goToPrev();
-    }
+	@Override
+	public void onSkipToPrevious() {
+		service.goToPrev();
+	}
 
-    @Override
-    public void onSeekTo(long pos) {
-        service.seek(pos);
-    }
+	@Override
+	public void onSeekTo(long pos) {
+		service.seek(pos);
+	}
 
-    @Override
-    public void onPlayFromUri(Uri uri, Bundle extras) {
-        service.openFile(uri);
-    }
+	@Override
+	public void onPlayFromUri(Uri uri, Bundle extras) {
+		service.openFile(uri);
+	}
 }

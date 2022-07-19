@@ -35,178 +35,178 @@ import com.andrew.apollo.utils.CursorFactory;
  */
 public class RecentWidgetService extends RemoteViewsService {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new WidgetRemoteViewsFactory(getApplicationContext());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RemoteViewsFactory onGetViewFactory(Intent intent) {
+		return new WidgetRemoteViewsFactory(getApplicationContext());
+	}
 
-    /**
-     * This is the factory that will provide data to the collection widget.
-     */
-    private static final class WidgetRemoteViewsFactory implements
-            RemoteViewsService.RemoteViewsFactory {
-        /**
-         * Number of views (ImageView and TextView)
-         */
-        private static final int VIEW_TYPE_COUNT = 1;
+	/**
+	 * This is the factory that will provide data to the collection widget.
+	 */
+	private static final class WidgetRemoteViewsFactory implements
+			RemoteViewsService.RemoteViewsFactory {
+		/**
+		 * Number of views (ImageView and TextView)
+		 */
+		private static final int VIEW_TYPE_COUNT = 1;
 
-        /**
-         * Image cache
-         */
-        private ImageFetcher mFetcher;
+		/**
+		 * Image cache
+		 */
+		private ImageFetcher mFetcher;
 
-        /**
-         * Cursor to use
-         */
-        private Cursor mCursor;
+		/**
+		 * Cursor to use
+		 */
+		private Cursor mCursor;
 
-        /**
-         * application context
-         */
-        private Context mContext;
+		/**
+		 * application context
+		 */
+		private Context mContext;
 
-        /**
-         * Constructor of <code>WidgetRemoteViewsFactory</code>
-         *
-         * @param context The {@link Context} to use.
-         */
-        public WidgetRemoteViewsFactory(Context context) {
-            // Initialize the image cache
-            mFetcher = ImageFetcher.getInstance(context);
-            mFetcher.setImageCache(ImageCache.getInstance(context));
-            this.mContext = context.getApplicationContext();
-        }
+		/**
+		 * Constructor of <code>WidgetRemoteViewsFactory</code>
+		 *
+		 * @param context The {@link Context} to use.
+		 */
+		public WidgetRemoteViewsFactory(Context context) {
+			// Initialize the image cache
+			mFetcher = ImageFetcher.getInstance(context);
+			mFetcher.setImageCache(ImageCache.getInstance(context));
+			this.mContext = context.getApplicationContext();
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int getCount() {
-            // Check for errors
-            if (mCursor == null || mCursor.isClosed() || mCursor.getCount() <= 0) {
-                return 0;
-            }
-            return mCursor.getCount();
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public int getCount() {
+			// Check for errors
+			if (mCursor == null || mCursor.isClosed() || mCursor.getCount() <= 0) {
+				return 0;
+			}
+			return mCursor.getCount();
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public RemoteViews getViewAt(int position) {
-            mCursor.moveToPosition(position);
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public RemoteViews getViewAt(int position) {
+			mCursor.moveToPosition(position);
 
-            // Create the remote views
-            RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
+			// Create the remote views
+			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
 
-            // Copy the album id
-            long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
+			// Copy the album id
+			long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
 
-            // Copy the album name
-            String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
+			// Copy the album name
+			String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
 
-            // Copy the artist name
-            String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
+			// Copy the artist name
+			String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
 
-            // Set the album names
-            mViews.setTextViewText(R.id.app_widget_recents_line_one, albumName);
-            // Set the artist names
-            mViews.setTextViewText(R.id.app_widget_recents_line_two, artist);
-            // Set the album art
-            Bitmap bitmap = mFetcher.getCachedArtwork(albumName, artist, id);
-            if (bitmap != null) {
-                mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
-            } else {
-                mViews.setImageViewResource(R.id.app_widget_recents_base_image, R.drawable.default_artwork);
-            }
-            // Open the profile of the touched album
-            Intent profileIntent = new Intent();
-            Bundle profileExtras = new Bundle();
-            profileExtras.putLong(Config.ID, id);
-            profileExtras.putString(Config.NAME, albumName);
-            profileExtras.putString(Config.ARTIST_NAME, artist);
-            profileExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
-            profileIntent.putExtras(profileExtras);
-            mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
+			// Set the album names
+			mViews.setTextViewText(R.id.app_widget_recents_line_one, albumName);
+			// Set the artist names
+			mViews.setTextViewText(R.id.app_widget_recents_line_two, artist);
+			// Set the album art
+			Bitmap bitmap = mFetcher.getCachedArtwork(albumName, artist, id);
+			if (bitmap != null) {
+				mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
+			} else {
+				mViews.setImageViewResource(R.id.app_widget_recents_base_image, R.drawable.default_artwork);
+			}
+			// Open the profile of the touched album
+			Intent profileIntent = new Intent();
+			Bundle profileExtras = new Bundle();
+			profileExtras.putLong(Config.ID, id);
+			profileExtras.putString(Config.NAME, albumName);
+			profileExtras.putString(Config.ARTIST_NAME, artist);
+			profileExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
+			profileIntent.putExtras(profileExtras);
+			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
 
-            // Play the album when the artwork is touched
-            Intent playAlbum = new Intent();
-            Bundle playAlbumExtras = new Bundle();
-            playAlbumExtras.putLong(Config.ID, id);
-            playAlbumExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
-            playAlbum.putExtras(playAlbumExtras);
-            mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbum);
-            return mViews;
-        }
+			// Play the album when the artwork is touched
+			Intent playAlbum = new Intent();
+			Bundle playAlbumExtras = new Bundle();
+			playAlbumExtras.putLong(Config.ID, id);
+			playAlbumExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
+			playAlbum.putExtras(playAlbumExtras);
+			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbum);
+			return mViews;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int getViewTypeCount() {
-            return VIEW_TYPE_COUNT;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public int getViewTypeCount() {
+			return VIEW_TYPE_COUNT;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onDataSetChanged() {
-            if (mCursor != null && !mCursor.isClosed()) {
-                mCursor.close();
-            }
-            mCursor = CursorFactory.makeRecentCursor(mContext);
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onDataSetChanged() {
+			if (mCursor != null && !mCursor.isClosed()) {
+				mCursor.close();
+			}
+			mCursor = CursorFactory.makeRecentCursor(mContext);
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onDestroy() {
-            closeCursor();
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onDestroy() {
+			closeCursor();
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public RemoteViews getLoadingView() {
-            // Nothing to do
-            return null;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public RemoteViews getLoadingView() {
+			// Nothing to do
+			return null;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onCreate() {
-            // Nothing to do
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void onCreate() {
+			// Nothing to do
+		}
 
-        private void closeCursor() {
-            if (mCursor != null && !mCursor.isClosed()) {
-                mCursor.close();
-                mCursor = null;
-            }
-        }
-    }
+		private void closeCursor() {
+			if (mCursor != null && !mCursor.isClosed()) {
+				mCursor.close();
+				mCursor = null;
+			}
+		}
+	}
 }

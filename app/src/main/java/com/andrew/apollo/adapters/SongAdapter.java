@@ -37,158 +37,158 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class SongAdapter extends ArrayAdapter<Song> {
 
-    /**
-     * item layout
-     */
-    private static final int LAYOUT = R.layout.list_item_simple;
+	/**
+	 * item layout
+	 */
+	private static final int LAYOUT = R.layout.list_item_simple;
 
-    /**
-     * transparency mask for a RGB color
-     */
-    private static final int TRANSPARENCY_MASK = 0x40FFFFFF;
+	/**
+	 * transparency mask for a RGB color
+	 */
+	private static final int TRANSPARENCY_MASK = 0x40FFFFFF;
 
-    /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
+	/**
+	 * fragment layout inflater
+	 */
+	private LayoutInflater inflater;
 
-    /**
-     * current item position of the current track
-     */
-    private int nowplayingPos = -1;
+	/**
+	 * current item position of the current track
+	 */
+	private int nowplayingPos = -1;
 
-    /**
-     * background color of the selected track
-     */
-    private int selectedColor;
+	/**
+	 * background color of the selected track
+	 */
+	private int selectedColor;
 
-    /**
-     * flag to enable drag and drop icon
-     */
-    private boolean enableDnD;
+	/**
+	 * flag to enable drag and drop icon
+	 */
+	private boolean enableDnD;
 
-    /**
-     * Constructor of <code>SongAdapter</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public SongAdapter(Context context, boolean enableDrag) {
-        super(context, LAYOUT);
-        PreferenceUtils prefs = PreferenceUtils.getInstance(context);
-        selectedColor = prefs.getDefaultThemeColor() & TRANSPARENCY_MASK;
-        inflater = LayoutInflater.from(context);
-        enableDnD = enableDrag;
-    }
+	/**
+	 * Constructor of <code>SongAdapter</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public SongAdapter(Context context, boolean enableDrag) {
+		super(context, LAYOUT);
+		PreferenceUtils prefs = PreferenceUtils.getInstance(context);
+		selectedColor = prefs.getDefaultThemeColor() & TRANSPARENCY_MASK;
+		inflater = LayoutInflater.from(context);
+		enableDnD = enableDrag;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Recycle ViewHolder's items
-        MusicHolder holder;
-        if (convertView == null) {
-            convertView = inflater.inflate(LAYOUT, parent, false);
-            if (enableDnD)
-                convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
-            holder = new MusicHolder(convertView);
-            // Hide the third line of text
-            holder.mLineThree.setVisibility(View.GONE);
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        // set background color
-        if (position == nowplayingPos) {
-            convertView.setBackgroundColor(selectedColor);
-        } else {
-            convertView.setBackgroundColor(0);
-        }
-        // Retrieve the data holder
-        Song song = getItem(position);
-        // Set each song name (line one)
-        holder.mLineOne.setText(song.getName());
-        // Set the song duration (line one, right)
-        holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
-        // Set the album name (line two)
-        holder.mLineTwo.setText(song.getArtist());
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		// Recycle ViewHolder's items
+		MusicHolder holder;
+		if (convertView == null) {
+			convertView = inflater.inflate(LAYOUT, parent, false);
+			if (enableDnD)
+				convertView.findViewById(R.id.edit_track_list_item_handle).setVisibility(View.VISIBLE);
+			holder = new MusicHolder(convertView);
+			// Hide the third line of text
+			holder.mLineThree.setVisibility(View.GONE);
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		// set background color
+		if (position == nowplayingPos) {
+			convertView.setBackgroundColor(selectedColor);
+		} else {
+			convertView.setBackgroundColor(0);
+		}
+		// Retrieve the data holder
+		Song song = getItem(position);
+		// Set each song name (line one)
+		holder.mLineOne.setText(song.getName());
+		// Set the song duration (line one, right)
+		holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+		// Set the album name (line two)
+		holder.mLineTwo.setText(song.getArtist());
+		return convertView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getItemId(int position) {
-        Song song = getItem(position);
-        if (song != null)
-            return song.getId();
-        return super.getItemId(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getItemId(int position) {
+		Song song = getItem(position);
+		if (song != null)
+			return song.getId();
+		return super.getItemId(position);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void remove(@Nullable Song song) {
-        int pos = getPosition(song);
-        if (pos < nowplayingPos)
-            nowplayingPos--;
-        super.remove(song);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void remove(@Nullable Song song) {
+		int pos = getPosition(song);
+		if (pos < nowplayingPos)
+			nowplayingPos--;
+		super.remove(song);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void insert(Song song, int to) {
-        if (to <= nowplayingPos)
-            nowplayingPos++;
-        super.insert(song, to);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void insert(Song song, int to) {
+		if (to <= nowplayingPos)
+			nowplayingPos++;
+		super.insert(song, to);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 
-    /**
-     * moves the track item to another position
-     *
-     * @param from index where the track is located
-     * @param to   index where the track should be moved
-     */
-    @MainThread
-    public void moveTrack(int from, int to) {
-        if (from != to) {
-            if (from != nowplayingPos) {
-                // move tracks around selected track
-                Song mSong = getItem(from);
-                remove(mSong);
-                insert(mSong, to);
-            } else {
-                // move selected track to new position
-                Song mSong = getItem(from);
-                remove(mSong);
-                insert(mSong, to);
-                nowplayingPos = to;
-            }
-        } else {
-            // nothing changed, revert layout changes
-            notifyDataSetChanged();
-        }
-    }
+	/**
+	 * moves the track item to another position
+	 *
+	 * @param from index where the track is located
+	 * @param to   index where the track should be moved
+	 */
+	@MainThread
+	public void moveTrack(int from, int to) {
+		if (from != to) {
+			if (from != nowplayingPos) {
+				// move tracks around selected track
+				Song mSong = getItem(from);
+				remove(mSong);
+				insert(mSong, to);
+			} else {
+				// move selected track to new position
+				Song mSong = getItem(from);
+				remove(mSong);
+				insert(mSong, to);
+				nowplayingPos = to;
+			}
+		} else {
+			// nothing changed, revert layout changes
+			notifyDataSetChanged();
+		}
+	}
 
-    /**
-     * set current track ID
-     *
-     * @param pos position of the current track
-     */
-    public void setCurrentTrackPos(int pos) {
-        nowplayingPos = pos;
-    }
+	/**
+	 * set current track ID
+	 *
+	 * @param pos position of the current track
+	 */
+	public void setCurrentTrackPos(int pos) {
+		nowplayingPos = pos;
+	}
 }

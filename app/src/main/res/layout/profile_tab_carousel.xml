@@ -14,44 +14,44 @@
   limitations under the License.
 -->
 <com.andrew.apollo.ui.views.ProfileTabCarousel xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:scrollbars="none">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:scrollbars="none">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/profile_tab_carousel_tab_one"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/profile_tab_carousel_shadow"
-            app:layout_constraintEnd_toStartOf="@id/profile_tab_carousel_tab_two"
-            layout="@layout/profile_tab" />
+		<include
+			android:id="@+id/profile_tab_carousel_tab_one"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@id/profile_tab_carousel_shadow"
+			app:layout_constraintEnd_toStartOf="@id/profile_tab_carousel_tab_two"
+			layout="@layout/profile_tab" />
 
-        <include
-            android:id="@+id/profile_tab_carousel_tab_two"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toEndOf="@id/profile_tab_carousel_tab_one"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/profile_tab_carousel_shadow"
-            app:layout_constraintEnd_toEndOf="parent"
-            layout="@layout/profile_tab" />
+		<include
+			android:id="@+id/profile_tab_carousel_tab_two"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			app:layout_constraintStart_toEndOf="@id/profile_tab_carousel_tab_one"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@id/profile_tab_carousel_shadow"
+			app:layout_constraintEnd_toEndOf="parent"
+			layout="@layout/profile_tab" />
 
-        <View
-            android:id="@+id/profile_tab_carousel_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/profile_photo_shadow_height"
-            android:background="?android:attr/windowContentOverlay"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+		<View
+			android:id="@+id/profile_tab_carousel_shadow"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/profile_photo_shadow_height"
+			android:background="?android:attr/windowContentOverlay"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.andrew.apollo.ui.views.ProfileTabCarousel>

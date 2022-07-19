@@ -38,121 +38,121 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public abstract class BasePlaylistDialog extends DialogFragment implements TextWatcher, OnClickListener {
 
-    /**
-     * The actual dialog
-     */
-    protected AlertDialog mPlaylistDialog;
-    /**
-     * Used to make new playlist names
-     */
-    protected EditText mPlaylist;
-    /**
-     * The dialog save button
-     */
-    protected Button mSaveButton;
-    /**
-     * The dialog prompt
-     */
-    protected String mPrompt = "";
-    /**
-     * The default edit text text
-     */
-    protected String mDefaultname = "";
+	/**
+	 * The actual dialog
+	 */
+	protected AlertDialog mPlaylistDialog;
+	/**
+	 * Used to make new playlist names
+	 */
+	protected EditText mPlaylist;
+	/**
+	 * The dialog save button
+	 */
+	protected Button mSaveButton;
+	/**
+	 * The dialog prompt
+	 */
+	protected String mPrompt = "";
+	/**
+	 * The default edit text text
+	 */
+	protected String mDefaultname = "";
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Initialize the alert dialog
-        mPlaylistDialog = new AlertDialog.Builder(requireContext()).create();
-        // Initialize the edit text
-        mPlaylist = new EditText(requireContext());
-        // To show the "done" button on the soft keyboard
-        mPlaylist.setSingleLine(true);
-        // All caps
-        mPlaylist.setInputType(mPlaylist.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-        // Set the save button action
-        mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
-        // Set the cancel button action
-        mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel), this);
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		// Initialize the alert dialog
+		mPlaylistDialog = new AlertDialog.Builder(requireContext()).create();
+		// Initialize the edit text
+		mPlaylist = new EditText(requireContext());
+		// To show the "done" button on the soft keyboard
+		mPlaylist.setSingleLine(true);
+		// All caps
+		mPlaylist.setInputType(mPlaylist.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+				| InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+		// Set the save button action
+		mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
+		// Set the cancel button action
+		mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel), this);
 
-        initObjects(savedInstanceState);
-        mPlaylistDialog.setTitle(mPrompt);
-        mPlaylistDialog.setView(mPlaylist);
-        mPlaylist.setText(mDefaultname);
-        mPlaylist.setSelection(mDefaultname.length());
-        mPlaylist.addTextChangedListener(this);
-        mPlaylistDialog.show();
-        return mPlaylistDialog;
-    }
+		initObjects(savedInstanceState);
+		mPlaylistDialog.setTitle(mPrompt);
+		mPlaylistDialog.setView(mPlaylist);
+		mPlaylist.setText(mDefaultname);
+		mPlaylist.setSelection(mDefaultname.length());
+		mPlaylist.addTextChangedListener(this);
+		mPlaylistDialog.show();
+		return mPlaylistDialog;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void onClick(DialogInterface dialog, int which) {
-        if (dialog == mPlaylistDialog) {
-            if (which == Dialog.BUTTON_POSITIVE) {
-                onSaveClick();
-                MusicUtils.refresh();
-                dialog.dismiss();
-            } else if (which == Dialog.BUTTON_NEGATIVE) {
-                closeKeyboard();
-                MusicUtils.refresh();
-                dialog.dismiss();
-            }
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void onClick(DialogInterface dialog, int which) {
+		if (dialog == mPlaylistDialog) {
+			if (which == Dialog.BUTTON_POSITIVE) {
+				onSaveClick();
+				MusicUtils.refresh();
+				dialog.dismiss();
+			} else if (which == Dialog.BUTTON_NEGATIVE) {
+				closeKeyboard();
+				MusicUtils.refresh();
+				dialog.dismiss();
+			}
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void onTextChanged(CharSequence s, int start, int before, int count) {
-        onTextChangedListener();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void onTextChanged(CharSequence s, int start, int before, int count) {
+		onTextChangedListener();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void afterTextChanged(Editable s) {
-        /* Nothing to do */
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void afterTextChanged(Editable s) {
+		/* Nothing to do */
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        /* Nothing to do */
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		/* Nothing to do */
+	}
 
-    /**
-     * Closes the soft keyboard
-     */
-    protected void closeKeyboard() {
-        InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
-        if (iManager != null) {
-            iManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
-        }
-    }
+	/**
+	 * Closes the soft keyboard
+	 */
+	protected void closeKeyboard() {
+		InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
+		if (iManager != null) {
+			iManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
+		}
+	}
 
-    /**
-     * Initializes the prompt and default name
-     */
-    public abstract void initObjects(Bundle savedInstanceState);
+	/**
+	 * Initializes the prompt and default name
+	 */
+	public abstract void initObjects(Bundle savedInstanceState);
 
-    /**
-     * Called when the save button of our {@link AlertDialog} is pressed
-     */
-    public abstract void onSaveClick();
+	/**
+	 * Called when the save button of our {@link AlertDialog} is pressed
+	 */
+	public abstract void onSaveClick();
 
-    /**
-     * Called in our {@link TextWatcher} during a text change
-     */
-    public abstract void onTextChangedListener();
+	/**
+	 * Called in our {@link TextWatcher} during a text change
+	 */
+	public abstract void onTextChangedListener();
 }

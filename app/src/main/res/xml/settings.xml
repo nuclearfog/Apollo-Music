@@ -15,76 +15,76 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- UI catetgory -->
-    <PreferenceCategory android:title="@string/settings_ui_category">
+	<!-- UI catetgory -->
+	<PreferenceCategory android:title="@string/settings_ui_category">
 
-        <!-- Color scheme -->
-        <Preference
-            android:key="color_scheme"
-            android:summary="@string/settings_color_scheme_summary"
-            android:title="@string/settings_color_scheme_title" />
+		<!-- Color scheme -->
+		<Preference
+			android:key="color_scheme"
+			android:summary="@string/settings_color_scheme_summary"
+			android:title="@string/settings_color_scheme_title" />
 
-        <!-- Theme chooser -->
-        <Preference
-            android:key="theme_chooser"
-            android:title="@string/settings_theme_chooser_title" />
-    </PreferenceCategory>
+		<!-- Theme chooser -->
+		<Preference
+			android:key="theme_chooser"
+			android:title="@string/settings_theme_chooser_title" />
+	</PreferenceCategory>
 
-    <!-- Data catetory -->
-    <PreferenceCategory android:title="@string/settings_data_category">
+	<!-- Data catetory -->
+	<PreferenceCategory android:title="@string/settings_data_category">
 
-        <!-- Only on Wi-Fi -->
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="only_on_wifi"
-            android:summary="@string/settings_download_only_on_wifi_summary"
-            android:title="@string/settings_download_only_on_wifi_title" />
+		<!-- Only on Wi-Fi -->
+		<CheckBoxPreference
+			android:defaultValue="true"
+			android:key="only_on_wifi"
+			android:summary="@string/settings_download_only_on_wifi_summary"
+			android:title="@string/settings_download_only_on_wifi_title" />
 
-        <!-- Missing artwork -->
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="download_missing_artwork"
-            android:title="@string/settings_download_missing_artwork_title" />
+		<!-- Missing artwork -->
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="download_missing_artwork"
+			android:title="@string/settings_download_missing_artwork_title" />
 
-        <!-- Missing artist images -->
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="download_missing_artist_images"
-            android:title="@string/settings_download_artist_images_title" />
-    </PreferenceCategory>
+		<!-- Missing artist images -->
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="download_missing_artist_images"
+			android:title="@string/settings_download_artist_images_title" />
+	</PreferenceCategory>
 
-    <!-- Storage catetory -->
-    <PreferenceCategory android:title="@string/settings_storage_category">
+	<!-- Storage catetory -->
+	<PreferenceCategory android:title="@string/settings_storage_category">
 
-        <!-- Delete cache -->
-        <Preference
-            android:key="delete_cache"
-            android:summary="@string/settings_delete_cache_summary"
-            android:title="@string/settings_delete_cache_title" />
-    </PreferenceCategory>
+		<!-- Delete cache -->
+		<Preference
+			android:key="delete_cache"
+			android:summary="@string/settings_delete_cache_summary"
+			android:title="@string/settings_delete_cache_title" />
+	</PreferenceCategory>
 
-    <!-- About -->
-    <PreferenceCategory android:title="@string/settings_about_apollo">
-        <Preference
-            android:summary="@string/settings_self_title"
-            android:title="@string/settings_author_title" />
-        <Preference
-            android:summary="@string/settings_nuclearfog_title"
-            android:title="@string/settings_remastered_title" />
-        <Preference
-            android:key="version"
-            android:title="@string/settings_version_title" />
-        <Preference
-            android:key="open_source"
-            android:title="@string/settings_open_source_licenses" />
-    </PreferenceCategory>
+	<!-- About -->
+	<PreferenceCategory android:title="@string/settings_about_apollo">
+		<Preference
+			android:summary="@string/settings_self_title"
+			android:title="@string/settings_author_title" />
+		<Preference
+			android:summary="@string/settings_nuclearfog_title"
+			android:title="@string/settings_remastered_title" />
+		<Preference
+			android:key="version"
+			android:title="@string/settings_version_title" />
+		<Preference
+			android:key="open_source"
+			android:title="@string/settings_open_source_licenses" />
+	</PreferenceCategory>
 
-    <!-- special thanks -->
-    <PreferenceCategory android:title="@string/settings_special_thanks">
-        <Preference
-            android:summary="@string/settings_lopez_summary"
-            android:title="@string/settings_lopez_title" />
-        <Preference android:title="@string/settings_cyanogenmod_title" />
-    </PreferenceCategory>
+	<!-- special thanks -->
+	<PreferenceCategory android:title="@string/settings_special_thanks">
+		<Preference
+			android:summary="@string/settings_lopez_summary"
+			android:title="@string/settings_lopez_title" />
+		<Preference android:title="@string/settings_cyanogenmod_title" />
+	</PreferenceCategory>
 
 </PreferenceScreen>

@@ -14,45 +14,45 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingRight="8dp"
-    android:paddingEnd="8dp"
-    android:enabled="false"
-    tools:ignore="RtlSymmetry">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="horizontal"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:paddingRight="8dp"
+	android:paddingEnd="8dp"
+	android:enabled="false"
+	tools:ignore="RtlSymmetry">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_gravity="center_vertical|start"
-        android:contentDescription="@null" />
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:layout_gravity="center_vertical|start"
+		android:contentDescription="@null" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start">
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical|start">
 
-        <TextView
-            android:id="@+id/action_bar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="@dimen/text_size_medium" />
+		<TextView
+			android:id="@+id/action_bar_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:textSize="@dimen/text_size_medium" />
 
-        <TextView
-            android:id="@+id/action_bar_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="-3dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="@dimen/text_size_small" />
-    </LinearLayout>
+		<TextView
+			android:id="@+id/action_bar_subtitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:visibility="gone"
+			android:layout_marginTop="-3dp"
+			android:ellipsize="end"
+			android:singleLine="true"
+			android:textSize="@dimen/text_size_small" />
+	</LinearLayout>
 
 </LinearLayout>

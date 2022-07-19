@@ -33,55 +33,55 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class PlayPauseButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
-    /**
-     * @param context The {@link Context} to use
-     * @param attrs   The attributes of the XML tag that is inflating the view.
-     */
-    public PlayPauseButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        // Theme the selector
-        setBackground(new HoloSelector(context));
-        // Control playback (play/pause)
-        setOnClickListener(this);
-        // Show the cheat sheet
-        setOnLongClickListener(this);
-    }
+	/**
+	 * @param context The {@link Context} to use
+	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 */
+	public PlayPauseButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// Theme the selector
+		setBackground(new HoloSelector(context));
+		// Control playback (play/pause)
+		setOnClickListener(this);
+		// Show the cheat sheet
+		setOnLongClickListener(this);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClick(View v) {
-        if (MusicUtils.isPlaying())
-            MusicUtils.pause();
-        else
-            MusicUtils.play();
-        updateState();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onClick(View v) {
+		if (MusicUtils.isPlaying())
+			MusicUtils.pause();
+		else
+			MusicUtils.play();
+		updateState();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onLongClick(View view) {
-        if (TextUtils.isEmpty(view.getContentDescription())) {
-            return false;
-        } else {
-            ApolloUtils.showCheatSheet(view);
-            return true;
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onLongClick(View view) {
+		if (TextUtils.isEmpty(view.getContentDescription())) {
+			return false;
+		} else {
+			ApolloUtils.showCheatSheet(view);
+			return true;
+		}
+	}
 
-    /**
-     * Sets the correct drawable for playback.
-     */
-    public void updateState() {
-        if (MusicUtils.isPlaying()) {
-            setContentDescription(getResources().getString(R.string.accessibility_pause));
-            setImageResource(R.drawable.btn_playback_pause);
-        } else {
-            setContentDescription(getResources().getString(R.string.accessibility_play));
-            setImageResource(R.drawable.btn_playback_play);
-        }
-    }
+	/**
+	 * Sets the correct drawable for playback.
+	 */
+	public void updateState() {
+		if (MusicUtils.isPlaying()) {
+			setContentDescription(getResources().getString(R.string.accessibility_pause));
+			setImageResource(R.drawable.btn_playback_pause);
+		} else {
+			setContentDescription(getResources().getString(R.string.accessibility_play));
+			setImageResource(R.drawable.btn_playback_play);
+		}
+	}
 }

@@ -39,136 +39,136 @@ import com.andrew.apollo.utils.ThemeUtils;
  */
 public class SettingsActivity extends AppCompatActivity {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_layout);
-        Toolbar toolbar = findViewById(R.id.settings_toolbar);
-        View root = findViewById(R.id.settings_root);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.settings_layout);
+		Toolbar toolbar = findViewById(R.id.settings_toolbar);
+		View root = findViewById(R.id.settings_root);
 
-        root.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
-        setSupportActionBar(toolbar);
-        // Fade it in
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        // UP
-        ActionBar bar = getSupportActionBar();
-        if (bar != null) {
-            bar.setDisplayHomeAsUpEnabled(true);
-            ThemeUtils mResources = new ThemeUtils(this);
-            mResources.themeActionBar(bar, R.string.menu_settings);
-        }
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();
-        }
-    }
+		root.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
+		setSupportActionBar(toolbar);
+		// Fade it in
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		// UP
+		ActionBar bar = getSupportActionBar();
+		if (bar != null) {
+			bar.setDisplayHomeAsUpEnabled(true);
+			ThemeUtils mResources = new ThemeUtils(this);
+			mResources.themeActionBar(bar, R.string.menu_settings);
+		}
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        MusicUtils.notifyForegroundStateChanged(this, true);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-        MusicUtils.notifyForegroundStateChanged(this, false);
-    }
-
-
-    /**
-     * Preference fragment class
-     */
-    public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
-
-        private static final String LICENSE = "open_source";
-
-        private static final String DEL_CACHE = "delete_cache";
-
-        private static final String THEME_SEL = "theme_chooser";
-
-        private static final String COLOR_SEL = "color_scheme";
-
-        private static final String VERSION = "version";
-
-        /**
-         * dialogs to ask the user for actions
-         */
-        private AlertDialog licenseDialog, cacheClearDialog, colorPicker;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStop() {
+		super.onStop();
+		MusicUtils.notifyForegroundStateChanged(this, false);
+	}
 
 
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.settings);
+	/**
+	 * Preference fragment class
+	 */
+	public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
-            Preference mOpenSourceLicenses = findPreference(LICENSE);
-            Preference deleteCache = findPreference(DEL_CACHE);
-            Preference themeChooser = findPreference(THEME_SEL);
-            Preference colorScheme = findPreference(COLOR_SEL);
-            Preference version = findPreference(VERSION);
+		private static final String LICENSE = "open_source";
 
-            if (version != null)
-                version.setSummary(BuildConfig.VERSION_NAME);
-            if (mOpenSourceLicenses != null)
-                mOpenSourceLicenses.setOnPreferenceClickListener(this);
-            if (deleteCache != null)
-                deleteCache.setOnPreferenceClickListener(this);
-            if (themeChooser != null)
-                themeChooser.setOnPreferenceClickListener(this);
-            if (colorScheme != null)
-                colorScheme.setOnPreferenceClickListener(this);
+		private static final String DEL_CACHE = "delete_cache";
 
-            licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
-            cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());
-            colorPicker = ApolloUtils.showColorPicker(requireActivity());
-        }
+		private static final String THEME_SEL = "theme_chooser";
+
+		private static final String COLOR_SEL = "color_scheme";
+
+		private static final String VERSION = "version";
+
+		/**
+		 * dialogs to ask the user for actions
+		 */
+		private AlertDialog licenseDialog, cacheClearDialog, colorPicker;
 
 
-        @Override
-        public boolean onPreferenceClick(@NonNull Preference preference) {
-            switch (preference.getKey()) {
-                case LICENSE:
-                    if (licenseDialog != null && !licenseDialog.isShowing())
-                        licenseDialog.show();
-                    return true;
+		@Override
+		public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+			addPreferencesFromResource(R.xml.settings);
 
-                case DEL_CACHE:
-                    if (cacheClearDialog != null && !cacheClearDialog.isShowing())
-                        cacheClearDialog.show();
-                    return true;
+			Preference mOpenSourceLicenses = findPreference(LICENSE);
+			Preference deleteCache = findPreference(DEL_CACHE);
+			Preference themeChooser = findPreference(THEME_SEL);
+			Preference colorScheme = findPreference(COLOR_SEL);
+			Preference version = findPreference(VERSION);
 
-                case COLOR_SEL:
-                    if (colorPicker != null && !colorPicker.isShowing())
-                        colorPicker.show();
-                    return true;
+			if (version != null)
+				version.setSummary(BuildConfig.VERSION_NAME);
+			if (mOpenSourceLicenses != null)
+				mOpenSourceLicenses.setOnPreferenceClickListener(this);
+			if (deleteCache != null)
+				deleteCache.setOnPreferenceClickListener(this);
+			if (themeChooser != null)
+				themeChooser.setOnPreferenceClickListener(this);
+			if (colorScheme != null)
+				colorScheme.setOnPreferenceClickListener(this);
 
-                case THEME_SEL:
-                    Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
-                    startActivity(themeChooserIntent);
-                    return true;
-            }
-            return false;
-        }
-    }
+			licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
+			cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());
+			colorPicker = ApolloUtils.showColorPicker(requireActivity());
+		}
+
+
+		@Override
+		public boolean onPreferenceClick(@NonNull Preference preference) {
+			switch (preference.getKey()) {
+				case LICENSE:
+					if (licenseDialog != null && !licenseDialog.isShowing())
+						licenseDialog.show();
+					return true;
+
+				case DEL_CACHE:
+					if (cacheClearDialog != null && !cacheClearDialog.isShowing())
+						cacheClearDialog.show();
+					return true;
+
+				case COLOR_SEL:
+					if (colorPicker != null && !colorPicker.isShowing())
+						colorPicker.show();
+					return true;
+
+				case THEME_SEL:
+					Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
+					startActivity(themeChooserIntent);
+					return true;
+			}
+			return false;
+		}
+	}
 }

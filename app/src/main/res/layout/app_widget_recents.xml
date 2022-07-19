@@ -14,92 +14,92 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/action_bar_color"
-    android:layout_margin="0dp"
-    tools:ignore="RelativeOverlap,ContentDescription">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/action_bar_color"
+	android:layout_margin="0dp"
+	tools:ignore="RelativeOverlap,ContentDescription">
 
-    <RelativeLayout
-        android:id="@+id/app_widget_recents_action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/app_widget_recents_action_bar_height">
+	<RelativeLayout
+		android:id="@+id/app_widget_recents_action_bar"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/app_widget_recents_action_bar_height">
 
-        <ImageView
-            android:id="@+id/app_widget_recents_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:padding="@dimen/app_widget_recents_action_bar_item_padding"
-            android:contentDescription="@string/app_name"
-            android:layout_centerVertical="true"
-            android:scaleType="centerInside"
-            android:src="@mipmap/ic_launcher" />
+		<ImageView
+			android:id="@+id/app_widget_recents_icon"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:background="@android:color/transparent"
+			android:padding="@dimen/app_widget_recents_action_bar_item_padding"
+			android:contentDescription="@string/app_name"
+			android:layout_centerVertical="true"
+			android:scaleType="centerInside"
+			android:src="@mipmap/ic_launcher" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/app_widget_recents_icon"
-            android:layout_toRightOf="@+id/app_widget_recents_icon"
-            android:singleLine="true"
-            android:text="@string/page_recent"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_medium" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_toEndOf="@+id/app_widget_recents_icon"
+			android:layout_toRightOf="@+id/app_widget_recents_icon"
+			android:singleLine="true"
+			android:text="@string/page_recent"
+			android:textColor="@color/white"
+			android:textSize="@dimen/text_size_medium" />
 
-        <ImageButton
-            android:id="@+id/app_widget_recents_previous"
-            android:layout_width="@dimen/app_widget_recents_action_bar_height"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:contentDescription="@null"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/app_widget_recents_play"
-            android:layout_toStartOf="@+id/app_widget_recents_play"
-            android:scaleType="center"
-            android:src="@drawable/btn_playback_previous" />
+		<ImageButton
+			android:id="@+id/app_widget_recents_previous"
+			android:layout_width="@dimen/app_widget_recents_action_bar_height"
+			android:layout_height="match_parent"
+			android:background="@android:color/transparent"
+			android:contentDescription="@null"
+			android:layout_centerVertical="true"
+			android:layout_toLeftOf="@+id/app_widget_recents_play"
+			android:layout_toStartOf="@+id/app_widget_recents_play"
+			android:scaleType="center"
+			android:src="@drawable/btn_playback_previous" />
 
-        <ImageButton
-            android:id="@+id/app_widget_recents_play"
-            android:layout_width="@dimen/app_widget_recents_action_bar_height"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/app_widget_recents_next"
-            android:layout_toStartOf="@+id/app_widget_recents_next"
-            android:scaleType="center"
-            android:src="@drawable/btn_playback_play" />
+		<ImageButton
+			android:id="@+id/app_widget_recents_play"
+			android:layout_width="@dimen/app_widget_recents_action_bar_height"
+			android:layout_height="match_parent"
+			android:background="@android:color/transparent"
+			android:layout_centerVertical="true"
+			android:layout_toLeftOf="@+id/app_widget_recents_next"
+			android:layout_toStartOf="@+id/app_widget_recents_next"
+			android:scaleType="center"
+			android:src="@drawable/btn_playback_play" />
 
-        <ImageButton
-            android:id="@+id/app_widget_recents_next"
-            android:layout_width="@dimen/app_widget_recents_action_bar_height"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:contentDescription="@null"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:scaleType="center"
-            android:src="@drawable/btn_playback_next" />
+		<ImageButton
+			android:id="@+id/app_widget_recents_next"
+			android:layout_width="@dimen/app_widget_recents_action_bar_height"
+			android:layout_height="match_parent"
+			android:background="@android:color/transparent"
+			android:contentDescription="@null"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:scaleType="center"
+			android:src="@drawable/btn_playback_next" />
 
-    </RelativeLayout>
+	</RelativeLayout>
 
-    <ImageView
-        android:id="@+id/colorstrip"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/colorstrip_height"
-        android:background="@color/transparent_white"
-        android:contentDescription="@null"
-        android:layout_below="@+id/app_widget_recents_action_bar" />
+	<ImageView
+		android:id="@+id/colorstrip"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/colorstrip_height"
+		android:background="@color/transparent_white"
+		android:contentDescription="@null"
+		android:layout_below="@+id/app_widget_recents_action_bar" />
 
-    <ListView
-        android:id="@+id/app_widget_recents_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/appwidget_bg"
-        android:cacheColorHint="@color/transparent"
-        android:layout_below="@+id/colorstrip"
-        android:layout_centerVertical="true" />
+	<ListView
+		android:id="@+id/app_widget_recents_list"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@drawable/appwidget_bg"
+		android:cacheColorHint="@color/transparent"
+		android:layout_below="@+id/colorstrip"
+		android:layout_centerVertical="true" />
 
 </RelativeLayout>

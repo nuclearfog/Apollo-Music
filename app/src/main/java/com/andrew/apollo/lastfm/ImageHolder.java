@@ -36,47 +36,47 @@ import java.util.Map;
  */
 public abstract class ImageHolder {
 
-    protected Map<ImageSize, String> imageUrls = new HashMap<>();
+	protected Map<ImageSize, String> imageUrls = new HashMap<>();
 
-    /**
-     *
-     */
-    protected static void loadImages(ImageHolder holder, DomElement element) {
-        Collection<DomElement> images = element.getChildren("image");
-        for (DomElement image : images) {
-            String attribute = image.getAttribute("size");
-            ImageSize size = null;
-            if (attribute == null || attribute.isEmpty()) {
-                size = ImageSize.UNKNOWN;
-            } else {
-                try {
-                    size = ImageSize.valueOf(attribute.toUpperCase(Locale.ENGLISH));
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                    // if they suddenly again introduce a new image size
-                }
-            }
-            if (size != null) {
-                holder.imageUrls.put(size, image.getText());
-            }
-        }
-    }
+	/**
+	 *
+	 */
+	protected static void loadImages(ImageHolder holder, DomElement element) {
+		Collection<DomElement> images = element.getChildren("image");
+		for (DomElement image : images) {
+			String attribute = image.getAttribute("size");
+			ImageSize size = null;
+			if (attribute == null || attribute.isEmpty()) {
+				size = ImageSize.UNKNOWN;
+			} else {
+				try {
+					size = ImageSize.valueOf(attribute.toUpperCase(Locale.ENGLISH));
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+					// if they suddenly again introduce a new image size
+				}
+			}
+			if (size != null) {
+				holder.imageUrls.put(size, image.getText());
+			}
+		}
+	}
 
-    /**
-     * Returns the URL of the image in the specified size, or <code>null</code>
-     * if not available.
-     *
-     * @param size The preferred size
-     * @return an image URL
-     */
-    public String getImageURL(ImageSize size) {
-        return imageUrls.get(size);
-    }
+	/**
+	 * Returns the URL of the image in the specified size, or <code>null</code>
+	 * if not available.
+	 *
+	 * @param size The preferred size
+	 * @return an image URL
+	 */
+	public String getImageURL(ImageSize size) {
+		return imageUrls.get(size);
+	}
 
 
-    @NonNull
-    @Override
-    public String toString() {
-        return imageUrls.toString();
-    }
+	@NonNull
+	@Override
+	public String toString() {
+		return imageUrls.toString();
+	}
 }

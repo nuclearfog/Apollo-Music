@@ -14,58 +14,58 @@
  -->
 <resources>
 
-    <!-- See through -->
-    <color name="transparent">#00000000</color>
+	<!-- See through -->
+	<color name="transparent">#00000000</color>
 
-    <!-- Black -->
-    <color name="black">#ff000000</color>
+	<!-- Black -->
+	<color name="black">#ff000000</color>
 
-    <!-- White -->
-    <color name="white">#ffffffff</color>
+	<!-- White -->
+	<color name="white">#ffffffff</color>
 
-    <!-- Transparent black -->
-    <color name="transparent_black">#99000000</color>
+	<!-- Transparent black -->
+	<color name="transparent_black">#99000000</color>
 
-    <!-- Transparent white -->
-    <color name="transparent_white">#ffcccccc</color>
+	<!-- Transparent white -->
+	<color name="transparent_white">#ffcccccc</color>
 
-    <!-- Dark transparent color -->
-    <color name="list_item_background">#66000000</color>
+	<!-- Dark transparent color -->
+	<color name="list_item_background">#66000000</color>
 
-    <!-- Dark transparent color -->
-    <color name="carousell_text_background">#66000000</color>
+	<!-- Dark transparent color -->
+	<color name="carousell_text_background">#66000000</color>
 
-    <!-- A darkish color used for the action bar -->
-    <color name="action_bar_color">#ff0d0d0d</color>
+	<!-- A darkish color used for the action bar -->
+	<color name="action_bar_color">#ff0d0d0d</color>
 
-    <!-- A light, Holo shade of blue -->
-    <color name="holo_green">#ff19F800</color>
+	<!-- A light, Holo shade of blue -->
+	<color name="holo_green">#ff19F800</color>
 
-    <!-- A light Holo shade of green -->
-    <color name="holo_green_light">#ff99cc00</color>
+	<!-- A light Holo shade of green -->
+	<color name="holo_green_light">#ff99cc00</color>
 
-    <!-- A light Holo shade of red -->
-    <color name="holo_red_light">#ffff4444</color>
+	<!-- A light Holo shade of red -->
+	<color name="holo_red_light">#ffff4444</color>
 
-    <!-- A Holo shade of purple -->
-    <color name="holo_purple">#ffaa66cc</color>
+	<!-- A Holo shade of purple -->
+	<color name="holo_purple">#ffaa66cc</color>
 
-    <!-- A light Holo shade of orange -->
-    <color name="holo_orange_light">#ffffbb33</color>
+	<!-- A light Holo shade of orange -->
+	<color name="holo_orange_light">#ffffbb33</color>
 
-    <!-- A dark Holo shade of orange -->
-    <color name="holo_orange_dark">#ffff8800</color>
+	<!-- A dark Holo shade of orange -->
+	<color name="holo_orange_dark">#ffff8800</color>
 
-    <color name="tpi_selected_text_color">#ffffffff</color>
+	<color name="tpi_selected_text_color">#ffffffff</color>
 
-    <color name="tpi_unselected_text_color">#ff7f7f7f</color>
+	<color name="tpi_unselected_text_color">#ff7f7f7f</color>
 
-    <color name="scrollbar_thumb_color">#6fffffff</color>
+	<color name="scrollbar_thumb_color">#6fffffff</color>
 
-    <color name="ic_launcher_background">#2E3E49</color>
+	<color name="ic_launcher_background">#2E3E49</color>
 
-    <!-- appmsg colors -->
-    <color name="alert">#CC0000</color>
-    <color name="confirm">#FF8800</color>
+	<!-- appmsg colors -->
+	<color name="alert">#CC0000</color>
+	<color name="confirm">#FF8800</color>
 
 </resources>

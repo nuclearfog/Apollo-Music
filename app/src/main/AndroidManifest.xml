@@ -13,284 +13,284 @@
      limitations under the License.
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.andrew.apollo">
+	xmlns:tools="http://schemas.android.com/tools"
+	package="com.andrew.apollo">
 
-    <!-- Used to set the devices's ringtone -->
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <!-- Used for caching, creating new playlists and deleting tracks -->
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-    <!-- Used to check for a network connection -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Used to download images -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Allows Apollo to read from External Storage -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-    <!-- Allows Apollo to stay in the foreground -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- Used to create launcher shortcuts -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-    <!-- The main service uses a sticky broadcast -->
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+	<!-- Used to set the devices's ringtone -->
+	<uses-permission
+		android:name="android.permission.WRITE_SETTINGS"
+		tools:ignore="ProtectedPermissions" />
+	<!-- Used for caching, creating new playlists and deleting tracks -->
+	<uses-permission
+		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+		android:maxSdkVersion="28" />
+	<!-- Used to check for a network connection -->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<!-- Used to download images -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- Allows Apollo to read from External Storage -->
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+	<!-- Allows Apollo to stay in the foreground -->
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<!-- Used to create launcher shortcuts -->
+	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+	<!-- The main service uses a sticky broadcast -->
+	<uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <queries>
-        <intent>
-            <action android:name="com.andrew.apollo.THEMES" />
-        </intent>
-    </queries>
+	<queries>
+		<intent>
+			<action android:name="com.andrew.apollo.THEMES" />
+		</intent>
+	</queries>
 
-    <application
-        android:name=".ApolloApplication"
-        android:allowBackup="false"
-        android:allowTaskReparenting="true"
-        android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:largeHeap="true"
-        android:requestLegacyExternalStorage="true"
-        android:taskAffinity="${applicationId}.task"
-        android:supportsRtl="true"
-        android:theme="@style/Apollo.Theme.Dark">
+	<application
+		android:name=".ApolloApplication"
+		android:allowBackup="false"
+		android:allowTaskReparenting="true"
+		android:hardwareAccelerated="true"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:largeHeap="true"
+		android:requestLegacyExternalStorage="true"
+		android:taskAffinity="${applicationId}.task"
+		android:supportsRtl="true"
+		android:theme="@style/Apollo.Theme.Dark">
 
-        <!-- provider to share music files -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:grantUriPermissions="true"
-            android:exported="false"
-            android:authorities="${applicationId}">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
+		<!-- provider to share music files -->
+		<provider
+			android:name="androidx.core.content.FileProvider"
+			android:grantUriPermissions="true"
+			android:exported="false"
+			android:authorities="${applicationId}">
+			<meta-data
+				android:name="android.support.FILE_PROVIDER_PATHS"
+				android:resource="@xml/provider_paths" />
+		</provider>
 
-        <!-- Searchable -->
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value=".ui.activities.SearchActivity" />
+		<!-- Searchable -->
+		<meta-data
+			android:name="android.app.default_searchable"
+			android:value=".ui.activities.SearchActivity" />
 
-        <!-- Base activity -->
-        <activity
-            android:name=".ui.activities.ActivityBase"
-            android:exported="true" />
+		<!-- Base activity -->
+		<activity
+			android:name=".ui.activities.ActivityBase"
+			android:exported="true" />
 
-        <!-- Main activity -->
-        <activity
-            android:name=".ui.activities.HomeActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+		<!-- Main activity -->
+		<activity
+			android:name=".ui.activities.HomeActivity"
+			android:windowSoftInputMode="adjustPan"
+			android:exported="true">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.MUSIC_PLAYER" />
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<action android:name="android.intent.action.MUSIC_PLAYER" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.APP_MUSIC" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="android.intent.category.APP_MUSIC" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
 
-        </activity>
+		</activity>
 
-        <!-- Now playing -->
-        <activity
-            android:name=".ui.activities.AudioPlayerActivity"
-            android:clearTaskOnLaunch="true"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
+		<!-- Now playing -->
+		<activity
+			android:name=".ui.activities.AudioPlayerActivity"
+			android:clearTaskOnLaunch="true"
+			android:exported="true"
+			android:launchMode="singleTask"
+			android:windowSoftInputMode="adjustPan">
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="content" />
-                <data android:mimeType="audio/*" />
-                <data android:mimeType="application/ogg" />
-                <data android:mimeType="application/x-ogg" />
-                <data android:mimeType="application/itunes" />
-            </intent-filter>
+				<data android:scheme="content" />
+				<data android:mimeType="audio/*" />
+				<data android:mimeType="application/ogg" />
+				<data android:mimeType="application/x-ogg" />
+				<data android:mimeType="application/itunes" />
+			</intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="file" />
-                <data android:mimeType="audio/*" />
-                <data android:mimeType="application/ogg" />
-                <data android:mimeType="application/x-ogg" />
-                <data android:mimeType="application/itunes" />
-            </intent-filter>
+				<data android:scheme="file" />
+				<data android:mimeType="audio/*" />
+				<data android:mimeType="application/ogg" />
+				<data android:mimeType="application/x-ogg" />
+				<data android:mimeType="application/itunes" />
+			</intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="http" />
-                <data android:mimeType="audio/*" />
-                <data android:mimeType="application/ogg" />
-                <data android:mimeType="application/x-ogg" />
-                <data android:mimeType="application/itunes" />
-            </intent-filter>
+				<data android:scheme="http" />
+				<data android:mimeType="audio/*" />
+				<data android:mimeType="application/ogg" />
+				<data android:mimeType="application/x-ogg" />
+				<data android:mimeType="application/itunes" />
+			</intent-filter>
 
-            <intent-filter tools:ignore="AppLinkUrlError">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+			<intent-filter tools:ignore="AppLinkUrlError">
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="vnd.android.cursor.dir/playlist" />
-                <data android:mimeType="vnd.android.cursor.dir/albums" />
-                <data android:mimeType="vnd.android.cursor.dir/artists" />
-            </intent-filter>
+				<data android:mimeType="vnd.android.cursor.dir/playlist" />
+				<data android:mimeType="vnd.android.cursor.dir/albums" />
+				<data android:mimeType="vnd.android.cursor.dir/artists" />
+			</intent-filter>
 
-            <intent-filter>
-                <action android:name="${applicationId}.AUDIO_PLAYER" />
+			<intent-filter>
+				<action android:name="${applicationId}.AUDIO_PLAYER" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.PICK" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.intent.action.PICK" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.OPENABLE" />
 
-                <data android:mimeType="vnd.android.cursor.dir/audio" />
-            </intent-filter>
-        </activity>
+				<data android:mimeType="vnd.android.cursor.dir/audio" />
+			</intent-filter>
+		</activity>
 
-        <!-- Profile phone Activity -->
-        <activity
-            android:name=".ui.activities.ProfileActivity"
-            android:excludeFromRecents="true" />
+		<!-- Profile phone Activity -->
+		<activity
+			android:name=".ui.activities.ProfileActivity"
+			android:excludeFromRecents="true" />
 
-        <!-- Shortcut launcher Activity -->
-        <activity
-            android:name=".ui.activities.ShortcutActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:theme="@style/Theme.Transparent">
+		<!-- Shortcut launcher Activity -->
+		<activity
+			android:name=".ui.activities.ShortcutActivity"
+			android:excludeFromRecents="true"
+			android:exported="true"
+			android:theme="@style/Theme.Transparent">
 
-            <intent-filter>
-                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+			<intent-filter>
+				<action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
 
-        </activity>
+		</activity>
 
-        <!-- Search interface -->
-        <activity
-            android:name=".ui.activities.SearchActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-                <action android:name="android.intent.action.MEDIA_SEARCH" />
+		<!-- Search interface -->
+		<activity
+			android:name=".ui.activities.SearchActivity"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.SEARCH" />
+				<action android:name="android.intent.action.MEDIA_SEARCH" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
+			<meta-data
+				android:name="android.app.searchable"
+				android:resource="@xml/searchable" />
+		</activity>
 
-        <!-- Used to set options -->
-        <activity
-            android:name=".ui.activities.SettingsActivity"
-            android:label="@string/menu_settings"
-            android:theme="@style/Apollo.Theme.Dark" />
+		<!-- Used to set options -->
+		<activity
+			android:name=".ui.activities.SettingsActivity"
+			android:label="@string/menu_settings"
+			android:theme="@style/Apollo.Theme.Dark" />
 
-        <!-- Themes Activity -->
-        <activity
-            android:name=".ui.activities.ThemesActivity"
-            android:excludeFromRecents="true" />
+		<!-- Themes Activity -->
+		<activity
+			android:name=".ui.activities.ThemesActivity"
+			android:excludeFromRecents="true" />
 
-        <!-- 4x1 App Widget -->
-        <receiver
-            android:name="com.andrew.apollo.widgets.AppWidgetSmall"
-            android:exported="false"
-            android:label="@string/app_widget_small">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
+		<!-- 4x1 App Widget -->
+		<receiver
+			android:name="com.andrew.apollo.widgets.AppWidgetSmall"
+			android:exported="false"
+			android:label="@string/app_widget_small">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/app_widget_small" />
-        </receiver>
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/app_widget_small" />
+		</receiver>
 
-        <!-- 4x2  App Widget -->
-        <receiver
-            android:name="com.andrew.apollo.widgets.AppWidgetLarge"
-            android:exported="false"
-            android:label="@string/app_widget_large">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
+		<!-- 4x2  App Widget -->
+		<receiver
+			android:name="com.andrew.apollo.widgets.AppWidgetLarge"
+			android:exported="false"
+			android:label="@string/app_widget_large">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/app_widget_large" />
-        </receiver>
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/app_widget_large" />
+		</receiver>
 
-        <!-- 4x2 alternate App Widget -->
-        <receiver
-            android:name="com.andrew.apollo.widgets.AppWidgetLargeAlternate"
-            android:exported="false"
-            android:label="@string/app_widget_large_alt">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
+		<!-- 4x2 alternate App Widget -->
+		<receiver
+			android:name="com.andrew.apollo.widgets.AppWidgetLargeAlternate"
+			android:exported="false"
+			android:label="@string/app_widget_large_alt">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/app_widget_large_alternate" />
-        </receiver>
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/app_widget_large_alternate" />
+		</receiver>
 
-        <!-- Resizable recently listened App Widget -->
-        <receiver
-            android:name="com.andrew.apollo.widgets.RecentWidgetProvider"
-            android:exported="false"
-            android:label="@string/app_widget_recent">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <!-- This specifies the widget provider info -->
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/app_widget_recents" />
-        </receiver>
+		<!-- Resizable recently listened App Widget -->
+		<receiver
+			android:name="com.andrew.apollo.widgets.RecentWidgetProvider"
+			android:exported="false"
+			android:label="@string/app_widget_recent">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<!-- This specifies the widget provider info -->
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/app_widget_recents" />
+		</receiver>
 
-        <receiver
-            android:name="androidx.media.session.MediaButtonReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
-            </intent-filter>
-        </receiver>
+		<receiver
+			android:name="androidx.media.session.MediaButtonReceiver"
+			android:exported="false">
+			<intent-filter>
+				<action android:name="android.intent.action.MEDIA_BUTTON" />
+				<action android:name="android.media.AUDIO_BECOMING_NOISY" />
+			</intent-filter>
+		</receiver>
 
-        <!-- The service serving the RemoteViews to the recently listened App Widget -->
-        <service
-            android:name="com.andrew.apollo.widgets.RecentWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+		<!-- The service serving the RemoteViews to the recently listened App Widget -->
+		<service
+			android:name="com.andrew.apollo.widgets.RecentWidgetService"
+			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <!-- Music service -->
-        <service
-            android:name=".MusicPlaybackService"
-            android:label="@string/app_name"
-            android:exported="false"
-            android:process=":music">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </service>
+		<!-- Music service -->
+		<service
+			android:name=".MusicPlaybackService"
+			android:label="@string/app_name"
+			android:exported="false"
+			android:process=":music">
+			<intent-filter>
+				<action android:name="android.intent.action.MEDIA_BUTTON" />
+			</intent-filter>
+		</service>
 
-    </application>
+	</application>
 
 </manifest>

@@ -35,79 +35,79 @@ import java.util.WeakHashMap;
  */
 public class Artist extends MusicEntry {
 
-    protected final static ItemFactory<Artist> FACTORY = new ArtistFactory();
+	protected final static ItemFactory<Artist> FACTORY = new ArtistFactory();
 
-    protected Artist(String name) {
-        super(name, null);
-    }
+	protected Artist(String name) {
+		super(name, null);
+	}
 
-    /**
-     * Retrieves detailed artist info for the given artist or mbid entry.
-     *
-     * @param artistOrMbid Name of the artist or an mbid
-     * @return detailed artist info
-     */
-    public static Artist getInfo(String artistOrMbid) {
-        return getInfo(artistOrMbid, Locale.getDefault());
-    }
+	/**
+	 * Retrieves detailed artist info for the given artist or mbid entry.
+	 *
+	 * @param artistOrMbid Name of the artist or an mbid
+	 * @return detailed artist info
+	 */
+	public static Artist getInfo(String artistOrMbid) {
+		return getInfo(artistOrMbid, Locale.getDefault());
+	}
 
-    /**
-     * Retrieves detailed artist info for the given artist or mbid entry.
-     *
-     * @param artistOrMbid Name of the artist or an mbid
-     * @param locale       The language to fetch info in, or <code>null</code>
-     * @return detailed artist info
-     */
-    public static Artist getInfo(String artistOrMbid, Locale locale) {
-        Map<String, String> mParams = new WeakHashMap<>();
-        mParams.put("artist", artistOrMbid);
-        if (locale != null && locale.getLanguage().length() != 0) {
-            mParams.put("lang", locale.getLanguage());
-        }
-        Result mResult = Caller.getInstance().call("artist.getInfo", mParams);
-        return ResponseBuilder.buildItem(mResult, Artist.class);
-    }
+	/**
+	 * Retrieves detailed artist info for the given artist or mbid entry.
+	 *
+	 * @param artistOrMbid Name of the artist or an mbid
+	 * @param locale       The language to fetch info in, or <code>null</code>
+	 * @return detailed artist info
+	 */
+	public static Artist getInfo(String artistOrMbid, Locale locale) {
+		Map<String, String> mParams = new WeakHashMap<>();
+		mParams.put("artist", artistOrMbid);
+		if (locale != null && locale.getLanguage().length() != 0) {
+			mParams.put("lang", locale.getLanguage());
+		}
+		Result mResult = Caller.getInstance().call("artist.getInfo", mParams);
+		return ResponseBuilder.buildItem(mResult, Artist.class);
+	}
 
-    /**
-     * Use the last.fm corrections data to check whether the supplied artist has
-     * a correction to a canonical artist. This method returns a new
-     * {@link Artist} object containing the corrected data, or <code>null</code>
-     * if the supplied Artist was not found.
-     *
-     * @param artist The artist name to correct
-     * @return a new {@link Artist}, or <code>null</code>
-     */
-    public static Artist getCorrection(String artist) {
-        Result result;
-        try {
-            result = Caller.getInstance().call("artist.getCorrection", "artist", artist);
-            if (!result.isSuccessful()) {
-                return null;
-            }
-            DomElement correctionElement = result.getContentElement().getChild("correction");
-            if (correctionElement == null) {
-                return new Artist(artist);
-            }
-            DomElement artistElem = correctionElement.getChild("artist");
-            return FACTORY.createItemFromElement(artistElem);
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
+	/**
+	 * Use the last.fm corrections data to check whether the supplied artist has
+	 * a correction to a canonical artist. This method returns a new
+	 * {@link Artist} object containing the corrected data, or <code>null</code>
+	 * if the supplied Artist was not found.
+	 *
+	 * @param artist The artist name to correct
+	 * @return a new {@link Artist}, or <code>null</code>
+	 */
+	public static Artist getCorrection(String artist) {
+		Result result;
+		try {
+			result = Caller.getInstance().call("artist.getCorrection", "artist", artist);
+			if (!result.isSuccessful()) {
+				return null;
+			}
+			DomElement correctionElement = result.getContentElement().getChild("correction");
+			if (correctionElement == null) {
+				return new Artist(artist);
+			}
+			DomElement artistElem = correctionElement.getChild("artist");
+			return FACTORY.createItemFromElement(artistElem);
+		} catch (Exception ignored) {
+			return null;
+		}
+	}
 
-    private final static class ArtistFactory implements ItemFactory<Artist> {
+	private final static class ArtistFactory implements ItemFactory<Artist> {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Artist createItemFromElement(DomElement element) {
-            if (element == null) {
-                return null;
-            }
-            Artist artist = new Artist(null);
-            MusicEntry.loadStandardInfo(artist, element);
-            return artist;
-        }
-    }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Artist createItemFromElement(DomElement element) {
+			if (element == null) {
+				return null;
+			}
+			Artist artist = new Artist(null);
+			MusicEntry.loadStandardInfo(artist, element);
+			return artist;
+		}
+	}
 }

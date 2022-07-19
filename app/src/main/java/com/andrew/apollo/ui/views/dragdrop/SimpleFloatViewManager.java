@@ -13,63 +13,63 @@ import android.widget.ListView;
  */
 public class SimpleFloatViewManager implements DragSortListView.FloatViewManager {
 
-    private final ListView mListView;
+	private final ListView mListView;
 
-    private Bitmap mFloatBitmap;
+	private Bitmap mFloatBitmap;
 
-    private int mFloatBGColor = Color.BLACK;
+	private int mFloatBGColor = Color.BLACK;
 
-    public SimpleFloatViewManager(ListView lv) {
-        mListView = lv;
-    }
+	public SimpleFloatViewManager(ListView lv) {
+		mListView = lv;
+	}
 
-    public void setBackgroundColor(int color) {
-        mFloatBGColor = color;
-    }
+	public void setBackgroundColor(int color) {
+		mFloatBGColor = color;
+	}
 
-    /**
-     * This simple implementation creates a Bitmap copy of the list item
-     * currently shown at ListView <code>position</code>.
-     */
-    @Override
-    public View onCreateFloatView(int position) {
-        View v = mListView.getChildAt(position + mListView.getHeaderViewsCount() - mListView.getFirstVisiblePosition());
+	/**
+	 * This simple implementation creates a Bitmap copy of the list item
+	 * currently shown at ListView <code>position</code>.
+	 */
+	@Override
+	public View onCreateFloatView(int position) {
+		View v = mListView.getChildAt(position + mListView.getHeaderViewsCount() - mListView.getFirstVisiblePosition());
 
-        if (v == null) {
-            return null;
-        }
+		if (v == null) {
+			return null;
+		}
 
-        v.setPressed(false);
+		v.setPressed(false);
 
-        v.setDrawingCacheEnabled(true);
-        mFloatBitmap = Bitmap.createBitmap(v.getDrawingCache());
-        v.setDrawingCacheEnabled(false);
+		v.setDrawingCacheEnabled(true);
+		mFloatBitmap = Bitmap.createBitmap(v.getDrawingCache());
+		v.setDrawingCacheEnabled(false);
 
-        ImageView iv = new ImageView(mListView.getContext());
-        iv.setBackgroundColor(mFloatBGColor);
-        iv.setPadding(0, 0, 0, 0);
-        iv.setImageBitmap(mFloatBitmap);
+		ImageView iv = new ImageView(mListView.getContext());
+		iv.setBackgroundColor(mFloatBGColor);
+		iv.setPadding(0, 0, 0, 0);
+		iv.setImageBitmap(mFloatBitmap);
 
-        return iv;
-    }
+		return iv;
+	}
 
-    /**
-     * Removes the Bitmap from the ImageView created in onCreateFloatView() and
-     * tells the system to recycle it.
-     */
-    @Override
-    public void onDestroyFloatView(View floatView) {
-        ((ImageView) floatView).setImageDrawable(null);
+	/**
+	 * Removes the Bitmap from the ImageView created in onCreateFloatView() and
+	 * tells the system to recycle it.
+	 */
+	@Override
+	public void onDestroyFloatView(View floatView) {
+		((ImageView) floatView).setImageDrawable(null);
 
-        mFloatBitmap.recycle();
-        mFloatBitmap = null;
-    }
+		mFloatBitmap.recycle();
+		mFloatBitmap = null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onDragFloatView(Point touch) {
-        /* Nothing to do */
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDragFloatView(Point touch) {
+		/* Nothing to do */
+	}
 }

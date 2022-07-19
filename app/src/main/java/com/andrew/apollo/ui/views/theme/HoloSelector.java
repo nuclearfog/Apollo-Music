@@ -25,28 +25,28 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class HoloSelector extends StateListDrawable {
 
-    /**
-     * Button states
-     */
-    private static final int[][] STATES = {
-            {android.R.attr.state_focused},
-            {android.R.attr.state_pressed},
-            {}
-    };
+	/**
+	 * Button states
+	 */
+	private static final int[][] STATES = {
+			{android.R.attr.state_focused},
+			{android.R.attr.state_pressed},
+			{}
+	};
 
-    /**
-     * Constructor for <code>HoloSelector</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public HoloSelector(Context context) {
-        int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
-        // Focused
-        addState(STATES[0], new ColorDrawable(holoColor));
-        // Pressed
-        addState(STATES[1], new ColorDrawable(holoColor));
-        // Default
-        addState(STATES[2], new ColorDrawable(Color.TRANSPARENT));
-        setExitFadeDuration(400);
-    }
+	/**
+	 * Constructor for <code>HoloSelector</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public HoloSelector(Context context) {
+		int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
+		// Focused
+		addState(STATES[0], new ColorDrawable(holoColor));
+		// Pressed
+		addState(STATES[1], new ColorDrawable(holoColor));
+		// Default
+		addState(STATES[2], new ColorDrawable(Color.TRANSPARENT));
+		setExitFadeDuration(400);
+	}
 }

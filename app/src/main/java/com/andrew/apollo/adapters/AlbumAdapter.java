@@ -36,111 +36,111 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class AlbumAdapter extends ArrayAdapter<Album> {
 
-    /**
-     * Image cache and image fetcher
-     */
-    private ImageFetcher mImageFetcher;
+	/**
+	 * Image cache and image fetcher
+	 */
+	private ImageFetcher mImageFetcher;
 
-    /**
-     * The resource Id of the layout to inflate
-     */
-    private int mLayoutId;
+	/**
+	 * The resource Id of the layout to inflate
+	 */
+	private int mLayoutId;
 
-    /**
-     * Determines if the grid or list should be the default style
-     */
-    private boolean mLoadExtraData = false;
+	/**
+	 * Determines if the grid or list should be the default style
+	 */
+	private boolean mLoadExtraData = false;
 
-    /**
-     * Constructor of <code>AlbumAdapter</code>
-     *
-     * @param context The {@link Context} to use.
-     */
-    public AlbumAdapter(Context context, @LayoutRes int mLayoutId) {
-        super(context, mLayoutId);
-        this.mLayoutId = mLayoutId;
-        // Initialize the cache & image fetcher
-        mImageFetcher = ApolloUtils.getImageFetcher(context);
-    }
+	/**
+	 * Constructor of <code>AlbumAdapter</code>
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public AlbumAdapter(Context context, @LayoutRes int mLayoutId) {
+		super(context, mLayoutId);
+		this.mLayoutId = mLayoutId;
+		// Initialize the cache & image fetcher
+		mImageFetcher = ApolloUtils.getImageFetcher(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @NonNull
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Recycle ViewHolder's items
-        MusicHolder holder;
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(mLayoutId, parent, false);
-            holder = new MusicHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        // Retrieve the data holder
-        Album album = getItem(position);
-        if (album != null) {
-            // Set each album name (line one)
-            holder.mLineOne.setText(album.getName());
-            // Set the artist name (line two)
-            holder.mLineTwo.setText(album.getArtist());
-            // Asynchronously load the album images into the adapter
-            mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
-            // List view only items
-            if (mLoadExtraData) {
-                // Set the number of songs (line three)
-                String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
-                if (holder.mLineThree != null)
-                    holder.mLineThree.setText(count);
-                // register album art click listener
-                ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
-            }
-        }
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@NonNull
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		// Recycle ViewHolder's items
+		MusicHolder holder;
+		if (convertView == null) {
+			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+			convertView = inflater.inflate(mLayoutId, parent, false);
+			holder = new MusicHolder(convertView);
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		// Retrieve the data holder
+		Album album = getItem(position);
+		if (album != null) {
+			// Set each album name (line one)
+			holder.mLineOne.setText(album.getName());
+			// Set the artist name (line two)
+			holder.mLineTwo.setText(album.getArtist());
+			// Asynchronously load the album images into the adapter
+			mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+			// List view only items
+			if (mLoadExtraData) {
+				// Set the number of songs (line three)
+				String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
+				if (holder.mLineThree != null)
+					holder.mLineThree.setText(count);
+				// register album art click listener
+				ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
+			}
+		}
+		return convertView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getItemId(int position) {
-        Album album = getItem(position);
-        if (album != null)
-            return album.getId();
-        return super.getItemId(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getItemId(int position) {
+		Album album = getItem(position);
+		if (album != null)
+			return album.getId();
+		return super.getItemId(position);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 
-    /**
-     * @param pause True to temporarily pause the disk cache, false otherwise.
-     */
-    public void setPauseDiskCache(boolean pause) {
-        if (mImageFetcher != null) {
-            mImageFetcher.setPauseDiskCache(pause);
-        }
-    }
+	/**
+	 * @param pause True to temporarily pause the disk cache, false otherwise.
+	 */
+	public void setPauseDiskCache(boolean pause) {
+		if (mImageFetcher != null) {
+			mImageFetcher.setPauseDiskCache(pause);
+		}
+	}
 
-    /**
-     * Flushes the disk cache.
-     */
-    public void flush() {
-        mImageFetcher.flush();
-    }
+	/**
+	 * Flushes the disk cache.
+	 */
+	public void flush() {
+		mImageFetcher.flush();
+	}
 
-    /**
-     * enable extra information
-     */
-    public void setLoadExtraData() {
-        mLoadExtraData = true;
-        notifyDataSetChanged();
-    }
+	/**
+	 * enable extra information
+	 */
+	public void setLoadExtraData() {
+		mLoadExtraData = true;
+		notifyDataSetChanged();
+	}
 }

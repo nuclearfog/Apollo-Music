@@ -14,75 +14,75 @@
   limitations under the License.
 -->
 <com.andrew.apollo.ui.views.CarouselTab xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/profile_tab_photo"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/theme_preview"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="ContentDescription" />
+		<ImageView
+			android:id="@+id/profile_tab_photo"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/theme_preview"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/profile_tab_alpha_overlay"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="@id/profile_tab_photo"
-            app:layout_constraintTop_toTopOf="@id/profile_tab_photo"
-            app:layout_constraintBottom_toBottomOf="@id/profile_tab_photo"
-            app:layout_constraintEnd_toEndOf="@id/profile_tab_photo"
-            tools:ignore="ContentDescription" />
+		<ImageView
+			android:id="@+id/profile_tab_alpha_overlay"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:scaleType="centerCrop"
+			app:layout_constraintStart_toStartOf="@id/profile_tab_photo"
+			app:layout_constraintTop_toTopOf="@id/profile_tab_photo"
+			app:layout_constraintBottom_toBottomOf="@id/profile_tab_photo"
+			app:layout_constraintEnd_toEndOf="@id/profile_tab_photo"
+			tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/profile_tab_album_art"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            android:scaleType="centerCrop"
-            android:src="@drawable/default_artwork"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1.0"
-            tools:ignore="ContentDescription" />
+		<ImageView
+			android:id="@+id/profile_tab_album_art"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:visibility="gone"
+			android:scaleType="centerCrop"
+			android:src="@drawable/default_artwork"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintDimensionRatio="1.0"
+			tools:ignore="ContentDescription" />
 
-        <TextView
-            android:id="@+id/profile_tab_label"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/profile_carousel_label_height"
-            android:background="@color/carousell_text_background"
-            android:paddingLeft="@dimen/profile_label_padding"
-            android:paddingRight="@dimen/profile_label_padding"
-            android:gravity="left|center_vertical"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="RtlHardcoded" />
+		<TextView
+			android:id="@+id/profile_tab_label"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/profile_carousel_label_height"
+			android:background="@color/carousell_text_background"
+			android:paddingLeft="@dimen/profile_label_padding"
+			android:paddingRight="@dimen/profile_label_padding"
+			android:gravity="left|center_vertical"
+			android:singleLine="true"
+			android:textColor="@color/white"
+			android:textSize="@dimen/text_size_large"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			tools:ignore="RtlHardcoded" />
 
-        <com.andrew.apollo.ui.views.theme.Colorstrip
-            android:id="@+id/profile_tab_colorstrip"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/profile_indicator_height"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+		<com.andrew.apollo.ui.views.theme.Colorstrip
+			android:id="@+id/profile_tab_colorstrip"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/profile_indicator_height"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.andrew.apollo.ui.views.CarouselTab>

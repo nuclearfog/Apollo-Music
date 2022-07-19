@@ -16,42 +16,42 @@ import java.util.TreeSet;
  */
 public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
 
-    /**
-     * custom comparator to sort folders by name and not by path
-     */
-    private static final Comparator<File> COMPARATOR = new Comparator<File>() {
-        @Override
-        public int compare(File file1, File file2) {
-            return file1.getName().compareToIgnoreCase(file2.getName());
-        }
-    };
+	/**
+	 * custom comparator to sort folders by name and not by path
+	 */
+	private static final Comparator<File> COMPARATOR = new Comparator<File>() {
+		@Override
+		public int compare(File file1, File file2) {
+			return file1.getName().compareToIgnoreCase(file2.getName());
+		}
+	};
 
-    /**
-     * @param paramContext Activity context
-     */
-    public FolderLoader(Context paramContext) {
-        super(paramContext);
-    }
+	/**
+	 * @param paramContext Activity context
+	 */
+	public FolderLoader(Context paramContext) {
+		super(paramContext);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<File> loadInBackground() {
-        // init tree set to sort folder by name
-        TreeSet<File> tree = new TreeSet<>(COMPARATOR);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<File> loadInBackground() {
+		// init tree set to sort folder by name
+		TreeSet<File> tree = new TreeSet<>(COMPARATOR);
 
-        Cursor cursor = CursorFactory.makeFolderCursor(getContext());
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    String pathName = cursor.getString(0);
-                    File folder = new File(pathName).getAbsoluteFile().getParentFile();
-                    tree.add(folder);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-        return new ArrayList<>(tree);
-    }
+		Cursor cursor = CursorFactory.makeFolderCursor(getContext());
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				do {
+					String pathName = cursor.getString(0);
+					File folder = new File(pathName).getAbsoluteFile().getParentFile();
+					tree.add(folder);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return new ArrayList<>(tree);
+	}
 }

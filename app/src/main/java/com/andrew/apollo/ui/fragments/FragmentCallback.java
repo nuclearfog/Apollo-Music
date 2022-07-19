@@ -7,13 +7,13 @@ package com.andrew.apollo.ui.fragments;
  */
 public interface FragmentCallback {
 
-    /**
-     * reload content after change
-     */
-    void refresh();
+	/**
+	 * reload content after change
+	 */
+	void refresh();
 
-    /**
-     * scroll to current item
-     */
-    void setCurrentTrack();
+	/**
+	 * scroll to current item
+	 */
+	void setCurrentTrack();
 }

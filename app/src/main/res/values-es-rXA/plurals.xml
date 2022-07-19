@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one">1 álbum</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> álbumes</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one">1 canción</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> canciones</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one">amestóse 1 canción a la lista.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones amestaes a la llista.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one">desanicióse 1 canción de la llista.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones desaniciaes de la llista.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one">amestóse 1 canción a la cola.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones amestaes a la cola.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one">desanicióse 1 canción.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> canciones desaniciaes.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one">1 álbum</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> álbumes</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one">1 canción</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> canciones</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one">amestóse 1 canción a la lista.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones amestaes a la llista.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one">desanicióse 1 canción de la llista.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones desaniciaes de la llista.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one">amestóse 1 canción a la cola.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> canciones amestaes a la cola.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one">desanicióse 1 canción.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> canciones desaniciaes.</item>
+	</plurals>
 </resources>

@@ -25,14 +25,14 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class Colorstrip extends View {
 
-    /**
-     * @param context The {@link Context} to use
-     * @param attrs   The attributes of the XML tag that is inflating the view.
-     */
-    public Colorstrip(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        // Theme the colorstrip
-        int color = PreferenceUtils.getInstance(context).getDefaultThemeColor();
-        setBackgroundColor(color);
-    }
+	/**
+	 * @param context The {@link Context} to use
+	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 */
+	public Colorstrip(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		// Theme the colorstrip
+		int color = PreferenceUtils.getInstance(context).getDefaultThemeColor();
+		setBackgroundColor(color);
+	}
 }

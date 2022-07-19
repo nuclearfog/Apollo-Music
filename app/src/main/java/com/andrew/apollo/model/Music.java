@@ -7,49 +7,49 @@ import androidx.annotation.NonNull;
  */
 public abstract class Music {
 
-    /**
-     * ID of the element
-     */
-    protected final long id;
+	/**
+	 * ID of the element
+	 */
+	protected final long id;
 
-    /**
-     * name of the element
-     */
-    protected final String name;
+	/**
+	 * name of the element
+	 */
+	protected final String name;
 
-    /**
-     *
-     */
-    protected Music(long id, String name) {
-        if (name != null)
-            this.name = name;
-        else
-            this.name = "";
-        this.id = id;
-    }
+	/**
+	 *
+	 */
+	protected Music(long id, String name) {
+		if (name != null)
+			this.name = name;
+		else
+			this.name = "";
+		this.id = id;
+	}
 
-    /**
-     * get name of the item like artist name or track name
-     *
-     * @return name of the item
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * get name of the item like artist name or track name
+	 *
+	 * @return name of the item
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * get ID of the item like artist, album or song ID
-     *
-     * @return ID of the item
-     */
-    public final long getId() {
-        return id;
-    }
+	/**
+	 * get ID of the item like artist, album or song ID
+	 *
+	 * @return ID of the item
+	 */
+	public final long getId() {
+		return id;
+	}
 
 
-    @NonNull
-    @Override
-    public String toString() {
-        return name;
-    }
+	@NonNull
+	@Override
+	public String toString() {
+		return name;
+	}
 }

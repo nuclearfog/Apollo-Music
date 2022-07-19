@@ -41,96 +41,96 @@ import com.andrew.apollo.utils.ThemeUtils;
  */
 public class HomeActivity extends ActivityBase {
 
-    /**
-     * request code for permission result
-     */
-    private static final int REQ_CHECK_PERM = 0x1139398F;
+	/**
+	 * request code for permission result
+	 */
+	private static final int REQ_CHECK_PERM = 0x1139398F;
 
-    /**
-     * permissions needed for this app
-     */
-    private static final String[] PERMISSIONS;
+	/**
+	 * permissions needed for this app
+	 */
+	private static final String[] PERMISSIONS;
 
-    /**
-     * audio
-     */
-    private MusicBrowserPhoneFragment fragment;
+	/**
+	 * audio
+	 */
+	private MusicBrowserPhoneFragment fragment;
 
-    static {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
-        } else {
-            PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
-        }
-    }
+	static {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
+		} else {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base);
-        Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_base);
+		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 
-        // Initialize the theme resources
-        ThemeUtils mResources = new ThemeUtils(this);
-        // Set the overflow style
-        mResources.setOverflowStyle(this);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
-        }
-        // initialize only if it is the first time
-        if (savedInstanceState == null) {
-            // check permissions before initialization
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                for (String permission : PERMISSIONS) {
-                    if (checkSelfPermission(permission) != PERMISSION_GRANTED) {
-                        // request first permission before initialization
-                        requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
-                        return;
-                    }
-                }
-            }
-            init();
-        }
-    }
+		// Initialize the theme resources
+		ThemeUtils mResources = new ThemeUtils(this);
+		// Set the overflow style
+		mResources.setOverflowStyle(this);
+		setSupportActionBar(toolbar);
+		if (getSupportActionBar() != null) {
+			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+		}
+		// initialize only if it is the first time
+		if (savedInstanceState == null) {
+			// check permissions before initialization
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				for (String permission : PERMISSIONS) {
+					if (checkSelfPermission(permission) != PERMISSION_GRANTED) {
+						// request first permission before initialization
+						requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
+						return;
+					}
+				}
+			}
+			init();
+		}
+	}
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // check if permissions are granted
-        if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
-            for (int grantResult : grantResults) {
-                if (grantResult == PERMISSION_DENIED) {
-                    Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
-                    finish();
-                    return;
-                }
-            }
-            init();
-        }
-    }
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		// check if permissions are granted
+		if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
+			for (int grantResult : grantResults) {
+				if (grantResult == PERMISSION_DENIED) {
+					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
+					finish();
+					return;
+				}
+			}
+			init();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
-            MusicUtils.onPostDelete(this);
-            fragment.refreshCurrent();
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+			MusicUtils.onPostDelete(this);
+			fragment.refreshCurrent();
+		}
+	}
 
-    /**
-     * initialize fragment
-     */
-    private void init() {
-        fragment = new MusicBrowserPhoneFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, fragment).commit();
-    }
+	/**
+	 * initialize fragment
+	 */
+	private void init() {
+		fragment = new MusicBrowserPhoneFragment();
+		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, fragment).commit();
+	}
 }

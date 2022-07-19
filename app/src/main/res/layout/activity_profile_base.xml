@@ -14,60 +14,60 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/activity_profile_base_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height" />
+	<androidx.appcompat.widget.Toolbar
+		android:id="@+id/activity_profile_base_toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/toolbar_height" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@drawable/pager_background">
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:background="@drawable/pager_background">
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/activity_profile_base_pager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/activity_profile_base_actionbar"
-            app:layout_constraintEnd_toEndOf="parent" />
+		<androidx.viewpager.widget.ViewPager
+			android:id="@+id/activity_profile_base_pager"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toTopOf="@id/activity_profile_base_actionbar"
+			app:layout_constraintEnd_toEndOf="parent" />
 
-        <include
-            android:id="@+id/activity_profile_base_tab_carousel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            layout="@layout/profile_tab_carousel" />
+		<include
+			android:id="@+id/activity_profile_base_tab_carousel"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			layout="@layout/profile_tab_carousel" />
 
-        <ImageView
-            android:id="@+id/activity_profile_base_shadow"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/shadow_height"
-            android:src="@drawable/top_shadow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="ContentDescription" />
+		<ImageView
+			android:id="@+id/activity_profile_base_shadow"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/shadow_height"
+			android:src="@drawable/top_shadow"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			tools:ignore="ContentDescription" />
 
-        <include
-            android:id="@+id/activity_profile_base_actionbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/bottom_action_bar_height"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            layout="@layout/bottom_action_bar" />
+		<include
+			android:id="@+id/activity_profile_base_actionbar"
+			android:layout_width="0dp"
+			android:layout_height="@dimen/bottom_action_bar_height"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			layout="@layout/bottom_action_bar" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+	</androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

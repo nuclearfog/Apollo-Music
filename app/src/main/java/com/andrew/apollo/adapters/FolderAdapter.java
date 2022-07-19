@@ -23,54 +23,54 @@ import java.io.File;
  */
 public class FolderAdapter extends ArrayAdapter<File> {
 
-    /**
-     * item layout reource
-     */
-    private static final int LAYOUT = R.layout.list_item_simple;
+	/**
+	 * item layout reource
+	 */
+	private static final int LAYOUT = R.layout.list_item_simple;
 
-    /**
-     * fragment layout inflater
-     */
-    private LayoutInflater inflater;
+	/**
+	 * fragment layout inflater
+	 */
+	private LayoutInflater inflater;
 
-    /**
-     * @param context application context
-     */
-    public FolderAdapter(Context context) {
-        super(context, LAYOUT);
-        // layout inflater from context
-        inflater = LayoutInflater.from(context);
-    }
+	/**
+	 * @param context application context
+	 */
+	public FolderAdapter(Context context) {
+		super(context, LAYOUT);
+		// layout inflater from context
+		inflater = LayoutInflater.from(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup container) {
-        MusicHolder holder;
-        if (convertView == null) {
-            // inflate view
-            convertView = inflater.inflate(LAYOUT, container, false);
-            holder = new MusicHolder(convertView);
-            // disable unnecessary views
-            holder.mLineTwo.setVisibility(GONE);
-            holder.mLineThree.setVisibility(GONE);
-            // set text size
-            float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
-            holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-            // set folder ICON
-            holder.mLineOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.folder, 0, 0, 0);
-            // attach holder to view
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        File folder = getItem(position);
-        if (folder != null) {
-            String name = folder.getName();
-            holder.mLineOne.setText(name);
-        }
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup container) {
+		MusicHolder holder;
+		if (convertView == null) {
+			// inflate view
+			convertView = inflater.inflate(LAYOUT, container, false);
+			holder = new MusicHolder(convertView);
+			// disable unnecessary views
+			holder.mLineTwo.setVisibility(GONE);
+			holder.mLineThree.setVisibility(GONE);
+			// set text size
+			float textSize = getContext().getResources().getDimension(R.dimen.text_size_large);
+			holder.mLineOne.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+			// set folder ICON
+			holder.mLineOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.folder, 0, 0, 0);
+			// attach holder to view
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		File folder = getItem(position);
+		if (folder != null) {
+			String name = folder.getName();
+			holder.mLineOne.setText(name);
+		}
+		return convertView;
+	}
 }

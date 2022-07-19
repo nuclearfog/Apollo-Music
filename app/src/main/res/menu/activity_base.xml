@@ -14,12 +14,12 @@
   limitations under the License.
 -->
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+	xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/menu_settings"
-        android:orderInCategory="4"
-        android:title="@string/menu_settings"
-        app:showAsAction="never" />
+	<item
+		android:id="@+id/menu_settings"
+		android:orderInCategory="4"
+		android:title="@string/menu_settings"
+		app:showAsAction="never" />
 
 </menu>

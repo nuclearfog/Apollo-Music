@@ -16,34 +16,34 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingQuantity">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> albumas</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> albumai</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> albumų</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> daina</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> dainos</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> dainų</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina įtraukta į grojaraštį.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos įtrauktos į grojaraštį.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų įtraukta į grojaraštį.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina pašalinta iš grojaraščio.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos pašalintos iš grojaraščio.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų pašalinta iš grojaraščio.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina įtraukta į eilę.</item>
-        <item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos įtrauktos į eilę.</item>
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų įtraukta į eilę.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete">%d</xliff:g> daina pašalinta.</item>
-        <item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> dainos pašalintos.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> dainų pašalinta.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> albumas</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> albumai</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> albumų</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> daina</item>
+		<item quantity="few"><xliff:g id="count">%d</xliff:g> dainos</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> dainų</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina įtraukta į grojaraštį.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos įtrauktos į grojaraštį.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų įtraukta į grojaraštį.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina pašalinta iš grojaraščio.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos pašalintos iš grojaraščio.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų pašalinta iš grojaraščio.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="27">%d</xliff:g> daina įtraukta į eilę.</item>
+		<item quantity="few"><xliff:g id="number" example="27">%d</xliff:g> dainos įtrauktos į eilę.</item>
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> dainų įtraukta į eilę.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete">%d</xliff:g> daina pašalinta.</item>
+		<item quantity="few"><xliff:g id="songs_to_delete">%d</xliff:g> dainos pašalintos.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> dainų pašalinta.</item>
+	</plurals>
 </resources>

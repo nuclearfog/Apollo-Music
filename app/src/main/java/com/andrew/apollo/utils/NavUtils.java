@@ -35,95 +35,95 @@ import com.devspark.appmsg.AppMsg;
  */
 public final class NavUtils {
 
-    /**
-     * Opens the profile of an artist.
-     *
-     * @param context    The {@link Context} to use.
-     * @param artistName The name of the artist
-     */
-    public static void openArtistProfile(Context context, String artistName) {
-        // Create a new bundle to transfer the artist info
-        Bundle bundle = new Bundle();
-        bundle.putLong(Config.ID, MusicUtils.getIdForArtist(context, artistName));
-        bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
-        bundle.putString(Config.ARTIST_NAME, artistName);
-        // Create the intent to launch the profile activity
-        Intent intent = new Intent(context, ProfileActivity.class);
-        intent.putExtras(bundle);
-        context.startActivity(intent);
-    }
+	/**
+	 * Opens the profile of an artist.
+	 *
+	 * @param context    The {@link Context} to use.
+	 * @param artistName The name of the artist
+	 */
+	public static void openArtistProfile(Context context, String artistName) {
+		// Create a new bundle to transfer the artist info
+		Bundle bundle = new Bundle();
+		bundle.putLong(Config.ID, MusicUtils.getIdForArtist(context, artistName));
+		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
+		bundle.putString(Config.ARTIST_NAME, artistName);
+		// Create the intent to launch the profile activity
+		Intent intent = new Intent(context, ProfileActivity.class);
+		intent.putExtras(bundle);
+		context.startActivity(intent);
+	}
 
-    /**
-     * Opens the profile of an album.
-     *
-     * @param context    The {@link Context} to use.
-     * @param albumName  The name of the album
-     * @param artistName The name of the album artist
-     * @param albumId    The id of the album
-     */
-    public static void openAlbumProfile(Context context, String albumName, String artistName, long albumId) {
-        // Create a new bundle to transfer the album info
-        Bundle bundle = new Bundle();
-        bundle.putString(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
-        bundle.putString(Config.ARTIST_NAME, artistName);
-        bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
-        bundle.putLong(Config.ID, albumId);
-        bundle.putString(Config.NAME, albumName);
-        // Create the intent to launch the profile activity
-        Intent intent = new Intent(context, ProfileActivity.class);
-        intent.putExtras(bundle);
-        context.startActivity(intent);
-    }
+	/**
+	 * Opens the profile of an album.
+	 *
+	 * @param context    The {@link Context} to use.
+	 * @param albumName  The name of the album
+	 * @param artistName The name of the album artist
+	 * @param albumId    The id of the album
+	 */
+	public static void openAlbumProfile(Context context, String albumName, String artistName, long albumId) {
+		// Create a new bundle to transfer the album info
+		Bundle bundle = new Bundle();
+		bundle.putString(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
+		bundle.putString(Config.ARTIST_NAME, artistName);
+		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
+		bundle.putLong(Config.ID, albumId);
+		bundle.putString(Config.NAME, albumName);
+		// Create the intent to launch the profile activity
+		Intent intent = new Intent(context, ProfileActivity.class);
+		intent.putExtras(bundle);
+		context.startActivity(intent);
+	}
 
-    /**
-     * Opens the sound effects panel or DSP manager in CM
-     *
-     * @param activity The {@link Activity} to use.
-     */
-    public static void openEffectsPanel(Activity activity) {
-        try {
-            Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-            effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicUtils.getAudioSessionId());
-            activity.startActivity(effects);
-        } catch (ActivityNotFoundException notFound) {
-            AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
-            notFound.printStackTrace();
-        }
-    }
+	/**
+	 * Opens the sound effects panel or DSP manager in CM
+	 *
+	 * @param activity The {@link Activity} to use.
+	 */
+	public static void openEffectsPanel(Activity activity) {
+		try {
+			Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+			effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicUtils.getAudioSessionId());
+			activity.startActivity(effects);
+		} catch (ActivityNotFoundException notFound) {
+			AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
+			notFound.printStackTrace();
+		}
+	}
 
-    /**
-     * Opens to {@link SettingsActivity}.
-     *
-     * @param context The {@link Context} to use.
-     */
-    public static void openSettings(Context context) {
-        Intent intent = new Intent(context, SettingsActivity.class);
-        context.startActivity(intent);
-    }
+	/**
+	 * Opens to {@link SettingsActivity}.
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public static void openSettings(Context context) {
+		Intent intent = new Intent(context, SettingsActivity.class);
+		context.startActivity(intent);
+	}
 
-    /**
-     * Opens to {@link SearchActivity}.
-     *
-     * @param activity The {@link Activity} to start a new Activity.
-     * @param query    The search query.
-     */
-    public static void openSearch(Activity activity, String query) {
-        Intent intent = new Intent(activity, SearchActivity.class);
-        intent.putExtra(SearchManager.QUERY, query);
-        activity.startActivity(intent);
-    }
+	/**
+	 * Opens to {@link SearchActivity}.
+	 *
+	 * @param activity The {@link Activity} to start a new Activity.
+	 * @param query    The search query.
+	 */
+	public static void openSearch(Activity activity, String query) {
+		Intent intent = new Intent(activity, SearchActivity.class);
+		intent.putExtra(SearchManager.QUERY, query);
+		activity.startActivity(intent);
+	}
 
-    /**
-     * Opens to {@link HomeActivity}.
-     *
-     * @param activity The {@link Activity} to use.
-     */
-    public static void goHome(Activity activity) {
-        Intent intent = new Intent(activity, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(intent);
-        activity.finish();
-    }
+	/**
+	 * Opens to {@link HomeActivity}.
+	 *
+	 * @param activity The {@link Activity} to use.
+	 */
+	public static void goHome(Activity activity) {
+		Intent intent = new Intent(activity, HomeActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		activity.startActivity(intent);
+		activity.finish();
+	}
 }

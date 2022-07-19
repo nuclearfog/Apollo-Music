@@ -32,62 +32,62 @@ import java.util.Locale;
  */
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    private List<Fragment> fragments = new ArrayList<>(4);
+	private List<Fragment> fragments = new ArrayList<>(4);
 
-    private String[] titles;
+	private String[] titles;
 
-    /**
-     * Constructor of <code>PagerAdapter<code>
-     */
-    public PagerAdapter(Context context, FragmentManager fm) {
-        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        titles = context.getResources().getStringArray(R.array.page_titles);
-    }
+	/**
+	 * Constructor of <code>PagerAdapter<code>
+	 */
+	public PagerAdapter(Context context, FragmentManager fm) {
+		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+		titles = context.getResources().getStringArray(R.array.page_titles);
+	}
 
-    /**
-     * Method that adds a new fragment class to the viewer (the fragment is
-     * internally instantiate)
-     *
-     * @param fragment The full qualified name of fragment class.
-     * @param params   The instantiate params.
-     */
-    public void add(Fragment fragment, @Nullable Bundle params) {
-        if (params != null)
-            fragment.setArguments(params);
-        fragments.add(fragment);
-        notifyDataSetChanged();
-    }
+	/**
+	 * Method that adds a new fragment class to the viewer (the fragment is
+	 * internally instantiate)
+	 *
+	 * @param fragment The full qualified name of fragment class.
+	 * @param params   The instantiate params.
+	 */
+	public void add(Fragment fragment, @Nullable Bundle params) {
+		if (params != null)
+			fragment.setArguments(params);
+		fragments.add(fragment);
+		notifyDataSetChanged();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @NonNull
-    public Fragment getItem(int position) {
-        return fragments.get(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@NonNull
+	public Fragment getItem(int position) {
+		return fragments.get(position);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getCount() {
-        return fragments.size();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getCount() {
+		return fragments.size();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return titles[position].toUpperCase(Locale.getDefault());
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CharSequence getPageTitle(int position) {
+		return titles[position].toUpperCase(Locale.getDefault());
+	}
 
-    /**
-     * clear all fragments from adapter
-     */
-    public void clear() {
-        fragments.clear();
-        notifyDataSetChanged();
-    }
+	/**
+	 * clear all fragments from adapter
+	 */
+	public void clear() {
+		fragments.clear();
+		notifyDataSetChanged();
+	}
 }

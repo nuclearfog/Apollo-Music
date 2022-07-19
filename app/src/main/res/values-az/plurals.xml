@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> albom</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> albom</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> mahnı</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> mahnı</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısına əlavə edildi.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısına əlavə edildi.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısından çıxarıldı.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısından çıxarıldı.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı sıraya əlavə olundu.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı sıraya əlavə olundu.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> mahnı silindi.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> mahnı silindi.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> albom</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> albom</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> mahnı</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> mahnı</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısına əlavə edildi.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısına əlavə edildi.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısından çıxarıldı.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı çalma siyahısından çıxarıldı.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> mahnı sıraya əlavə olundu.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> mahnı sıraya əlavə olundu.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> mahnı silindi.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> mahnı silindi.</item>
+	</plurals>
 </resources>

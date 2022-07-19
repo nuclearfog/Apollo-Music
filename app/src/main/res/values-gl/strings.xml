@@ -16,32 +16,32 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="page_recent">Recente</string>
-    <string name="page_artists">Artistas</string>
-    <string name="page_albums">Álbumes</string>
-    <string name="page_songs">Cancións</string>
-    <string name="page_playlists">Listas de reprodución</string>
-    <string name="page_genres">Xéneros</string>
-    <string name="menu_shuffle">Todo aleatorio</string>
-    <string name="menu_play_all">Reproducir todo</string>
-    <string name="menu_sort_by">Ordenar por</string>
-    <string name="menu_share">Compartir</string>
-    <string name="menu_equalizer">Ecualizador</string>
-    <string name="menu_simple">Sinxelo</string>
-    <string name="menu_detailed">Detallado</string>
-    <string name="menu_view_as">Ver como</string>
-    <string name="sort_order_entry_az">A-Z</string>
-    <string name="sort_order_entry_za">Z-A</string>
-    <string name="sort_order_entry_artist">Artista</string>
-    <string name="sort_order_entry_album">Álbum</string>
-    <string name="sort_order_entry_duration">Duración</string>
-    <string name="sort_order_entry_date_added">Engadida o</string>
-    <string name="sort_order_entry_track_list">Lista de cancións</string>
-    <string name="sort_order_entry_number_of_songs">Número de cancións</string>
-    <string name="sort_order_entry_number_of_albums">Número de álbumes</string>
-    <string name="playlist_favorite">Favorito</string>
-    <string name="playlist_favorites">Favoritos</string>
-    <string name="save">Gardar</string>
-    <string name="cancel">Cancelar</string>
-    <string name="delete_dialog_title">Eliminar <xliff:g id="item" example="album">%s</xliff:g>?</string>
+	<string name="page_recent">Recente</string>
+	<string name="page_artists">Artistas</string>
+	<string name="page_albums">Álbumes</string>
+	<string name="page_songs">Cancións</string>
+	<string name="page_playlists">Listas de reprodución</string>
+	<string name="page_genres">Xéneros</string>
+	<string name="menu_shuffle">Todo aleatorio</string>
+	<string name="menu_play_all">Reproducir todo</string>
+	<string name="menu_sort_by">Ordenar por</string>
+	<string name="menu_share">Compartir</string>
+	<string name="menu_equalizer">Ecualizador</string>
+	<string name="menu_simple">Sinxelo</string>
+	<string name="menu_detailed">Detallado</string>
+	<string name="menu_view_as">Ver como</string>
+	<string name="sort_order_entry_az">A-Z</string>
+	<string name="sort_order_entry_za">Z-A</string>
+	<string name="sort_order_entry_artist">Artista</string>
+	<string name="sort_order_entry_album">Álbum</string>
+	<string name="sort_order_entry_duration">Duración</string>
+	<string name="sort_order_entry_date_added">Engadida o</string>
+	<string name="sort_order_entry_track_list">Lista de cancións</string>
+	<string name="sort_order_entry_number_of_songs">Número de cancións</string>
+	<string name="sort_order_entry_number_of_albums">Número de álbumes</string>
+	<string name="playlist_favorite">Favorito</string>
+	<string name="playlist_favorites">Favoritos</string>
+	<string name="save">Gardar</string>
+	<string name="cancel">Cancelar</string>
+	<string name="delete_dialog_title">Eliminar <xliff:g id="item" example="album">%s</xliff:g>?</string>
 </resources>

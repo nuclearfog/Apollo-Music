@@ -14,32 +14,32 @@
   limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/list_preferred_item_padding">
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="@dimen/list_preferred_item_padding">
 
-    <TextView
-        android:id="@+id/list_base_empty_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingLeft="@dimen/list_empty_text_padding"
-        android:paddingStart="@dimen/list_empty_text_padding"
-        android:paddingRight="@dimen/list_empty_text_padding"
-        android:paddingEnd="@dimen/list_empty_text_padding"
-        android:layout_gravity="center"
-        android:text="@string/empty_music" />
+	<TextView
+		android:id="@+id/list_base_empty_info"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:visibility="gone"
+		android:paddingLeft="@dimen/list_empty_text_padding"
+		android:paddingStart="@dimen/list_empty_text_padding"
+		android:paddingRight="@dimen/list_empty_text_padding"
+		android:paddingEnd="@dimen/list_empty_text_padding"
+		android:layout_gravity="center"
+		android:text="@string/empty_music" />
 
-    <com.andrew.apollo.ui.views.dragdrop.DragSortListView
-        android:id="@+id/list_base"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cacheColorHint="@color/transparent"
-        android:drawSelectorOnTop="false"
-        android:fadingEdge="vertical"
-        android:fastScrollAlwaysVisible="false"
-        android:fastScrollEnabled="true"
-        android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
-        android:scrollbars="none" />
+	<com.andrew.apollo.ui.views.dragdrop.DragSortListView
+		android:id="@+id/list_base"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:cacheColorHint="@color/transparent"
+		android:drawSelectorOnTop="false"
+		android:fadingEdge="vertical"
+		android:fastScrollAlwaysVisible="false"
+		android:fastScrollEnabled="true"
+		android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
+		android:scrollbars="none" />
 
 </FrameLayout>

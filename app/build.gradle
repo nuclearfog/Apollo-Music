@@ -1,52 +1,52 @@
 plugins {
-    id 'com.android.application'
-    id 'io.michaelrocks.paranoid'
-    id 'ru.cleverpumpkin.proguard-dictionaries-generator'
+	id 'com.android.application'
+	id 'io.michaelrocks.paranoid'
+	id 'ru.cleverpumpkin.proguard-dictionaries-generator'
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '33.0.0'
-    useLibrary 'org.apache.http.legacy'
+	compileSdkVersion 32
+	buildToolsVersion '33.0.0'
+	useLibrary 'org.apache.http.legacy'
 
-    defaultConfig {
-        applicationId 'com.andrew.apollo'
-        minSdkVersion 16
-        targetSdkVersion 32
-        versionCode 14
-        versionName '1.1.6'
-    }
+	defaultConfig {
+		applicationId 'com.andrew.apollo'
+		minSdkVersion 16
+		targetSdkVersion 32
+		versionCode 14
+		versionName '1.1.6'
+	}
 
-    buildTypes {
-        release {
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            multiDexEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix 'd'
-        }
-    }
+	buildTypes {
+		release {
+			debuggable false
+			minifyEnabled true
+			shrinkResources true
+			multiDexEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+		}
+		debug {
+			applicationIdSuffix '.debug'
+			versionNameSuffix 'd'
+		}
+	}
 
-    paranoid {
-        enabled true
-    }
+	paranoid {
+		enabled true
+	}
 }
 
 proguardDictionaries {
-    minLineLength 4
-    maxLineLength 8
-    linesCountInDictionary 15000
-    dictionaryNames = ['dict/class-dictionary', 'dict/package-dictionary', 'dict/obfuscation-dictionary']
+	minLineLength 4
+	maxLineLength 8
+	linesCountInDictionary 15000
+	dictionaryNames = ['dict/class-dictionary', 'dict/package-dictionary', 'dict/obfuscation-dictionary']
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.preference:preference:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.media:media:1.6.0'
+	implementation 'androidx.appcompat:appcompat:1.4.2'
+	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+	implementation 'androidx.preference:preference:1.2.0'
+	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+	implementation 'androidx.media:media:1.6.0'
 }

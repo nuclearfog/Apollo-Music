@@ -28,37 +28,37 @@ import java.util.logging.Logger;
  */
 public class ApolloApplication extends Application {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // Enable strict mode logging
-        if (BuildConfig.DEBUG) {
-            enableStrictMode();
-        }
-        // Turn off logging for jaudiotagger.
-        Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		// Enable strict mode logging
+		if (BuildConfig.DEBUG) {
+			enableStrictMode();
+		}
+		// Turn off logging for jaudiotagger.
+		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onLowMemory() {
-        ImageCache.getInstance(this).evictAll();
-        super.onLowMemory();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onLowMemory() {
+		ImageCache.getInstance(this).evictAll();
+		super.onLowMemory();
+	}
 
-    /**
-     *
-     */
-    private void enableStrictMode() {
-        StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
-        StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
-        threadPolicyBuilder.penaltyFlashScreen();
-        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-        StrictMode.setVmPolicy(vmPolicyBuilder.build());
-    }
+	/**
+	 *
+	 */
+	private void enableStrictMode() {
+		StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
+		StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
+		threadPolicyBuilder.penaltyFlashScreen();
+		StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+		StrictMode.setVmPolicy(vmPolicyBuilder.build());
+	}
 }

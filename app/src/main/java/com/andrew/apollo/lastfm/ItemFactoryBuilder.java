@@ -33,41 +33,41 @@ import java.util.Map;
  */
 final class ItemFactoryBuilder {
 
-    private final static ItemFactoryBuilder INSTANCE = new ItemFactoryBuilder();
+	private final static ItemFactoryBuilder INSTANCE = new ItemFactoryBuilder();
 
-    @SuppressWarnings("rawtypes")
-    private Map<Class, ItemFactory> factories = new HashMap<>();
+	@SuppressWarnings("rawtypes")
+	private Map<Class, ItemFactory> factories = new HashMap<>();
 
-    private ItemFactoryBuilder() {
-        // register default factories
-        addItemFactory(Album.class, Album.FACTORY);
-        addItemFactory(Artist.class, Artist.FACTORY);
-        addItemFactory(Image.class, Image.FACTORY);
-    }
+	private ItemFactoryBuilder() {
+		// register default factories
+		addItemFactory(Album.class, Album.FACTORY);
+		addItemFactory(Artist.class, Artist.FACTORY);
+		addItemFactory(Image.class, Image.FACTORY);
+	}
 
-    /**
-     * Retrieve the instance of the <code>ItemFactoryBuilder</code>.
-     *
-     * @return the instance
-     */
-    public static ItemFactoryBuilder getFactoryBuilder() {
-        return INSTANCE;
-    }
+	/**
+	 * Retrieve the instance of the <code>ItemFactoryBuilder</code>.
+	 *
+	 * @return the instance
+	 */
+	public static ItemFactoryBuilder getFactoryBuilder() {
+		return INSTANCE;
+	}
 
 
-    public <T> void addItemFactory(Class<T> itemClass, ItemFactory<T> factory) {
-        factories.put(itemClass, factory);
-    }
+	public <T> void addItemFactory(Class<T> itemClass, ItemFactory<T> factory) {
+		factories.put(itemClass, factory);
+	}
 
-    /**
-     * Retrieves an {@link ItemFactory} for the given type, or <code>null</code>
-     * if no such factory was registered.
-     *
-     * @param itemClass the type's Class object
-     * @return the <code>ItemFactory</code> or <code>null</code>
-     */
-    @SuppressWarnings("unchecked")
-    public <T> ItemFactory<T> getItemFactory(Class<T> itemClass) {
-        return factories.get(itemClass);
-    }
+	/**
+	 * Retrieves an {@link ItemFactory} for the given type, or <code>null</code>
+	 * if no such factory was registered.
+	 *
+	 * @param itemClass the type's Class object
+	 * @return the <code>ItemFactory</code> or <code>null</code>
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> ItemFactory<T> getItemFactory(Class<T> itemClass) {
+		return factories.get(itemClass);
+	}
 }

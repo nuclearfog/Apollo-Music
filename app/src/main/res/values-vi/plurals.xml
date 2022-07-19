@@ -16,22 +16,22 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> album</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> bài hát</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được thêm vào danh sách.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được xoá khỏi danh sách.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được thêm vào danh sách chờ.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> bài hát đã được xoá.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> album</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> bài hát</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được thêm vào danh sách.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được xoá khỏi danh sách.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="other"><xliff:g id="number" example="27">%d</xliff:g> bài hát được thêm vào danh sách chờ.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> bài hát đã được xoá.</item>
+	</plurals>
 </resources>

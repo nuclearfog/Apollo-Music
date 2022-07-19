@@ -31,177 +31,177 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class CarouselTab extends FrameLayoutWithOverlay {
 
-    private ImageFetcher mFetcher;
-    private ImageView mPhoto;
-    private ImageView mAlbumArt;
-    private TextView mLabelView;
-    private View mColorstrip;
+	private ImageFetcher mFetcher;
+	private ImageView mPhoto;
+	private ImageView mAlbumArt;
+	private TextView mLabelView;
+	private View mColorstrip;
 
-    /**
-     * @param context The {@link Context} to use
-     * @param attrs   The attributes of the XML tag that is inflating the view.
-     */
-    public CarouselTab(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mFetcher = ApolloUtils.getImageFetcher(context);
-    }
+	/**
+	 * @param context The {@link Context} to use
+	 * @param attrs   The attributes of the XML tag that is inflating the view.
+	 */
+	public CarouselTab(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		mFetcher = ApolloUtils.getImageFetcher(context);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        mPhoto = findViewById(R.id.profile_tab_photo);
-        mAlbumArt = findViewById(R.id.profile_tab_album_art);
-        mLabelView = findViewById(R.id.profile_tab_label);
-        View mAlphaLayer = findViewById(R.id.profile_tab_alpha_overlay);
-        mColorstrip = findViewById(R.id.profile_tab_colorstrip);
-        // Set the alpha layer
-        setAlphaLayer(mAlphaLayer);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onFinishInflate() {
+		super.onFinishInflate();
+		mPhoto = findViewById(R.id.profile_tab_photo);
+		mAlbumArt = findViewById(R.id.profile_tab_album_art);
+		mLabelView = findViewById(R.id.profile_tab_label);
+		View mAlphaLayer = findViewById(R.id.profile_tab_alpha_overlay);
+		mColorstrip = findViewById(R.id.profile_tab_colorstrip);
+		// Set the alpha layer
+		setAlphaLayer(mAlphaLayer);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSelected(boolean selected) {
-        super.setSelected(selected);
-        if (selected) {
-            mColorstrip.setVisibility(View.VISIBLE);
-        } else {
-            mColorstrip.setVisibility(View.INVISIBLE);
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setSelected(boolean selected) {
+		super.setSelected(selected);
+		if (selected) {
+			mColorstrip.setVisibility(View.VISIBLE);
+		} else {
+			mColorstrip.setVisibility(View.INVISIBLE);
+		}
+	}
 
-    /**
-     * Used to set the artist image in the artist profile.
-     *
-     * @param context The {@link Context} to use.
-     * @param artist  The name of the artist in the profile the user is viewing.
-     */
-    public void setArtistPhoto(Context context, String artist) {
-        if (!TextUtils.isEmpty(artist)) {
-            mFetcher.loadArtistImage(artist, mPhoto);
-        } else {
-            setDefault(context);
-        }
-    }
+	/**
+	 * Used to set the artist image in the artist profile.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param artist  The name of the artist in the profile the user is viewing.
+	 */
+	public void setArtistPhoto(Context context, String artist) {
+		if (!TextUtils.isEmpty(artist)) {
+			mFetcher.loadArtistImage(artist, mPhoto);
+		} else {
+			setDefault(context);
+		}
+	}
 
-    /**
-     * Used to set the album art in the album profile.
-     *
-     * @param context The {@link Context} to use.
-     * @param album   The name of the album in the profile the user is viewing.
-     */
-    public void setAlbumPhoto(Context context, String album, String artist) {
-        if (!TextUtils.isEmpty(album)) {
-            mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt, mPhoto);
-            mAlbumArt.setVisibility(View.VISIBLE);
-        } else {
-            setDefault(context);
-        }
-    }
+	/**
+	 * Used to set the album art in the album profile.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param album   The name of the album in the profile the user is viewing.
+	 */
+	public void setAlbumPhoto(Context context, String album, String artist) {
+		if (!TextUtils.isEmpty(album)) {
+			mFetcher.loadAlbumImage(artist, album, MusicUtils.getIdForAlbum(context, album, artist), mAlbumArt, mPhoto);
+			mAlbumArt.setVisibility(View.VISIBLE);
+		} else {
+			setDefault(context);
+		}
+	}
 
-    /**
-     * Used to fetch for the album art via Last.fm.
-     *
-     * @param context The {@link Context} to use.
-     * @param album   The name of the album in the profile the user is viewing.
-     * @param artist  The name of the album artist in the profile the user is viewing
-     */
-    public void fetchAlbumPhoto(Context context, String album, String artist) {
-        if (!TextUtils.isEmpty(album)) {
-            mFetcher.removeFromCache(ImageFetcher.generateAlbumCacheKey(album, artist));
-            mFetcher.loadAlbumImage(artist, album, -1, mAlbumArt);
-        } else {
-            setDefault(context);
-        }
-    }
+	/**
+	 * Used to fetch for the album art via Last.fm.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param album   The name of the album in the profile the user is viewing.
+	 * @param artist  The name of the album artist in the profile the user is viewing
+	 */
+	public void fetchAlbumPhoto(Context context, String album, String artist) {
+		if (!TextUtils.isEmpty(album)) {
+			mFetcher.removeFromCache(ImageFetcher.generateAlbumCacheKey(album, artist));
+			mFetcher.loadAlbumImage(artist, album, -1, mAlbumArt);
+		} else {
+			setDefault(context);
+		}
+	}
 
-    /**
-     * Used to set the album art in the artist profile.
-     *
-     * @param context The {@link Context} to use.
-     * @param artist  The name of the artist in the profile the user is viewing.
-     */
-    public void setArtistAlbumPhoto(final Context context, final String artist) {
-        final String lastAlbum = MusicUtils.getLastAlbumForArtist(context, artist);
-        if (!TextUtils.isEmpty(lastAlbum)) {
-            // Set the last album the artist played
-            mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);
-            // Play the album
-            mPhoto.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    long[] albumList = MusicUtils.getSongListForAlbum(getContext(),
-                            MusicUtils.getIdForAlbum(context, lastAlbum, artist));
-                    MusicUtils.playAll(albumList, 0, false);
-                }
-            });
-        } else {
-            setDefault(context);
-        }
-    }
+	/**
+	 * Used to set the album art in the artist profile.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param artist  The name of the artist in the profile the user is viewing.
+	 */
+	public void setArtistAlbumPhoto(final Context context, final String artist) {
+		final String lastAlbum = MusicUtils.getLastAlbumForArtist(context, artist);
+		if (!TextUtils.isEmpty(lastAlbum)) {
+			// Set the last album the artist played
+			mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);
+			// Play the album
+			mPhoto.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					long[] albumList = MusicUtils.getSongListForAlbum(getContext(),
+							MusicUtils.getIdForAlbum(context, lastAlbum, artist));
+					MusicUtils.playAll(albumList, 0, false);
+				}
+			});
+		} else {
+			setDefault(context);
+		}
+	}
 
-    /**
-     * Used to set the header image for playlists and genres.
-     *
-     * @param context     The {@link Context} to use.
-     * @param profileName The key used to fetch the image.
-     */
-    public void setPlaylistOrGenrePhoto(Context context, String profileName) {
-        if (!TextUtils.isEmpty(profileName)) {
-            Bitmap image = mFetcher.getCachedBitmap(profileName);
-            if (image != null) {
-                mPhoto.setImageBitmap(image);
-            } else {
-                setDefault(context);
-            }
-        } else {
-            setDefault(context);
-        }
-    }
+	/**
+	 * Used to set the header image for playlists and genres.
+	 *
+	 * @param context     The {@link Context} to use.
+	 * @param profileName The key used to fetch the image.
+	 */
+	public void setPlaylistOrGenrePhoto(Context context, String profileName) {
+		if (!TextUtils.isEmpty(profileName)) {
+			Bitmap image = mFetcher.getCachedBitmap(profileName);
+			if (image != null) {
+				mPhoto.setImageBitmap(image);
+			} else {
+				setDefault(context);
+			}
+		} else {
+			setDefault(context);
+		}
+	}
 
-    /**
-     * @param context The {@link Context} to use.
-     */
-    public void setDefault(Context context) {
-        mPhoto.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.header_temp));
-    }
+	/**
+	 * @param context The {@link Context} to use.
+	 */
+	public void setDefault(Context context) {
+		mPhoto.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.header_temp));
+	}
 
-    /**
-     * @param label The string to set as the labe.
-     */
-    public void setLabel(String label) {
-        mLabelView.setText(label);
-    }
+	/**
+	 * @param label The string to set as the labe.
+	 */
+	public void setLabel(String label) {
+		mLabelView.setText(label);
+	}
 
-    /**
-     * Selects the label view.
-     */
-    public void showSelectedState() {
-        mLabelView.setSelected(true);
-    }
+	/**
+	 * Selects the label view.
+	 */
+	public void showSelectedState() {
+		mLabelView.setSelected(true);
+	}
 
-    /**
-     * Deselects the label view.
-     */
-    public void showDeselectedState() {
-        mLabelView.setSelected(false);
-    }
+	/**
+	 * Deselects the label view.
+	 */
+	public void showDeselectedState() {
+		mLabelView.setSelected(false);
+	}
 
-    /**
-     * @return The {@link ImageView} used to set the header photo.
-     */
-    public ImageView getPhoto() {
-        return mPhoto;
-    }
+	/**
+	 * @return The {@link ImageView} used to set the header photo.
+	 */
+	public ImageView getPhoto() {
+		return mPhoto;
+	}
 
-    /**
-     * @return The {@link ImageView} used to set the album art .
-     */
-    public ImageView getAlbumArt() {
-        return mAlbumArt;
-    }
+	/**
+	 * @return The {@link ImageView} used to set the album art .
+	 */
+	public ImageView getAlbumArt() {
+		return mAlbumArt;
+	}
 }

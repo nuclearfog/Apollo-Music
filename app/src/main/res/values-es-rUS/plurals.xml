@@ -16,8 +16,8 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> álbum</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> álbumes</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> álbum</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> álbumes</item>
+	</plurals>
 </resources>

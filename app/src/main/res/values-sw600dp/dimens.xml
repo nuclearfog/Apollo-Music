@@ -15,7 +15,7 @@
 -->
 <resources>
 
-    <!-- List item detailed height -->
-    <dimen name="list_item_detailed_height">164.0dip</dimen>
+	<!-- List item detailed height -->
+	<dimen name="list_item_detailed_height">164.0dip</dimen>
 
 </resources>

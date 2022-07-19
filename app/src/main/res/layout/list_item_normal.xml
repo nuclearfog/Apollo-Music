@@ -14,69 +14,69 @@
   limitations under the License.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/item_normal_height"
-    tools:ignore="ContentDescription">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="@dimen/item_normal_height"
+	tools:ignore="ContentDescription">
 
-    <ImageView
-        android:id="@+id/list_item_background"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/list_item_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+	<ImageView
+		android:id="@+id/list_item_background"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:background="@color/list_item_background"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:ignore="ContentDescription" />
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="@dimen/item_normal_height"
-        android:layout_height="@dimen/item_normal_height"
-        android:adjustViewBounds="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+	<ImageView
+		android:id="@+id/image"
+		android:layout_width="@dimen/item_normal_height"
+		android:layout_height="@dimen/item_normal_height"
+		android:adjustViewBounds="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentTop="true"
+		android:scaleType="fitCenter"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/line_one"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/list_preferred_item_padding"
-        android:layout_marginStart="@dimen/list_preferred_item_padding"
-        android:layout_above="@+id/line_two"
-        android:layout_toEndOf="@+id/image"
-        android:layout_toRightOf="@+id/image"
-        android:singleLine="true"
-        android:textColor="@color/line_one"
-        android:textSize="@dimen/text_size_medium"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/line_two"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<TextView
+		android:id="@+id/line_one"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="@dimen/list_preferred_item_padding"
+		android:layout_marginStart="@dimen/list_preferred_item_padding"
+		android:layout_above="@+id/line_two"
+		android:layout_toEndOf="@+id/image"
+		android:layout_toRightOf="@+id/image"
+		android:singleLine="true"
+		android:textColor="@color/line_one"
+		android:textSize="@dimen/text_size_medium"
+		android:textStyle="bold"
+		app:layout_constraintStart_toEndOf="@id/image"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintBottom_toTopOf="@id/line_two"
+		app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/line_two"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/list_item_text_padding"
-        android:layout_marginLeft="@dimen/list_preferred_item_padding"
-        android:layout_marginStart="@dimen/list_preferred_item_padding"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/image"
-        android:layout_toRightOf="@+id/image"
-        android:singleLine="true"
-        android:textColor="@color/line_two"
-        android:textSize="@dimen/text_size_small"
-        app:layout_constraintStart_toEndOf="@id/image"
-        app:layout_constraintTop_toBottomOf="@id/line_one"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+	<TextView
+		android:id="@+id/line_two"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:paddingBottom="@dimen/list_item_text_padding"
+		android:layout_marginLeft="@dimen/list_preferred_item_padding"
+		android:layout_marginStart="@dimen/list_preferred_item_padding"
+		android:layout_alignParentBottom="true"
+		android:layout_toEndOf="@+id/image"
+		android:layout_toRightOf="@+id/image"
+		android:singleLine="true"
+		android:textColor="@color/line_two"
+		android:textSize="@dimen/text_size_small"
+		app:layout_constraintStart_toEndOf="@id/image"
+		app:layout_constraintTop_toBottomOf="@id/line_one"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

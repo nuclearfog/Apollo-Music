@@ -28,51 +28,51 @@ import com.andrew.apollo.utils.ThemeUtils;
  */
 public class ThemesActivity extends ActivityBase {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base);
-        Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
-        // Initialize the theme resources
-        ThemeUtils mResources = new ThemeUtils(this);
-        // Set the overflow style
-        mResources.setOverflowStyle(this);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            mResources.themeActionBar(getSupportActionBar(), R.string.settings_theme_chooser_title);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        // Transact the theme fragment
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, new ThemeFragment()).commit();
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_base);
+		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
+		// Initialize the theme resources
+		ThemeUtils mResources = new ThemeUtils(this);
+		// Set the overflow style
+		mResources.setOverflowStyle(this);
+		setSupportActionBar(toolbar);
+		if (getSupportActionBar() != null) {
+			mResources.themeActionBar(getSupportActionBar(), R.string.settings_theme_chooser_title);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
+		// Transact the theme fragment
+		if (savedInstanceState == null) {
+			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, new ThemeFragment()).commit();
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.theme_shop, menu);
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.theme_shop, menu);
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        } else if (item.getItemId() == R.id.menu_shop) {
-            ThemeUtils utils = new ThemeUtils(this);
-            utils.shopFor(this);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+			return true;
+		} else if (item.getItemId() == R.id.menu_shop) {
+			ThemeUtils utils = new ThemeUtils(this);
+			utils.shopFor(this);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 }

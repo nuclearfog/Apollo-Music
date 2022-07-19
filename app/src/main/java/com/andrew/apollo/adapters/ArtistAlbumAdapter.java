@@ -35,169 +35,169 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
 
-    /**
-     * The header view
-     */
-    private static final int ITEM_VIEW_TYPE_HEADER = 0;
+	/**
+	 * The header view
+	 */
+	private static final int ITEM_VIEW_TYPE_HEADER = 0;
 
-    /**
-     * * The data in the list.
-     */
-    private static final int ITEM_VIEW_TYPE_MUSIC = 1;
+	/**
+	 * * The data in the list.
+	 */
+	private static final int ITEM_VIEW_TYPE_MUSIC = 1;
 
-    /**
-     * Number of views (ImageView, TextView, header)
-     */
-    private static final int VIEW_TYPE_COUNT = 2;
+	/**
+	 * Number of views (ImageView, TextView, header)
+	 */
+	private static final int VIEW_TYPE_COUNT = 2;
 
-    /**
-     * count of header views
-     */
-    private static final int HEADER_COUNT = 1;
+	/**
+	 * count of header views
+	 */
+	private static final int HEADER_COUNT = 1;
 
-    /**
-     * layout resource
-     */
-    private static final int LAYOUT = R.layout.list_item_detailed;
+	/**
+	 * layout resource
+	 */
+	private static final int LAYOUT = R.layout.list_item_detailed;
 
-    /**
-     * Image cache and image fetcher
-     */
-    private ImageFetcher mImageFetcher;
+	/**
+	 * Image cache and image fetcher
+	 */
+	private ImageFetcher mImageFetcher;
 
-    /**
-     * Placeholder view
-     */
-    private View mHeader;
+	/**
+	 * Placeholder view
+	 */
+	private View mHeader;
 
-    /**
-     * Constructor of <code>ArtistAlbumAdapter</code>
-     *
-     * @param context The {@link Context} to use
-     */
-    public ArtistAlbumAdapter(Context context) {
-        super(context, LAYOUT);
-        // Initialize the cache & image fetcher
-        mImageFetcher = ApolloUtils.getImageFetcher(context);
-        // create placeholder view
-        mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
-        mHeader.setVisibility(View.INVISIBLE);
-    }
+	/**
+	 * Constructor of <code>ArtistAlbumAdapter</code>
+	 *
+	 * @param context The {@link Context} to use
+	 */
+	public ArtistAlbumAdapter(Context context) {
+		super(context, LAYOUT);
+		// Initialize the cache & image fetcher
+		mImageFetcher = ApolloUtils.getImageFetcher(context);
+		// create placeholder view
+		mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
+		mHeader.setVisibility(View.INVISIBLE);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        // Return a faux header at position 0
-        if (position == 0) {
-            return mHeader;
-        }
-        // Recycle MusicHolder's items
-        MusicHolder holder;
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            convertView = inflater.inflate(LAYOUT, parent, false);
-            holder = new MusicHolder(convertView);
-            convertView.setTag(holder);
-        } else {
-            holder = (MusicHolder) convertView.getTag();
-        }
-        // Retrieve the album
-        Album album = getItem(position);
-        if (album != null) {
-            // Set each album name (line one)
-            holder.mLineOne.setText(album.getName());
-            // Set the number of songs (line two)
-            holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
-            // Set the album year (line three)
-            holder.mLineThree.setText(album.getRelease());
-            // Asynchronously load the album images into the adapter
-            mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
-            // register album art click listener
-            ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
-        }
-        return convertView;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@NonNull
+	@Override
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+		// Return a faux header at position 0
+		if (position == 0) {
+			return mHeader;
+		}
+		// Recycle MusicHolder's items
+		MusicHolder holder;
+		if (convertView == null) {
+			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+			convertView = inflater.inflate(LAYOUT, parent, false);
+			holder = new MusicHolder(convertView);
+			convertView.setTag(holder);
+		} else {
+			holder = (MusicHolder) convertView.getTag();
+		}
+		// Retrieve the album
+		Album album = getItem(position);
+		if (album != null) {
+			// Set each album name (line one)
+			holder.mLineOne.setText(album.getName());
+			// Set the number of songs (line two)
+			holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
+			// Set the album year (line three)
+			holder.mLineThree.setText(album.getRelease());
+			// Asynchronously load the album images into the adapter
+			mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+			// register album art click listener
+			ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
+		}
+		return convertView;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasStableIds() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getCount() {
-        return HEADER_COUNT + super.getCount();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getCount() {
+		return HEADER_COUNT + super.getCount();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Nullable
-    @Override
-    public Album getItem(int position) {
-        if (position >= HEADER_COUNT)
-            return super.getItem(position - HEADER_COUNT);
-        return null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Nullable
+	@Override
+	public Album getItem(int position) {
+		if (position >= HEADER_COUNT)
+			return super.getItem(position - HEADER_COUNT);
+		return null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getItemId(int position) {
-        Album album = getItem(position);
-        if (album != null)
-            return album.getId();
-        return super.getItemId(position);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long getItemId(int position) {
+		Album album = getItem(position);
+		if (album != null)
+			return album.getId();
+		return super.getItemId(position);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isEmpty() {
-        return super.getCount() == 0;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isEmpty() {
+		return super.getCount() == 0;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getViewTypeCount() {
+		return VIEW_TYPE_COUNT;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0)
-            return ITEM_VIEW_TYPE_HEADER;
-        return ITEM_VIEW_TYPE_MUSIC;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getItemViewType(int position) {
+		if (position == 0)
+			return ITEM_VIEW_TYPE_HEADER;
+		return ITEM_VIEW_TYPE_MUSIC;
+	}
 
-    /**
-     * @param pause True to temporarily pause the disk cache, false otherwise.
-     */
-    public void setPauseDiskCache(boolean pause) {
-        if (mImageFetcher != null) {
-            mImageFetcher.setPauseDiskCache(pause);
-        }
-    }
+	/**
+	 * @param pause True to temporarily pause the disk cache, false otherwise.
+	 */
+	public void setPauseDiskCache(boolean pause) {
+		if (mImageFetcher != null) {
+			mImageFetcher.setPauseDiskCache(pause);
+		}
+	}
 
-    /**
-     * Flushes the disk cache.
-     */
-    public void flush() {
-        mImageFetcher.flush();
-    }
+	/**
+	 * Flushes the disk cache.
+	 */
+	public void flush() {
+		mImageFetcher.flush();
+	}
 }

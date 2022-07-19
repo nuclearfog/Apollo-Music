@@ -16,28 +16,28 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <plurals name="Nalbums">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> Album</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> Alben</item>
-    </plurals>
-    <plurals name="Nsongs">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> Lidd</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> Lidder</item>
-    </plurals>
-    <plurals name="NNNtrackstoplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd gouf an d\'Ofspilllëscht gesat.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder goufen an d\'Ofspilllëscht gesat.</item>
-    </plurals>
-    <plurals name="NNNtracksfromplaylist">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd aus der Ofspilllëscht erausgeholl.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder aus der Ofspilllëscht erausgeholl.</item>
-    </plurals>
-    <plurals name="NNNtrackstoqueue">
-        <item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd gouf an d\'Waardeschlaang gesat.</item>
-        <item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder goufen an d\'Waardeschlaang gesat.</item>
-    </plurals>
-    <plurals name="NNNtracksdeleted">
-        <item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> Lidd gouf geläscht.</item>
-        <item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> Lidder goufe geläscht.</item>
-    </plurals>
+	<plurals name="Nalbums">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> Album</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> Alben</item>
+	</plurals>
+	<plurals name="Nsongs">
+		<item quantity="one"><xliff:g id="count">%d</xliff:g> Lidd</item>
+		<item quantity="other"><xliff:g id="count">%d</xliff:g> Lidder</item>
+	</plurals>
+	<plurals name="NNNtrackstoplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd gouf an d\'Ofspilllëscht gesat.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder goufen an d\'Ofspilllëscht gesat.</item>
+	</plurals>
+	<plurals name="NNNtracksfromplaylist">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd aus der Ofspilllëscht erausgeholl.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder aus der Ofspilllëscht erausgeholl.</item>
+	</plurals>
+	<plurals name="NNNtrackstoqueue">
+		<item quantity="one"><xliff:g id="number" example="1">%d</xliff:g> Lidd gouf an d\'Waardeschlaang gesat.</item>
+		<item quantity="other"><xliff:g id="number" example="1">%d</xliff:g> Lidder goufen an d\'Waardeschlaang gesat.</item>
+	</plurals>
+	<plurals name="NNNtracksdeleted">
+		<item quantity="one"><xliff:g id="songs_to_delete" example="1">%d</xliff:g> Lidd gouf geläscht.</item>
+		<item quantity="other"><xliff:g id="songs_to_delete">%d</xliff:g> Lidder goufe geläscht.</item>
+	</plurals>
 </resources>

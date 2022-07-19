@@ -14,9 +14,9 @@
   limitations under the License.
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialLayout="@layout/app_widget_small"
-    android:minHeight="@dimen/app_widget_small_min_height"
-    android:minWidth="@dimen/app_widget_small_min_width"
-    android:previewImage="@drawable/app_widget_small"
-    android:updatePeriodMillis="0"
-    android:widgetCategory="keyguard|home_screen" />
+	android:initialLayout="@layout/app_widget_small"
+	android:minHeight="@dimen/app_widget_small_min_height"
+	android:minWidth="@dimen/app_widget_small_min_width"
+	android:previewImage="@drawable/app_widget_small"
+	android:updatePeriodMillis="0"
+	android:widgetCategory="keyguard|home_screen" />

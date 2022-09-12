@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.Icon;
+import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -330,6 +331,16 @@ public final class ApolloUtils {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * check if equalizer is supported
+	 *
+	 * @return true if an equalizer was found
+	 */
+	public static boolean isEqualizerInstalled(Context context) {
+		Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+		return context.getPackageManager().resolveActivity(intent, 0) != null;
 	}
 
 	/**

@@ -194,7 +194,7 @@ public final class PreferenceUtils {
 		// This is only to prevent return an invalid field name caused by bug BUGDUMP-21136
 		String defaultSortKey = SortOrder.ArtistSortOrder.ARTIST_A_Z;
 		String key = mPreferences.getString(ARTIST_SORT_ORDER, defaultSortKey);
-		if (key != null && key.equals(SortOrder.ArtistSongSortOrder.SONG_FILENAME)) {
+		if (key.equals(SortOrder.ArtistSongSortOrder.SONG_FILENAME)) {
 			key = defaultSortKey;
 		}
 		return key;
@@ -273,10 +273,9 @@ public final class PreferenceUtils {
 	 * @return playlist
 	 */
 	public List<Long> getPlaylist() {
-		String trackQueue = mPreferences.getString(QUEUE, "");
 		List<Long> playList = new LinkedList<>();
-
-		if (trackQueue != null && trackQueue.length() > 0) {
+		String trackQueue = mPreferences.getString(QUEUE, "");
+		if (!trackQueue.isEmpty()) {
 			int separatorPos = trackQueue.indexOf(";");
 			int cut = 0;
 			while (separatorPos != -1) {
@@ -298,7 +297,7 @@ public final class PreferenceUtils {
 	public List<Integer> getTrackHistory() {
 		List<Integer> history = new LinkedList<>();
 		String trackHistory = mPreferences.getString(HISTORY, "");
-		if (trackHistory != null) {
+		if (!trackHistory.isEmpty()) {
 			int separatorPos = trackHistory.indexOf(";");
 			int cut = 0;
 			while (separatorPos != -1) {
@@ -498,7 +497,7 @@ public final class PreferenceUtils {
 	 */
 	public boolean isSimpleLayout(String which) {
 		String result = mPreferences.getString(which, LAYOUT_GRID);
-		return result != null && result.equals(LAYOUT_SIMPLE);
+		return LAYOUT_SIMPLE.equals(result);
 	}
 
 	/**
@@ -509,6 +508,6 @@ public final class PreferenceUtils {
 	 */
 	public boolean isDetailedLayout(String which) {
 		String result = mPreferences.getString(which, LAYOUT_GRID);
-		return result != null && result.equals(LAYOUT_DETAILED);
+		return LAYOUT_DETAILED.equals(result);
 	}
 }

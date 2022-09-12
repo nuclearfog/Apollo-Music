@@ -25,7 +25,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
 import android.media.AudioManager;
-import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -303,7 +302,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		// Search view
 		getMenuInflater().inflate(R.menu.search, menu);
 		// Theme the search icon
@@ -332,14 +331,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
-		MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
+		//MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
 		// Add fav icon
 		mResources.setFavoriteIcon(favorite);
 		// Hide the EQ option if it can't be opened
-		Intent intent = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-		if (getPackageManager().resolveActivity(intent, 0) == null) {
-			effects.setVisible(false);
-		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -368,8 +363,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// Share the current meta data
 			shareCurrentTrack();
 		} else if (vId == R.id.menu_audio_player_equalizer) {
-			// Sound effects
-			NavUtils.openEffectsPanel(this);
+			if (ApolloUtils.isEqualizerInstalled(this)) {
+				// Sound effects
+				NavUtils.openEffectsPanel(this);
+			} else {
+				// todo open equalizer page
+			}
 		} else if (vId == R.id.menu_settings) {
 			// Settings
 			NavUtils.openSettings(this);

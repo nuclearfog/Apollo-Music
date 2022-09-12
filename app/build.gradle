@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-	compileSdkVersion 32
+	compileSdkVersion 33
 	buildToolsVersion '33.0.0'
 	useLibrary 'org.apache.http.legacy'
 
 	defaultConfig {
 		applicationId 'com.andrew.apollo'
 		minSdkVersion 16
-		targetSdkVersion 32
+		targetSdkVersion 33
 		versionCode 14
 		versionName '1.1.6'
 	}
@@ -31,6 +31,19 @@ android {
 		}
 	}
 
+	packagingOptions {
+		exclude '/META-INF/CHANGES'
+		exclude '/META-INF/DEPENDENCIES'
+		exclude '/META-INF/README.md'
+		exclude '/META-INF/androidx.*'
+		exclude '/META-INF/kotlin*'
+		exclude '/META-INF/com.*'
+		exclude '/META-INF/services/**'
+		exclude '/META-INF/com/**'
+		exclude '/kotlin/**'
+		exclude '/Debug*'
+	}
+
 	paranoid {
 		enabled true
 	}
@@ -44,9 +57,10 @@ proguardDictionaries {
 }
 
 dependencies {
-	implementation 'androidx.appcompat:appcompat:1.4.2'
+	implementation 'androidx.appcompat:appcompat:1.5.1'
 	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 	implementation 'androidx.preference:preference:1.2.0'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'androidx.media:media:1.6.0'
+	implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
 }

@@ -28,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -149,7 +150,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		// Search view
 		getMenuInflater().inflate(R.menu.search, menu);
 		// Settings

@@ -29,7 +29,6 @@ import android.annotation.SuppressLint;
 
 import com.andrew.apollo.lastfm.Result.Status;
 
-import org.apache.http.HttpStatus;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -135,7 +134,7 @@ public class Caller {
 				return lastResult;
 			}
 		} catch (IOException ioEx) {
-			lastResult = Result.createHttpErrorResult(HttpStatus.SC_SERVICE_UNAVAILABLE, ioEx.getLocalizedMessage());
+			lastResult = Result.createHttpErrorResult(503, ioEx.getLocalizedMessage());
 			return lastResult;
 		}
 		try {

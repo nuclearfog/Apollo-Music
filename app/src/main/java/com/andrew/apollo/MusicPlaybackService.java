@@ -22,28 +22,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -59,6 +50,8 @@ import androidx.media.MediaBrowserServiceCompat;
 
 import com.andrew.apollo.cache.ImageCache;
 import com.andrew.apollo.cache.ImageFetcher;
+import com.andrew.apollo.player.MultiPlayer;
+import com.andrew.apollo.player.MusicPlayerHandler;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.provider.RecentStore;
@@ -67,14 +60,13 @@ import com.andrew.apollo.receiver.WidgetBroadcastReceiver;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.Shuffler;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.TreeSet;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -155,13 +147,17 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public static final String FOREGROUND_STATE_CHANGED = APOLLO_PACKAGE_NAME + ".fgstatechanged";
 	/**
-	 *
-	 */
-	public static final String NOW_IN_FOREGROUND = "nowinforeground";
-	/**
 	 * Used to easily notify a list that it should refresh. i.e. A playlist changes
 	 */
 	public static final String REFRESH = APOLLO_PACKAGE_NAME + ".refresh";
+	/**
+	 * Used by the alarm intent to shutdown the service after being idle
+	 */
+	private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
+	/**
+	 *
+	 */
+	public static final String NOW_IN_FOREGROUND = "nowinforeground";
 	/**
 	 *
 	 */
@@ -194,6 +190,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	private static final String HANDLER_NAME = "MusicPlayerHandler";
+	/**
+	 * Notification name
+	 */
+	private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
+	/**
+	 * Notification channel ID
+	 */
+	public static final String NOTIFICAITON_ID = APOLLO_PACKAGE_NAME + ".controlpanel";
 	/**
 	 * Moves a list to the front of the queue
 	 */
@@ -233,39 +237,27 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Indicates when the track ends
 	 */
-	private static final int TRACK_ENDED = 0xF7E68B1A;
+	public static final int TRACK_ENDED = 0xF7E68B1A;
 	/**
 	 * Indicates that the current track was changed the next track
 	 */
-	private static final int TRACK_WENT_TO_NEXT = 0xB4C13964;
+	public static final int TRACK_WENT_TO_NEXT = 0xB4C13964;
 	/**
 	 * Indicates the player died
 	 */
-	private static final int SERVER_DIED = 0xA2F4FFEE;
+	public static final int SERVER_DIED = 0xA2F4FFEE;
 	/**
 	 * Indicates some sort of focus change, maybe a phone call
 	 */
-	private static final int FOCUSCHANGE = 0xDB9F6A3B;
+	public static final int FOCUSCHANGE = 0xDB9F6A3B;
 	/**
 	 * Indicates to fade the volume down
 	 */
-	private static final int FADEDOWN = 0x9745AB2B;
+	public static final int FADEDOWN = 0x9745AB2B;
 	/**
 	 * Indicates to fade the volume back up
 	 */
-	private static final int FADEUP = 0x2A72CF59;
-	/**
-	 * Notification channel ID
-	 */
-	public static final String NOTIFICAITON_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
-	/**
-	 * Notification name
-	 */
-	private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
-	/**
-	 * Used by the alarm intent to shutdown the service after being idle
-	 */
-	private static final String SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
+	public static final int FADEUP = 0x2A72CF59;
 	/**
 	 * Idle time before stopping the foreground notfication (1 minute)
 	 */
@@ -279,7 +271,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * The max size allowed for the track history
 	 */
-	private static final int MAX_HISTORY_SIZE = 100;
+	public static final int MAX_HISTORY_SIZE = 100;
 	/**
 	 * Used to shuffle the tracks
 	 */
@@ -555,7 +547,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// Remove any sound effects
 		Intent audioEffectsIntent = new Intent(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
+		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, APOLLO_PACKAGE_NAME);
 		sendBroadcast(audioEffectsIntent);
 		// remove any pending alarms
 		mAlarmManager.cancel(mShutdownIntent);
@@ -1099,9 +1091,68 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Called to open a new file as the current track and prepare the next for
 	 * playback
 	 */
-	private void openCurrentAndNext() {
+	public void openCurrentAndNext() {
 		openCurrentTrack();
 		setNextTrack();
+	}
+
+	/**
+	 * set current playback volume
+	 */
+	public void setVolume(float volume) {
+		mPlayer.setVolume(volume);
+	}
+
+	/**
+	 * notify if track chages
+	 */
+	public void onWentToNext() {
+		mPlayPos = mNextPlayPos;
+		if (mCursor != null) {
+			mCursor.close();
+		}
+		updateCursor(mPlayList.get(mPlayPos));
+		notifyChange(META_CHANGED);
+		updateNotification();
+		setNextTrack();
+	}
+
+	/**
+	 * notify if current track ends
+	 */
+	public void onTrackEnded() {
+		if (mRepeatMode == REPEAT_CURRENT) {
+			seek(0);
+			play();
+		} else {
+			gotoNext(false);
+		}
+	}
+
+	/**
+	 * notify on audio focus loss
+	 * @param msg type of focus loss
+	 */
+	public void onAudioFocusLoss(int msg) {
+		if (isPlaying()) {
+			mPausedByTransientLossOfFocus = msg == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
+		}
+		pause();
+	}
+
+	/**
+	 * notify on audio focus gain
+	 *
+	 * @return true if player started
+	 */
+	public boolean onAudioFocusGain() {
+		if (!isPlaying() && mPausedByTransientLossOfFocus) {
+			mPausedByTransientLossOfFocus = false;
+			mPlayer.setVolume(0f);
+			play();
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -1938,415 +1989,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void refresh() {
 		notifyChange(REFRESH);
-	}
-
-	/**
-	 *
-	 */
-	private static class Shuffler {
-
-		private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
-
-		private TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
-
-		private Random mRandom = new Random();
-
-		private int mPrevious;
-
-		/**
-		 * Constructor of <code>Shuffler</code>
-		 */
-		public Shuffler() {
-			super();
-		}
-
-		/**
-		 * @param interval The duration the queue
-		 * @return The position of the next track to play
-		 */
-		public int nextInt(int interval) {
-			int next;
-			do {
-				next = mRandom.nextInt(interval);
-			} while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
-			mPrevious = next;
-			mHistoryOfNumbers.add(mPrevious);
-			mPreviousNumbers.add(mPrevious);
-			cleanUpHistory();
-			return next;
-		}
-
-		/**
-		 * Removes old tracks and cleans up the history preparing for new tracks
-		 * to be added to the mapping
-		 */
-		private void cleanUpHistory() {
-			if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MAX_HISTORY_SIZE) {
-				for (int i = 0; i < Math.max(1, MAX_HISTORY_SIZE / 2); i++) {
-					mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 */
-	private static class MusicPlayerHandler extends Handler {
-		private WeakReference<MusicPlaybackService> mService;
-		private float mCurrentVolume = 1.0f;
-
-		/**
-		 * Constructor of <code>MusicPlayerHandler</code>
-		 *
-		 * @param service The service to use.
-		 * @param looper  The thread to run on.
-		 */
-		public MusicPlayerHandler(MusicPlaybackService service, Looper looper) {
-			super(looper);
-			mService = new WeakReference<>(service);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void handleMessage(@NonNull Message msg) {
-			MusicPlaybackService service = mService.get();
-			if (service == null) {
-				return;
-			}
-
-			switch (msg.what) {
-				case FADEDOWN:
-					mCurrentVolume -= .05f;
-					if (mCurrentVolume > .2f) {
-						sendEmptyMessageDelayed(FADEDOWN, 10);
-					} else {
-						mCurrentVolume = .2f;
-					}
-					service.mPlayer.setVolume(mCurrentVolume);
-					break;
-
-				case FADEUP:
-					mCurrentVolume += .01f;
-					if (mCurrentVolume < 1.0f) {
-						sendEmptyMessageDelayed(FADEUP, 10);
-					} else {
-						mCurrentVolume = 1.0f;
-					}
-					service.mPlayer.setVolume(mCurrentVolume);
-					break;
-
-				case SERVER_DIED:
-					if (service.isPlaying()) {
-						service.gotoNext(true);
-					} else {
-						service.openCurrentAndNext();
-					}
-					break;
-
-				case TRACK_WENT_TO_NEXT:
-					service.mPlayPos = service.mNextPlayPos;
-					if (service.mCursor != null) {
-						service.mCursor.close();
-					}
-					service.updateCursor(service.mPlayList.get(service.mPlayPos));
-					service.notifyChange(META_CHANGED);
-					service.updateNotification();
-					service.setNextTrack();
-					break;
-
-				case TRACK_ENDED:
-					if (service.mRepeatMode == REPEAT_CURRENT) {
-						service.seek(0);
-						service.play();
-					} else {
-						service.gotoNext(false);
-					}
-					break;
-
-				case FOCUSCHANGE:
-					switch (msg.arg1) {
-						case AudioManager.AUDIOFOCUS_LOSS:
-						case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-							if (service.isPlaying()) {
-								service.mPausedByTransientLossOfFocus =
-										msg.arg1 == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-							}
-							service.pause();
-							break;
-
-						case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-							removeMessages(FADEUP);
-							sendEmptyMessage(FADEDOWN);
-							break;
-
-						case AudioManager.AUDIOFOCUS_GAIN:
-							if (!service.isPlaying()
-									&& service.mPausedByTransientLossOfFocus) {
-								service.mPausedByTransientLossOfFocus = false;
-								mCurrentVolume = 0f;
-								service.mPlayer.setVolume(mCurrentVolume);
-								service.play();
-							} else {
-								removeMessages(FADEDOWN);
-								sendEmptyMessage(FADEUP);
-							}
-							break;
-					}
-					break;
-			}
-		}
-	}
-
-	/**
-	 * custom MediaPlayer implementation containing two MediaPlayer to switch fast tracks
-	 */
-	private static class MultiPlayer implements OnErrorListener, OnCompletionListener {
-
-		private final WeakReference<MusicPlaybackService> mService;
-
-		private MediaPlayer mCurrentMediaPlayer;
-
-		@Nullable
-		private MediaPlayer mNextMediaPlayer;
-
-		private Handler mHandler;
-
-		private boolean mIsInitialized = false;
-
-		/**
-		 * Constructor of <code>MultiPlayer</code>
-		 */
-		public MultiPlayer(MusicPlaybackService service) {
-			mService = new WeakReference<>(service);
-			mCurrentMediaPlayer = createPlayer();
-		}
-
-		/**
-		 * @param path The path of the file, or the http/rtsp URL of the stream
-		 *             you want to play
-		 */
-		public void setDataSource(String path) {
-			mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path);
-			if (mIsInitialized) {
-				resetNextPlayer();
-			}
-		}
-
-		/**
-		 * Set the MediaPlayer to start when this MediaPlayer finishes playback.
-		 *
-		 * @param path The path of the file, or the http/rtsp URL of the stream
-		 *             you want to play
-		 */
-		public void setNextDataSource(@NonNull String path) {
-			try {
-				mNextMediaPlayer = createPlayer();
-				mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-				if (setDataSourceImpl(mNextMediaPlayer, path)) {
-					// prepare next player
-					mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
-				} else {
-					// an error occured, reset next player
-					resetNextPlayer();
-				}
-			} catch (Exception err) {
-				err.printStackTrace();
-			}
-		}
-
-		/**
-		 * remove next player
-		 */
-		public void resetNextPlayer() {
-			try {
-				mCurrentMediaPlayer.setNextMediaPlayer(null);
-				if (mNextMediaPlayer != null) {
-					mNextMediaPlayer.release();
-					mNextMediaPlayer = null;
-				}
-			} catch (Exception err) {
-				err.printStackTrace();
-			}
-		}
-
-		/**
-		 * Sets the handler
-		 *
-		 * @param handler The handler to use
-		 */
-		public void setHandler(Handler handler) {
-			mHandler = handler;
-		}
-
-		/**
-		 * @return True if the player is ready to go, false otherwise
-		 */
-		public boolean isInitialized() {
-			return mIsInitialized;
-		}
-
-		/**
-		 * Starts or resumes playback.
-		 */
-		public void start() {
-			mCurrentMediaPlayer.start();
-		}
-
-		/**
-		 * Resets the MediaPlayer to its uninitialized state.
-		 */
-		public void stop() {
-			mCurrentMediaPlayer.reset();
-			mIsInitialized = false;
-		}
-
-		/**
-		 * Releases resources associated with this MediaPlayer object.
-		 */
-		public void release() {
-			stop();
-			mCurrentMediaPlayer.release();
-		}
-
-		/**
-		 * Pauses playback. Call start() to resume.
-		 */
-		public void pause() {
-			mCurrentMediaPlayer.pause();
-		}
-
-		/**
-		 * Gets the duration of the file.
-		 *
-		 * @return The duration in milliseconds
-		 */
-		public long duration() {
-			return mCurrentMediaPlayer.getDuration();
-		}
-
-		/**
-		 * Gets the current playback position.
-		 *
-		 * @return The current position in milliseconds
-		 */
-		public long position() {
-			return mCurrentMediaPlayer.getCurrentPosition();
-		}
-
-		/**
-		 * Gets the current playback position.
-		 *
-		 * @param whereto The offset in milliseconds from the start to seek to
-		 */
-		public void seek(long whereto) {
-			mCurrentMediaPlayer.seekTo((int) whereto);
-		}
-
-		/**
-		 * Sets the volume on this player.
-		 *
-		 * @param vol Left and right volume scalar
-		 */
-		public void setVolume(float vol) {
-			mCurrentMediaPlayer.setVolume(vol, vol);
-		}
-
-		/**
-		 * Returns the audio session ID.
-		 *
-		 * @return The current audio session ID.
-		 */
-		public int getAudioSessionId() {
-			return mCurrentMediaPlayer.getAudioSessionId();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean onError(MediaPlayer mp, int what, int extra) {
-			if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-				mIsInitialized = false;
-				mCurrentMediaPlayer.reset();
-				mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED), 2000);
-				return true;
-			}
-			return false;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void onCompletion(MediaPlayer mp) {
-			if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
-				// switch to next player
-				mCurrentMediaPlayer.release();
-				mCurrentMediaPlayer = mNextMediaPlayer;
-				mNextMediaPlayer = null;
-				//
-				mHandler.sendEmptyMessage(TRACK_WENT_TO_NEXT);
-			} else {
-				mHandler.sendEmptyMessage(TRACK_ENDED);
-			}
-		}
-
-		/**
-		 * create and configure MediaPlayer instance
-		 *
-		 * @return player
-		 */
-		private MediaPlayer createPlayer() {
-			MediaPlayer player = new MediaPlayer();
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				AudioAttributes attr = new AudioAttributes.Builder()
-						.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-						.setUsage(AudioAttributes.USAGE_MEDIA).build();
-				player.setAudioAttributes(attr);
-			}
-			return player;
-		}
-
-		/**
-		 * @param player The {@link MediaPlayer} to use
-		 * @param path   The path of the file, or the http/rtsp URL of the stream
-		 *               you want to play
-		 * @return True if the <code>player</code> has been prepared and is
-		 * ready to play, false otherwise
-		 */
-		private boolean setDataSourceImpl(MediaPlayer player, @NonNull String path) {
-			MusicPlaybackService musicService = mService.get();
-			if (musicService != null) {
-				try {
-					player.reset();
-					player.setOnPreparedListener(null);
-					if (path.startsWith("content://")) {
-						ContentResolver resolver = musicService.getApplicationContext().getContentResolver();
-						ParcelFileDescriptor pfd = resolver.openFileDescriptor(Uri.parse(path), "r");
-						player.setDataSource(pfd.getFileDescriptor(), 0, pfd.getStatSize());
-						pfd.close();
-					} else {
-						player.setDataSource(path);
-						player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					}
-					player.prepare();
-				} catch (Exception err) {
-					err.printStackTrace();
-					return false;
-				}
-				player.setOnCompletionListener(this);
-				player.setOnErrorListener(this);
-				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-				intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-				musicService.sendBroadcast(intent);
-				return true;
-			}
-			return false;
-		}
 	}
 
 	/**

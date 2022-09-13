@@ -652,9 +652,25 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			seek(0);
 			releaseServiceUiAndStop();
 		} else if (REPEAT_ACTION.equals(action)) {
-			cycleRepeat();
+			if (mRepeatMode == REPEAT_NONE) {
+				setRepeatMode(REPEAT_ALL);
+			} else if (mRepeatMode == REPEAT_ALL) {
+				setRepeatMode(REPEAT_CURRENT);
+				if (mShuffleMode != SHUFFLE_NONE) {
+					setShuffleMode(SHUFFLE_NONE);
+				}
+			} else {
+				setRepeatMode(REPEAT_NONE);
+			}
 		} else if (SHUFFLE_ACTION.equals(action)) {
-			cycleShuffle();
+			if (mShuffleMode == SHUFFLE_NONE) {
+				setShuffleMode(SHUFFLE_NORMAL);
+				if (mRepeatMode == REPEAT_CURRENT) {
+					setRepeatMode(REPEAT_ALL);
+				}
+			} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
+				setShuffleMode(SHUFFLE_NONE);
+			}
 		}
 	}
 
@@ -900,6 +916,74 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
+	 * Called to open a new file as the current track and prepare the next for
+	 * playback
+	 */
+	public void openCurrentAndNext() {
+		openCurrentTrack();
+		setNextTrack();
+	}
+
+	/**
+	 * set current playback volume
+	 */
+	public void setVolume(float volume) {
+		mPlayer.setVolume(volume);
+	}
+
+	/**
+	 * notify if track chages
+	 */
+	public void onWentToNext() {
+		mPlayPos = mNextPlayPos;
+		if (mCursor != null) {
+			mCursor.close();
+		}
+		updateCursor(mPlayList.get(mPlayPos));
+		notifyChange(META_CHANGED);
+		updateNotification();
+		setNextTrack();
+	}
+
+	/**
+	 * notify if current track ends
+	 */
+	public void onTrackEnded() {
+		if (mRepeatMode == REPEAT_CURRENT) {
+			seek(0);
+			play();
+		} else {
+			gotoNext(false);
+		}
+	}
+
+	/**
+	 * notify on audio focus loss
+	 * @param msg type of focus loss
+	 */
+	public void onAudioFocusLoss(int msg) {
+		if (isPlaying()) {
+			mPausedByTransientLossOfFocus = msg == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
+		}
+		pause();
+	}
+
+	/**
+	 * notify on audio focus gain
+	 *
+	 * @return true if player started
+	 */
+	public boolean onAudioFocusGain() {
+		if (!isPlaying() && mPausedByTransientLossOfFocus) {
+			mPausedByTransientLossOfFocus = false;
+			mPlayer.setVolume(0f);
+			play();
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 *
 	 */
 	private void getCardId() {
@@ -1085,74 +1169,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			mAlbumCursor.close();
 			mAlbumCursor = null;
 		}
-	}
-
-	/**
-	 * Called to open a new file as the current track and prepare the next for
-	 * playback
-	 */
-	public void openCurrentAndNext() {
-		openCurrentTrack();
-		setNextTrack();
-	}
-
-	/**
-	 * set current playback volume
-	 */
-	public void setVolume(float volume) {
-		mPlayer.setVolume(volume);
-	}
-
-	/**
-	 * notify if track chages
-	 */
-	public void onWentToNext() {
-		mPlayPos = mNextPlayPos;
-		if (mCursor != null) {
-			mCursor.close();
-		}
-		updateCursor(mPlayList.get(mPlayPos));
-		notifyChange(META_CHANGED);
-		updateNotification();
-		setNextTrack();
-	}
-
-	/**
-	 * notify if current track ends
-	 */
-	public void onTrackEnded() {
-		if (mRepeatMode == REPEAT_CURRENT) {
-			seek(0);
-			play();
-		} else {
-			gotoNext(false);
-		}
-	}
-
-	/**
-	 * notify on audio focus loss
-	 * @param msg type of focus loss
-	 */
-	public void onAudioFocusLoss(int msg) {
-		if (isPlaying()) {
-			mPausedByTransientLossOfFocus = msg == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-		}
-		pause();
-	}
-
-	/**
-	 * notify on audio focus gain
-	 *
-	 * @return true if player started
-	 */
-	public boolean onAudioFocusGain() {
-		if (!isPlaying() && mPausedByTransientLossOfFocus) {
-			mPausedByTransientLossOfFocus = false;
-			mPlayer.setVolume(0f);
-			play();
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -1513,6 +1529,41 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
+	 * Returns the audio session ID
+	 *
+	 * @return The current media player audio session ID
+	 */
+	private int getAudioSessionId() {
+		return mPlayer.getAudioSessionId();
+	}
+
+	/**
+	 * Indicates if the media storeage device has been mounted or not
+	 *
+	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
+	 */
+	private int getMediaMountedCount() {
+		return mMediaMountedCount;
+	}
+
+	/**
+	 * Removes the range of tracks specified from the play list. If a file
+	 * within the range is the file currently being played, playback will move
+	 * to the next file after the range.
+	 *
+	 * @param first The first file to be removed
+	 * @param last  The last file to be removed
+	 * @return the number of tracks deleted
+	 */
+	private int removeTracks(int first, int last) {
+		int numremoved = removeTracksInternal(first, last);
+		if (numremoved > 0) {
+			notifyChange(QUEUE_CHANGED);
+		}
+		return numremoved;
+	}
+
+	/**
 	 * Opens a file and prepares it for playback
 	 *
 	 * @param path The path of the file to open
@@ -1553,26 +1604,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			stop(true);
 			return false;
 		}
-	}
-
-	/**
-	 * Returns the audio session ID
-	 *
-	 * @return The current media player audio session ID
-	 */
-	private int getAudioSessionId() {
-		synchronized (this) {
-			return mPlayer.getAudioSessionId();
-		}
-	}
-
-	/**
-	 * Indicates if the media storeage device has been mounted or not
-	 *
-	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
-	 */
-	private int getMediaMountedCount() {
-		return mMediaMountedCount;
 	}
 
 	/**
@@ -1706,35 +1737,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return how many instances of the track were removed
 	 */
 	private int removeTrack(long id) {
-		int numremoved = 0;
 		synchronized (this) {
+			int numremoved = 0;
 			for (int pos = 0; pos < mPlayList.size(); pos++) {
 				if (mPlayList.get(pos) == id) {
 					numremoved += removeTracksInternal(pos, pos);
 				}
 			}
+			if (numremoved > 0) {
+				notifyChange(QUEUE_CHANGED);
+			}
+			return numremoved;
 		}
-		if (numremoved > 0) {
-			notifyChange(QUEUE_CHANGED);
-		}
-		return numremoved;
-	}
-
-	/**
-	 * Removes the range of tracks specified from the play list. If a file
-	 * within the range is the file currently being played, playback will move
-	 * to the next file after the range.
-	 *
-	 * @param first The first file to be removed
-	 * @param last  The last file to be removed
-	 * @return the number of tracks deleted
-	 */
-	private int removeTracks(int first, int last) {
-		int numremoved = removeTracksInternal(first, last);
-		if (numremoved > 0) {
-			notifyChange(QUEUE_CHANGED);
-		}
-		return numremoved;
 	}
 
 	/**
@@ -1781,8 +1795,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * True if the current track is a "favorite", false otherwise
 	 */
 	private boolean isFavorite() {
-		if (mFavoritesCache != null) {
-			synchronized (this) {
+		synchronized (this) {
+			if (mFavoritesCache != null) {
 				return mFavoritesCache.exists(getAudioId());
 			}
 		}
@@ -1861,27 +1875,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			}
 			stop(false);
-			openCurrent();
+			openCurrentTrack();
 			play();
 			notifyChange(META_CHANGED);
 		}
 	}
 
 	/**
-	 * We don't want to open the current and next track when the user is using
-	 * the {@code #prev()} method because they won't be able to travel back to
-	 * the previously listened track if they're shuffling.
-	 */
-	private void openCurrent() {
-		openCurrentTrack();
-	}
-
-	/**
 	 * Toggles the current song as a favorite.
 	 */
 	private void toggleFavorite() {
-		if (mFavoritesCache != null) {
-			synchronized (this) {
+		synchronized (this) {
+			if (mFavoritesCache != null) {
 				long trackId = getAudioId();
 				// remove track if exists from the favorites
 				if (mFavoritesCache.exists(trackId)) {
@@ -1952,43 +1957,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				notifyChange(META_CHANGED);
 			}
 		}
-	}
-
-	/**
-	 * Cycles through the different repeat modes
-	 */
-	private void cycleRepeat() {
-		if (mRepeatMode == REPEAT_NONE) {
-			setRepeatMode(REPEAT_ALL);
-		} else if (mRepeatMode == REPEAT_ALL) {
-			setRepeatMode(REPEAT_CURRENT);
-			if (mShuffleMode != SHUFFLE_NONE) {
-				setShuffleMode(SHUFFLE_NONE);
-			}
-		} else {
-			setRepeatMode(REPEAT_NONE);
-		}
-	}
-
-	/**
-	 * Cycles through the different shuffle modes
-	 */
-	private void cycleShuffle() {
-		if (mShuffleMode == SHUFFLE_NONE) {
-			setShuffleMode(SHUFFLE_NORMAL);
-			if (mRepeatMode == REPEAT_CURRENT) {
-				setRepeatMode(REPEAT_ALL);
-			}
-		} else if (mShuffleMode == SHUFFLE_NORMAL || mShuffleMode == SHUFFLE_AUTO) {
-			setShuffleMode(SHUFFLE_NONE);
-		}
-	}
-
-	/**
-	 * Called when one of the lists should refresh or requery.
-	 */
-	private void refresh() {
-		notifyChange(REFRESH);
 	}
 
 	/**
@@ -2119,7 +2087,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		public void refresh() {
 			MusicPlaybackService service = mService.get();
 			if (service != null)
-				service.refresh();
+				service.notifyChange(REFRESH);
 		}
 
 		/**

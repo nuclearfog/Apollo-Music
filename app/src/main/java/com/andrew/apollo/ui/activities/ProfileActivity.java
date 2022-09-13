@@ -369,7 +369,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		// Pin to Home screen
 		getMenuInflater().inflate(R.menu.add_to_homescreen, menu);
 		// Shuffle

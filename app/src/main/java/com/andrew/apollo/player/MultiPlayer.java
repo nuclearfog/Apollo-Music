@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.audiofx.AudioEffect;
-import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,18 +24,18 @@ import java.lang.ref.WeakReference;
 /**
  * custom MediaPlayer implementation containing two MediaPlayer to switch fast tracks
  */
-public class MultiPlayer implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
 	private final WeakReference<MusicPlaybackService> mService;
+
+	private AudioEffects audioEffects;
+
+	private Handler mHandler;
 
 	private MediaPlayer mCurrentMediaPlayer;
 
 	@Nullable
 	private MediaPlayer mNextMediaPlayer;
-
-	private Equalizer equalizer;
-
-	private Handler mHandler;
 
 	private boolean mIsInitialized = false;
 
@@ -43,8 +45,41 @@ public class MultiPlayer implements MediaPlayer.OnErrorListener, MediaPlayer.OnC
 	public MultiPlayer(MusicPlaybackService service) {
 		mService = new WeakReference<>(service);
 		mCurrentMediaPlayer = createPlayer();
-		equalizer = new Equalizer(0, mCurrentMediaPlayer.getAudioSessionId());
+		Log.v("test666", "equalizer");// todo remove
+		audioEffects = new AudioEffects(service, mCurrentMediaPlayer.getAudioSessionId());
 
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onError(MediaPlayer mp, int what, int extra) {
+		if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+			mIsInitialized = false;
+			mCurrentMediaPlayer.reset();
+			mHandler.sendMessageDelayed(mHandler.obtainMessage(MusicPlaybackService.SERVER_DIED), 2000);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCompletion(MediaPlayer mp) {
+		if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
+			// switch to next player
+			mCurrentMediaPlayer.release();
+			mCurrentMediaPlayer = mNextMediaPlayer;
+			mNextMediaPlayer = null;
+			//
+			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_WENT_TO_NEXT);
+		} else {
+			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_ENDED);
+		}
 	}
 
 	/**
@@ -93,6 +128,13 @@ public class MultiPlayer implements MediaPlayer.OnErrorListener, MediaPlayer.OnC
 		} catch (Exception err) {
 			err.printStackTrace();
 		}
+	}
+
+	/**
+	 *
+	 */
+	public AudioEffects getAudioEffects() {
+		return audioEffects;
 	}
 
 	/**
@@ -184,37 +226,6 @@ public class MultiPlayer implements MediaPlayer.OnErrorListener, MediaPlayer.OnC
 	 */
 	public int getAudioSessionId() {
 		return mCurrentMediaPlayer.getAudioSessionId();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onError(MediaPlayer mp, int what, int extra) {
-		if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-			mIsInitialized = false;
-			mCurrentMediaPlayer.reset();
-			mHandler.sendMessageDelayed(mHandler.obtainMessage(MusicPlaybackService.SERVER_DIED), 2000);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onCompletion(MediaPlayer mp) {
-		if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
-			// switch to next player
-			mCurrentMediaPlayer.release();
-			mCurrentMediaPlayer = mNextMediaPlayer;
-			mNextMediaPlayer = null;
-			//
-			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_WENT_TO_NEXT);
-		} else {
-			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_ENDED);
-		}
 	}
 
 	/**

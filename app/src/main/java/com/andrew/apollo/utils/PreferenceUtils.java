@@ -80,6 +80,10 @@ public final class PreferenceUtils {
 	private static final String QUEUE = "queue";
 	private static final String ID_CARD = "cardid";
 
+	private static final String FX_ENABLE = "fx_enable";
+	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
+	private static final String FX_BASSBOOST = "fx_bassbost";
+
 	private final SharedPreferences mPreferences;
 	private int themeColor;
 	private int startPage;
@@ -509,5 +513,74 @@ public final class PreferenceUtils {
 	public boolean isDetailedLayout(String which) {
 		String result = mPreferences.getString(which, LAYOUT_GRID);
 		return LAYOUT_DETAILED.equals(result);
+	}
+
+	/**
+	 * check if audiofx is enabled
+	 *
+	 * @return true if audiofx is enabled
+	 */
+	public boolean isAudioFxEnabled() {
+		return mPreferences.getBoolean(FX_ENABLE, false);
+	}
+
+	/**
+	 * enable/disable audiofx
+	 *
+	 * @param enable true to enable audiofx
+	 */
+	public void setAudioFxEnabled(boolean enable) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putBoolean(FX_ENABLE, enable);
+		editor.apply();
+	}
+
+	/**
+	 * save new equalizer band setup
+	 *
+	 * @param bands array of band levels starting with the lowest frequency
+	 */
+	public void setEqualizerBands(int[] bands) {
+		StringBuilder result = new StringBuilder();
+		for (int band : bands)
+			result.append(band).append(';');
+		result.deleteCharAt(result.length() - 1);
+
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putString(FX_EQUALIZER_BANDS, result.toString());
+		editor.apply();
+	}
+
+	/**
+	 * get equalizer band setup
+	 *
+	 * @return array of band levels starting with the lowest frequency
+	 */
+	public int[] getEqualizerBands() {
+		String serializedBands = mPreferences.getString(FX_EQUALIZER_BANDS, "");
+		String[] bands = serializedBands.split(";");
+		int[] result = new int[bands.length];
+		for (int i = 0 ; i < result.length ; i++) {
+			result[i] = Integer.parseInt(bands[i]);
+		}
+		return result;
+	}
+
+	/**
+	 * set bass boost level
+	 * @param level bass level from 0 to 1000
+	 */
+	public void setBassLevel(int level) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(FX_BASSBOOST, level);
+		editor.apply();
+	}
+
+	/**
+	 * get bass boost level
+	 * @return bass level from 0 to 1000
+	 */
+	public int getBassLevel() {
+		return mPreferences.getInt(FX_BASSBOOST, 0);
 	}
 }

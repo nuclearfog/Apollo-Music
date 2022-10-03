@@ -367,7 +367,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				// Sound effects
 				NavUtils.openEffectsPanel(this);
 			} else {
-				// todo open equalizer page
+				Intent intent = new Intent(this, AudioFxActivity.class);
+				startActivity(intent);
 			}
 		} else if (vId == R.id.menu_settings) {
 			// Settings

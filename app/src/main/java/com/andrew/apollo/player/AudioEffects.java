@@ -61,10 +61,19 @@ public class AudioEffects {
      * @param bandLevel array of band levels starting from the lowest equalizer frequency
      */
     public void setBands(int[] bandLevel) {
-        for (short i = 0 ; i < bandLevel.length ; i++) {
-            equalizer.setBandLevel(i, (short) bandLevel[i]);
+        for (int i = 0 ; i < bandLevel.length ; i++) {
+            setBand(i, bandLevel[i]);
         }
         prefs.setEqualizerBands(bandLevel);
+    }
+
+    /**
+     * set a new equalizer band value
+     * @param pos index of the equalizer band
+     * @param band level of the band
+     */
+    public void setBand(int pos, int band) {
+        equalizer.setBandLevel((short) pos, (short) band);
     }
 
     /**

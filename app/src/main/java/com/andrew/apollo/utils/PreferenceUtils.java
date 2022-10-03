@@ -544,7 +544,8 @@ public final class PreferenceUtils {
 		StringBuilder result = new StringBuilder();
 		for (int band : bands)
 			result.append(band).append(';');
-		result.deleteCharAt(result.length() - 1);
+		if (result.length() > 0)
+			result.deleteCharAt(result.length() - 1);
 
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putString(FX_EQUALIZER_BANDS, result.toString());
@@ -558,6 +559,9 @@ public final class PreferenceUtils {
 	 */
 	public int[] getEqualizerBands() {
 		String serializedBands = mPreferences.getString(FX_EQUALIZER_BANDS, "");
+		if (serializedBands.isEmpty())
+			return new int[0];
+
 		String[] bands = serializedBands.split(";");
 		int[] result = new int[bands.length];
 		for (int i = 0 ; i < result.length ; i++) {

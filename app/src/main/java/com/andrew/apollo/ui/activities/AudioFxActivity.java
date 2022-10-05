@@ -18,6 +18,5 @@ public class AudioFxActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_audiofx);
 
 		eq_bands = findViewById(R.id.eq_bands);
-
 	}
 }

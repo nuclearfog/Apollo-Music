@@ -35,7 +35,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.loaders.SearchLoader;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.Capitalize;
+import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 
@@ -204,7 +204,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	@Override
 	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
 		// Get the voice search query
-		mVoiceQuery = Capitalize.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
+		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
 		return new SearchLoader(ShortcutActivity.this, mVoiceQuery);
 	}
 

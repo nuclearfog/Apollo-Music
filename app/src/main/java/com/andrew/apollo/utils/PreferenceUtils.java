@@ -96,7 +96,7 @@ public final class PreferenceUtils {
 	 * @param context The {@link Context} to use.
 	 */
 	private PreferenceUtils(Context context) {
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
 		startPage = mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
 	}
@@ -107,7 +107,7 @@ public final class PreferenceUtils {
 	 */
 	public static PreferenceUtils getInstance(Context context) {
 		if (sInstance == null) {
-			sInstance = new PreferenceUtils(context);
+			sInstance = new PreferenceUtils(context.getApplicationContext());
 		}
 		return sInstance;
 	}

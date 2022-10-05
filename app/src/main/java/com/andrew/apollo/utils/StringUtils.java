@@ -1,11 +1,17 @@
 package com.andrew.apollo.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
 
-public class Capitalize {
+import com.andrew.apollo.R;
+
+/**
+ * This class contains utils for strings
+ */
+public class StringUtils {
 
 	/* This class is never initiated */
-	private Capitalize() {
+	private StringUtils() {
 	}
 
 	public static String capitalize(String str) {
@@ -36,6 +42,28 @@ public class Capitalize {
 			}
 		}
 		return new String(buffer);
+	}
+
+	/**
+	 * Used to create a formatted time string for the duration of tracks.
+	 *
+	 * @param context The {@link Context} to use.
+	 * @param secs    The track in seconds.
+	 * @return Duration of a track that's properly formatted.
+	 */
+	public static String makeTimeString(Context context, int secs) {
+		if (secs < 0) {
+			// invalid time
+			return "--:--";
+		}
+		if (secs == 0) {
+			// no need to calculate
+			return "0:00";
+		}
+		int min = secs / 60;
+		int hour = min / 60;
+		String durationFormat = context.getString(hour == 0 ? R.string.durationformatshort : R.string.durationformatlong);
+		return String.format(durationFormat, hour, min % 60, secs % 60);
 	}
 
 	/**

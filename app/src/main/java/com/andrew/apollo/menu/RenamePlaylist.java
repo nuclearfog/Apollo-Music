@@ -24,7 +24,7 @@ import android.provider.MediaStore.Audio.Playlists;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.Capitalize;
+import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -98,7 +98,7 @@ public class RenamePlaylist extends BasePlaylistDialog {
 		if (!playlistName.isEmpty()) {
 			// seting new name
 			ContentValues values = new ContentValues(1);
-			values.put(Playlists.NAME, Capitalize.capitalize(playlistName));
+			values.put(Playlists.NAME, StringUtils.capitalize(playlistName));
 			// update old playlist
 			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mRenameId);
 			ContentResolver resolver = requireActivity().getContentResolver();

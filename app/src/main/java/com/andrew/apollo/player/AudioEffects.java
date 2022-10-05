@@ -18,7 +18,10 @@ public class AudioEffects {
 
     private PreferenceUtils prefs;
 
-
+    /**
+     * @param context   context to get equalizer settings
+     * @param sessionId current audio session ID
+     */
     public AudioEffects(Context context, int sessionId) {
         equalizer = new Equalizer(0, sessionId);
         bassBooster = new BassBoost(0, sessionId);

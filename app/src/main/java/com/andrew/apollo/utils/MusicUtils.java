@@ -185,28 +185,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * * Used to create a formatted time string for the duration of tracks.
-	 *
-	 * @param context The {@link Context} to use.
-	 * @param secs    The track in seconds.
-	 * @return Duration of a track that's properly formatted.
-	 */
-	public static String makeTimeString(Context context, int secs) {
-		if (secs < 0) {
-			// invalid time
-			return "--:--";
-		}
-		if (secs == 0) {
-			// no need to calculate
-			return "0:00";
-		}
-		int min = secs / 60;
-		int hour = min / 60;
-		String durationFormat = context.getString(hour == 0 ? R.string.durationformatshort : R.string.durationformatlong);
-		return String.format(durationFormat, hour, min % 60, secs % 60);
-	}
-
-	/**
 	 * switch to next track
 	 */
 	public static void next() {
@@ -959,7 +937,8 @@ public final class MusicUtils {
 				}
 			} catch (SecurityException err) {
 				// thrown when the app does not own the playlist
-				// todo add error message
+				String message = activity.getString(R.string.error_add_playlist);
+				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 				err.printStackTrace();
 			}
 			cursor.close();
@@ -1582,7 +1561,23 @@ public final class MusicUtils {
 	/**
 	 *
 	 */
-	public static final class ServiceBinder implements ServiceConnection {
+	public static final class ServiceToken {
+		public ContextWrapper mWrappedContext;
+
+		/**
+		 * Constructor of <code>ServiceToken</code>
+		 *
+		 * @param context The {@link ContextWrapper} to use
+		 */
+		public ServiceToken(ContextWrapper context) {
+			mWrappedContext = context;
+		}
+	}
+
+	/**
+	 *
+	 */
+	private static final class ServiceBinder implements ServiceConnection {
 
 		/**
 		 * callback called when the service is connected/disconnected
@@ -1612,22 +1607,6 @@ public final class MusicUtils {
 				mCallback.onServiceDisconnected(className);
 			}
 			mService = null;
-		}
-	}
-
-	/**
-	 *
-	 */
-	public static final class ServiceToken {
-		public ContextWrapper mWrappedContext;
-
-		/**
-		 * Constructor of <code>ServiceToken</code>
-		 *
-		 * @param context The {@link ContextWrapper} to use
-		 */
-		public ServiceToken(ContextWrapper context) {
-			mWrappedContext = context;
 		}
 	}
 
@@ -1667,7 +1646,6 @@ public final class MusicUtils {
 						}
 					}
 				});
-
 			}
 		}
 	}

@@ -29,6 +29,7 @@ import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display the songs for a particular
@@ -145,19 +146,19 @@ public class ProfileSongAdapter extends ArrayAdapter<Song> {
 			// Set the line two
 			if (mDisplaySetting == DISPLAY_ALBUM_SETTING) {
 				holder.mLineOneRight.setVisibility(View.GONE);
-				holder.mLineTwo.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+				holder.mLineTwo.setText(StringUtils.makeTimeString(getContext(), song.duration()));
 			} else if (mDisplaySetting == DISPLAY_PLAYLIST_SETTING) {
 				if (song.duration() < 0) {
 					holder.mLineOneRight.setVisibility(View.GONE);
 				} else {
 					holder.mLineOneRight.setVisibility(View.VISIBLE);
-					holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+					holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
 				}
 				String sb = song.getArtist() + " - " + song.getAlbum();
 				holder.mLineTwo.setText(sb);
 			} else {
 				holder.mLineOneRight.setVisibility(View.VISIBLE);
-				holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+				holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
 				holder.mLineTwo.setText(song.getAlbum());
 			}
 		}

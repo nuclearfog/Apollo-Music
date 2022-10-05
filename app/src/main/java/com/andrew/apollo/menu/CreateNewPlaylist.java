@@ -17,7 +17,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.Capitalize;
+import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -85,7 +85,7 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
 				MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, playlistId);
 			} else {
 				long newId = MusicUtils.createPlaylist(requireContext(),
-						Capitalize.capitalize(playlistName));
+						StringUtils.capitalize(playlistName));
 				MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, newId);
 			}
 			closeKeyboard();

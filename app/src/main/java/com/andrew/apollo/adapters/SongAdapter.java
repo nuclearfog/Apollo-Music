@@ -27,6 +27,7 @@ import com.andrew.apollo.ui.fragments.QueueFragment;
 import com.andrew.apollo.ui.fragments.SongFragment;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the songs on a user's
@@ -110,7 +111,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
 		// Set each song name (line one)
 		holder.mLineOne.setText(song.getName());
 		// Set the song duration (line one, right)
-		holder.mLineOneRight.setText(MusicUtils.makeTimeString(getContext(), song.duration()));
+		holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
 		// Set the album name (line two)
 		holder.mLineTwo.setText(song.getArtist());
 		return convertView;

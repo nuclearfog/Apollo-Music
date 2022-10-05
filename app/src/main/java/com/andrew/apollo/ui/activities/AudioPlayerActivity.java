@@ -76,6 +76,7 @@ import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.MusicUtils.ServiceToken;
 import com.andrew.apollo.utils.NavUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
+import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.ThemeUtils;
 
 import java.io.File;
@@ -655,7 +656,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		// Set the artist name
 		mArtistName.setText(MusicUtils.getArtistName());
 		// Set the total time
-		mTotalTime.setText(MusicUtils.makeTimeString(this, (int) MusicUtils.duration() / 1000));
+		mTotalTime.setText(StringUtils.makeTimeString(this, (int) MusicUtils.duration() / 1000));
 		// Set the album art
 		mImageFetcher.loadCurrentArtwork(mAlbumArt);
 		// Set the small artwork
@@ -844,7 +845,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 *
 	 */
 	private void refreshCurrentTimeText(long pos) {
-		mCurrentTime.setText(MusicUtils.makeTimeString(this, (int) pos / 1000));
+		mCurrentTime.setText(StringUtils.makeTimeString(this, (int) pos / 1000));
 	}
 
 	/**

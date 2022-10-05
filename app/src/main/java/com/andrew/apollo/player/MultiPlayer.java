@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,10 +44,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	public MultiPlayer(MusicPlaybackService service) {
 		mService = new WeakReference<>(service);
 		mCurrentMediaPlayer = createPlayer();
-		Log.v("test666", "equalizer");// todo remove
 		audioEffects = new AudioEffects(service, mCurrentMediaPlayer.getAudioSessionId());
-
-
 	}
 
 	/**

@@ -60,26 +60,26 @@ public class AudioEffects {
      *
      * @return array of band levels and frequencies starting from the lowest equalizer frequency
      */
-    public int[][] getBands() {
+    public int[][] getBandLevel() {
         short bandCount = equalizer.getNumberOfBands();
-        int[][] bands = new int[2][bandCount];
+        int[][] level = new int[2][bandCount];
         for (short i = 0 ; i < bandCount ; i++) {
-            bands[0][i] = equalizer.getBandLevel(i);
+            level[0][i] = equalizer.getBandLevel(i);
         }
         for (short i = 0 ; i < bandCount ; i++) {
-            bands[1][i] = equalizer.getCenterFreq(i) / 1000;
+            level[1][i] = equalizer.getCenterFreq(i) / 1000;
         }
-        return bands;
+        return level;
     }
 
     /**
      * set a new equalizer band value
-     * @param pos index of the equalizer band
-     * @param band level of the band
+     * @param band  index of the equalizer band
+     * @param level level of the band
      */
-    public void setBand(int pos, int band) {
+    public void setBandLevel(int band, int level) {
         // set single band level
-        equalizer.setBandLevel((short) pos, (short) band);
+        equalizer.setBandLevel((short) band, (short) level);
         // save all equalizer band levels
         short bandCount = equalizer.getNumberOfBands();
         int[] bands = new int[bandCount];
@@ -99,11 +99,12 @@ public class AudioEffects {
     }
 
     /**
-     * set bass boost strength
-     * @param strength bassbost strength value from 0 to 1000
+     * set bass boost level
+     *
+     * @param level bassbost strength value from 0 to 1000
      */
-    public void setBassLevel(int strength) {
-        bassBooster.setStrength((short) strength);
-        prefs.setBassLevel(strength);
+    public void setBassLevel(int level) {
+        bassBooster.setStrength((short) level);
+        prefs.setBassLevel(level);
     }
 }

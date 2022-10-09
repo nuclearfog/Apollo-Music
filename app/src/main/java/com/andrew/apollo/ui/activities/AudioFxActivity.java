@@ -38,7 +38,7 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 
 		audioEffects = new AudioEffects(this, MusicUtils.getAudioSessionId());
 
-		eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBands()));
+		eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBandLevel()));
 		enableFx.setChecked(audioEffects.isAudioFxEnabled());
 
 		enableFx.setOnCheckedChangeListener(this);
@@ -46,7 +46,7 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 
 	@Override
 	public void onLevelChange(int pos, int level) {
-		audioEffects.setBand(pos, level);
+		audioEffects.setBandLevel(pos, level);
 	}
 
 	@Override

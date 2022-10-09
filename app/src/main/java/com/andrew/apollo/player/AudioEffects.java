@@ -4,6 +4,8 @@ import android.content.Context;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 
+import androidx.annotation.Nullable;
+
 import com.andrew.apollo.utils.PreferenceUtils;
 
 /**
@@ -13,19 +15,37 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class AudioEffects {
 
+    private static AudioEffects instance;
+
     private Equalizer equalizer;
     private BassBoost bassBooster;
 
     private PreferenceUtils prefs;
 
     /**
+     * get singleton instance
+     *
      * @param context   context to get equalizer settings
      * @param sessionId current audio session ID
      */
-    public AudioEffects(Context context, int sessionId) {
+    @Nullable
+    public static AudioEffects getInstance(Context context, int sessionId) {
+        try {
+            if (instance == null) {
+                instance = new AudioEffects(context, sessionId);
+            }
+            return instance;
+        } catch (Exception e) {
+            // thrown if there is no support for audio effects
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private AudioEffects(Context context, int sessionId) {
         equalizer = new Equalizer(0, sessionId);
         bassBooster = new BassBoost(0, sessionId);
-
         prefs = PreferenceUtils.getInstance(context);
 
         equalizer.setEnabled(prefs.isAudioFxEnabled());

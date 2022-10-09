@@ -122,11 +122,12 @@
 	<string name="set_as_ringtone">\'<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\' set as ringtone</string>
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> set as the theme</string>
 	<string name="explain_permission_write_settings">This permission is only required to set ringtone</string>
+	<string name="error_audioeffects_not_supported">Audioeffects not supported!</string>
 
 	<!-- Settings -->
 	<string name="settings_ui_category">Interface</string>
 	<string name="settings_storage_category">Storage</string>
-	<string name="settings_other">Other</string>
+	<string name="settings_other">Other settings</string>
 	<string name="settings_data_category">Data</string>
 	<string name="settings_author_title">Author</string>
 	<string name="settings_remastered_title">further developments by</string>

@@ -43,7 +43,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		mService = new WeakReference<>(service);
 		mCurrentMediaPlayer = createPlayer();
 		// assign audio effect to current session ID
-		new AudioEffects(service, mCurrentMediaPlayer.getAudioSessionId());
+		AudioEffects.getInstance(service, mCurrentMediaPlayer.getAudioSessionId());
 	}
 
 	/**

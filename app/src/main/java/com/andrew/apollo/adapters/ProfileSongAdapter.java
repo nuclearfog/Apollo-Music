@@ -28,7 +28,6 @@ import com.andrew.apollo.ui.fragments.profile.FavoriteSongFragment;
 import com.andrew.apollo.ui.fragments.profile.GenreSongFragment;
 import com.andrew.apollo.ui.fragments.profile.LastAddedFragment;
 import com.andrew.apollo.ui.fragments.profile.PlaylistSongFragment;
-import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.StringUtils;
 
 /**

@@ -5,6 +5,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,14 +40,18 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		toolbar.setTitle(R.string.title_audio_effects);
 
-		audioEffects = new AudioEffects(this, MusicUtils.getAudioSessionId());
+		audioEffects = AudioEffects.getInstance(this, MusicUtils.getAudioSessionId());
+		if (audioEffects != null) {
+			eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBandLevel()));
+			enableFx.setChecked(audioEffects.isAudioFxEnabled());
+			bassBoost.setProgress(audioEffects.getBassLevel());
 
-		eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBandLevel()));
-		enableFx.setChecked(audioEffects.isAudioFxEnabled());
-		bassBoost.setProgress(audioEffects.getBassLevel());
-
-		enableFx.setOnCheckedChangeListener(this);
-		bassBoost.setOnSeekBarChangeListener(this);
+			enableFx.setOnCheckedChangeListener(this);
+			bassBoost.setOnSeekBarChangeListener(this);
+		} else {
+			Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
+			finish();
+		}
 	}
 
 	@Override

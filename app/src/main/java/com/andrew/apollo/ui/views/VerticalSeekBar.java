@@ -2,14 +2,15 @@ package com.andrew.apollo.ui.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.SeekBar;
+
+import androidx.appcompat.widget.AppCompatSeekBar;
 
 /**
  * custom implementation of a vertical seekbar
  *
  * @author nuclerfog
  */
-public class VerticalSeekBar extends SeekBar {
+public class VerticalSeekBar extends AppCompatSeekBar {
 
 	public VerticalSeekBar(Context context) {
 		this(context, null);

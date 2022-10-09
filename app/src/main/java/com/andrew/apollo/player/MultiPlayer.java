@@ -27,8 +27,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
 	private final WeakReference<MusicPlaybackService> mService;
 
-	private AudioEffects audioEffects;
-
 	private Handler mHandler;
 
 	private MediaPlayer mCurrentMediaPlayer;
@@ -44,7 +42,8 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	public MultiPlayer(MusicPlaybackService service) {
 		mService = new WeakReference<>(service);
 		mCurrentMediaPlayer = createPlayer();
-		audioEffects = new AudioEffects(service, mCurrentMediaPlayer.getAudioSessionId());
+		// assign audio effect to current session ID
+		new AudioEffects(service, mCurrentMediaPlayer.getAudioSessionId());
 	}
 
 	/**
@@ -124,13 +123,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		} catch (Exception err) {
 			err.printStackTrace();
 		}
-	}
-
-	/**
-	 *
-	 */
-	public AudioEffects getAudioEffects() {
-		return audioEffects;
 	}
 
 	/**

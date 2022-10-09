@@ -27,9 +27,14 @@ public class AudioEffects {
         bassBooster = new BassBoost(0, sessionId);
 
         prefs = PreferenceUtils.getInstance(context);
-        enableAudioFx(prefs.isAudioFxEnabled());
-        setBands(prefs.getEqualizerBands());
-        setBassLevel(prefs.getBassLevel());
+
+        equalizer.setEnabled(prefs.isAudioFxEnabled());
+        bassBooster.setEnabled(prefs.isAudioFxEnabled());
+        bassBooster.setStrength((short) prefs.getBassLevel());
+        int[] bandLevel = prefs.getEqualizerBands();
+        for (short i = 0 ; i < bandLevel.length ; i++) {
+            equalizer.setBandLevel( i, (short) bandLevel[i]);
+        }
     }
 
     /**
@@ -44,30 +49,27 @@ public class AudioEffects {
     }
 
     /**
-     * get equalizer bands
-     *
-     * @return array of band levels starting from the lowest equalizer frequency
+     * @return true if audio FX is enabled
      */
-    public int[] getBands() {
-        short bandCount = equalizer.getNumberOfBands();
-        int[] bandLevel = new int[bandCount];
-
-        for (short i = 0 ; i < bandCount ; i++) {
-            bandLevel[i] = equalizer.getBandLevel(i);
-        }
-        return bandLevel;
+    public boolean isAudioFxEnabled() {
+        return prefs.isAudioFxEnabled();
     }
 
     /**
-     * set new equalizer band
+     * get equalizer bands
      *
-     * @param bandLevel array of band levels starting from the lowest equalizer frequency
+     * @return array of band levels and frequencies starting from the lowest equalizer frequency
      */
-    public void setBands(int[] bandLevel) {
-        for (int i = 0 ; i < bandLevel.length ; i++) {
-            setBand(i, bandLevel[i]);
+    public int[][] getBands() {
+        short bandCount = equalizer.getNumberOfBands();
+        int[][] bands = new int[2][bandCount];
+        for (short i = 0 ; i < bandCount ; i++) {
+            bands[0][i] = equalizer.getBandLevel(i);
         }
-        prefs.setEqualizerBands(bandLevel);
+        for (short i = 0 ; i < bandCount ; i++) {
+            bands[1][i] = equalizer.getCenterFreq(i) / 1000;
+        }
+        return bands;
     }
 
     /**
@@ -76,7 +78,15 @@ public class AudioEffects {
      * @param band level of the band
      */
     public void setBand(int pos, int band) {
+        // set single band level
         equalizer.setBandLevel((short) pos, (short) band);
+        // save all equalizer band levels
+        short bandCount = equalizer.getNumberOfBands();
+        int[] bands = new int[bandCount];
+        for (short i = 0 ; i < bandCount ; i++) {
+            bands[i] = equalizer.getBandLevel(i);
+        }
+        prefs.setEqualizerBands(bands);
     }
 
     /**

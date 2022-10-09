@@ -83,6 +83,7 @@ public final class PreferenceUtils {
 	private static final String FX_ENABLE = "fx_enable";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
 	private static final String FX_BASSBOOST = "fx_bassbost";
+	private static final String FX_PREFER_EXT = "fx_prefer_external";
 
 	private final SharedPreferences mPreferences;
 	private int themeColor;
@@ -586,5 +587,14 @@ public final class PreferenceUtils {
 	 */
 	public int getBassLevel() {
 		return mPreferences.getInt(FX_BASSBOOST, 0);
+	}
+
+	/**
+	 * check if external audio effect app is prefered
+	 *
+	 * @return true if external audio effect app is prefered
+	 */
+	public boolean isExternalAudioFxPrefered() {
+		return mPreferences.getBoolean(FX_PREFER_EXT, false);
 	}
 }

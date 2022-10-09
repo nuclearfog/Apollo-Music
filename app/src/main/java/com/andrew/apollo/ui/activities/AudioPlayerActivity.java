@@ -173,6 +173,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	private ThemeUtils mResources;
 
+	private PreferenceUtils mPrefs;
+
 	private int themeColor;
 	private long mPosOverride = -1;
 	private long mStartSeekPos = 0;
@@ -195,9 +197,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			setSupportActionBar(toolbar);
 		// Initialze the theme resources
 		mResources = new ThemeUtils(this);
+		// app preferences
+		mPrefs = PreferenceUtils.getInstance(this);
 		// Set the overflow style
 		mResources.setOverflowStyle(this);
-		themeColor = PreferenceUtils.getInstance(this).getDefaultThemeColor();
+		themeColor = mPrefs.getDefaultThemeColor();
 		// Fade it in
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		// Control the media volume
@@ -364,7 +368,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// Share the current meta data
 			shareCurrentTrack();
 		} else if (vId == R.id.menu_audio_player_equalizer) {
-			if (ApolloUtils.isEqualizerInstalled(this)) {
+			if (mPrefs.isExternalAudioFxPrefered() && ApolloUtils.isEqualizerInstalled(this)) {
 				// Sound effects
 				NavUtils.openEffectsPanel(this);
 			} else {

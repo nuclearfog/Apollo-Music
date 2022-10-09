@@ -30,8 +30,10 @@
 		android:layout_marginLeft="10dp"
 		android:layout_marginBottom="5dp"
 		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/audiofx_colorstrip"
 		app:layout_constraintBottom_toTopOf="@id/audiofx_eq_scroll"
-		tools:ignore="UseSwitchCompatOrMaterialXml" />
+		tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck"
+		app:layout_constraintVertical_chainStyle="packed" />
 
 	<TextView
 		android:id="@+id/audiofx_enable_label"
@@ -41,8 +43,7 @@
 		app:layout_constraintStart_toEndOf="@id/audiofx_enable"
 		app:layout_constraintTop_toTopOf="@id/audiofx_enable"
 		app:layout_constraintBottom_toBottomOf="@id/audiofx_enable"
-		app:layout_constraintEnd_toEndOf="parent"
-		/>
+		app:layout_constraintEnd_toEndOf="parent" />
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/audiofx_eq_scroll"
@@ -50,8 +51,33 @@
 		android:layout_height="0dp"
 		app:layout_constraintHeight_percent="0.4"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/audiofx_colorstrip"
+		app:layout_constraintTop_toBottomOf="@id/audiofx_enable"
+		app:layout_constraintBottom_toTopOf="@id/audiofx_bass_boost"
+		app:layout_constraintEnd_toEndOf="parent" />
+
+	<TextView
+		android:id="@+id/audiofx_bass_boost_label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/label_bass_boost"
+		android:layout_marginStart="5dp"
+		android:layout_marginLeft="5dp"
+		android:layout_marginEnd="5dp"
+		android:layout_marginRight="5dp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="@id/audiofx_bass_boost"
+		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost"
+		app:layout_constraintEnd_toStartOf="@id/audiofx_bass_boost"/>
+
+	<SeekBar
+		android:id="@+id/audiofx_bass_boost"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="15dp"
+		android:max="1000"
+		app:layout_constraintStart_toEndOf="@id/audiofx_bass_boost_label"
+		app:layout_constraintTop_toBottomOf="@id/audiofx_eq_scroll"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"/>
+		app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

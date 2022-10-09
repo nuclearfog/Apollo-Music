@@ -3,6 +3,8 @@ package com.andrew.apollo.ui.activities;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,7 +22,7 @@ import com.andrew.apollo.utils.MusicUtils;
  *
  * @author nuclerfog
  */
-public class AudioFxActivity extends AppCompatActivity implements EqualizerListener, OnCheckedChangeListener {
+public class AudioFxActivity extends AppCompatActivity implements EqualizerListener, OnCheckedChangeListener, OnSeekBarChangeListener {
 
 	private AudioEffects audioEffects;
 
@@ -32,6 +34,7 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 		CompoundButton enableFx = findViewById(R.id.audiofx_enable);
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
+		SeekBar bassBoost = findViewById(R.id.audiofx_bass_boost);
 
 		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		toolbar.setTitle(R.string.title_audio_effects);
@@ -40,8 +43,10 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 
 		eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBandLevel()));
 		enableFx.setChecked(audioEffects.isAudioFxEnabled());
+		bassBoost.setProgress(audioEffects.getBassLevel());
 
 		enableFx.setOnCheckedChangeListener(this);
+		bassBoost.setOnSeekBarChangeListener(this);
 	}
 
 	@Override
@@ -54,5 +59,20 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 		if (buttonView.getId() == R.id.audiofx_enable) {
 			audioEffects.enableAudioFx(isChecked);
 		}
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		if (seekBar.getId() == R.id.audiofx_bass_boost) {
+			audioEffects.setBassLevel(progress);
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 }

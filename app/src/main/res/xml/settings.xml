@@ -63,6 +63,15 @@
 			android:title="@string/settings_delete_cache_title" />
 	</PreferenceCategory>
 
+	<!-- other settigns -->
+	<PreferenceCategory android:title="@string/settings_other">
+
+		<CheckBoxPreference
+			android:defaultValue="false"
+			android:key="fx_prefer_external"
+			android:title="@string/settings_prefer_external_equalizer" />
+	</PreferenceCategory>
+
 	<!-- About -->
 	<PreferenceCategory android:title="@string/settings_about_apollo">
 		<Preference

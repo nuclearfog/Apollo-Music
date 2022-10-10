@@ -71,7 +71,7 @@ public final class PreferenceUtils {
 	public static final String LAYOUT_SIMPLE = "simple";
 	public static final String LAYOUT_DETAILED = "detailed";
 	public static final String LAYOUT_GRID = "grid";
-
+	//
 	private static final String MODE_SHUFFLE = "shufflemode";
 	private static final String MODE_REPEAT = "repeatmode";
 	private static final String POS_SEEK = "seekpos";
@@ -79,17 +79,17 @@ public final class PreferenceUtils {
 	private static final String HISTORY = "history";
 	private static final String QUEUE = "queue";
 	private static final String ID_CARD = "cardid";
-
+	// equalizer settings
 	private static final String FX_ENABLE = "fx_enable";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
 	private static final String FX_BASSBOOST = "fx_bassbost";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
 
-	private final SharedPreferences mPreferences;
+	private static volatile PreferenceUtils sInstance;
+
+	private SharedPreferences mPreferences;
 	private int themeColor;
 	private int startPage;
-
-	private static PreferenceUtils sInstance;
 
 	/**
 	 * Constructor for <code>PreferenceUtils</code>

@@ -17,9 +17,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.StringUtils;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com) TODO - The playlist names are

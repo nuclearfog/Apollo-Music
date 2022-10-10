@@ -15,7 +15,7 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class AudioEffects {
 
-    private static AudioEffects instance;
+    private static volatile AudioEffects instance;
 
     private Equalizer equalizer;
     private BassBoost bassBooster;

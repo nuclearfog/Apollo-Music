@@ -24,9 +24,9 @@ import android.provider.MediaStore.Audio.Playlists;
 import androidx.annotation.Nullable;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.StringUtils;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.StringUtils;
 
 /**
  * Alert dialog used to rename playlits.

@@ -1,5 +1,12 @@
 package com.andrew.apollo.player;
 
+import static com.andrew.apollo.MusicPlaybackService.FADEDOWN;
+import static com.andrew.apollo.MusicPlaybackService.FADEUP;
+import static com.andrew.apollo.MusicPlaybackService.FOCUSCHANGE;
+import static com.andrew.apollo.MusicPlaybackService.SERVER_DIED;
+import static com.andrew.apollo.MusicPlaybackService.TRACK_ENDED;
+import static com.andrew.apollo.MusicPlaybackService.TRACK_WENT_TO_NEXT;
+
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,13 +17,6 @@ import androidx.annotation.NonNull;
 import com.andrew.apollo.MusicPlaybackService;
 
 import java.lang.ref.WeakReference;
-
-import static com.andrew.apollo.MusicPlaybackService.FADEDOWN;
-import static com.andrew.apollo.MusicPlaybackService.FADEUP;
-import static com.andrew.apollo.MusicPlaybackService.FOCUSCHANGE;
-import static com.andrew.apollo.MusicPlaybackService.SERVER_DIED;
-import static com.andrew.apollo.MusicPlaybackService.TRACK_ENDED;
-import static com.andrew.apollo.MusicPlaybackService.TRACK_WENT_TO_NEXT;
 
 /**
  *

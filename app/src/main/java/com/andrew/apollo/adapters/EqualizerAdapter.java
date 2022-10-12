@@ -23,31 +23,38 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 
 	private static final NumberFormat NUMBER_FORMAT = NumberFormat.getInstance();
 
-	private EqualizerListener listener;
-	private int[][] bands;
+	private BandLevelChangeListener listener;
+	private int[] level, frequency, range;
 
 	/**
 	 * @param listener  listener to call if equalizer level changes
-	 * @param bands     amplitude/frequency matrix
+	 * @param level     array of band levels (mB)
+	 * @param frequency array of band frequencies (Hz)
+	 * @param range     min/max limits of the band
 	 */
-	public EqualizerAdapter(EqualizerListener listener, int[][] bands) {
+	public EqualizerAdapter(BandLevelChangeListener listener, int[] level, int[] frequency, int[] range) {
 		this.listener = listener;
-		this.bands = bands;
+		this.level = level;
+		this.frequency = frequency;
+		this.range = range;
 	}
-
 
 	@NonNull
 	@Override
 	public EqualizerAdapter.EqualizerHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		final EqualizerHolder holder = new EqualizerHolder(parent);
+		holder.slider.setMax((range[1] - range[0]) / 100);
 		holder.slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
 					int position = holder.getLayoutPosition();
 					if (position != NO_POSITION) {
-						listener.onLevelChange(position, progress);
-						holder.level.setText(NUMBER_FORMAT.format(progress));
+						// calculate new band level
+						level[position] = progress * 100 + range[0];
+						holder.level.setText(NUMBER_FORMAT.format(level[position] / 100.0));
+						//
+						listener.onBandLevelChange(position, level[position]);
 					}
 				}
 			}
@@ -65,21 +72,27 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 
 	@Override
 	public void onBindViewHolder(@NonNull EqualizerAdapter.EqualizerHolder holder, int position) {
-		holder.slider.setProgress(bands[0][position]);
-		holder.level.setText(NUMBER_FORMAT.format(bands[0][position]));
-		holder.frequency.setText(NUMBER_FORMAT.format(bands[1][position]));
+		// calculate seekbar position
+		holder.slider.setProgress((level[position] - range[0]) / 100);
+		// band level
+		holder.level.setText(NUMBER_FORMAT.format(level[position] / 100.0));
+		// band frequency
+		if (frequency[position] >= 1000) {
+			holder.frequency.setText(NUMBER_FORMAT.format(frequency[position] / 1000.0));
+			holder.frequency.append("K");
+		} else {
+			holder.frequency.setText(NUMBER_FORMAT.format(frequency[position]));
+		}
 	}
 
 	@Override
 	public int getItemCount() {
-		return Math.min(bands[0].length, bands[1].length);
+		return Math.min(level.length, frequency.length);
 	}
 
 	/**
 	 */
 	public static class EqualizerHolder extends RecyclerView.ViewHolder {
-
-		public static final int SLIDER_MAX = 2000;
 
 		public final SeekBar slider;
 		public final TextView level, frequency;
@@ -89,13 +102,20 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 			slider = itemView.findViewById(R.id.eq_seekbar);
 			level = itemView.findViewById(R.id.eq_level);
 			frequency = itemView.findViewById(R.id.eq_freq);
-
-			slider.setMax(SLIDER_MAX);
 		}
 	}
 
-	public interface EqualizerListener {
+	/**
+	 * Adapter item listener
+	 */
+	public interface BandLevelChangeListener {
 
-		void onLevelChange(int pos, int level);
+		/**
+		 * called when a band seekbar changes
+		 *
+		 * @param pos   adapter position of the band
+		 * @param level level value
+		 */
+		void onBandLevelChange(int pos, int level);
 	}
 }

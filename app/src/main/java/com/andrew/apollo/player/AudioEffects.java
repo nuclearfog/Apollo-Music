@@ -76,24 +76,46 @@ public class AudioEffects {
     }
 
     /**
+     * get min, max limits of the eq band
+     *
+     * @return array with min and max limits
+     */
+    public int[] getBandLevelRange() {
+        short[] test = equalizer.getBandLevelRange();
+        return new int[] {test[0], test[1]};
+    }
+
+    /**
+     * get band frequencies
+     *
+     * @return array of band frequencies, starting with the lowest frequency
+     */
+    public int[] getBandFrequencies() {
+        short bandCount = equalizer.getNumberOfBands();
+        int[] freq = new int[bandCount];
+        for (short i = 0 ; i < bandCount ; i++) {
+            freq[i] = equalizer.getCenterFreq(i) / 1000;
+        }
+        return freq;
+    }
+
+    /**
      * get equalizer bands
      *
      * @return array of band levels and frequencies starting from the lowest equalizer frequency
      */
-    public int[][] getBandLevel() {
+    public int[] getBandLevel() {
         short bandCount = equalizer.getNumberOfBands();
-        int[][] level = new int[2][bandCount];
+        int[] level = new int[bandCount];
         for (short i = 0 ; i < bandCount ; i++) {
-            level[0][i] = equalizer.getBandLevel(i);
-        }
-        for (short i = 0 ; i < bandCount ; i++) {
-            level[1][i] = equalizer.getCenterFreq(i) / 1000;
+            level[i] = equalizer.getBandLevel(i);
         }
         return level;
     }
 
     /**
      * set a new equalizer band value
+     *
      * @param band  index of the equalizer band
      * @param level level of the band
      */

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.EqualizerAdapter;
-import com.andrew.apollo.adapters.EqualizerAdapter.EqualizerListener;
+import com.andrew.apollo.adapters.EqualizerAdapter.BandLevelChangeListener;
 import com.andrew.apollo.player.AudioEffects;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -24,7 +24,7 @@ import com.andrew.apollo.utils.MusicUtils;
  *
  * @author nuclerfog
  */
-public class AudioFxActivity extends AppCompatActivity implements EqualizerListener, OnCheckedChangeListener, OnSeekBarChangeListener {
+public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener, OnSeekBarChangeListener {
 
 	private AudioEffects audioEffects;
 
@@ -47,7 +47,8 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 
 		audioEffects = AudioEffects.getInstance(this, MusicUtils.getAudioSessionId());
 		if (audioEffects != null) {
-			eq_bands.setAdapter(new EqualizerAdapter(this, audioEffects.getBandLevel()));
+			EqualizerAdapter adapter = new EqualizerAdapter(this, audioEffects.getBandLevel(), audioEffects.getBandFrequencies(), audioEffects.getBandLevelRange());
+			eq_bands.setAdapter(adapter);
 			enableFx.setChecked(audioEffects.isAudioFxEnabled());
 			bassBoost.setProgress(audioEffects.getBassLevel());
 
@@ -72,7 +73,7 @@ public class AudioFxActivity extends AppCompatActivity implements EqualizerListe
 	}
 
 	@Override
-	public void onLevelChange(int pos, int level) {
+	public void onBandLevelChange(int pos, int level) {
 		audioEffects.setBandLevel(pos, level);
 	}
 

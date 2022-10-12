@@ -15,6 +15,11 @@ import com.andrew.apollo.utils.PreferenceUtils;
  */
 public class AudioEffects {
 
+    /**
+     * max limit of the bass boost effect defined in {@link BassBoost}
+     */
+    public static final int MAX_BASSBOOST = 1000;
+
     private static volatile AudioEffects instance;
 
     private Equalizer equalizer;

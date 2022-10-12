@@ -18,6 +18,7 @@ import com.andrew.apollo.adapters.EqualizerAdapter;
 import com.andrew.apollo.adapters.EqualizerAdapter.BandLevelChangeListener;
 import com.andrew.apollo.player.AudioEffects;
 import com.andrew.apollo.utils.MusicUtils;
+import com.andrew.apollo.utils.ThemeUtils;
 
 /**
  * Audio effects activity
@@ -25,6 +26,11 @@ import com.andrew.apollo.utils.MusicUtils;
  * @author nuclerfog
  */
 public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener, OnSeekBarChangeListener {
+
+	/**
+	 * maximum steps of the bassboost seekbar
+	 */
+	private static final int BASS_STEPS = 20;
 
 	private AudioEffects audioEffects;
 
@@ -38,11 +44,13 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		SeekBar bassBoost = findViewById(R.id.audiofx_bass_boost);
 
 		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+		bassBoost.setMax(BASS_STEPS);
 
-		toolbar.setTitle(R.string.title_audio_effects);
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
+			ThemeUtils mResources = new ThemeUtils(this);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			mResources.themeActionBar(getSupportActionBar(), R.string.title_audio_effects);
 		}
 
 		audioEffects = AudioEffects.getInstance(this, MusicUtils.getAudioSessionId());
@@ -50,7 +58,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			EqualizerAdapter adapter = new EqualizerAdapter(this, audioEffects.getBandLevel(), audioEffects.getBandFrequencies(), audioEffects.getBandLevelRange());
 			eq_bands.setAdapter(adapter);
 			enableFx.setChecked(audioEffects.isAudioFxEnabled());
-			bassBoost.setProgress(audioEffects.getBassLevel());
+			bassBoost.setProgress(audioEffects.getBassLevel() / AudioEffects.MAX_BASSBOOST / BASS_STEPS);
 
 			enableFx.setOnCheckedChangeListener(this);
 			bassBoost.setOnSeekBarChangeListener(this);
@@ -87,7 +95,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (seekBar.getId() == R.id.audiofx_bass_boost) {
-			audioEffects.setBassLevel(progress);
+			audioEffects.setBassLevel(progress * AudioEffects.MAX_BASSBOOST / BASS_STEPS);
 		}
 	}
 

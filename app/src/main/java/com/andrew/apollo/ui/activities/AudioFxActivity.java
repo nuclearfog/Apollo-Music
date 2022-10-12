@@ -58,7 +58,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			EqualizerAdapter adapter = new EqualizerAdapter(this, audioEffects.getBandLevel(), audioEffects.getBandFrequencies(), audioEffects.getBandLevelRange());
 			eq_bands.setAdapter(adapter);
 			enableFx.setChecked(audioEffects.isAudioFxEnabled());
-			bassBoost.setProgress(audioEffects.getBassLevel() / AudioEffects.MAX_BASSBOOST / BASS_STEPS);
+			bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASSBOOST);
 
 			enableFx.setOnCheckedChangeListener(this);
 			bassBoost.setOnSeekBarChangeListener(this);

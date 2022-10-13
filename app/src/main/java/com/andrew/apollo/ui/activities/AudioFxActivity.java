@@ -42,9 +42,11 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
 		SeekBar bassBoost = findViewById(R.id.audiofx_bass_boost);
+		SeekBar reverb = findViewById(R.id.audiofx_reverb);
 
-		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		bassBoost.setMax(BASS_STEPS);
+		reverb.setMax(AudioEffects.MAX_REVERB);
+		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
@@ -59,9 +61,11 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			eq_bands.setAdapter(adapter);
 			enableFx.setChecked(audioEffects.isAudioFxEnabled());
 			bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASSBOOST);
+			reverb.setProgress(audioEffects.getReverbLevel());
 
 			enableFx.setOnCheckedChangeListener(this);
 			bassBoost.setOnSeekBarChangeListener(this);
+			reverb.setOnSeekBarChangeListener(this);
 		} else {
 			Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
 			finish();
@@ -94,8 +98,15 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		if (seekBar.getId() == R.id.audiofx_bass_boost) {
-			audioEffects.setBassLevel(progress * AudioEffects.MAX_BASSBOOST / BASS_STEPS);
+		if (fromUser) {
+			// set bass boost
+			if (seekBar.getId() == R.id.audiofx_bass_boost) {
+				audioEffects.setBassLevel(progress * AudioEffects.MAX_BASSBOOST / BASS_STEPS);
+			}
+			// set reverb
+			else if (seekBar.getId() == R.id.audiofx_reverb) {
+				audioEffects.setReverbLevel(progress);
+			}
 		}
 	}
 

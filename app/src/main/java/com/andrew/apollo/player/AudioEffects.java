@@ -3,6 +3,7 @@ package com.andrew.apollo.player;
 import android.content.Context;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
+import android.media.audiofx.PresetReverb;
 
 import androidx.annotation.Nullable;
 
@@ -20,10 +21,16 @@ public class AudioEffects {
      */
     public static final int MAX_BASSBOOST = 1000;
 
+    /**
+     * max reverb steps definded in {@link PresetReverb}
+     */
+    public static final int MAX_REVERB = 6;
+
     private static volatile AudioEffects instance;
 
     private Equalizer equalizer;
     private BassBoost bassBooster;
+    private PresetReverb reverb;
 
     private PreferenceUtils prefs;
 
@@ -32,6 +39,7 @@ public class AudioEffects {
      *
      * @param context   context to get equalizer settings
      * @param sessionId current audio session ID
+     * @return {@link AudioEffects} instance or null if audio effects isn't supported
      */
     @Nullable
     public static AudioEffects getInstance(Context context, int sessionId) {
@@ -47,15 +55,21 @@ public class AudioEffects {
         }
     }
 
-
+    /**
+     * @param sessionId current audio session ID
+     */
     private AudioEffects(Context context, int sessionId) {
         equalizer = new Equalizer(0, sessionId);
         bassBooster = new BassBoost(0, sessionId);
+        reverb = new PresetReverb(0, sessionId);
         prefs = PreferenceUtils.getInstance(context);
-
+        // enable/disable effects
         equalizer.setEnabled(prefs.isAudioFxEnabled());
         bassBooster.setEnabled(prefs.isAudioFxEnabled());
+        reverb.setEnabled(prefs.isAudioFxEnabled());
+        // set effect parameters
         bassBooster.setStrength((short) prefs.getBassLevel());
+        reverb.setPreset((short) prefs.getReverbLevel());
         int[] bandLevel = prefs.getEqualizerBands();
         for (short i = 0 ; i < bandLevel.length ; i++) {
             equalizer.setBandLevel( i, (short) bandLevel[i]);
@@ -153,5 +167,24 @@ public class AudioEffects {
     public void setBassLevel(int level) {
         bassBooster.setStrength((short) level);
         prefs.setBassLevel(level);
+    }
+
+    /**
+     * get reverb level
+     *
+     * @return reverb level
+     */
+    public int getReverbLevel() {
+        return reverb.getPreset();
+    }
+
+    /**
+     * set reverb level
+     *
+     * @param level reverb level
+     */
+    public void setReverbLevel(int level) {
+        reverb.setPreset((short) level);
+        prefs.setReverbLevel(level);
     }
 }

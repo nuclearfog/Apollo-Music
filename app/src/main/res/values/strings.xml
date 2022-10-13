@@ -183,6 +183,7 @@
 	<!-- labels -->
 	<string name="label_enable_equalizer">enable Audio FX</string>
 	<string name="label_bass_boost">Bass boost</string>
+	<string name="label_reverb">Room size</string>
 	<string name="title_audio_effects">Audio effects</string>
 
 	<!-- Duration format for duration < 1 hour -->

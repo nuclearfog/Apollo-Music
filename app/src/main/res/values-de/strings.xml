@@ -141,4 +141,5 @@
 	<string name="accessibility_switch_queue">zur Warteschlange umschalten</string>
 	<string name="accessibility_switch_album_art">zum Albumcover umschalten</string>
 	<string name="accessibility_album_art">Albumcover</string>
+	<string name="label_reverb">Raumgröße</string>
 </resources>

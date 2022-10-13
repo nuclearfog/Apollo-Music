@@ -83,6 +83,7 @@ public final class PreferenceUtils {
 	private static final String FX_ENABLE = "fx_enable";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
 	private static final String FX_BASSBOOST = "fx_bassbost";
+	private static final String FX_REVERB = "fx_reverb";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
 
 	private static volatile PreferenceUtils sInstance;
@@ -587,6 +588,26 @@ public final class PreferenceUtils {
 	 */
 	public int getBassLevel() {
 		return mPreferences.getInt(FX_BASSBOOST, 0);
+	}
+
+	/**
+	 * set reverb level
+	 *
+	 * @param level reverb level (room size)
+	 */
+	public void setReverbLevel(int level) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(FX_REVERB, level);
+		editor.apply();
+	}
+
+	/**
+	 * get reverb level
+	 *
+	 * @return reverb level (room size)
+	 */
+	public int getReverbLevel() {
+		return mPreferences.getInt(FX_REVERB, 0);
 	}
 
 	/**

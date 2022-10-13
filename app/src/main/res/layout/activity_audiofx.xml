@@ -71,22 +71,54 @@
 		android:text="@string/label_bass_boost"
 		android:layout_marginStart="5dp"
 		android:layout_marginLeft="5dp"
-		android:layout_marginEnd="5dp"
-		android:layout_marginRight="5dp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_bass_boost"
-		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost"
-		app:layout_constraintEnd_toStartOf="@id/audiofx_bass_boost"/>
+		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost"/>
+
+
+	<TextView
+		android:id="@+id/audiofx_reverb_label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/label_reverb"
+		android:layout_marginStart="5dp"
+		android:layout_marginLeft="5dp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="@id/audiofx_reverb"
+		app:layout_constraintBottom_toBottomOf="@id/audiofx_reverb"/>
+
+	<androidx.constraintlayout.widget.Barrier
+		android:id="@+id/seekbar_label_barrier"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:barrierDirection="end"
+		app:constraint_referenced_ids="audiofx_bass_boost_label,audiofx_reverb_label"/>
 
 	<SeekBar
 		android:id="@+id/audiofx_bass_boost"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:layout_marginStart="5dp"
+		android:layout_marginLeft="5dp"
 		android:layout_marginTop="15dp"
 		android:layout_marginEnd="5dp"
 		android:layout_marginRight="5dp"
-		app:layout_constraintStart_toEndOf="@id/audiofx_bass_boost_label"
+		app:layout_constraintStart_toEndOf="@id/seekbar_label_barrier"
 		app:layout_constraintTop_toBottomOf="@id/audiofx_eq_scroll"
+		app:layout_constraintBottom_toTopOf="@id/audiofx_reverb"
+		app:layout_constraintEnd_toEndOf="parent" />
+
+	<SeekBar
+		android:id="@+id/audiofx_reverb"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="5dp"
+		android:layout_marginLeft="5dp"
+		android:layout_marginTop="15dp"
+		android:layout_marginEnd="5dp"
+		android:layout_marginRight="5dp"
+		app:layout_constraintStart_toEndOf="@id/seekbar_label_barrier"
+		app:layout_constraintTop_toBottomOf="@id/audiofx_bass_boost"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 

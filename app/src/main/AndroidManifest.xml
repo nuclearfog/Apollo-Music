@@ -49,6 +49,8 @@
 	<application
 		android:name=".ApolloApplication"
 		android:allowBackup="false"
+		android:fullBackupContent="false"
+		android:dataExtractionRules="@xml/rules"
 		android:allowTaskReparenting="true"
 		android:hardwareAccelerated="true"
 		android:icon="@mipmap/ic_launcher"
@@ -57,7 +59,8 @@
 		android:requestLegacyExternalStorage="true"
 		android:taskAffinity="${applicationId}.task"
 		android:supportsRtl="true"
-		android:theme="@style/Apollo.Theme.Dark">
+		android:theme="@style/Apollo.Theme.Dark"
+		tools:ignore="UnusedAttribute">
 
 		<!-- provider to share music files -->
 		<provider

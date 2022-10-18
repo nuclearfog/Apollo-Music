@@ -69,21 +69,30 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	 * Title text used when no title is provided by the adapter.
 	 */
 	private static final String EMPTY_TITLE = "";
+
+	/**
+	 */
 	private static final int INVALID_POINTER = -1;
-	private final Paint mPaintText = new Paint();
-	private final Rect mBounds = new Rect();
-	private final Paint mPaintFooterLine = new Paint();
-	private final Paint mPaintFooterIndicator = new Paint();
+
+	private Paint mPaintText = new Paint();
+	private Rect mBounds = new Rect();
+	private Paint mPaintFooterLine = new Paint();
+	private Paint mPaintFooterIndicator = new Paint();
+	private Path mPath = new Path();
+
+	private IndicatorStyle mFooterIndicatorStyle;
+	private LinePosition mLinePosition;
 	private ViewPager mViewPager;
+
+	private OnCenterItemClickListener mCenterItemClickListener;
+
 	private int mCurrentPage = -1;
 	private float mPageOffset;
 	private int mScrollState;
 	private boolean mBoldText;
 	private int mColorText;
 	private int mColorSelected;
-	private Path mPath = new Path();
-	private IndicatorStyle mFooterIndicatorStyle;
-	private LinePosition mLinePosition;
+
 	private float mFooterIndicatorHeight;
 	private float mFooterIndicatorUnderlinePadding;
 	private float mFooterPadding;
@@ -98,15 +107,17 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	private float mLastMotionX = -1;
 	private int mActivePointerId = INVALID_POINTER;
 	private boolean mIsDragging;
-	private OnCenterItemClickListener mCenterItemClickListener;
+
 
 	public TitlePageIndicator(Context context) {
 		this(context, null);
 	}
 
+
 	public TitlePageIndicator(Context context, AttributeSet attrs) {
 		this(context, attrs, R.attr.vpiTitlePageIndicatorStyle);
 	}
+
 
 	public TitlePageIndicator(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -165,21 +176,6 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 		mTouchSlop = ViewConfiguration.get(context).getScaledPagingTouchSlop();
 	}
 
-	public void setTextColor(int textColor) {
-		mPaintText.setColor(textColor);
-		mColorText = textColor;
-		invalidate();
-	}
-
-	public void setSelectedColor(int color) {
-		mColorSelected = color;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see android.view.View#onDraw(android.graphics.Canvas)
-	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -369,6 +365,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
+	@Override
 	public boolean onTouchEvent(android.view.MotionEvent ev) {
 		if (super.onTouchEvent(ev)) {
 			return true;
@@ -464,97 +461,6 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 		return true;
 	}
 
-	/**
-	 * Set bounds for the right textView including clip padding.
-	 *
-	 * @param curViewBound current bounds.
-	 * @param curViewWidth width of the view.
-	 */
-	private void clipViewOnTheRight(Rect curViewBound, float curViewWidth, int right) {
-		curViewBound.right = (int) (right - mClipPadding);
-		curViewBound.left = (int) (curViewBound.right - curViewWidth);
-	}
-
-	/**
-	 * Set bounds for the left textView including clip padding.
-	 *
-	 * @param curViewBound current bounds.
-	 * @param curViewWidth width of the view.
-	 */
-	private void clipViewOnTheLeft(Rect curViewBound, float curViewWidth, int left) {
-		curViewBound.left = (int) (left + mClipPadding);
-		curViewBound.right = (int) (mClipPadding + curViewWidth);
-	}
-
-	/**
-	 * Calculate views bounds and scroll them according to the current index
-	 */
-	private ArrayList<Rect> calculateAllBounds(Paint paint) {
-		ArrayList<Rect> list = new ArrayList<>();
-		//For each views (If no values then add a fake one)
-		if (mViewPager.getAdapter() != null) {
-			int count = mViewPager.getAdapter().getCount();
-			int width = getWidth();
-			int halfWidth = width / 2;
-			for (int i = 0; i < count; i++) {
-				Rect bounds = calcBounds(i, paint);
-				int w = bounds.right - bounds.left;
-				int h = bounds.bottom - bounds.top;
-				bounds.left = (int) (halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
-				bounds.right = bounds.left + w;
-				bounds.top = 0;
-				bounds.bottom = h;
-				list.add(bounds);
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * Calculate the bounds for a view's title
-	 */
-	private Rect calcBounds(int index, Paint paint) {
-		//Calculate the text bounds
-		Rect bounds = new Rect();
-		CharSequence title = getTitle(index);
-		bounds.right = (int) paint.measureText(title, 0, title.length());
-		bounds.bottom = (int) (paint.descent() - paint.ascent());
-		return bounds;
-	}
-
-	public void setViewPager(ViewPager view) {
-		if (mViewPager == view) {
-			return;
-		}
-		if (mViewPager != null) {
-			mViewPager.removeOnPageChangeListener(this);
-		}
-		if (view.getAdapter() == null) {
-			throw new IllegalStateException("ViewPager does not have adapter instance.");
-		}
-		mViewPager = view;
-		mViewPager.addOnPageChangeListener(this);
-		invalidate();
-	}
-
-	/**
-	 * Set a callback listener for the center item click.
-	 *
-	 * @param listener Callback instance.
-	 */
-	public void setOnCenterItemClickListener(OnCenterItemClickListener listener) {
-		mCenterItemClickListener = listener;
-	}
-
-	private void setCurrentItem(int item) {
-		if (mViewPager == null) {
-			throw new IllegalStateException("ViewPager has not been bound.");
-		}
-		mViewPager.setCurrentItem(item);
-		mCurrentPage = item;
-		invalidate();
-	}
-
 	@Override
 	public void onPageScrollStateChanged(int state) {
 		mScrollState = state;
@@ -614,6 +520,117 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 		return savedState;
 	}
 
+	/**
+	 */
+	public void setTextColor(int textColor) {
+		mPaintText.setColor(textColor);
+		mColorText = textColor;
+		invalidate();
+	}
+
+	/**
+	 */
+	public void setSelectedColor(int color) {
+		mColorSelected = color;
+	}
+
+	/**
+	 */
+	public void setViewPager(ViewPager view) {
+		if (mViewPager == view) {
+			return;
+		}
+		if (mViewPager != null) {
+			mViewPager.removeOnPageChangeListener(this);
+		}
+		if (view.getAdapter() == null) {
+			throw new IllegalStateException("ViewPager does not have adapter instance.");
+		}
+		mViewPager = view;
+		mViewPager.addOnPageChangeListener(this);
+		invalidate();
+	}
+
+	/**
+	 * Set a callback listener for the center item click.
+	 *
+	 * @param listener Callback instance.
+	 */
+	public void setOnCenterItemClickListener(OnCenterItemClickListener listener) {
+		mCenterItemClickListener = listener;
+	}
+
+	/**
+	 * Set bounds for the right textView including clip padding.
+	 *
+	 * @param curViewBound current bounds.
+	 * @param curViewWidth width of the view.
+	 */
+	private void clipViewOnTheRight(Rect curViewBound, float curViewWidth, int right) {
+		curViewBound.right = (int) (right - mClipPadding);
+		curViewBound.left = (int) (curViewBound.right - curViewWidth);
+	}
+
+	/**
+	 * Set bounds for the left textView including clip padding.
+	 *
+	 * @param curViewBound current bounds.
+	 * @param curViewWidth width of the view.
+	 */
+	private void clipViewOnTheLeft(Rect curViewBound, float curViewWidth, int left) {
+		curViewBound.left = (int) (left + mClipPadding);
+		curViewBound.right = (int) (mClipPadding + curViewWidth);
+	}
+
+	/**
+	 * Calculate views bounds and scroll them according to the current index
+	 */
+	private ArrayList<Rect> calculateAllBounds(Paint paint) {
+		ArrayList<Rect> list = new ArrayList<>();
+		//For each views (If no values then add a fake one)
+		if (mViewPager.getAdapter() != null) {
+			int count = mViewPager.getAdapter().getCount();
+			int width = getWidth();
+			int halfWidth = width / 2;
+			for (int i = 0; i < count; i++) {
+				Rect bounds = calcBounds(i, paint);
+				int w = bounds.right - bounds.left;
+				int h = bounds.bottom - bounds.top;
+				bounds.left = (int) (halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
+				bounds.right = bounds.left + w;
+				bounds.top = 0;
+				bounds.bottom = h;
+				list.add(bounds);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Calculate the bounds for a view's title
+	 */
+	private Rect calcBounds(int index, Paint paint) {
+		//Calculate the text bounds
+		Rect bounds = new Rect();
+		CharSequence title = getTitle(index);
+		bounds.right = (int) paint.measureText(title, 0, title.length());
+		bounds.bottom = (int) (paint.descent() - paint.ascent());
+		return bounds;
+	}
+
+	/**
+	 */
+	private void setCurrentItem(int item) {
+		if (mViewPager == null) {
+			throw new IllegalStateException("ViewPager has not been bound.");
+		}
+		mViewPager.setCurrentItem(item);
+		mCurrentPage = item;
+		invalidate();
+	}
+
+	/**
+	 */
 	private CharSequence getTitle(int i) {
 		CharSequence title = EMPTY_TITLE;
 		if (mViewPager.getAdapter() != null)
@@ -621,7 +638,57 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 		return title;
 	}
 
-	public enum IndicatorStyle {
+	/**
+	 * Interface for a callback when the center item has been clicked.
+	 */
+	public interface OnCenterItemClickListener {
+		/**
+		 * Callback when the center item has been clicked.
+		 *
+		 * @param position Position of the current center item.
+		 */
+		void onCenterItemClick(int position);
+	}
+
+	/**
+	 */
+	private static class SavedState extends BaseSavedState {
+
+		@SuppressWarnings("UnusedDeclaration")
+		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+
+			@Override
+			public SavedState createFromParcel(Parcel in) {
+				return new SavedState(in);
+			}
+
+			@Override
+			public SavedState[] newArray(int size) {
+				return new SavedState[size];
+			}
+		};
+
+		int currentPage;
+
+		public SavedState(Parcelable superState) {
+			super(superState);
+		}
+
+		private SavedState(Parcel in) {
+			super(in);
+			currentPage = in.readInt();
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			super.writeToParcel(dest, flags);
+			dest.writeInt(currentPage);
+		}
+	}
+
+	/**
+	 */
+	private enum IndicatorStyle {
 		None(0), Triangle(1), Underline(2);
 
 		public final int value;
@@ -640,7 +707,9 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 		}
 	}
 
-	public enum LinePosition {
+	/**
+	 */
+	private enum LinePosition {
 		Bottom(0), Top(1);
 
 		public final int value;
@@ -656,49 +725,6 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 				}
 			}
 			return null;
-		}
-	}
-
-	/**
-	 * Interface for a callback when the center item has been clicked.
-	 */
-	public interface OnCenterItemClickListener {
-		/**
-		 * Callback when the center item has been clicked.
-		 *
-		 * @param position Position of the current center item.
-		 */
-		void onCenterItemClick(int position);
-	}
-
-	static class SavedState extends BaseSavedState {
-		@SuppressWarnings("UnusedDeclaration")
-		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-			@Override
-			public SavedState createFromParcel(Parcel in) {
-				return new SavedState(in);
-			}
-
-			@Override
-			public SavedState[] newArray(int size) {
-				return new SavedState[size];
-			}
-		};
-		int currentPage;
-
-		public SavedState(Parcelable superState) {
-			super(superState);
-		}
-
-		private SavedState(Parcel in) {
-			super(in);
-			currentPage = in.readInt();
-		}
-
-		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-			super.writeToParcel(dest, flags);
-			dest.writeInt(currentPage);
 		}
 	}
 }

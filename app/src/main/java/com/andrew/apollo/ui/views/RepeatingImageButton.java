@@ -37,13 +37,11 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
 
 	private static final long sInterval = 400;
 
-	private long mStartTime;
-
-	private int mRepeatCount;
-
 	private RepeatListener mListener;
-
 	private Repeater repeater;
+
+	private long mStartTime;
+	private int mRepeatCount;
 
 	/**
 	 * @param context The {@link Context} to use

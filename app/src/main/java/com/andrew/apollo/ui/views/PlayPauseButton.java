@@ -64,12 +64,10 @@ public class PlayPauseButton extends AppCompatImageButton implements OnClickList
 	 */
 	@Override
 	public boolean onLongClick(View view) {
-		if (TextUtils.isEmpty(view.getContentDescription())) {
+		if (TextUtils.isEmpty(view.getContentDescription()))
 			return false;
-		} else {
-			ApolloUtils.showCheatSheet(view);
-			return true;
-		}
+		ApolloUtils.showCheatSheet(view);
+		return true;
 	}
 
 	/**

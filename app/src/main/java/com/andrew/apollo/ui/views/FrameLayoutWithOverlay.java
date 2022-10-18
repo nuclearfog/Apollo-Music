@@ -24,7 +24,7 @@ import android.widget.FrameLayout;
  */
 public class FrameLayoutWithOverlay extends FrameLayout {
 
-	private final AlphaTouchInterceptorOverlay mOverlay;
+	private AlphaTouchInterceptorOverlay mOverlay;
 
 	/**
 	 * @param context The {@link Context} to use
@@ -35,7 +35,6 @@ public class FrameLayoutWithOverlay extends FrameLayout {
 
 		/* Programmatically create touch-interceptor View. */
 		mOverlay = new AlphaTouchInterceptorOverlay(context);
-
 		addView(mOverlay);
 	}
 

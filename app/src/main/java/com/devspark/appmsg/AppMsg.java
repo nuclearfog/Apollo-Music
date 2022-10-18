@@ -56,11 +56,11 @@ public class AppMsg {
 	 */
 	public static final Style STYLE_CONFIRM = new Style(LENGTH_SHORT, R.color.confirm);
 
-
-	private final Activity activity;
-	private int mDuration = LENGTH_SHORT;
-	private View mView;
+	private Activity activity;
 	private LayoutParams mLayoutParams;
+	private View mView;
+
+	private int mDuration = LENGTH_SHORT;
 
 	/**
 	 * Construct an empty AppMsg object.
@@ -148,10 +148,10 @@ public class AppMsg {
 	 *
 	 * @author e.shishkin
 	 */
-	public static class Style {
+	private static class Style {
 
-		private final int duration;
-		private final int background;
+		private int duration;
+		private int background;
 
 		/**
 		 * Construct an {@link AppMsg.Style} object.
@@ -176,5 +176,4 @@ public class AppMsg {
 		}
 
 	}
-
 }

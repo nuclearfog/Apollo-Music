@@ -28,7 +28,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
@@ -101,14 +100,10 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		// init view
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);
-		View background = findViewById(R.id.grid_search_container);
-		// Fade it in
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
 		mToken = MusicUtils.bindToService(this, this);
-		background.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
 		mFilterString = !TextUtils.isEmpty(query) ? query : null;

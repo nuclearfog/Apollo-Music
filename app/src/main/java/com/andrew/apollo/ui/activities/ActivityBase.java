@@ -105,8 +105,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Fade it in
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service

@@ -14,14 +14,12 @@ package com.andrew.apollo.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
@@ -47,19 +45,15 @@ public class SettingsActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_layout);
 		Toolbar toolbar = findViewById(R.id.settings_toolbar);
-		View root = findViewById(R.id.settings_root);
-
-		root.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pager_background, null));
+		// setup toolbar
 		setSupportActionBar(toolbar);
-		// Fade it in
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-		// UP
-		ActionBar bar = getSupportActionBar();
-		if (bar != null) {
-			bar.setDisplayHomeAsUpEnabled(true);
+		ActionBar actionbar = getSupportActionBar();
+		if (actionbar != null) {
+			actionbar.setDisplayHomeAsUpEnabled(true);
 			ThemeUtils mResources = new ThemeUtils(this);
-			mResources.themeActionBar(bar, R.string.menu_settings);
+			mResources.themeActionBar(actionbar, R.string.menu_settings);
 		}
+		//attach fragment
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();
 		}

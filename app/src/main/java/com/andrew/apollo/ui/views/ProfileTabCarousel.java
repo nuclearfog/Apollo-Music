@@ -120,14 +120,18 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private float mScrollScaleFactor = 1.0f;
 
 	private boolean mScrollToCurrentTab = false;
-
 	private boolean mTabCarouselIsAnimating;
+	private boolean mEnableSwipe;
+	private CarouselTab mFirstTab;
+	private CarouselTab mSecondTab;
+	private Listener mListener;
+
 	/**
 	 * This listener keeps track of whether the tab carousel animation is
 	 * currently going on or not, in order to prevent other simultaneous changes
 	 * to the Y position of the tab carousel which can cause flicker.
 	 */
-	private final AnimatorListener mTabCarouselAnimatorListener = new AnimatorListener() {
+	private AnimatorListener mTabCarouselAnimatorListener = new AnimatorListener() {
 
 		@Override
 		public void onAnimationCancel(Animator animation) {
@@ -149,10 +153,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 			mTabCarouselIsAnimating = true;
 		}
 	};
-	private boolean mEnableSwipe;
-	private CarouselTab mFirstTab;
-	private CarouselTab mSecondTab;
-	private Listener mListener;
 
 	/**
 	 * @param context The {@link Context} to use
@@ -494,8 +494,9 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	/**
 	 * When clicked, selects the corresponding tab.
 	 */
-	private final class TabClickListener implements OnClickListener {
-		private final int mTab;
+	private class TabClickListener implements OnClickListener {
+
+		private int mTab;
 
 		public TabClickListener(int tab) {
 			super();

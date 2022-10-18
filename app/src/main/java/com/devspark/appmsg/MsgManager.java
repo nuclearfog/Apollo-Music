@@ -54,6 +54,30 @@ class MsgManager extends Handler {
 		return INSTANCE;
 	}
 
+	@Override
+	public void handleMessage(Message msg) {
+		AppMsg appMsg;
+		switch (msg.what) {
+			case MESSAGE_DISPLAY:
+				displayMsg();
+				break;
+
+			case MESSAGE_ADD_VIEW:
+				appMsg = (AppMsg) msg.obj;
+				addMsgToView(appMsg);
+				break;
+
+			case MESSAGE_REMOVE:
+				appMsg = (AppMsg) msg.obj;
+				removeMsg(appMsg);
+				break;
+
+			default:
+				super.handleMessage(msg);
+				break;
+		}
+	}
+
 	/**
 	 * Inserts a {@link AppMsg} to be displayed.
 	 */
@@ -63,8 +87,7 @@ class MsgManager extends Handler {
 			inAnimation = AnimationUtils.loadAnimation(appMsg.getContext(), android.R.anim.fade_in);
 		}
 		if (outAnimation == null) {
-			outAnimation = AnimationUtils.loadAnimation(appMsg.getContext(),
-					android.R.anim.fade_out);
+			outAnimation = AnimationUtils.loadAnimation(appMsg.getContext(), android.R.anim.fade_out);
 		}
 		displayMsg();
 	}
@@ -122,29 +145,5 @@ class MsgManager extends Handler {
 		Message msg = obtainMessage(MESSAGE_REMOVE);
 		msg.obj = appMsg;
 		sendMessageDelayed(msg, appMsg.getDuration());
-	}
-
-	@Override
-	public void handleMessage(Message msg) {
-		AppMsg appMsg;
-		switch (msg.what) {
-			case MESSAGE_DISPLAY:
-				displayMsg();
-				break;
-
-			case MESSAGE_ADD_VIEW:
-				appMsg = (AppMsg) msg.obj;
-				addMsgToView(appMsg);
-				break;
-
-			case MESSAGE_REMOVE:
-				appMsg = (AppMsg) msg.obj;
-				removeMsg(appMsg);
-				break;
-
-			default:
-				super.handleMessage(msg);
-				break;
-		}
 	}
 }

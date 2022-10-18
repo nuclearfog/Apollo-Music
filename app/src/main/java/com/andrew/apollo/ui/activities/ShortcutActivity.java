@@ -89,8 +89,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Fade it in
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		// Bind Apollo's service
 		mToken = MusicUtils.bindToService(this, this);
 		// Initialize the intent

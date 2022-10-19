@@ -17,58 +17,36 @@ import android.widget.AdapterView;
  * of your
  * {@link DragSortListView} instance.
  */
-public class DragSortController extends SimpleFloatViewManager implements View.OnTouchListener,
-		GestureDetector.OnGestureListener {
+public class DragSortController extends SimpleFloatViewManager implements View.OnTouchListener, GestureDetector.OnGestureListener {
 
 	public final static int ON_DOWN = 0;
-
 	public final static int ON_DRAG = 1;
-
 	public final static int ON_LONG_PRESS = 2;
-
 	public final static int FLING_RIGHT_REMOVE = 0;
-
 	public final static int FLING_LEFT_REMOVE = 1;
-
 	public final static int SLIDE_RIGHT_REMOVE = 2;
-
 	public final static int SLIDE_LEFT_REMOVE = 3;
-
 	public final static int MISS = -1;
 
-	private final GestureDetector mDetector;
-
-	private final GestureDetector mFlingRemoveDetector;
-
-	private final int mTouchSlop;
-
-	private final int[] mTempLoc = new int[2];
-
-	private final DragSortListView mDslv;
-
-	private boolean mSortEnabled = true;
-
-	private boolean mRemoveEnabled = false;
-
-	private boolean mDragging = false;
-
-	private int mDragInitMode = ON_DOWN;
-
-	private int mRemoveMode;
-
-	private int mHitPos = MISS;
-
-	private int mItemX;
-
-	private int mItemY;
-
-	private int mCurrX;
-
-	private int mCurrY;
-
-	private int mDragHandleId;
+	private GestureDetector mDetector;
+	private GestureDetector mFlingRemoveDetector;
+	private DragSortListView mDslv;
 
 	private float mOrigFloatAlpha;
+	private int mTouchSlop;
+	private int mRemoveMode;
+	private int mItemX;
+	private int mItemY;
+	private int mCurrX;
+	private int mCurrY;
+	private int mDragHandleId;
+
+	private int[] mTempLoc = new int[2];
+	private int mHitPos = MISS;
+	private int mDragInitMode = ON_DOWN;
+	private boolean mSortEnabled = true;
+	private boolean mRemoveEnabled = false;
+	private boolean mDragging = false;
 
 	/**
 	 * By default, sorting is enabled, and removal is disabled.

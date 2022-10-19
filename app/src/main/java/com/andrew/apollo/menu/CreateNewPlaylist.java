@@ -58,18 +58,23 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
 	@SuppressLint("StringFormatInvalid")
 	@Override
 	public void initObjects(Bundle savedInstanceState) {
-		if (getArguments() != null)
-			mPlaylistList = getArguments().getLongArray("playlist_list");
-		if (savedInstanceState != null)
+		if (getArguments() != null) {
+			long[] mPlaylistList = getArguments().getLongArray("playlist_list");
+			if (mPlaylistList != null) {
+				this.mPlaylistList = mPlaylistList;
+			}
+		}
+		if (savedInstanceState != null) {
 			mDefaultname = savedInstanceState.getString("defaultname");
-		else
+		} else {
 			mDefaultname = makePlaylistName();
+		}
 		if (mDefaultname == null && getDialog() != null) {
 			getDialog().dismiss();
-			return;
+		} else {
+			String promptformat = getString(R.string.create_playlist_prompt);
+			mPrompt = String.format(promptformat, mDefaultname);
 		}
-		String promptformat = getString(R.string.create_playlist_prompt);
-		mPrompt = String.format(promptformat, mDefaultname);
 	}
 
 	/**
@@ -133,7 +138,6 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
 				cursor.moveToNext();
 			}
 			cursor.close();
-
 			// search for conflicts and increase number suffix
 			int num = 1;
 			boolean conflict;

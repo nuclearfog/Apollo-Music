@@ -35,7 +35,7 @@ import java.lang.ref.WeakReference;
  */
 public class RepeatingImageButton extends AppCompatImageButton implements OnClickListener {
 
-	private static final long sInterval = 400;
+	private static final long S_INTERVAL = 400;
 
 	private RepeatListener mListener;
 	private Repeater repeater;
@@ -196,7 +196,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
 			if (button != null) {
 				button.doRepeat(false);
 				if (button.isPressed()) {
-					button.postDelayed(this, sInterval);
+					button.postDelayed(this, S_INTERVAL);
 				}
 			}
 		}

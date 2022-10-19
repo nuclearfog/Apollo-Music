@@ -14,6 +14,7 @@ package com.andrew.apollo.ui.views;
 import static android.graphics.PorterDuff.Mode.MULTIPLY;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -39,7 +40,7 @@ public class ShuffleButton extends AppCompatImageButton implements OnClickListen
 	/**
 	 * highlight color
 	 */
-	private int color = -1;
+	private int color = Color.WHITE;
 
 	/**
 	 * @param context The {@link Context} to use

@@ -31,45 +31,28 @@ import android.widget.FrameLayout;
  */
 public class AlphaTouchInterceptorOverlay extends FrameLayout {
 
-	private final View mInterceptorLayer;
+	private View mInterceptorLayer;
 
+	private View mAlphaLayer = this;
 	private float mAlpha = 0.0f;
-
-	private View mAlphaLayer;
 
 	/**
 	 * @param context The {@link Context} to use.
 	 */
 	public AlphaTouchInterceptorOverlay(Context context) {
 		super(context);
-
 		mInterceptorLayer = new View(context);
 		mInterceptorLayer.setBackgroundColor(0);
 		addView(mInterceptorLayer);
-
-		mAlphaLayer = this;
 	}
 
 	/**
 	 * Sets an alpha value on the view.
 	 */
-	public static void setAlphaOnViewBackground(View view, float alpha) {
+	public void setAlphaOnViewBackground(View view, float alpha) {
 		if (view != null) {
 			view.setBackgroundColor((int) (clamp(alpha, 0.0f, 1.0f) * 255) << 24);
 		}
-	}
-
-	/**
-	 * If the input value lies outside of the specified range, return the nearer
-	 * bound. Otherwise, return the input value, unchanged.
-	 */
-	public static float clamp(float input, float lowerBound, float upperBound) {
-		if (input < lowerBound) {
-			return lowerBound;
-		} else if (input > upperBound) {
-			return upperBound;
-		}
-		return input;
 	}
 
 	/**
@@ -81,12 +64,10 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 		if (mAlphaLayer == alphaLayer) {
 			return;
 		}
-
-		/* We're no longer the alpha-layer, so make ourself invisible. */
+		// We're no longer the alpha-layer, so make ourself invisible.
 		if (mAlphaLayer == this) {
 			setAlphaOnViewBackground(this, 0.0f);
 		}
-
 		mAlphaLayer = alphaLayer == null ? this : alphaLayer;
 		setAlphaLayerValue(mAlpha);
 	}
@@ -113,5 +94,18 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	 */
 	public void setOverlayClickable(boolean clickable) {
 		mInterceptorLayer.setClickable(clickable);
+	}
+
+	/**
+	 * If the input value lies outside of the specified range, return the nearer
+	 * bound. Otherwise, return the input value, unchanged.
+	 */
+	public static float clamp(float input, float lowerBound, float upperBound) {
+		if (input < lowerBound) {
+			return lowerBound;
+		} else if (input > upperBound) {
+			return upperBound;
+		}
+		return input;
 	}
 }

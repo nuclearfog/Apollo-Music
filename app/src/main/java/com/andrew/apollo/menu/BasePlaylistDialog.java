@@ -72,8 +72,7 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 		// To show the "done" button on the soft keyboard
 		mPlaylist.setSingleLine(true);
 		// All caps
-		mPlaylist.setInputType(mPlaylist.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-				| InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+		mPlaylist.setInputType(mPlaylist.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		// Set the save button action
 		mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
 		// Set the cancel button action
@@ -120,7 +119,6 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 	 */
 	@Override
 	public final void afterTextChanged(Editable s) {
-		/* Nothing to do */
 	}
 
 	/**
@@ -128,7 +126,6 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 	 */
 	@Override
 	public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		/* Nothing to do */
 	}
 
 	/**

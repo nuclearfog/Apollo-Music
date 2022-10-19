@@ -86,25 +86,27 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	private static final int ON_TOUCH_EVENT = 0xA462CF1D;
 	private static final int ON_INTERCEPT_TOUCH_EVENT = 0x9B5F98B2;
 	/**
+	 * Transparency for the floating View (XML attribute).
+	 */
+	private static final float M_FLOAT_ALPHA = 1.0f;
+	/**
 	 * A proposed float View location based on touch location and given deltaX
 	 * and deltaY.
 	 */
-	private final Point mFloatLoc = new Point();
+	private Point mFloatLoc = new Point();
 	/**
 	 * Watch the Adapter for data changes. Cancel a drag if coincident with a
 	 * change.
 	 */
-	private final DataSetObserver mObserver;
+	private DataSetObserver mObserver;
 	/**
-	 * Transparency for the floating View (XML attribute).
+	 * handler used for post() operations
 	 */
-	private final float mFloatAlpha = 1.0f;
-
+	private DragSortHandler handler;
 	/**
 	 * Given to ListView to cancel its action when a drag-sort begins.
 	 */
-	private final MotionEvent mCancelEvent;
-	private final DragSortController mController;
+	private MotionEvent mCancelEvent;
 	/**
 	 * The View that floats above the ListView and represents the dragged item.
 	 */
@@ -121,7 +123,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * Top edge of floating View.
 	 */
 	private int mFloatViewTop;
-	private float mCurrFloatAlpha;
 	/**
 	 * While drag-sorting, the current position of the floating View. If
 	 * dropped, the dragged item will land in this position.
@@ -175,7 +176,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * Enable/Disable item dragging
 	 */
 	private boolean mDragEnabled = true;
-	private int mDragState = IDLE;
 	/**
 	 * Height in pixels to which the originally dragged item is collapsed during
 	 * a drag-sort. Currently, this value must be greater than zero.
@@ -215,9 +215,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * The following are calculated from the above fracs.
 	 */
 	private int mUpScrollStartY;
-	private int mDownScrollStartY;
-	private float mDownScrollStartYF;
-	private float mUpScrollStartYF;
 	/**
 	 * Calculated from above above and current ListView height.
 	 */
@@ -226,33 +223,6 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * Calculated from above above and current ListView height.
 	 */
 	private float mDragDownScrollHeight;
-	/**
-	 * Defines the scroll speed during a drag-scroll. User can provide their
-	 * own; this default is a simple linear profile where scroll speed increases
-	 * linearly as the floating View nears the top/bottom of the ListView.
-	 */
-	private DragScrollProfile mScrollProfile = new DragScrollProfile() {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public float getSpeed(float w) {
-			float mMaxScrollSpeed = 0.3f;
-			return mMaxScrollSpeed * w;
-		}
-	};
-
-	/**
-	 * handler used for post() operations
-	 */
-	private DragSortHandler handler;
-
-	private boolean mAbort;
-	private long mPrevTime;
-	private int scrollDir;
-	private boolean mScrolling = false;
-
 	/**
 	 * Current touch x.
 	 */
@@ -303,6 +273,33 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 * Needed for adjusting item heights from within layoutChildren
 	 */
 	private boolean mBlockLayoutRequests = false;
+	/**
+	 * Defines the scroll speed during a drag-scroll. User can provide their
+	 * own; this default is a simple linear profile where scroll speed increases
+	 * linearly as the floating View nears the top/bottom of the ListView.
+	 */
+	private DragScrollProfile mScrollProfile = new DragScrollProfile() {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public float getSpeed(float w) {
+			float mMaxScrollSpeed = 0.3f;
+			return mMaxScrollSpeed * w;
+		}
+	};
+
+	private DragSortController mController;
+	private float mCurrFloatAlpha;
+	private boolean mAbort;
+	private long mPrevTime;
+	private int scrollDir;
+	private int mDownScrollStartY;
+	private float mDownScrollStartYF;
+	private float mUpScrollStartYF;
+	private int mDragState = IDLE;
+	private boolean mScrolling = false;
 
 	/**
 	 * @param context The {@link Context} to use
@@ -312,7 +309,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		super(context, attrs);
 		mItemHeightCollapsed = 1;
 
-		mCurrFloatAlpha = mFloatAlpha;
+		mCurrFloatAlpha = M_FLOAT_ALPHA;
 
 		mSlideRegionFrac = 0.75f;
 
@@ -1088,7 +1085,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		mCancelMethod = NO_CANCEL;
 		mInTouchEvent = false;
 		mDragState = IDLE;
-		mCurrFloatAlpha = mFloatAlpha;
+		mCurrFloatAlpha = M_FLOAT_ALPHA;
 	}
 
 	private void saveTouchCoords(MotionEvent ev) {
@@ -1515,7 +1512,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 	 */
 	private class AdapterWrapper extends HeaderViewListAdapter {
 
-		private final ListAdapter mAdapter;
+		private ListAdapter mAdapter;
 
 		public AdapterWrapper(ListAdapter adapter) {
 			super(null, null, adapter);

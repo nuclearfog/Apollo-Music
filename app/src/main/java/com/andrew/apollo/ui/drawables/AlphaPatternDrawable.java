@@ -16,6 +16,7 @@ import static android.graphics.PixelFormat.TRANSLUCENT;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -31,25 +32,23 @@ import android.graphics.drawable.Drawable;
 public class AlphaPatternDrawable extends Drawable {
 
 	private Paint mPaint = new Paint();
-
 	private Paint mPaintWhite = new Paint();
-
 	private Paint mPaintGray = new Paint();
 
-	private int mRectangleSize;
-
-	private int numRectanglesHorizontal;
-
-	private int numRectanglesVertical;
-
-	/* Bitmap in which the pattern will be cached. */
+	/**
+	 *  Bitmap in which the pattern will be cached.
+	 */
 	private Bitmap mBitmap;
 
-	/**/
+	private int mRectangleSize;
+	private int numRectanglesHorizontal;
+	private int numRectanglesVertical;
+
+
 	public AlphaPatternDrawable(int rectangleSize) {
 		mRectangleSize = rectangleSize;
-		mPaintWhite.setColor(0xffffffff);
-		mPaintGray.setColor(0xffcbcbcb);
+		mPaintWhite.setColor(Color.WHITE);
+		mPaintGray.setColor(Color.LTGRAY);
 	}
 
 	/**
@@ -88,13 +87,8 @@ public class AlphaPatternDrawable extends Drawable {
 	@Override
 	protected void onBoundsChange(Rect bounds) {
 		super.onBoundsChange(bounds);
-
-		int mHeight = bounds.height();
-		int mWidth = bounds.width();
-
-		numRectanglesHorizontal = mWidth / mRectangleSize;
-		numRectanglesVertical = mHeight / mRectangleSize;
-
+		numRectanglesHorizontal = bounds.width() / mRectangleSize;
+		numRectanglesVertical = bounds.height() / mRectangleSize;
 		generatePatternBitmap();
 	}
 
@@ -104,7 +98,6 @@ public class AlphaPatternDrawable extends Drawable {
 	 * recreate it each time draw() is called since it takes a few milliseconds.
 	 */
 	private void generatePatternBitmap() {
-
 		if (getBounds().width() <= 0 || getBounds().height() <= 0) {
 			return;
 		}

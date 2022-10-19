@@ -12,7 +12,6 @@
 package com.andrew.apollo.ui.views.dragdrop;
 
 import android.annotation.SuppressLint;
-import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
@@ -21,13 +20,16 @@ import com.andrew.apollo.ui.views.ProfileTabCarousel;
 @SuppressLint("NewApi")
 public class VerticalScrollListener implements OnScrollListener {
 
-	/* Used to determine the off set to scroll the header */
-	private final ScrollableHeader mHeader;
+	/**
+	 *  Used to determine the off set to scroll the header
+	 */
+	private ScrollableHeader mHeader;
+	private ProfileTabCarousel mTabCarousel;
 
-	private final ProfileTabCarousel mTabCarousel;
+	private int mPageIndex;
 
-	private final int mPageIndex;
-
+	/**
+	 */
 	public VerticalScrollListener(ScrollableHeader header, ProfileTabCarousel carousel, int pageIndex) {
 		mHeader = header;
 		mTabCarousel = carousel;
@@ -39,21 +41,16 @@ public class VerticalScrollListener implements OnScrollListener {
 	 */
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
 		if (mTabCarousel == null || mTabCarousel.isTabCarouselIsAnimating()) {
 			return;
 		}
-
-		View top = view.getChildAt(firstVisibleItem);
-		if (top == null) {
+		if (view.getChildAt(firstVisibleItem) == null) {
 			return;
 		}
-
 		if (firstVisibleItem != 0) {
 			mTabCarousel.moveToYCoordinate(mPageIndex, -mTabCarousel.getAllowedVerticalScrollLength());
 			return;
 		}
-
 		float y = view.getChildAt(firstVisibleItem).getY();
 		float amtToScroll = Math.max(y, -mTabCarousel.getAllowedVerticalScrollLength());
 		mTabCarousel.moveToYCoordinate(mPageIndex, amtToScroll);
@@ -74,7 +71,9 @@ public class VerticalScrollListener implements OnScrollListener {
 	 */
 	public interface ScrollableHeader {
 
-		/* Used the pause the disk cache while scrolling */
+		/**
+		 * Used the pause the disk cache while scrolling
+		 */
 		void onScrollStateChanged(int scrollState);
 	}
 }

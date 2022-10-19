@@ -44,7 +44,6 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	private ImageFetcher mFetcher;
 
 	private String key = "";
-
 	private String title = "";
 
 	/**
@@ -104,7 +103,8 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 		}
 	}
 
-
+	/**
+	 */
 	public interface DeleteDialogCallback {
 		void onDelete();
 	}

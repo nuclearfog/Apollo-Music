@@ -13,16 +13,19 @@ import android.widget.ListView;
  */
 public class SimpleFloatViewManager implements DragSortListView.FloatViewManager {
 
-	private final ListView mListView;
-
+	private ListView mListView;
 	private Bitmap mFloatBitmap;
 
 	private int mFloatBGColor = Color.BLACK;
 
+	/**
+	 */
 	public SimpleFloatViewManager(ListView lv) {
 		mListView = lv;
 	}
 
+	/**
+	 */
 	public void setBackgroundColor(int color) {
 		mFloatBGColor = color;
 	}
@@ -33,24 +36,20 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
 	 */
 	@Override
 	public View onCreateFloatView(int position) {
-		View v = mListView.getChildAt(position + mListView.getHeaderViewsCount() - mListView.getFirstVisiblePosition());
+		View child = mListView.getChildAt(position + mListView.getHeaderViewsCount() - mListView.getFirstVisiblePosition());
+		if (child != null) {
+			child.setPressed(false);
+			child.setDrawingCacheEnabled(true);
+			mFloatBitmap = Bitmap.createBitmap(child.getDrawingCache());
+			child.setDrawingCacheEnabled(false);
 
-		if (v == null) {
-			return null;
+			ImageView iv = new ImageView(mListView.getContext());
+			iv.setBackgroundColor(mFloatBGColor);
+			iv.setPadding(0, 0, 0, 0);
+			iv.setImageBitmap(mFloatBitmap);
+			return iv;
 		}
-
-		v.setPressed(false);
-
-		v.setDrawingCacheEnabled(true);
-		mFloatBitmap = Bitmap.createBitmap(v.getDrawingCache());
-		v.setDrawingCacheEnabled(false);
-
-		ImageView iv = new ImageView(mListView.getContext());
-		iv.setBackgroundColor(mFloatBGColor);
-		iv.setPadding(0, 0, 0, 0);
-		iv.setImageBitmap(mFloatBitmap);
-
-		return iv;
+		return null;
 	}
 
 	/**
@@ -59,8 +58,8 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
 	 */
 	@Override
 	public void onDestroyFloatView(View floatView) {
-		((ImageView) floatView).setImageDrawable(null);
-
+		if (floatView instanceof ImageView)
+			((ImageView) floatView).setImageDrawable(null);
 		mFloatBitmap.recycle();
 		mFloatBitmap = null;
 	}
@@ -70,6 +69,5 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
 	 */
 	@Override
 	public void onDragFloatView(Point touch) {
-		/* Nothing to do */
 	}
 }

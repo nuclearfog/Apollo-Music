@@ -40,11 +40,8 @@ import java.util.List;
 public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
 	private static final int IDX_NEW = 0;
-
 	private static final int IDX_OLD = 1;
-
 	private static final int IDX_SEARCH = 2;
-
 	private static final int IDX_FETCH = 3;
 
 	private static ProfileType mProfileType;

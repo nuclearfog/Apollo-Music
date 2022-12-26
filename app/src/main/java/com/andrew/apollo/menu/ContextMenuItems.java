@@ -17,53 +17,85 @@ package com.andrew.apollo.menu;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class FragmentMenuItems {
+public final class ContextMenuItems {
 
-	/* Removes a single album from the recents pages */
+	/**
+	 * Removes a single album from the recents pages
+	 */
 	public static final int REMOVE_FROM_RECENT = 0xDCFE73F7;
 
-	/* Used to play the selected artist, album, song, playlist, or genre */
+	/**
+	 * Used to play the selected artist, album, song, playlist, or genre
+	 */
 	public static final int PLAY_SELECTION = 0x2DC71E3B;
 
-	/* Used to add to the qeueue */
+	/**
+	 * Used to add to the qeueue
+	 */
 	public static final int ADD_TO_QUEUE = 0xF8572568;
 
-	/* Used to add to a playlist */
+	/**
+	 * Used to add to a playlist
+	 */
 	public static final int ADD_TO_PLAYLIST = 0x894845F9;
 
-	/* Used to add to the favorites cache */
+	/**
+	 * Used to add to the favorites cache
+	 */
 	public static final int ADD_TO_FAVORITES = 0x8C114555;
 
-	/* Used to create a new playlist */
+	/**
+	 * Used to create a new playlist
+	 */
 	public static final int NEW_PLAYLIST = 0x4D688CF9;
 
-	/* Used to rename a playlist */
+	/**
+	 * Used to rename a playlist
+	 */
 	public static final int RENAME_PLAYLIST = 0xAFACA06E;
 
-	/* Used to add to a current playlist */
+	/**
+	 * Used to add to a current playlist
+	 */
 	public static final int PLAYLIST_SELECTED = 0xC5A52C94;
 
-	/* Used to show more content by an artist */
+	/**
+	 * Used to show more content by an artist
+	 */
 	public static final int MORE_BY_ARTIST = 0xB1F37A7;
 
-	/* Used to delete track(s) */
+	/**
+	 * Used to delete track(s)
+	 */
 	public static final int DELETE = 0xD6BD96E9;
 
-	/* Used to set a track as a ringtone */
+	/**
+	 * Used to set a track as a ringtone
+	 */
 	public static final int USE_AS_RINGTONE = 0x6733A94D;
 
-	/* Used to remove a track from the favorites cache */
+	/**
+	 * Used to remove a track from the favorites cache
+	 */
 	public static final int REMOVE_FROM_FAVORITES = 0xDD9FABC9;
 
-	/* Used to remove a track from a playlist */
+	/**
+	 * Used to remove a track from a playlist
+	 */
 	public static final int REMOVE_FROM_PLAYLIST = 0xC777843A;
 
-	/* Used to remove a track from the queue */
+	/**
+	 * Used to remove a track from the queue
+	 */
 	public static final int REMOVE_FROM_QUEUE = 0x2A538C9D;
 
-	/* Used to queue a track to be played next */
+	/**
+	 * Used to queue a track to be played next
+	 */
 	public static final int PLAY_NEXT = 0x4ACDEC66;
 
-	/* Used to remove track from the popular */
+	/**
+	 * Used to remove track from the popular
+	 */
 	public static final int REMOVE_FROM_POPULAR = 0xB06947EE;
 }

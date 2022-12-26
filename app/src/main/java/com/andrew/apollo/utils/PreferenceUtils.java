@@ -566,7 +566,7 @@ public final class PreferenceUtils {
 
 		String[] bands = serializedBands.split(";");
 		int[] result = new int[bands.length];
-		for (int i = 0 ; i < result.length ; i++) {
+		for (int i = 0; i < result.length; i++) {
 			result[i] = Integer.parseInt(bands[i]);
 		}
 		return result;
@@ -574,6 +574,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * set bass boost level
+	 *
 	 * @param level bass level from 0 to 1000
 	 */
 	public void setBassLevel(int level) {
@@ -584,6 +585,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * get bass boost level
+	 *
 	 * @return bass level from 0 to 1000
 	 */
 	public int getBassLevel() {

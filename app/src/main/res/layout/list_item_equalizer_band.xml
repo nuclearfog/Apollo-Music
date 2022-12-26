@@ -8,19 +8,19 @@
 		android:id="@+id/eq_level"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center"/>
+		android:gravity="center" />
 
 	<com.andrew.apollo.ui.views.VerticalSeekBar
 		android:id="@+id/eq_seekbar"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
-		android:layout_gravity="center"/>
+		android:layout_gravity="center" />
 
 	<TextView
 		android:id="@+id/eq_freq"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center"/>
+		android:gravity="center" />
 
 </LinearLayout>

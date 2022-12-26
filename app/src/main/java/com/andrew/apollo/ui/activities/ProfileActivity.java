@@ -703,7 +703,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 				name = mProfileName;
 			}
 			DialogFragment dialog = PhotoSelectionDialog.newInstance(name, profileType);
-			dialog.show(getSupportFragmentManager(), "PhotoSelectionDialog");
+			dialog.show(getSupportFragmentManager(), PhotoSelectionDialog.NAME);
 		} else {
 			super.onClick(v);
 		}

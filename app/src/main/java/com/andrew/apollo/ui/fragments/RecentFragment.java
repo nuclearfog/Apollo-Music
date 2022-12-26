@@ -42,8 +42,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.AlbumAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.RecentLoader;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.provider.RecentStore;
 import com.andrew.apollo.ui.activities.ActivityBase;
@@ -187,18 +187,18 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 				// Create a list of the album's songs
 				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
 				// Play the album
-				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
-				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				// Add the album to a playlist
-				SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// View more content by the album artist
-				menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
 				// Remove the album from the list
-				menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
+				menu.add(GROUP_ID, ContextMenuItems.REMOVE_FROM_RECENT, Menu.NONE, R.string.context_menu_remove_from_recent);
 				// Delete the album
-				menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
 		} else {
 			// remove selection if an error occurs
@@ -214,34 +214,34 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		// Avoid leaking context menu selections
 		if (item.getGroupId() == GROUP_ID && mAlbum != null) {
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(mAlbumList, 0, false);
 					return true;
 
-				case FragmentMenuItems.ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					MusicUtils.addToQueue(requireActivity(), mAlbumList);
 					return true;
 
-				case FragmentMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), "CreatePlaylist");
+				case ContextMenuItems.NEW_PLAYLIST:
+					CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
 					return true;
 
-				case FragmentMenuItems.MORE_BY_ARTIST:
+				case ContextMenuItems.MORE_BY_ARTIST:
 					NavUtils.openArtistProfile(requireActivity(), mAlbum.getArtist());
 					return true;
 
-				case FragmentMenuItems.PLAYLIST_SELECTED:
+				case ContextMenuItems.PLAYLIST_SELECTED:
 					long id = item.getIntent().getLongExtra("playlist", 0);
 					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
 					return true;
 
-				case FragmentMenuItems.REMOVE_FROM_RECENT:
+				case ContextMenuItems.REMOVE_FROM_RECENT:
 					mShouldRefresh = true;
 					RecentStore.getInstance(requireActivity()).removeItem(mAlbum.getId());
 					MusicUtils.refresh();
 					return true;
 
-				case FragmentMenuItems.DELETE:
+				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
 					mShouldRefresh = true;
 					return true;

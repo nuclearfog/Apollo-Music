@@ -31,8 +31,8 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAlbumAdapter;
 import com.andrew.apollo.loaders.ArtistAlbumLoader;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
 import com.andrew.apollo.utils.MusicUtils;
@@ -133,14 +133,14 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 			if (mAlbum != null) {
 				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
 				// Play the album
-				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
-				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				// Add the album to a playlist
-				SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// Delete the album
-				menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 				return;
 			}
 		}
@@ -157,24 +157,24 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		// Avoid leaking context menu selections
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(mAlbumList, 0, false);
 					return true;
 
-				case FragmentMenuItems.ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					MusicUtils.addToQueue(requireActivity(), mAlbumList);
 					return true;
 
-				case FragmentMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), "CreatePlaylist");
+				case ContextMenuItems.NEW_PLAYLIST:
+					CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
 					return true;
 
-				case FragmentMenuItems.PLAYLIST_SELECTED:
+				case ContextMenuItems.PLAYLIST_SELECTED:
 					long id = item.getIntent().getLongExtra("playlist", 0);
 					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
 					return true;
 
-				case FragmentMenuItems.DELETE:
+				case ContextMenuItems.DELETE:
 					if (mAlbum != null)
 						MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
 					return true;

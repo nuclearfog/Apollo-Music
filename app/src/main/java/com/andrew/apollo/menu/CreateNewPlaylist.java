@@ -29,6 +29,8 @@ import com.andrew.apollo.utils.StringUtils;
  */
 public class CreateNewPlaylist extends BasePlaylistDialog {
 
+	public static final String NAME = "CreatePlaylist";
+
 	// The playlist list
 	private long[] mPlaylistList = {};
 
@@ -143,7 +145,8 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
 			boolean conflict;
 			String suggestedname;
 			String template = getString(R.string.new_playlist_name_template);
-			do {
+			do
+			{
 				conflict = false;
 				suggestedname = String.format(template, num++);
 				for (String playlist : playlists) {

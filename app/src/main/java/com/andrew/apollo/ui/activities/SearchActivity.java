@@ -16,7 +16,10 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -26,6 +29,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 import androidx.loader.app.LoaderManager;
@@ -36,6 +40,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SearchAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.MusicSearchLoader;
+import com.andrew.apollo.menu.ContextMenuItems;
+import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.model.Music;
@@ -67,6 +73,11 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	private static final int ONE = 1, TWO = 2;
 
 	/**
+	 * context menu group ID
+	 */
+	private static final int GROUP_ID = 0xC1A35EE4;
+
+	/**
 	 * The service token
 	 */
 	private ServiceToken mToken;
@@ -81,6 +92,9 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	 */
 	private SearchAdapter mAdapter;
 
+	@Nullable
+	private Music selection;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -88,6 +102,9 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.grid_search);
+		// init view
+		GridView mGridView = findViewById(R.id.grid_search);
+		TextView emptyText = findViewById(R.id.grid_search_empty_info);
 		Toolbar toolbar = findViewById(R.id.grid_search_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
@@ -97,9 +114,6 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		// init view
-		GridView mGridView = findViewById(R.id.grid_search);
-		TextView emptyText = findViewById(R.id.grid_search_empty_info);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
@@ -122,6 +136,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		// Speed up scrolling
 		mGridView.setOnScrollListener(this);
 		mGridView.setOnItemClickListener(this);
+		mGridView.setOnCreateContextMenuListener(this);
 		if (ApolloUtils.isLandscape(this)) {
 			mGridView.setNumColumns(TWO);
 		} else {
@@ -174,6 +189,84 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 			MusicUtils.unbindFromService(mToken);
 			mToken = null;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if (menuInfo instanceof AdapterView.AdapterContextMenuInfo) {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+			selection = mAdapter.getItem(info.position);
+			if (selection instanceof Album) {
+				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+			} else if (selection instanceof Song) {
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				menu.add(GROUP_ID, ContextMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+			}
+			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+			menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+			MusicUtils.makePlaylistMenu(this, GROUP_ID, subMenu, true);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean onContextItemSelected(@NonNull MenuItem item) {
+		if (selection == null)
+			return super.onContextItemSelected(item);
+		// get selected item's ID
+		long[] ids = {};
+		if (selection instanceof Album) {
+			ids = MusicUtils.getSongListForAlbum(this, selection.getId());
+		} else if (selection instanceof Artist) {
+			ids = MusicUtils.getSongListForArtist(this, selection.getId());
+		} else if (selection instanceof Song) {
+			ids = new long[]{selection.getId()};
+		}
+		switch (item.getItemId()) {
+			case ContextMenuItems.PLAY_SELECTION:
+				MusicUtils.playAll(ids, 0, false);
+				return true;
+
+			case ContextMenuItems.ADD_TO_QUEUE:
+				MusicUtils.addToQueue(this, ids);
+				return true;
+
+			case ContextMenuItems.ADD_TO_PLAYLIST:
+				CreateNewPlaylist.getInstance(ids).show(getSupportFragmentManager(), CreateNewPlaylist.NAME);
+				return true;
+
+			case ContextMenuItems.DELETE:
+				String artist = selection.getName();
+				MusicUtils.openDeleteDialog(this, artist, ids);
+				return true;
+
+			case ContextMenuItems.MORE_BY_ARTIST:
+				if (selection instanceof Album)
+					NavUtils.openArtistProfile(this, ((Album) selection).getArtist());
+				else if (selection instanceof Song)
+					NavUtils.openArtistProfile(this, ((Song) selection).getArtist());
+				return true;
+
+			case ContextMenuItems.PLAY_NEXT:
+				if (selection instanceof Song)
+					MusicUtils.playNext(ids);
+				return true;
+
+			case ContextMenuItems.USE_AS_RINGTONE:
+				if (selection instanceof Song)
+					MusicUtils.setRingtone(this, selection.getId());
+				return true;
+		}
+		return super.onContextItemSelected(item);
 	}
 
 	/**

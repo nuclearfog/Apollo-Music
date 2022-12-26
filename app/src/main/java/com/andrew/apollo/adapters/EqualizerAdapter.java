@@ -91,6 +91,7 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 	}
 
 	/**
+	 *
 	 */
 	public static class EqualizerHolder extends RecyclerView.ViewHolder {
 

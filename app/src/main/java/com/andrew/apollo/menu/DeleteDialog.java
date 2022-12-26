@@ -34,6 +34,8 @@ import com.andrew.apollo.utils.MusicUtils;
  */
 public class DeleteDialog extends DialogFragment implements OnClickListener {
 
+	public static final String NAME = "DeleteDialog";
+
 	/**
 	 * The item(s) to delete
 	 */
@@ -104,6 +106,7 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	}
 
 	/**
+	 *
 	 */
 	public interface DeleteDialogCallback {
 		void onDelete();

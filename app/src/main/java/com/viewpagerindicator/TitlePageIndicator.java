@@ -71,6 +71,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	private static final String EMPTY_TITLE = "";
 
 	/**
+	 *
 	 */
 	private static final int INVALID_POINTER = -1;
 
@@ -121,7 +122,8 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 
 	public TitlePageIndicator(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		if (isInEditMode()) return;
+		if (isInEditMode())
+			return;
 
 		//Load defaults from resources
 		Resources res = getResources();
@@ -437,7 +439,8 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 
 				mIsDragging = false;
 				mActivePointerId = INVALID_POINTER;
-				if (mViewPager.isFakeDragging()) mViewPager.endFakeDrag();
+				if (mViewPager.isFakeDragging())
+					mViewPager.endFakeDrag();
 				break;
 
 			case ACTION_POINTER_DOWN: {
@@ -521,6 +524,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	public void setTextColor(int textColor) {
 		mPaintText.setColor(textColor);
@@ -529,12 +533,14 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	public void setSelectedColor(int color) {
 		mColorSelected = color;
 	}
 
 	/**
+	 *
 	 */
 	public void setViewPager(ViewPager view) {
 		if (mViewPager == view) {
@@ -619,6 +625,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	private void setCurrentItem(int item) {
 		if (mViewPager == null) {
@@ -630,6 +637,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	private CharSequence getTitle(int i) {
 		CharSequence title = EMPTY_TITLE;
@@ -651,6 +659,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	private static class SavedState extends BaseSavedState {
 
@@ -687,6 +696,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	private enum IndicatorStyle {
 		None(0), Triangle(1), Underline(2);
@@ -708,6 +718,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	}
 
 	/**
+	 *
 	 */
 	private enum LinePosition {
 		Bottom(0), Top(1);

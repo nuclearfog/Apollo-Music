@@ -39,8 +39,8 @@ import com.andrew.apollo.adapters.SongAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.NowPlayingCursor;
 import com.andrew.apollo.loaders.QueueLoader;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView;
@@ -179,18 +179,18 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 			// Creat a new song
 			mSong = mAdapter.getItem(mSelectedPosition);
 			// Play the song next
-			menu.add(GROUP_ID, FragmentMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+			menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
 			// Add the song to a playlist
-			SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 			MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
 			// Remove the song from the queue
-			menu.add(GROUP_ID, FragmentMenuItems.REMOVE_FROM_QUEUE, Menu.NONE, R.string.remove_from_queue);
+			menu.add(GROUP_ID, ContextMenuItems.REMOVE_FROM_QUEUE, Menu.NONE, R.string.remove_from_queue);
 			// View more content by the song artist
-			menu.add(GROUP_ID, FragmentMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+			menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
 			// Make the song a ringtone
-			menu.add(GROUP_ID, FragmentMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+			menu.add(GROUP_ID, ContextMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
 			// Delete the song
-			menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 		} else {
 			// remove old selection
 			mSelectedPosition = -1;
@@ -207,7 +207,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 			long[] trackId = {mSong.getId()};
 
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_NEXT:
+				case ContextMenuItems.PLAY_NEXT:
 					NowPlayingCursor queueCursor = new NowPlayingCursor(requireContext());
 					queueCursor.removeItem(mSelectedPosition);
 					queueCursor.close();
@@ -215,32 +215,32 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					refresh();
 					return true;
 
-				case FragmentMenuItems.REMOVE_FROM_QUEUE:
+				case ContextMenuItems.REMOVE_FROM_QUEUE:
 					remove(mSelectedPosition);
 					return true;
 
-				case FragmentMenuItems.ADD_TO_FAVORITES:
+				case ContextMenuItems.ADD_TO_FAVORITES:
 					FavoritesStore.getInstance(requireActivity()).addSongId(mSong);
 					return true;
 
-				case FragmentMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), "CreatePlaylist");
+				case ContextMenuItems.NEW_PLAYLIST:
+					CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
 					return true;
 
-				case FragmentMenuItems.PLAYLIST_SELECTED:
+				case ContextMenuItems.PLAYLIST_SELECTED:
 					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
 					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
 					return true;
 
-				case FragmentMenuItems.MORE_BY_ARTIST:
+				case ContextMenuItems.MORE_BY_ARTIST:
 					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
 					return true;
 
-				case FragmentMenuItems.USE_AS_RINGTONE:
+				case ContextMenuItems.USE_AS_RINGTONE:
 					MusicUtils.setRingtone(requireActivity(), mSong.getId());
 					return true;
 
-				case FragmentMenuItems.DELETE:
+				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
 					return true;
 			}

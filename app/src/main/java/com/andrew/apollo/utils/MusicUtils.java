@@ -48,9 +48,9 @@ import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.loaders.NowPlayingCursor;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.DeleteDialog;
-import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
@@ -576,7 +576,8 @@ public final class MusicUtils {
 			if (cursor.moveToFirst()) {
 				int index = 0;
 				result = new long[cursor.getCount()];
-				do {
+				do
+				{
 					result[index++] = cursor.getLong(0);
 				} while (cursor.moveToNext());
 			}
@@ -757,7 +758,8 @@ public final class MusicUtils {
 		long playlistId = -1;
 		if (cursor != null) {
 			if (cursor.moveToFirst() && name != null) {
-				do {
+				do
+				{
 					String playlist = cursor.getString(1);
 					if (name.equals(playlist)) {
 						playlistId = cursor.getLong(0);
@@ -805,7 +807,8 @@ public final class MusicUtils {
 				// use dynamic array because the result size differs from cursor size
 				List<Long> ids = new LinkedList<>();
 				int idxName = folder.length() + 1;
-				do {
+				do
+				{
 					String filename = cursor.getString(5);
 					// filter sub folders from results
 					if (filename.indexOf('/', idxName) < 0) {
@@ -1258,18 +1261,19 @@ public final class MusicUtils {
 	public static void makePlaylistMenu(Context context, int groupId, SubMenu subMenu, boolean showFavorites) {
 		subMenu.clear();
 		if (showFavorites) {
-			subMenu.add(groupId, FragmentMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
+			subMenu.add(groupId, ContextMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
 		}
-		subMenu.add(groupId, FragmentMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
+		subMenu.add(groupId, ContextMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
 		Cursor cursor = CursorFactory.makePlaylistCursor(context);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				do {
+				do
+				{
 					String name = cursor.getString(1);
 					if (name != null) {
 						Intent intent = new Intent();
 						intent.putExtra("playlist", getIdForPlaylist(context, name));
-						subMenu.add(groupId, FragmentMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
+						subMenu.add(groupId, ContextMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
 					}
 				} while (cursor.moveToNext());
 			}
@@ -1492,7 +1496,7 @@ public final class MusicUtils {
 			deleteTracks(activity, ids);
 		} else {
 			DeleteDialog dialog = DeleteDialog.newInstance(title, ids, null);
-			dialog.show(activity.getSupportFragmentManager(), "DeleteDialog");
+			dialog.show(activity.getSupportFragmentManager(), DeleteDialog.NAME);
 		}
 	}
 
@@ -1642,7 +1646,7 @@ public final class MusicUtils {
 					public void run() {
 						FragmentActivity activity = QueueWorker.this.activity.get();
 						if (activity != null) {
-							CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), "CreatePlaylist");
+							CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), CreateNewPlaylist.NAME);
 						}
 					}
 				});

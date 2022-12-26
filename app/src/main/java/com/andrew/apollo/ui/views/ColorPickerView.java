@@ -114,18 +114,21 @@ public class ColorPickerView extends View {
 	private boolean mShowAlphaPanel = false;
 
 	/**
+	 *
 	 */
 	public ColorPickerView(Context context) {
 		this(context, null);
 	}
 
 	/**
+	 *
 	 */
 	public ColorPickerView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
 	/**
+	 *
 	 */
 	public ColorPickerView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);

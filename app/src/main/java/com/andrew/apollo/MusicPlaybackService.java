@@ -959,6 +959,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
 	/**
 	 * notify on audio focus loss
+	 *
 	 * @param msg type of focus loss
 	 */
 	public void onAudioFocusLoss(int msg) {

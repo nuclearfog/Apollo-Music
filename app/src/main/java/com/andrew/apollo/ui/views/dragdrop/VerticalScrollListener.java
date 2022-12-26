@@ -21,7 +21,7 @@ import com.andrew.apollo.ui.views.ProfileTabCarousel;
 public class VerticalScrollListener implements OnScrollListener {
 
 	/**
-	 *  Used to determine the off set to scroll the header
+	 * Used to determine the off set to scroll the header
 	 */
 	private ScrollableHeader mHeader;
 	private ProfileTabCarousel mTabCarousel;
@@ -29,6 +29,7 @@ public class VerticalScrollListener implements OnScrollListener {
 	private int mPageIndex;
 
 	/**
+	 *
 	 */
 	public VerticalScrollListener(ScrollableHeader header, ProfileTabCarousel carousel, int pageIndex) {
 		mHeader = header;

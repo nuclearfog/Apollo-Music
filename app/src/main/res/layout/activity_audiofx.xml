@@ -12,7 +12,7 @@
 		android:layout_height="@dimen/toolbar_height"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"/>
+		app:layout_constraintEnd_toEndOf="parent" />
 
 	<com.andrew.apollo.ui.views.theme.Colorstrip
 		android:id="@+id/audiofx_colorstrip"
@@ -73,7 +73,7 @@
 		android:layout_marginLeft="5dp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_bass_boost"
-		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost"/>
+		app:layout_constraintBottom_toBottomOf="@id/audiofx_bass_boost" />
 
 
 	<TextView
@@ -85,14 +85,14 @@
 		android:layout_marginLeft="5dp"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="@id/audiofx_reverb"
-		app:layout_constraintBottom_toBottomOf="@id/audiofx_reverb"/>
+		app:layout_constraintBottom_toBottomOf="@id/audiofx_reverb" />
 
 	<androidx.constraintlayout.widget.Barrier
 		android:id="@+id/seekbar_label_barrier"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		app:barrierDirection="end"
-		app:constraint_referenced_ids="audiofx_bass_boost_label,audiofx_reverb_label"/>
+		app:constraint_referenced_ids="audiofx_bass_boost_label,audiofx_reverb_label" />
 
 	<SeekBar
 		android:id="@+id/audiofx_bass_boost"

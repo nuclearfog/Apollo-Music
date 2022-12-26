@@ -49,7 +49,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PlaylistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.PlaylistLoader;
-import com.andrew.apollo.menu.FragmentMenuItems;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.RenamePlaylist;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.ui.activities.ActivityBase;
@@ -162,13 +162,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 			// Delete and rename (user made playlists)
 			if (mPlaylist != null) {
 				// Play the playlist
-				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the playlist to the queue
-				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				if (!mPlaylist.isDefault()) {
 					// add options to edit playlist
-					menu.add(GROUP_ID, FragmentMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
-					menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+					menu.add(GROUP_ID, ContextMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
+					menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 				}
 			}
 		} else {
@@ -184,7 +184,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && mPlaylist != null) {
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
 						// play favorite playlist
 						MusicUtils.playFavorites(requireContext());
@@ -200,7 +200,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 					}
 					return true;
 
-				case FragmentMenuItems.ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					long[] list;
 					if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
 						// add favorite playlist
@@ -218,11 +218,11 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 					MusicUtils.addToQueue(requireActivity(), list);
 					return true;
 
-				case FragmentMenuItems.RENAME_PLAYLIST:
-					RenamePlaylist.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), "RenameDialog");
+				case ContextMenuItems.RENAME_PLAYLIST:
+					RenamePlaylist.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), RenamePlaylist.NAME);
 					return true;
 
-				case FragmentMenuItems.DELETE:
+				case ContextMenuItems.DELETE:
 					String name = mPlaylist.getName();
 					new AlertDialog.Builder(requireContext())
 							.setTitle(getString(R.string.delete_dialog_title, name))

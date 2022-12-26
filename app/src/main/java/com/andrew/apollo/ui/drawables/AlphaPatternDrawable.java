@@ -36,7 +36,7 @@ public class AlphaPatternDrawable extends Drawable {
 	private Paint mPaintGray = new Paint();
 
 	/**
-	 *  Bitmap in which the pattern will be cached.
+	 * Bitmap in which the pattern will be cached.
 	 */
 	private Bitmap mBitmap;
 

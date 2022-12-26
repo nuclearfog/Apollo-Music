@@ -42,8 +42,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.ArtistLoader;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.FragmentMenuItems;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
@@ -91,12 +91,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 * app preferences
 	 */
 	private PreferenceUtils preference;
-
-	/**
-	 * Artist song list
-	 */
-	@NonNull
-	private long[] mArtistList = {};
 
 	/**
 	 * Represents an artist
@@ -188,17 +182,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 			// Create a new model
 			mArtist = mAdapter.getItem(info.position);
 			if (mArtist != null) {
-				// Create a list of the artist's songs
-				mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
 				// Play the artist
-				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the artist to the queue
-				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				// Add the artist to a playlist
-				SubMenu subMenu = menu.addSubMenu(GROUP_ID, FragmentMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 				MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
 				// Delete the artist
-				menu.add(GROUP_ID, FragmentMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
 		} else {
 			// remove selection
@@ -213,25 +205,27 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
 		if (item.getGroupId() == GROUP_ID && mArtist != null) {
+			// Create a list of the artist's songs
+			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(mArtistList, 0, true);
 					return true;
 
-				case FragmentMenuItems.ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					MusicUtils.addToQueue(requireActivity(), mArtistList);
 					return true;
 
-				case FragmentMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(mArtistList).show(getParentFragmentManager(), "CreatePlaylist");
+				case ContextMenuItems.NEW_PLAYLIST:
+					CreateNewPlaylist.getInstance(mArtistList).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
 					return true;
 
-				case FragmentMenuItems.PLAYLIST_SELECTED:
+				case ContextMenuItems.PLAYLIST_SELECTED:
 					long id = item.getIntent().getLongExtra("playlist", 0);
 					MusicUtils.addToPlaylist(requireActivity(), mArtistList, id);
 					return true;
 
-				case FragmentMenuItems.DELETE:
+				case ContextMenuItems.DELETE:
 					mShouldRefresh = true;
 					String artist = mArtist.getName();
 					MusicUtils.openDeleteDialog(requireActivity(), artist, mArtistList);

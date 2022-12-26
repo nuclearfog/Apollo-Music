@@ -39,7 +39,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.GenreAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.GenreLoader;
-import com.andrew.apollo.menu.FragmentMenuItems;
+import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.model.Genre;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -137,9 +137,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 				// Create a list of the genre's songs
 				mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
 				// Play the genre
-				menu.add(GROUP_ID, FragmentMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the genre to the queue
-				menu.add(GROUP_ID, FragmentMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				return;
 			}
 		}
@@ -154,11 +154,11 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
-				case FragmentMenuItems.PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(mGenreList, 0, false);
 					return true;
 
-				case FragmentMenuItems.ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					MusicUtils.addToQueue(requireActivity(), mGenreList);
 					return true;
 			}

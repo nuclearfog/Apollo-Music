@@ -1,16 +1,16 @@
 package com.andrew.apollo.ui.fragments.profile;
 
 import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
-import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_FAVORITES;
-import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_PLAYLIST;
-import static com.andrew.apollo.menu.FragmentMenuItems.ADD_TO_QUEUE;
-import static com.andrew.apollo.menu.FragmentMenuItems.DELETE;
-import static com.andrew.apollo.menu.FragmentMenuItems.MORE_BY_ARTIST;
-import static com.andrew.apollo.menu.FragmentMenuItems.NEW_PLAYLIST;
-import static com.andrew.apollo.menu.FragmentMenuItems.PLAYLIST_SELECTED;
-import static com.andrew.apollo.menu.FragmentMenuItems.PLAY_NEXT;
-import static com.andrew.apollo.menu.FragmentMenuItems.PLAY_SELECTION;
-import static com.andrew.apollo.menu.FragmentMenuItems.USE_AS_RINGTONE;
+import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_FAVORITES;
+import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_PLAYLIST;
+import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_QUEUE;
+import static com.andrew.apollo.menu.ContextMenuItems.DELETE;
+import static com.andrew.apollo.menu.ContextMenuItems.MORE_BY_ARTIST;
+import static com.andrew.apollo.menu.ContextMenuItems.NEW_PLAYLIST;
+import static com.andrew.apollo.menu.ContextMenuItems.PLAYLIST_SELECTED;
+import static com.andrew.apollo.menu.ContextMenuItems.PLAY_NEXT;
+import static com.andrew.apollo.menu.ContextMenuItems.PLAY_SELECTION;
+import static com.andrew.apollo.menu.ContextMenuItems.USE_AS_RINGTONE;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -146,7 +146,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 					return true;
 
 				case NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(ids).show(getParentFragmentManager(), "CreatePlaylist");
+					CreateNewPlaylist.getInstance(ids).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
 					return true;
 
 				case PLAYLIST_SELECTED:

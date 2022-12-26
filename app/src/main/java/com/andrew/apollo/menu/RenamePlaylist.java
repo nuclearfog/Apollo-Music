@@ -35,6 +35,8 @@ import com.andrew.apollo.utils.StringUtils;
  */
 public class RenamePlaylist extends BasePlaylistDialog {
 
+	public static final String NAME = "RenameDialog";
+
 	/**
 	 * ID of the playlist to rename
 	 */

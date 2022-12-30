@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -94,6 +94,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Message to refresh the time
 	 */
 	private static final int MSG_ID = 0x65059CC4;
+
+	/**
+	 * progress thumb drawable transparency mask
+	 */
+	private static final int THUMB_TRANSPARENCY = 0x7fffffff;
 
 	/**
 	 * The service token
@@ -644,9 +649,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		mShuffleButton.setColor(themeColor);
 		mRepeatButton.setColor(themeColor);
 		// set seek bar color
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			mProgress.setProgressTintList(ColorStateList.valueOf(themeColor));
-		}
+		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
+		mProgress.getThumb().setColorFilter(themeColor & THUMB_TRANSPARENCY, PorterDuff.Mode.SRC_IN);
 	}
 
 	/**

@@ -40,7 +40,6 @@
 		android:background="@null"
 		android:layout_marginBottom="@dimen/audio_player_seek_bar_margin_bottom"
 		android:max="1000"
-		android:thumb="@null"
 		app:layout_constraintStart_toEndOf="@id/audio_player_current_time"
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintBottom_toTopOf="@id/audio_player_controls_barrier"

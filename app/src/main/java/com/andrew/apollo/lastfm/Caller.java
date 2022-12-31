@@ -26,8 +26,10 @@ import static com.andrew.apollo.lastfm.StringUtilities.encode;
 import static com.andrew.apollo.lastfm.StringUtilities.map;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 
 import com.andrew.apollo.lastfm.Result.Status;
+import com.andrew.apollo.utils.PreferenceUtils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,6 +91,11 @@ public class Caller {
 	 */
 	private static final Caller mInstance = new Caller();
 
+	/**
+	 * app preferences used to get API-key
+	 */
+	private PreferenceUtils mPrefs;
+
 
 	private Caller() {
 	}
@@ -96,7 +103,8 @@ public class Caller {
 	/**
 	 * @return A new instance of this class
 	 */
-	public static synchronized Caller getInstance() {
+	public static synchronized Caller getInstance(Context context) {
+		mInstance.mPrefs = PreferenceUtils.getInstance(context);
 		return mInstance;
 	}
 
@@ -119,16 +127,17 @@ public class Caller {
 	public Result call(String method, Map<String, String> params) {
 		params = new WeakHashMap<>(params);
 		InputStream inputStream;
-
-		// no entry in cache, load from web
 		Result lastResult;
 
-		// fill parameter map with apiKey and session info
-		params.put(PARAM_API_KEY, LASTFM_API_KEY);
+		String apiKey = mPrefs.getApiKey();
+		if (!apiKey.isEmpty()) {
+			params.put(PARAM_API_KEY, apiKey);
+		} else {
+			params.put(PARAM_API_KEY, LASTFM_API_KEY);
+		}
 		try {
 			HttpsURLConnection urlConnection = openPostConnection(method, params);
 			inputStream = getInputStreamFromConnection(urlConnection);
-
 			if (inputStream == null) {
 				lastResult = Result.createHttpErrorResult(urlConnection.getResponseCode(), urlConnection.getResponseMessage());
 				return lastResult;

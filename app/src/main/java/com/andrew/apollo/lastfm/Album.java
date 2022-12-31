@@ -21,6 +21,8 @@
 
 package com.andrew.apollo.lastfm;
 
+import android.content.Context;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,8 +50,8 @@ public class Album extends MusicEntry {
 	 * @param albumOrMbid Album name or MBID
 	 * @return Album metadata
 	 */
-	public static Album getInfo(String artist, String albumOrMbid) {
-		return getInfo(artist, albumOrMbid, null);
+	public static Album getInfo(Context context, String artist, String albumOrMbid) {
+		return getInfo(context, artist, albumOrMbid, null);
 	}
 
 	/**
@@ -63,12 +65,12 @@ public class Album extends MusicEntry {
 	 *                    response.
 	 * @return Album metadata
 	 */
-	public static Album getInfo(String artist, String albumOrMbid, String username) {
+	public static Album getInfo(Context context, String artist, String albumOrMbid, String username) {
 		Map<String, String> params = new HashMap<>();
 		params.put("artist", artist);
 		params.put("album", albumOrMbid);
 		MapUtilities.nullSafePut(params, "username", username);
-		Result result = Caller.getInstance().call("album.getInfo", params);
+		Result result = Caller.getInstance(context).call("album.getInfo", params);
 		return ResponseBuilder.buildItem(result, Album.class);
 	}
 

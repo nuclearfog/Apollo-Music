@@ -21,6 +21,8 @@
 
 package com.andrew.apollo.lastfm;
 
+import android.content.Context;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -47,8 +49,8 @@ public class Artist extends MusicEntry {
 	 * @param artistOrMbid Name of the artist or an mbid
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo(String artistOrMbid) {
-		return getInfo(artistOrMbid, Locale.getDefault());
+	public static Artist getInfo(Context context, String artistOrMbid) {
+		return getInfo(context, artistOrMbid, Locale.getDefault());
 	}
 
 	/**
@@ -58,13 +60,13 @@ public class Artist extends MusicEntry {
 	 * @param locale       The language to fetch info in, or <code>null</code>
 	 * @return detailed artist info
 	 */
-	public static Artist getInfo(String artistOrMbid, Locale locale) {
+	public static Artist getInfo(Context context, String artistOrMbid, Locale locale) {
 		Map<String, String> mParams = new WeakHashMap<>();
 		mParams.put("artist", artistOrMbid);
 		if (locale != null && locale.getLanguage().length() != 0) {
 			mParams.put("lang", locale.getLanguage());
 		}
-		Result mResult = Caller.getInstance().call("artist.getInfo", mParams);
+		Result mResult = Caller.getInstance(context).call("artist.getInfo", mParams);
 		return ResponseBuilder.buildItem(mResult, Artist.class);
 	}
 
@@ -77,10 +79,10 @@ public class Artist extends MusicEntry {
 	 * @param artist The artist name to correct
 	 * @return a new {@link Artist}, or <code>null</code>
 	 */
-	public static Artist getCorrection(String artist) {
+	public static Artist getCorrection(Context context, String artist) {
 		Result result;
 		try {
-			result = Caller.getInstance().call("artist.getCorrection", "artist", artist);
+			result = Caller.getInstance(context).call("artist.getCorrection", "artist", artist);
 			if (!result.isSuccessful()) {
 				return null;
 			}

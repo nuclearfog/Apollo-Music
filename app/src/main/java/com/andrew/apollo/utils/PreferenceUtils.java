@@ -85,6 +85,7 @@ public final class PreferenceUtils {
 	private static final String FX_BASSBOOST = "fx_bassbost";
 	private static final String FX_REVERB = "fx_reverb";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
+	private static final String LASTFM_API_KEY = "api_key";
 
 	private static volatile PreferenceUtils sInstance;
 
@@ -619,5 +620,13 @@ public final class PreferenceUtils {
 	 */
 	public boolean isExternalAudioFxPrefered() {
 		return mPreferences.getBoolean(FX_PREFER_EXT, false);
+	}
+
+	/**
+	 * get LastFM API key
+	 * @return API key string
+	 */
+	public String getApiKey() {
+		return mPreferences.getString(LASTFM_API_KEY, "");
 	}
 }

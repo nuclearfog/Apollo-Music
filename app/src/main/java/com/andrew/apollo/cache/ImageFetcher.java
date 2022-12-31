@@ -273,7 +273,7 @@ public class ImageFetcher extends ImageWorker {
 		switch (imageType) {
 			case ARTIST:
 				if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-					Artist artist = Artist.getInfo(artistName);
+					Artist artist = Artist.getInfo(getContext(), artistName);
 					if (artist != null) {
 						return getBestImage(artist);
 					}
@@ -283,9 +283,9 @@ public class ImageFetcher extends ImageWorker {
 			case ALBUM:
 				if (!TextUtils.isEmpty(artistName) && !TextUtils.isEmpty(albumName)
 						&& PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-					Artist correction = Artist.getCorrection(artistName);
+					Artist correction = Artist.getCorrection(mContext, artistName);
 					if (correction != null) {
-						Album album = Album.getInfo(correction.getName(), albumName);
+						Album album = Album.getInfo(getContext(), correction.getName(), albumName);
 						if (album != null) {
 							return getBestImage(album);
 						}

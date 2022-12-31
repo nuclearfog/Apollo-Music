@@ -14,7 +14,7 @@ import com.andrew.apollo.utils.PreferenceUtils;
  *
  * @author nuclearfog
  */
-public class AudioEffects {
+public final class AudioEffects {
 
 	/**
 	 * max limit of the bass boost effect defined in {@link BassBoost}
@@ -26,13 +26,18 @@ public class AudioEffects {
 	 */
 	public static final int MAX_REVERB = 6;
 
-	private static volatile AudioEffects instance;
+	/**
+	 * singleton instance
+	 * regenerated if session ID changes
+	 */
+	private static AudioEffects instance;
 
 	private Equalizer equalizer;
 	private BassBoost bassBooster;
 	private PresetReverb reverb;
-
 	private PreferenceUtils prefs;
+
+	private int sessionId;
 
 	/**
 	 * get singleton instance
@@ -44,7 +49,7 @@ public class AudioEffects {
 	@Nullable
 	public static AudioEffects getInstance(Context context, int sessionId) {
 		try {
-			if (instance == null) {
+			if (instance == null || instance.sessionId != sessionId) {
 				instance = new AudioEffects(context, sessionId);
 			}
 			return instance;
@@ -63,16 +68,13 @@ public class AudioEffects {
 		bassBooster = new BassBoost(0, sessionId);
 		reverb = new PresetReverb(0, sessionId);
 		prefs = PreferenceUtils.getInstance(context);
-		// enable/disable effects
-		equalizer.setEnabled(prefs.isAudioFxEnabled());
-		bassBooster.setEnabled(prefs.isAudioFxEnabled());
-		reverb.setEnabled(prefs.isAudioFxEnabled());
-		// set effect parameters
-		bassBooster.setStrength((short) prefs.getBassLevel());
-		reverb.setPreset((short) prefs.getReverbLevel());
-		int[] bandLevel = prefs.getEqualizerBands();
-		for (short i = 0; i < bandLevel.length; i++) {
-			equalizer.setBandLevel(i, (short) bandLevel[i]);
+		this.sessionId = sessionId;
+		boolean active = prefs.isAudioFxEnabled();
+
+		equalizer.setEnabled(active);
+		bassBooster.setEnabled(active);
+		if (active) {
+			setEffectValues();
 		}
 	}
 
@@ -85,6 +87,9 @@ public class AudioEffects {
 		equalizer.setEnabled(enable);
 		bassBooster.setEnabled(enable);
 		prefs.setAudioFxEnabled(enable);
+		if (enable) {
+			setEffectValues();
+		}
 	}
 
 	/**
@@ -186,5 +191,18 @@ public class AudioEffects {
 	public void setReverbLevel(int level) {
 		reverb.setPreset((short) level);
 		prefs.setReverbLevel(level);
+	}
+
+	/**
+	 * set saved values for audio effects
+	 */
+	private void setEffectValues() {
+		// setup audio effects
+		bassBooster.setStrength((short) prefs.getBassLevel());
+		reverb.setPreset((short) prefs.getReverbLevel());
+		int[] bandLevel = prefs.getEqualizerBands();
+		for (short i = 0; i < bandLevel.length; i++) {
+			equalizer.setBandLevel(i, (short) bandLevel[i]);
+		}
 	}
 }

@@ -64,7 +64,7 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
 	 */
 	@Override
 	public void onClick(View v) {
-		MusicUtils.cycleRepeat();
+		MusicUtils.cycleRepeat(getContext());
 		updateRepeatState();
 	}
 

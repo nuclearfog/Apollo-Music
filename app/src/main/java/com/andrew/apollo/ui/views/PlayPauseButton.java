@@ -55,7 +55,7 @@ public class PlayPauseButton extends AppCompatImageButton implements OnClickList
 		if (MusicUtils.isPlaying())
 			MusicUtils.pause();
 		else
-			MusicUtils.play();
+			MusicUtils.play(getContext());
 		updateState();
 	}
 

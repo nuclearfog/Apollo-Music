@@ -96,11 +96,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	private static final int MSG_ID = 0x65059CC4;
 
 	/**
-	 * progress thumb drawable transparency mask
-	 */
-	private static final int THUMB_TRANSPARENCY = 0x7fffffff;
-
-	/**
 	 * The service token
 	 */
 	private ServiceToken mToken;
@@ -180,7 +175,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 	private PreferenceUtils mPrefs;
 
-	private int themeColor;
 	private long mPosOverride = -1;
 	private long mStartSeekPos = 0;
 	private long mLastSeekEventTime;
@@ -206,7 +200,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		mPrefs = PreferenceUtils.getInstance(this);
 		// Set the overflow style
 		mResources.setOverflowStyle(this);
-		themeColor = mPrefs.getDefaultThemeColor();
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
@@ -646,11 +639,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		mQueueSwitch.setOnClickListener(this);
 		mAlbumArtSmall.setOnClickListener(this);
 		// set colors
+		int themeColor = mPrefs.getDefaultThemeColor();
 		mShuffleButton.setColor(themeColor);
 		mRepeatButton.setColor(themeColor);
-		// set seek bar color
 		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
-		mProgress.getThumb().setColorFilter(themeColor & THUMB_TRANSPARENCY, PorterDuff.Mode.SRC_IN);
+		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 	}
 
 	/**
@@ -787,7 +780,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			long newpos = mStartSeekPos - delta;
 			if (newpos < 0) {
 				// move to previous track
-				MusicUtils.previous();
+				MusicUtils.previous(this);
 				long duration = MusicUtils.duration();
 				mStartSeekPos += duration;
 				newpos += duration;
@@ -830,7 +823,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			long duration = MusicUtils.duration();
 			if (newpos >= duration) {
 				// move to next track
-				MusicUtils.next();
+				MusicUtils.next(this);
 				mStartSeekPos -= duration; // is OK to go negative
 				newpos -= duration;
 			}

@@ -61,7 +61,7 @@ public class ShuffleButton extends AppCompatImageButton implements OnClickListen
 	 */
 	@Override
 	public void onClick(View v) {
-		MusicUtils.cycleShuffle();
+		MusicUtils.cycleShuffle(getContext());
 		updateShuffleState();
 	}
 

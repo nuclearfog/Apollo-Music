@@ -2,6 +2,7 @@ package com.andrew.apollo.adapters;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.utils.PreferenceUtils;
 
 import java.text.NumberFormat;
 
@@ -25,6 +27,8 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 
 	private BandLevelChangeListener listener;
 	private int[] level, frequency, range;
+
+	private boolean enabled = true;
 
 	/**
 	 * @param listener  listener to call if equalizer level changes
@@ -72,6 +76,8 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 
 	@Override
 	public void onBindViewHolder(@NonNull EqualizerAdapter.EqualizerHolder holder, int position) {
+		// set enabled
+		holder.slider.setEnabled(enabled);
 		// calculate seekbar position
 		holder.slider.setProgress((level[position] - range[0]) / 100);
 		// band level
@@ -91,18 +97,32 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 	}
 
 	/**
+	 * enable/disable slider
+	 *
+	 * @param enable true to enable slider
+	 */
+	public void setEnabled(boolean enable) {
+		this.enabled = enable;
+		notifyDataSetChanged();
+	}
+
+	/**
 	 *
 	 */
-	public static class EqualizerHolder extends RecyclerView.ViewHolder {
+	static class EqualizerHolder extends RecyclerView.ViewHolder {
 
-		public final SeekBar slider;
-		public final TextView level, frequency;
+		final SeekBar slider;
+		final TextView level, frequency;
 
 		public EqualizerHolder(ViewGroup parent) {
 			super(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_equalizer_band, parent, false));
 			slider = itemView.findViewById(R.id.eq_seekbar);
 			level = itemView.findViewById(R.id.eq_level);
 			frequency = itemView.findViewById(R.id.eq_freq);
+
+			PreferenceUtils mPrefs = PreferenceUtils.getInstance(parent.getContext());
+			slider.getProgressDrawable().setColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
+			slider.getThumb().setColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
 		}
 	}
 

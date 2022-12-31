@@ -52,6 +52,7 @@ import com.andrew.apollo.menu.ContextMenuItems;
 import com.andrew.apollo.menu.CreateNewPlaylist;
 import com.andrew.apollo.menu.DeleteDialog;
 import com.andrew.apollo.model.Song;
+import com.andrew.apollo.player.AudioEffects;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.provider.RecentStore;
@@ -187,9 +188,10 @@ public final class MusicUtils {
 	/**
 	 * switch to next track
 	 */
-	public static void next() {
+	public static void next(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.goToNext();
 			} catch (RemoteException err) {
@@ -201,9 +203,10 @@ public final class MusicUtils {
 	/**
 	 * switch to previous track or repeat current track
 	 */
-	public static void previous() {
+	public static void previous(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.goToPrev();
 			} catch (RemoteException err) {
@@ -215,9 +218,10 @@ public final class MusicUtils {
 	/**
 	 * plays the music.
 	 */
-	public static void play() {
+	public static void play(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.play();
 			} catch (Exception err) {
@@ -243,9 +247,10 @@ public final class MusicUtils {
 	/**
 	 * Cycles through the repeat options.
 	 */
-	public static void cycleRepeat() {
+	public static void cycleRepeat(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				switch (service.getRepeatMode()) {
 					case MusicPlaybackService.REPEAT_NONE:
@@ -272,9 +277,10 @@ public final class MusicUtils {
 	/**
 	 * Cycles through the shuffle options.
 	 */
-	public static void cycleShuffle() {
+	public static void cycleShuffle(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				switch (service.getShuffleMode()) {
 					case MusicPlaybackService.SHUFFLE_NONE:

@@ -13,6 +13,8 @@ package com.andrew.apollo.ui.activities;
 
 import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.andrew.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -57,7 +60,9 @@ public class HomeActivity extends ActivityBase {
 	private MusicBrowserPhoneFragment fragment;
 
 	static {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			PERMISSIONS = new String[]{ACCESS_MEDIA_LOCATION, READ_MEDIA_AUDIO, READ_MEDIA_IMAGES};
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
 		} else {
 			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
@@ -81,20 +86,17 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		// initialize only if it is the first time
-		if (savedInstanceState == null) {
-			// check permissions before initialization
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				for (String permission : PERMISSIONS) {
-					if (checkSelfPermission(permission) != PERMISSION_GRANTED) {
-						// request first permission before initialization
-						requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
-						return;
-					}
+		// check permissions before initialization
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			for (String permission : PERMISSIONS) {
+				if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+					// request first permission before initialization
+					requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
+					return;
 				}
 			}
-			init();
 		}
+		init();
 	}
 
 
@@ -106,7 +108,6 @@ public class HomeActivity extends ActivityBase {
 			for (int grantResult : grantResults) {
 				if (grantResult == PERMISSION_DENIED) {
 					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
-					finish();
 					return;
 				}
 			}

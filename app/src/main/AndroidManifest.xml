@@ -32,6 +32,10 @@
 	<!-- Allows Apollo to read from External Storage -->
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+	<!-- permissions to read audio files used by Android 13+ -->
+	<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+	<!-- permissions to read album/artist cover files used by Android 13+ -->
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 	<!-- Allows Apollo to stay in the foreground -->
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 	<!-- Used to create launcher shortcuts -->

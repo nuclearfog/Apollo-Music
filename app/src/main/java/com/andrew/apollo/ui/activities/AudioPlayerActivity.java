@@ -127,7 +127,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	/**
 	 * album art borders
 	 */
-	private View[] albumArtBorder = new View[2];
+	private View albumArtBorder1, albumArtBorder2;
 	/**
 	 * Tiny artwork
 	 */
@@ -190,6 +190,23 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		super.onCreate(savedInstanceState);
 		// Set the layout
 		setContentView(R.layout.activity_player_base);
+		mPlayPauseButton = findViewById(R.id.action_button_play);
+		mShuffleButton = findViewById(R.id.action_button_shuffle);
+		mRepeatButton = findViewById(R.id.action_button_repeat);
+		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
+		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
+		mTrackName = findViewById(R.id.audio_player_track_name);
+		mArtistName = findViewById(R.id.audio_player_artist_name);
+		mAlbumArt = findViewById(R.id.audio_player_album_art);
+		albumArtBorder1 = findViewById(R.id.audio_player_album_border);
+		albumArtBorder2 = findViewById(R.id.audio_player_album_border_bottom);
+		mAlbumArtSmall = findViewById(R.id.audio_player_switch_album_art);
+		mCurrentTime = findViewById(R.id.audio_player_current_time);
+		mTotalTime = findViewById(R.id.audio_player_total_time);
+		mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
+		mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);
+		mProgress = findViewById(R.id.player_progress);
+
 		// set toolbar
 		Toolbar toolbar = findViewById(R.id.player_toolbar);
 		if (toolbar != null) // toolbar only available in portrait mode
@@ -216,8 +233,28 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			mResources.themeActionBar(actionBar, R.string.app_name);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-		// Cache all the items
-		initPlaybackControls();
+		// View pager
+		mViewPager = findViewById(R.id.audio_player_pager);
+		// Offscreen pager loading limit
+		mViewPager.setOffscreenPageLimit(1);
+		// Initialize the pager adapter and attach
+		mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
+		mPagerAdapter.add(new QueueFragment(), null);
+		mViewPager.setAdapter(mPagerAdapter);
+		// set colors
+		int themeColor = mPrefs.getDefaultThemeColor();
+		mShuffleButton.setColor(themeColor);
+		mRepeatButton.setColor(themeColor);
+		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
+		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
+
+		mPreviousButton.setRepeatListener(this);
+		mNextButton.setRepeatListener(this);
+		mProgress.setOnSeekBarChangeListener(this);
+		mTrackName.setOnClickListener(this);
+		mArtistName.setOnClickListener(this);
+		mQueueSwitch.setOnClickListener(this);
+		mAlbumArtSmall.setOnClickListener(this);
 	}
 
 
@@ -313,8 +350,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
 		searchView.setSearchableInfo(searchableInfo);
-		// Perform the search
-		searchView.setOnQueryTextListener(this);
 		// Favorite action
 		getMenuInflater().inflate(R.menu.favorite, menu);
 		// Shuffle all
@@ -323,6 +358,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		getMenuInflater().inflate(R.menu.audio_player, menu);
 		// Settings
 		getMenuInflater().inflate(R.menu.activity_base, menu);
+		// Perform the search
+		searchView.setOnQueryTextListener(this);
 		return true;
 	}
 
@@ -332,10 +369,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
-		//MenuItem effects = menu.findItem(R.id.menu_audio_player_equalizer);
 		// Add fav icon
 		mResources.setFavoriteIcon(favorite);
-		// Hide the EQ option if it can't be opened
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -471,7 +506,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-
 		}
 	}
 
@@ -502,8 +536,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 	@Override
 	public void onClick(@NonNull View v) {
-		if (v.getId() == R.id.audio_player_artist_name ||
-				v.getId() == R.id.audio_player_track_name) {
+		if (v.getId() == R.id.audio_player_artist_name || v.getId() == R.id.audio_player_track_name) {
 			String albumname = MusicUtils.getAlbumName();
 			String artistname = MusicUtils.getArtistName();
 			long albumId = MusicUtils.getCurrentAlbumId();
@@ -516,10 +549,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// hide this button
 			mQueueSwitch.setVisibility(View.INVISIBLE);
 			// Fade out the artwork
-			if (albumArtBorder[0] != null)
-				fade(albumArtBorder[0], false);
-			if (albumArtBorder[1] != null)
-				fade(albumArtBorder[1], false);
+			if (albumArtBorder1 != null)
+				fade(albumArtBorder1, false);
+			if (albumArtBorder2 != null)
+				fade(albumArtBorder2, false);
 			fade(mAlbumArt, false);
 			// Scroll to the current track
 			setQueueTrack();
@@ -531,10 +564,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// hide this button
 			mAlbumArtSmall.setVisibility(View.INVISIBLE);
 			// Fade in the album art
-			if (albumArtBorder[0] != null)
-				fade(albumArtBorder[0], true);
-			if (albumArtBorder[1] != null)
-				fade(albumArtBorder[1], true);
+			if (albumArtBorder1 != null)
+				fade(albumArtBorder1, true);
+			if (albumArtBorder2 != null)
+				fade(albumArtBorder2, true);
 			fade(mAlbumArt, true);
 		}
 	}
@@ -579,71 +612,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 	@Override
 	public void refresh() {
-	}
-
-	/**
-	 * Initializes the items in the now playing screen
-	 */
-	private void initPlaybackControls() {
-		// View pager
-		mViewPager = findViewById(R.id.audio_player_pager);
-		// Offscreen pager loading limit
-		mViewPager.setOffscreenPageLimit(1);
-		// Initialize the pager adapter and attach
-		mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
-		mPagerAdapter.add(new QueueFragment(), null);
-		mViewPager.setAdapter(mPagerAdapter);
-		// Play and pause button
-		mPlayPauseButton = findViewById(R.id.action_button_play);
-		// Shuffle button
-		mShuffleButton = findViewById(R.id.action_button_shuffle);
-		// Repeat button
-		mRepeatButton = findViewById(R.id.action_button_repeat);
-		// Previous button
-		// Previous button
-		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
-		// Next button
-		// Next button
-		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
-		// Track name
-		mTrackName = findViewById(R.id.audio_player_track_name);
-		// Artist name
-		mArtistName = findViewById(R.id.audio_player_artist_name);
-		// Album art
-		mAlbumArt = findViewById(R.id.audio_player_album_art);
-		// album art shadow borders
-		albumArtBorder[0] = findViewById(R.id.audio_player_album_border);
-		albumArtBorder[1] = findViewById(R.id.audio_player_album_border_bottom);
-		// Small album art
-		mAlbumArtSmall = findViewById(R.id.audio_player_switch_album_art);
-		// Current time
-		mCurrentTime = findViewById(R.id.audio_player_current_time);
-		// Total time
-		mTotalTime = findViewById(R.id.audio_player_total_time);
-		// Used to show and hide the queue fragment
-		mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
-		// Theme the queue switch icon
-		mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);
-		// Progress
-		mProgress = findViewById(R.id.player_progress);
-		// Set the repeat listner for the previous button
-		mPreviousButton.setRepeatListener(this);
-		// Set the repeat listner for the next button
-		mNextButton.setRepeatListener(this);
-		// Update the progress
-		mProgress.setOnSeekBarChangeListener(this);
-		// header click listener
-		mTrackName.setOnClickListener(this);
-		mArtistName.setOnClickListener(this);
-		// queue/album art toggle
-		mQueueSwitch.setOnClickListener(this);
-		mAlbumArtSmall.setOnClickListener(this);
-		// set colors
-		int themeColor = mPrefs.getDefaultThemeColor();
-		mShuffleButton.setColor(themeColor);
-		mRepeatButton.setColor(themeColor);
-		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
-		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 	}
 
 	/**
@@ -941,7 +909,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	private void refreshQueue() {
 		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
 			Fragment fragment = mPagerAdapter.getItem(0);
-			if (fragment instanceof FragmentCallback) {
+			if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
 				((FragmentCallback) fragment).refresh();
 			}
 		}
@@ -953,7 +921,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	private void setQueueTrack() {
 		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
 			Fragment fragment = mPagerAdapter.getItem(0);
-			if (fragment instanceof FragmentCallback) {
+			if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
 				((FragmentCallback) fragment).setCurrentTrack();
 			}
 		}

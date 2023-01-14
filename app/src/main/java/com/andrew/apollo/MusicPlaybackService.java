@@ -1402,7 +1402,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Notify the change-receivers that something has changed.
 	 */
 	private void notifyChange(String what) {
-
 		if (what.equals(POSITION_CHANGED)) {
 			return;
 		}
@@ -1629,7 +1628,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					openCurrentAndNext();
 					play();
 					notifyChange(META_CHANGED);
-					return;
 				} else {
 					mShuffleMode = SHUFFLE_NONE;
 				}
@@ -1641,7 +1639,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					openCurrentAndNext();
 					play();
 					notifyChange(META_CHANGED);
-					return;
 				} else {
 					mShuffleMode = SHUFFLE_NONE;
 				}

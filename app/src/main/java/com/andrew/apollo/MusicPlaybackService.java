@@ -60,13 +60,15 @@ import com.andrew.apollo.receiver.WidgetBroadcastReceiver;
 import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.PreferenceUtils;
-import com.andrew.apollo.utils.Shuffler;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A background {@link Service} used to keep music playing between activities
@@ -273,10 +275,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public static final int MAX_HISTORY_SIZE = 100;
 	/**
-	 * Used to shuffle the tracks
-	 */
-	private static Shuffler mShuffler = new Shuffler();
-	/**
 	 * Keeps a mapping of the track history
 	 */
 	private static List<Integer> mHistory = new LinkedList<>();
@@ -293,6 +291,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * current shuffle list contaning track ID's
 	 */
 	private List<Long> mAutoShuffleList = new LinkedList<>();
+
+	private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
+
+	private Set<Integer> mPreviousNumbers = new TreeSet<>();
+	/**
+	 * random generator used for shuffle
+	 */
+	private Random mRandom = new Random();
 	/**
 	 * Service stub
 	 */
@@ -392,12 +398,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
 	private int mRepeatMode = REPEAT_ALL;
-
 	private int mShuffleIndex = -1;
 	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
 	private int mMediaMountedCount = 0;
-
+	private int mPrevious = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -1243,18 +1248,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					mHistory.remove(0);
 				}
 				// reset shuffle list after reaching the end or refreshing
-				if (mShuffleIndex < 0 || mShuffleIndex >= mNormalShuffleList.size()
-						|| mNormalShuffleList.size() != mPlayList.size()) {
+				if (mNormalShuffleList.size() != mPlayList.size() || mShuffleIndex < 0 || mShuffleIndex >= mNormalShuffleList.size()) {
 					// create a new shuffle list. if fail, prevent playing
-					if (!makeNormalShuffleList())
-						return -1;
 					mShuffleIndex = 0;
+					if (!makeNormalShuffleList()) {
+						return -1;
+					}
 				}
 				// get index of the new track
-				int newPos = mNormalShuffleList.get(mShuffleIndex);
-				if (force)
-					mShuffleIndex++;
-				return newPos;
+				return mNormalShuffleList.get(mShuffleIndex++);
 
 			// Party shuffle
 			case SHUFFLE_AUTO:
@@ -1324,7 +1326,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			for (int index = 0; index < mPlayList.size(); index++) {
 				mNormalShuffleList.add(index);
 			}
-			Collections.shuffle(mNormalShuffleList);
+			Collections.shuffle(mNormalShuffleList, mRandom);
 			return true;
 		}
 		return false;
@@ -1344,7 +1346,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			int lookback = mHistory.size();
 			int idx;
 			do {
-				idx = mShuffler.nextInt(mAutoShuffleList.size() - 1);
+				idx = nextInt(mAutoShuffleList.size() - 1);
 				lookback /= 2;
 			} while (wasRecentlyUsed(idx, lookback));
 
@@ -1830,7 +1832,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				mShuffleMode = SHUFFLE_NORMAL;
 			}
 			long oldId = getAudioId();
-			mPlayPos = position >= 0 ? position : mShuffler.nextInt(mPlayList.size() - 1);
+			mPlayPos = position >= 0 ? position : nextInt(mPlayList.size() - 1);
 
 			boolean newlist = true;
 			if (mPlayList.size() == list.length) {
@@ -1958,6 +1960,28 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				notifyChange(META_CHANGED);
 			}
 		}
+	}
+
+	/**
+	 * @param interval The duration the queue
+	 * @return The position of the next track to play
+	 */
+	public int nextInt(int interval) {
+		int next;
+		do {
+			next = mRandom.nextInt(interval);
+		} while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
+		mPrevious = next;
+		mHistoryOfNumbers.add(mPrevious);
+		mPreviousNumbers.add(mPrevious);
+		// Removes old tracks and cleans up the history preparing for new tracks
+		// to be added to the mapping
+		if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MusicPlaybackService.MAX_HISTORY_SIZE) {
+			for (int i = 0; i < Math.max(1, MusicPlaybackService.MAX_HISTORY_SIZE / 2); i++) {
+				mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
+			}
+		}
+		return next;
 	}
 
 	/**

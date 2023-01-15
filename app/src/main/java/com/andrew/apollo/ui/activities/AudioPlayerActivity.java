@@ -309,10 +309,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	@Override
 	protected void onStop() {
-		super.onStop();
+		// Unregister the receiver
+		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
 		mImageFetcher.flush();
-
+		super.onStop();
 	}
 
 	/**
@@ -325,12 +326,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		// Unbind from the service
 		if (MusicUtils.isConnected()) {
 			MusicUtils.unbindFromService(mToken);
-		}
-		// Unregister the receiver
-		try {
-			unregisterReceiver(mPlaybackStatus);
-		} catch (Throwable e) {
-			e.printStackTrace();
 		}
 		mPagerAdapter.clear();
 		super.onDestroy();

@@ -38,7 +38,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	 */
 	private static final int BASS_STEPS = 20;
 
-	private SeekBar bassBoost,reverb;
+	private SeekBar bassBoost, reverb;
 
 	private EqualizerAdapter adapter;
 	private AudioEffects audioEffects;

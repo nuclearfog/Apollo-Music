@@ -277,11 +277,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Keeps a mapping of the track history
 	 */
-	private static List<Integer> mHistory = new LinkedList<>();
+	private LinkedList<Integer> mHistory = new LinkedList<>();
 	/**
 	 * current playlist containing track ID's
 	 */
-	private List<Long> mPlayList = new LinkedList<>();
+	private LinkedList<Long> mPlayList = new LinkedList<>();
 	/**
 	 * the values of this list points on indexes of {@link #mPlayList} which are randomly shuffled.
 	 * after finishing this list, the values will be shuffled again.
@@ -290,7 +290,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * current shuffle list contaning track ID's
 	 */
-	private List<Long> mAutoShuffleList = new LinkedList<>();
+	private ArrayList<Long> mAutoShuffleList = new ArrayList<>();
 
 	private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
 
@@ -318,15 +318,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * broadcast listener for unmounting external storage
 	 */
-	private BroadcastReceiver mUnmountReceiver = null;
+	private BroadcastReceiver mUnmountReceiver;
 	/**
 	 * The media player
 	 */
 	private MultiPlayer mPlayer;
-	/**
-	 * The path of the current file to play
-	 */
-	private String mFileToPlay;
 	/**
 	 * MediaSession to init media button support
 	 */
@@ -375,6 +371,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Nullable
 	private Cursor mAlbumCursor;
 	/**
+	 * used to distinguish between different cards when saving/restoring playlists
+	 */
+	private int mCardId;
+	/**
 	 * Used to know when the service is active
 	 */
 	private boolean mServiceInUse = false;
@@ -390,10 +390,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Used to track what type of audio focus loss caused the playback to pause
 	 */
 	private boolean mPausedByTransientLossOfFocus = false;
-	/**
-	 * used to distinguish between different cards when saving/restoring playlists
-	 */
-	private int mCardId;
 
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
@@ -568,7 +564,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		unregisterReceiver(mIntentReceiver);
 		if (mUnmountReceiver != null) {
 			unregisterReceiver(mUnmountReceiver);
-			mUnmountReceiver = null;
 		}
 		mNotificationHelper.cancelNotification();
 		super.onDestroy();
@@ -1033,7 +1028,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (mPlayer.isInitialized()) {
 			mPlayer.stop();
 		}
-		mFileToPlay = null;
 		closeCursor();
 		if (goToIdle) {
 			scheduleDelayedShutdown();
@@ -1245,7 +1239,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 				// clear old history entries when exceeding maximum capacity
 				if (mHistory.size() > MAX_HISTORY_SIZE) {
-					mHistory.remove(0);
+					mHistory.removeFirst();
 				}
 				// reset shuffle list after reaching the end or refreshing
 				if (mNormalShuffleList.size() != mPlayList.size() || mShuffleIndex < 0 || mShuffleIndex >= mNormalShuffleList.size()) {
@@ -1300,7 +1294,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					mAutoShuffleList.clear();
-					do {
+					mAutoShuffleList.ensureCapacity(cursor.getColumnCount());
+					do
+					{
 						long id = cursor.getLong(0);
 						mAutoShuffleList.add(id);
 					} while (cursor.moveToNext());
@@ -1336,28 +1332,25 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Creates the party shuffle playlist
 	 */
 	private void doAutoShuffleUpdate() {
-		boolean notify = false;
 		if (mPlayPos > 10) {
 			removeTracks(0, mPlayPos - 9);
-			notify = true;
+			notifyChange(QUEUE_CHANGED);
 		}
 		int toAdd = 7 - (mPlayList.size() - (mPlayPos < 0 ? -1 : mPlayPos));
 		for (int i = 0; i < toAdd; i++) {
 			int lookback = mHistory.size();
 			int idx;
-			do {
+			do
+			{
 				idx = nextInt(mAutoShuffleList.size() - 1);
 				lookback /= 2;
 			} while (wasRecentlyUsed(idx, lookback));
 
 			mHistory.add(idx);
 			if (mHistory.size() > MAX_HISTORY_SIZE) {
-				mHistory.remove(0);
+				mHistory.removeFirst();
 			}
 			mPlayList.add(mAutoShuffleList.get(idx));
-			notify = true;
-		}
-		if (notify) {
 			notifyChange(QUEUE_CHANGED);
 		}
 	}
@@ -1391,7 +1384,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			return;
 		}
 		stopForeground(true);
-		//mediaSession.abandonAudioFocus(this);
 		if (!mServiceInUse) {
 			saveQueue(true);
 			stopSelf(mServiceStartId);
@@ -1594,12 +1586,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 				if (mCursor != null && mCursor.moveToFirst()) {
 					id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
-					mPlayList.add(0, id);
+					mPlayList.addFirst(id);
 					mPlayPos = 0;
 				}
 			}
-			mFileToPlay = path;
-			mPlayer.setDataSource(mFileToPlay);
+			mPlayer.setDataSource(path);
 			if (mPlayer.isInitialized()) {
 				return true;
 			}
@@ -1866,7 +1857,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				if (histsize == 0) {
 					return;
 				}
-				mPlayPos = mHistory.remove(histsize - 1);
+				mPlayPos = mHistory.removeLast();
 			} else {
 				if (mPlayPos > 0) {
 					mPlayPos--;
@@ -1965,7 +1956,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public int nextInt(int interval) {
 		int next;
-		do {
+		do
+		{
 			next = mRandom.nextInt(interval);
 		} while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
 		mPrevious = next;

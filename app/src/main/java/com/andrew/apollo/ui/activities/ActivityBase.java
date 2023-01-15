@@ -58,8 +58,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection,
-		OnClickListener, OnQueryTextListener, PlayStatusListener {
+public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection, OnClickListener, OnQueryTextListener, PlayStatusListener {
 
 	/**
 	 * Playstate and meta change listener
@@ -212,8 +211,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 */
 	@Override
 	protected void onStop() {
-		super.onStop();
+		// Unregister the receiver
+		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
+		super.onStop();
 	}
 
 	/**
@@ -224,12 +225,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		// Unbind from the service
 		if (mToken != null) {
 			MusicUtils.unbindFromService(mToken);
-		}
-		// Unregister the receiver
-		try {
-			unregisterReceiver(mPlaybackStatus);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		// Remove any music status listeners
 		mMusicStateListener.clear();

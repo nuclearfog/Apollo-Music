@@ -624,6 +624,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * get LastFM API key
+	 *
 	 * @return API key string
 	 */
 	public String getApiKey() {

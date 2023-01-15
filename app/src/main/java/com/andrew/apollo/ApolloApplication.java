@@ -14,8 +14,14 @@ package com.andrew.apollo;
 import android.app.Application;
 import android.os.StrictMode;
 
+import androidx.annotation.NonNull;
+
 import com.andrew.apollo.cache.ImageCache;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ApolloApplication extends Application {
+public class ApolloApplication extends Application implements Thread.UncaughtExceptionHandler {
 
 	/**
 	 * {@inheritDoc}
@@ -40,6 +46,8 @@ public class ApolloApplication extends Application {
 		}
 		// Turn off logging for jaudiotagger.
 		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
+		// add error handler to write stacktrace to file
+		Thread.setDefaultUncaughtExceptionHandler(this);
 	}
 
 	/**
@@ -49,6 +57,28 @@ public class ApolloApplication extends Application {
 	public void onLowMemory() {
 		ImageCache.getInstance(this).evictAll();
 		super.onLowMemory();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+		try {
+			// write stacktrace file to cache folder
+			File outputFile = new File(getExternalCacheDir(), "stacktrace.txt");
+			FileOutputStream fos = new FileOutputStream(outputFile);
+			PrintStream ps = new PrintStream(fos);
+			e.printStackTrace(ps);
+		} catch (FileNotFoundException ex) {
+			// ignore
+		}
+		Thread.UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
+		if (oldHandler != null) {
+			oldHandler.uncaughtException(t, e);
+		} else {
+			System.exit(2);
+		}
 	}
 
 	/**

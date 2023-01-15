@@ -276,7 +276,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		invalidateOptionsMenu();
 		// Let the listener know to the meta changed
 		for (MusicStateListener listener : mMusicStateListener) {
-			if (listener != null) {
+			if (!listener.isDetached()) {
 				listener.onMetaChanged();
 			}
 		}
@@ -303,7 +303,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	public final void refresh() {
 		// Let the listener know to update a list
 		for (MusicStateListener listener : mMusicStateListener) {
-			if (listener != null) {
+			if (!listener.isDetached()) {
 				listener.restartLoader();
 			}
 		}
@@ -362,16 +362,21 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	/**
 	 * @param status The {@link MusicStateListener} to use
 	 */
-	public void setMusicStateListenerListener(MusicStateListener status) {
-		if (status != null) {
-			mMusicStateListener.add(status);
-		}
+	public void setMusicStateListenerListener(@NonNull MusicStateListener status) {
+		mMusicStateListener.add(status);
 	}
 
 	/**
 	 * Listens for playback changes to send the the fragments bound to this activity
 	 */
 	public interface MusicStateListener {
+
+		/**
+		 * check if (fragment) is detached
+		 *
+		 * @return true if detached
+		 */
+		boolean isDetached();
 
 		/**
 		 * Called when {@link MusicPlaybackService#REFRESH} is invoked
@@ -382,6 +387,5 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		 * Called when {@link MusicPlaybackService#META_CHANGED} is invoked
 		 */
 		void onMetaChanged();
-
 	}
 }

@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.ui.activities.ProfileActivity;
 import com.andrew.apollo.utils.ApolloUtils;
@@ -40,6 +39,8 @@ import java.util.List;
 public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
 	public static final String NAME = "PhotoSelectionDialog";
+
+	private static final String KEY_TITLE = "title";
 
 	private static final int IDX_NEW = 0;
 	private static final int IDX_OLD = 1;
@@ -60,7 +61,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 	public static PhotoSelectionDialog newInstance(String title, ProfileType type) {
 		PhotoSelectionDialog frag = new PhotoSelectionDialog();
 		Bundle args = new Bundle();
-		args.putString(Config.NAME, title);
+		args.putString(KEY_TITLE, title);
 		frag.setArguments(args);
 		mProfileType = type;
 		return frag;
@@ -105,7 +106,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				break;
 		}
 		// Dialog item Adapter
-		String title = getArguments() != null ? getArguments().getString(Config.NAME) : "";
+		String title = getArguments() != null ? getArguments().getString(KEY_TITLE, "") : "";
 		ListAdapter adapter = new ArrayAdapter<>(requireContext(), android.R.layout.select_dialog_item, mChoices);
 		return new AlertDialog.Builder(requireContext()).setTitle(title).setAdapter(adapter, this).create();
 	}

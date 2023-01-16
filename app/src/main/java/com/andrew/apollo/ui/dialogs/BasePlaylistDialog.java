@@ -16,6 +16,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -25,10 +26,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.andrew.apollo.R;
+import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 
 /**
@@ -97,11 +100,9 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 			if (which == Dialog.BUTTON_POSITIVE) {
 				onSaveClick();
 				MusicUtils.refresh();
-				dialog.dismiss();
 			} else if (which == Dialog.BUTTON_NEGATIVE) {
 				closeKeyboard();
 				MusicUtils.refresh();
-				dialog.dismiss();
 			}
 		}
 	}
@@ -136,6 +137,22 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 		if (iManager != null) {
 			iManager.hideSoftInputFromWindow(mPlaylist.getWindowToken(), 0);
 		}
+	}
+
+	/**
+	 * @return The name of the playlist
+	 */
+	@Nullable
+	protected String getPlaylistNameFromId(long id) {
+		Cursor cursor = CursorFactory.makePlaylistCursor(requireContext(), id);
+		String playlistName = null;
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				playlistName = cursor.getString(1);
+			}
+			cursor.close();
+		}
+		return playlistName;
 	}
 
 	/**

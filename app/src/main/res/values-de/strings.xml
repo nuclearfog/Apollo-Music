@@ -142,4 +142,7 @@
 	<string name="accessibility_switch_album_art">zum Albumcover umschalten</string>
 	<string name="accessibility_album_art">Albumcover</string>
 	<string name="label_reverb">Raumgröße</string>
+	<string name="context_menu_copy_playlist">Kopieren</string>
+	<string name="error_empty_playlistname">Playlistname leer!</string>
+	<string name="error_duplicate_playlistname">Playlistname existiert bereits!</string>
 </resources>

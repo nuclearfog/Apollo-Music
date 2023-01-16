@@ -915,7 +915,7 @@ public final class MusicUtils {
 	 * @param playlistId The playlist ID.
 	 */
 	@SuppressLint("InlinedApi")
-	public static void clearPlaylist(Context context, int playlistId) {
+	public static void clearPlaylist(Context context, long playlistId) {
 		Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
 		context.getContentResolver().delete(uri, null, null);
 	}

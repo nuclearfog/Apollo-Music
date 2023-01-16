@@ -55,6 +55,11 @@ public final class ContextMenuItems {
 	public static final int RENAME_PLAYLIST = 0xAFACA06E;
 
 	/**
+	 * Used to copy a playlist
+	 */
+	public static final int COPY_PLAYLIST = 0x146490AA;
+
+	/**
 	 * Used to add to a current playlist
 	 */
 	public static final int PLAYLIST_SELECTED = 0xC5A52C94;

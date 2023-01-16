@@ -49,6 +49,7 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PlaylistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.PlaylistLoader;
+import com.andrew.apollo.ui.dialogs.PlaylistCopyDialog;
 import com.andrew.apollo.utils.ContextMenuItems;
 import com.andrew.apollo.ui.dialogs.PlaylistRenameDialog;
 import com.andrew.apollo.model.Playlist;
@@ -168,6 +169,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 				if (!mPlaylist.isDefault()) {
 					// add options to edit playlist
 					menu.add(GROUP_ID, ContextMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
+					menu.add(GROUP_ID, ContextMenuItems.COPY_PLAYLIST, Menu.NONE, R.string.context_menu_copy_playlist);
 					menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 				}
 			}
@@ -221,6 +223,10 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 				case ContextMenuItems.RENAME_PLAYLIST:
 					PlaylistRenameDialog.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), PlaylistRenameDialog.NAME);
 					return true;
+
+				case ContextMenuItems.COPY_PLAYLIST:
+					PlaylistCopyDialog.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), PlaylistCopyDialog.NAME);
+					break;
 
 				case ContextMenuItems.DELETE:
 					String name = mPlaylist.getName();

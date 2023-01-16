@@ -12,19 +12,15 @@
 package com.andrew.apollo.ui.dialogs;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio.Playlists;
-
-import androidx.annotation.Nullable;
+import android.widget.Toast;
 
 import com.andrew.apollo.R;
-import com.andrew.apollo.utils.CursorFactory;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.StringUtils;
 
@@ -35,7 +31,11 @@ import com.andrew.apollo.utils.StringUtils;
  */
 public class PlaylistRenameDialog extends BasePlaylistDialog {
 
-	public static final String NAME = "PlaylistDialog";
+	public static final String NAME = "PlaylistRenameDialog";
+
+	private static final String KEY_ID = "rename-id";
+
+	private static final String KEY_DEFAULT_NAME = "defaultname";
 
 	/**
 	 * ID of the playlist to rename
@@ -46,10 +46,10 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	 * @param id The Id of the playlist to rename
 	 * @return A new instance of this dialog.
 	 */
-	public static PlaylistRenameDialog getInstance(Long id) {
+	public static PlaylistRenameDialog getInstance(long id) {
 		PlaylistRenameDialog frag = new PlaylistRenameDialog();
 		Bundle args = new Bundle();
-		args.putLong("rename", id);
+		args.putLong(KEY_ID, id);
 		frag.setArguments(args);
 		return frag;
 	}
@@ -59,8 +59,8 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle outcicle) {
-		outcicle.putString("defaultname", mPlaylist.getText().toString());
-		outcicle.putLong("rename", mRenameId);
+		outcicle.putString(KEY_DEFAULT_NAME, mPlaylist.getText().toString());
+		outcicle.putLong(KEY_ID, mRenameId);
 	}
 
 	/**
@@ -71,14 +71,14 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	public void initObjects(Bundle savedInstanceState) {
 		// get ID of the playlist to rename
 		if (savedInstanceState != null) {
-			mRenameId = savedInstanceState.getLong("rename");
+			mRenameId = savedInstanceState.getLong(KEY_ID);
 		} else if (getArguments() != null) {
-			mRenameId = getArguments().getLong("rename");
+			mRenameId = getArguments().getLong(KEY_ID);
 		}
 		// get playlist name
-		String mOriginalName = getPlaylistNameFromId();
+		String mOriginalName = getPlaylistNameFromId(mRenameId);
 		if (savedInstanceState != null) {
-			mDefaultname = savedInstanceState.getString("defaultname");
+			mDefaultname = savedInstanceState.getString(KEY_DEFAULT_NAME);
 		} else {
 			mDefaultname = mOriginalName;
 		}
@@ -97,7 +97,12 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	@Override
 	public void onSaveClick() {
 		String playlistName = mPlaylist.getText().toString();
-		if (!playlistName.isEmpty()) {
+		long id = MusicUtils.getIdForPlaylist(requireContext(), playlistName);
+		if (playlistName.isEmpty()) {
+			Toast.makeText(requireContext(), R.string.error_empty_playlistname, Toast.LENGTH_SHORT).show();
+		} else if (id >= 0) {
+			Toast.makeText(requireContext(), R.string.error_duplicate_playlistname, Toast.LENGTH_SHORT).show();
+		} else {
 			// seting new name
 			ContentValues values = new ContentValues(1);
 			values.put(Playlists.NAME, StringUtils.capitalize(playlistName));
@@ -105,11 +110,6 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mRenameId);
 			ContentResolver resolver = requireActivity().getContentResolver();
 			resolver.update(uri, values, null, null);
-			// close keyboard after dialog end
-			closeKeyboard();
-			if (getDialog() != null) {
-				getDialog().dismiss();
-			}
 		}
 	}
 
@@ -117,7 +117,6 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	@Override
 	public void onTextChangedListener() {
 		String playlistName = mPlaylist.getText().toString();
-		mSaveButton = mPlaylistDialog.getButton(Dialog.BUTTON_POSITIVE);
 		if (mSaveButton == null) {
 			return;
 		}
@@ -131,21 +130,5 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 				mSaveButton.setText(R.string.save);
 			}
 		}
-	}
-
-	/**
-	 * @return The name of the playlist
-	 */
-	@Nullable
-	private String getPlaylistNameFromId() {
-		Cursor cursor = CursorFactory.makePlaylistCursor(requireContext(), mRenameId);
-		String playlistName = null;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				playlistName = cursor.getString(1);
-			}
-			cursor.close();
-		}
-		return playlistName;
 	}
 }

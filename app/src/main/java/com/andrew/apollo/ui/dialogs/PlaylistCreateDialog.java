@@ -15,6 +15,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.utils.CursorFactory;
@@ -31,6 +32,10 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "CreatePlaylist";
 
+	private static final String KEY_LIST = "playlist_list";
+
+	private static final String KEY_DEFAULT_NAME = "defaultname";
+
 	// The playlist list
 	private long[] mPlaylistList = {};
 
@@ -41,7 +46,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	public static PlaylistCreateDialog getInstance(long[] list) {
 		PlaylistCreateDialog frag = new PlaylistCreateDialog();
 		Bundle args = new Bundle();
-		args.putLongArray("playlist_list", list);
+		args.putLongArray(KEY_LIST, list);
 		frag.setArguments(args);
 		return frag;
 	}
@@ -51,7 +56,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle outcicle) {
-		outcicle.putString("defaultname", mPlaylist.getText().toString());
+		outcicle.putString(KEY_DEFAULT_NAME, mPlaylist.getText().toString());
 	}
 
 	/**
@@ -61,13 +66,13 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	@Override
 	public void initObjects(Bundle savedInstanceState) {
 		if (getArguments() != null) {
-			long[] mPlaylistList = getArguments().getLongArray("playlist_list");
+			long[] mPlaylistList = getArguments().getLongArray(KEY_LIST);
 			if (mPlaylistList != null) {
 				this.mPlaylistList = mPlaylistList;
 			}
 		}
 		if (savedInstanceState != null) {
-			mDefaultname = savedInstanceState.getString("defaultname");
+			mDefaultname = savedInstanceState.getString(KEY_DEFAULT_NAME);
 		} else {
 			mDefaultname = makePlaylistName();
 		}
@@ -81,24 +86,25 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	/**
 	 * {@inheritDoc}
+	 * @return
 	 */
 	@Override
 	public void onSaveClick() {
-		String playlistName = mPlaylist.getText().toString();
-		if (playlistName.length() > 0) {
-			int playlistId = (int) MusicUtils.getIdForPlaylist(requireContext(), playlistName);
-			if (playlistId >= 0) {
+		if (mPlaylist.length() > 0) {
+			String playlistName = mPlaylist.getText().toString();
+			long playlistId = MusicUtils.getIdForPlaylist(requireContext(), playlistName);
+			if (playlistId >= 0L) {
+				// save to existing playlist
+				// fixme scoped storage does not allow modifying foreign playlists
 				MusicUtils.clearPlaylist(requireContext(), playlistId);
 				MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, playlistId);
 			} else {
-				long newId = MusicUtils.createPlaylist(requireContext(),
-						StringUtils.capitalize(playlistName));
+				// create new playlist
+				long newId = MusicUtils.createPlaylist(requireContext(), StringUtils.capitalize(playlistName));
 				MusicUtils.addToPlaylist(requireActivity(), mPlaylistList, newId);
 			}
-			closeKeyboard();
-			if (getDialog() != null) {
-				getDialog().dismiss();
-			}
+		} else {
+			Toast.makeText(requireContext(), R.string.error_empty_playlistname, Toast.LENGTH_SHORT).show();
 		}
 	}
 

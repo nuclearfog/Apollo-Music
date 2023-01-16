@@ -31,8 +31,8 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAlbumAdapter;
 import com.andrew.apollo.loaders.ArtistAlbumLoader;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.CreateNewPlaylist;
+import com.andrew.apollo.utils.ContextMenuItems;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
 import com.andrew.apollo.utils.MusicUtils;
@@ -166,7 +166,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(mAlbumList).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
+					PlaylistCreateDialog.getInstance(mAlbumList).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

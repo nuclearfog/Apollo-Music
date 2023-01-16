@@ -1,16 +1,16 @@
 package com.andrew.apollo.ui.fragments.profile;
 
 import static com.andrew.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
-import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_FAVORITES;
-import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_PLAYLIST;
-import static com.andrew.apollo.menu.ContextMenuItems.ADD_TO_QUEUE;
-import static com.andrew.apollo.menu.ContextMenuItems.DELETE;
-import static com.andrew.apollo.menu.ContextMenuItems.MORE_BY_ARTIST;
-import static com.andrew.apollo.menu.ContextMenuItems.NEW_PLAYLIST;
-import static com.andrew.apollo.menu.ContextMenuItems.PLAYLIST_SELECTED;
-import static com.andrew.apollo.menu.ContextMenuItems.PLAY_NEXT;
-import static com.andrew.apollo.menu.ContextMenuItems.PLAY_SELECTION;
-import static com.andrew.apollo.menu.ContextMenuItems.USE_AS_RINGTONE;
+import static com.andrew.apollo.utils.ContextMenuItems.ADD_TO_FAVORITES;
+import static com.andrew.apollo.utils.ContextMenuItems.ADD_TO_PLAYLIST;
+import static com.andrew.apollo.utils.ContextMenuItems.ADD_TO_QUEUE;
+import static com.andrew.apollo.utils.ContextMenuItems.DELETE;
+import static com.andrew.apollo.utils.ContextMenuItems.MORE_BY_ARTIST;
+import static com.andrew.apollo.utils.ContextMenuItems.NEW_PLAYLIST;
+import static com.andrew.apollo.utils.ContextMenuItems.PLAYLIST_SELECTED;
+import static com.andrew.apollo.utils.ContextMenuItems.PLAY_NEXT;
+import static com.andrew.apollo.utils.ContextMenuItems.PLAY_SELECTION;
+import static com.andrew.apollo.utils.ContextMenuItems.USE_AS_RINGTONE;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -30,7 +30,7 @@ import androidx.loader.content.Loader;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ProfileSongAdapter;
 import com.andrew.apollo.loaders.FolderSongLoader;
-import com.andrew.apollo.menu.CreateNewPlaylist;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.utils.MusicUtils;
@@ -146,7 +146,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 					return true;
 
 				case NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(ids).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
+					PlaylistCreateDialog.getInstance(ids).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
 				case PLAYLIST_SELECTED:

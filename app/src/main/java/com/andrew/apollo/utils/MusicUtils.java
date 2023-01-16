@@ -48,9 +48,8 @@ import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.loaders.NowPlayingCursor;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.CreateNewPlaylist;
-import com.andrew.apollo.menu.DeleteDialog;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
+import com.andrew.apollo.ui.dialogs.DeleteDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.player.AudioEffects;
 import com.andrew.apollo.provider.FavoritesStore;
@@ -1652,7 +1651,7 @@ public final class MusicUtils {
 					public void run() {
 						FragmentActivity activity = QueueWorker.this.activity.get();
 						if (activity != null) {
-							CreateNewPlaylist.getInstance(ids).show(activity.getSupportFragmentManager(), CreateNewPlaylist.NAME);
+							PlaylistCreateDialog.getInstance(ids).show(activity.getSupportFragmentManager(), PlaylistCreateDialog.NAME);
 						}
 					}
 				});

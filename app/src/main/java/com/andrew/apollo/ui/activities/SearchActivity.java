@@ -40,8 +40,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SearchAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.MusicSearchLoader;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.CreateNewPlaylist;
+import com.andrew.apollo.utils.ContextMenuItems;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Album;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.model.Music;
@@ -241,7 +241,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 				return true;
 
 			case ContextMenuItems.ADD_TO_PLAYLIST:
-				CreateNewPlaylist.getInstance(ids).show(getSupportFragmentManager(), CreateNewPlaylist.NAME);
+				PlaylistCreateDialog.getInstance(ids).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
 				return true;
 
 			case ContextMenuItems.DELETE:

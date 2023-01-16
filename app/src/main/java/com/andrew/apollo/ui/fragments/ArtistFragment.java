@@ -42,8 +42,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.ArtistLoader;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.CreateNewPlaylist;
+import com.andrew.apollo.utils.ContextMenuItems;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Artist;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
@@ -217,7 +217,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(mArtistList).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
+					PlaylistCreateDialog.getInstance(mArtistList).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

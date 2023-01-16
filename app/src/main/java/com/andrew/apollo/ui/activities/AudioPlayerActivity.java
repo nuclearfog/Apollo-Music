@@ -61,7 +61,7 @@ import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.cache.ImageFetcher;
-import com.andrew.apollo.menu.DeleteDialog.DeleteDialogCallback;
+import com.andrew.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
 import com.andrew.apollo.receiver.PlaybackStatus;
 import com.andrew.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import com.andrew.apollo.ui.fragments.FragmentCallback;

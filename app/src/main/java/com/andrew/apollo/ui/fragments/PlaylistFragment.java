@@ -49,8 +49,8 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PlaylistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.PlaylistLoader;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.RenamePlaylist;
+import com.andrew.apollo.utils.ContextMenuItems;
+import com.andrew.apollo.ui.dialogs.PlaylistRenameDialog;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
@@ -219,7 +219,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 					return true;
 
 				case ContextMenuItems.RENAME_PLAYLIST:
-					RenamePlaylist.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), RenamePlaylist.NAME);
+					PlaylistRenameDialog.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), PlaylistRenameDialog.NAME);
 					return true;
 
 				case ContextMenuItems.DELETE:

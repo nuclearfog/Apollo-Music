@@ -39,8 +39,8 @@ import com.andrew.apollo.adapters.SongAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.NowPlayingCursor;
 import com.andrew.apollo.loaders.QueueLoader;
-import com.andrew.apollo.menu.ContextMenuItems;
-import com.andrew.apollo.menu.CreateNewPlaylist;
+import com.andrew.apollo.utils.ContextMenuItems;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView;
@@ -224,7 +224,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					CreateNewPlaylist.getInstance(trackId).show(getParentFragmentManager(), CreateNewPlaylist.NAME);
+					PlaylistCreateDialog.getInstance(trackId).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

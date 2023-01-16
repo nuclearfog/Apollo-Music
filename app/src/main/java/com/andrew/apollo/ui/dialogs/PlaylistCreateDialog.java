@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.menu;
+package com.andrew.apollo.ui.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -27,7 +27,7 @@ import com.andrew.apollo.utils.StringUtils;
  * actions, but it really needs to work either way. As in, capitalized
  * or not.
  */
-public class CreateNewPlaylist extends BasePlaylistDialog {
+public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "CreatePlaylist";
 
@@ -38,8 +38,8 @@ public class CreateNewPlaylist extends BasePlaylistDialog {
 	 * @param list The list of tracks to add to the playlist
 	 * @return A new instance of this dialog.
 	 */
-	public static CreateNewPlaylist getInstance(long[] list) {
-		CreateNewPlaylist frag = new CreateNewPlaylist();
+	public static PlaylistCreateDialog getInstance(long[] list) {
+		PlaylistCreateDialog frag = new PlaylistCreateDialog();
 		Bundle args = new Bundle();
 		args.putLongArray("playlist_list", list);
 		frag.setArguments(args);

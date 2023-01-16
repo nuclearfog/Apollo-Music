@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.menu;
+package com.andrew.apollo.utils;
 
 /**
  * Several of the context menu items used in Apollo are reused. This class helps

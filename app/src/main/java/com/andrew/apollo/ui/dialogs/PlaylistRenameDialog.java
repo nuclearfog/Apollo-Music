@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.andrew.apollo.menu;
+package com.andrew.apollo.ui.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -33,9 +33,9 @@ import com.andrew.apollo.utils.StringUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RenamePlaylist extends BasePlaylistDialog {
+public class PlaylistRenameDialog extends BasePlaylistDialog {
 
-	public static final String NAME = "RenameDialog";
+	public static final String NAME = "PlaylistDialog";
 
 	/**
 	 * ID of the playlist to rename
@@ -46,8 +46,8 @@ public class RenamePlaylist extends BasePlaylistDialog {
 	 * @param id The Id of the playlist to rename
 	 * @return A new instance of this dialog.
 	 */
-	public static RenamePlaylist getInstance(Long id) {
-		RenamePlaylist frag = new RenamePlaylist();
+	public static PlaylistRenameDialog getInstance(Long id) {
+		PlaylistRenameDialog frag = new PlaylistRenameDialog();
 		Bundle args = new Bundle();
 		args.putLong("rename", id);
 		frag.setArguments(args);

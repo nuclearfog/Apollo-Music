@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">সব অদলবদল</string>
 	<string name="menu_play_all">সবগুলো প্লে করুন</string>
 	<string name="menu_sort_by">ক্রমানুসারে</string>
-	<string name="menu_shop">থিমের জন্যে দোকান</string>
 	<string name="menu_clear_queue">সারি পরিষ্কার করুন</string>
 	<string name="menu_save_queue">সারি সংরক্ষণ করুন</string>
 	<string name="menu_share">শেয়ার</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">মুছুন</string>
 	<string name="context_menu_fetch_album_art">এলবাম কলাকৌশল পান</string>
 	<string name="context_menu_fetch_artist_image">শিল্পীর ছবি পান</string>
-	<string name="context_menu_open_in_play_store">প্লে-স্টোরে খুলুন</string>
 	<string name="context_menu_remove_from_recent">সাম্প্রতিক থেকে অপসারণ করুন</string>
 	<string name="context_menu_use_as_ringtone">রিংটোন হিসেবে ব্যবহার করুন</string>
 	<string name="context_menu_remove_from_playlist">প্লে-তালিকা থেকে অপসারণ করুন</string>

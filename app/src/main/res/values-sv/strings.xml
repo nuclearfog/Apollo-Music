@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Blanda alla</string>
 	<string name="menu_play_all">Spela alla</string>
 	<string name="menu_sort_by">Sortera efter</string>
-	<string name="menu_shop">Fler teman</string>
 	<string name="menu_clear_queue">Rensa kö</string>
 	<string name="menu_save_queue">Spara kö</string>
 	<string name="menu_share">Dela</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Ta bort</string>
 	<string name="context_menu_fetch_album_art">Hämta albumomslag</string>
 	<string name="context_menu_fetch_artist_image">Hämta artistbild</string>
-	<string name="context_menu_open_in_play_store">Öppna i Play Butik</string>
 	<string name="context_menu_remove_from_recent">Ta bort från Nya</string>
 	<string name="context_menu_use_as_ringtone">Använd som ringsignal</string>
 	<string name="context_menu_remove_from_playlist">Ta bort från spellista</string>

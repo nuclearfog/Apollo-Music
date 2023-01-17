@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Перемішати</string>
 	<string name="menu_play_all">Грати все</string>
 	<string name="menu_sort_by">Сортувати по</string>
-	<string name="menu_shop">Теми</string>
 	<string name="menu_clear_queue">Очистити чергу</string>
 	<string name="menu_save_queue">Зберегти чергу</string>
 	<string name="menu_share">Поділитись</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Видалити</string>
 	<string name="context_menu_fetch_album_art">Отримати обкладинку</string>
 	<string name="context_menu_fetch_artist_image">Отримати фото виконавця</string>
-	<string name="context_menu_open_in_play_store">Відкрити у магазині Play</string>
 	<string name="context_menu_remove_from_recent">Видалити з недавніх</string>
 	<string name="context_menu_use_as_ringtone">Встановити як дзвінок</string>
 	<string name="context_menu_remove_from_playlist">Видалити з плейлиста</string>

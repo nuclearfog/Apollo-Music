@@ -81,7 +81,7 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 			Toast.makeText(requireContext(), R.string.error_empty_playlistname, Toast.LENGTH_SHORT).show();
 		} else if (id >= 0) {
 			Toast.makeText(requireContext(), R.string.error_duplicate_playlistname, Toast.LENGTH_SHORT).show();
-		} else  {
+		} else {
 			long newId = MusicUtils.createPlaylist(requireContext(), StringUtils.capitalize(playlistName));
 			long[] songIds = MusicUtils.getSongListForPlaylist(requireContext(), copyId);
 			MusicUtils.addToPlaylist(requireActivity(), songIds, newId);

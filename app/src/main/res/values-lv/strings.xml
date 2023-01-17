@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Jaukt visu</string>
 	<string name="menu_play_all">Atskaņot visu</string>
 	<string name="menu_sort_by">Kārtot pēc</string>
-	<string name="menu_shop">Iegādāties apdares</string>
 	<string name="menu_clear_queue">Notīrīt rindu</string>
 	<string name="menu_save_queue">Saglabāt rindu</string>
 	<string name="menu_share">Kopīgot</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Izdzēst</string>
 	<string name="context_menu_fetch_album_art">Ielādēt albuma vāku</string>
 	<string name="context_menu_fetch_artist_image">Ielādēt izpildītaja bildi</string>
-	<string name="context_menu_open_in_play_store">Atvērt Play veikalā</string>
 	<string name="context_menu_remove_from_recent">Noņemt no nesenajiem</string>
 	<string name="context_menu_use_as_ringtone">Izmantot kā zvana signālu</string>
 	<string name="context_menu_remove_from_playlist">Izdzēst no atskaņošanas saraksta</string>

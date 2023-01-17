@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">全部隨機播放</string>
 	<string name="menu_play_all">全部播放</string>
 	<string name="menu_sort_by">排序</string>
-	<string name="menu_shop">購買主題</string>
 	<string name="menu_clear_queue">清除隊列</string>
 	<string name="menu_save_queue">儲存隊列</string>
 	<string name="menu_share">分享</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">刪除</string>
 	<string name="context_menu_fetch_album_art">取得專輯封面</string>
 	<string name="context_menu_fetch_artist_image">取得演出者影像</string>
-	<string name="context_menu_open_in_play_store">在 Play 商店中開啟</string>
 	<string name="context_menu_remove_from_recent">從最近播放移除</string>
 	<string name="context_menu_use_as_ringtone">設為鈴聲</string>
 	<string name="context_menu_remove_from_playlist">從播放清單移除</string>

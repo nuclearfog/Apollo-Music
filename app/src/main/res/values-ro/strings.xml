@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Amestecă tot</string>
 	<string name="menu_play_all">Redă tot</string>
 	<string name="menu_sort_by">Sortare după</string>
-	<string name="menu_shop">Magazin pentru teme</string>
 	<string name="menu_clear_queue">Curăță coada</string>
 	<string name="menu_save_queue">Salvare în așteptare</string>
 	<string name="menu_share">Distribuie</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Șterge</string>
 	<string name="context_menu_fetch_album_art">Obține coperta albumului</string>
 	<string name="context_menu_fetch_artist_image">Obține coperta artistului</string>
-	<string name="context_menu_open_in_play_store">Deschide în Magazinul Play</string>
 	<string name="context_menu_remove_from_recent">Elimină din recente</string>
 	<string name="context_menu_use_as_ringtone">Folosește ca ton de apel</string>
 	<string name="context_menu_remove_from_playlist">Elimină din lista de redare</string>

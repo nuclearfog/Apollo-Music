@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Prehrať všetky náhodne</string>
 	<string name="menu_play_all">Prehrať všetky</string>
 	<string name="menu_sort_by">Zoradiť podľa</string>
-	<string name="menu_shop">Obchod s témami</string>
 	<string name="menu_clear_queue">Vyčistiť poradie</string>
 	<string name="menu_save_queue">Uložiť poradie</string>
 	<string name="menu_share">Zdieľať</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Vymazať</string>
 	<string name="context_menu_fetch_album_art">Stiahnuť obrázok albumu</string>
 	<string name="context_menu_fetch_artist_image">Stiahnuť obrázok interpreta</string>
-	<string name="context_menu_open_in_play_store">Otvoriť v Obchode Play</string>
 	<string name="context_menu_remove_from_recent">Odstrániť z nedávnych</string>
 	<string name="context_menu_use_as_ringtone">Použiť ako vyzváňanie</string>
 	<string name="context_menu_remove_from_playlist">Odstrániť zo zoznamu skladieb</string>

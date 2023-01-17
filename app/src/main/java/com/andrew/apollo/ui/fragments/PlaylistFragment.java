@@ -49,13 +49,13 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PlaylistAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.PlaylistLoader;
-import com.andrew.apollo.ui.dialogs.PlaylistCopyDialog;
-import com.andrew.apollo.utils.ContextMenuItems;
-import com.andrew.apollo.ui.dialogs.PlaylistRenameDialog;
 import com.andrew.apollo.model.Playlist;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
 import com.andrew.apollo.ui.activities.ProfileActivity;
+import com.andrew.apollo.ui.dialogs.PlaylistCopyDialog;
+import com.andrew.apollo.ui.dialogs.PlaylistRenameDialog;
+import com.andrew.apollo.utils.ContextMenuItems;
 import com.andrew.apollo.utils.MusicUtils;
 
 import java.util.List;

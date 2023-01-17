@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Reproducción aleatoria</string>
 	<string name="menu_play_all">Reproducir too</string>
 	<string name="menu_sort_by">Ordenar por</string>
-	<string name="menu_shop">Descargar temes</string>
 	<string name="menu_clear_queue">Desaniciar cola</string>
 	<string name="menu_save_queue">Guardar cola</string>
 	<string name="menu_share">Compartir</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Desaniciar</string>
 	<string name="context_menu_fetch_album_art">Obtener carátula del álbum</string>
 	<string name="context_menu_fetch_artist_image">Obtener semeya del artista</string>
-	<string name="context_menu_open_in_play_store">Abrir en Play Store</string>
 	<string name="context_menu_remove_from_recent">Quitar de recientes</string>
 	<string name="context_menu_use_as_ringtone">Usar como tonu</string>
 	<string name="context_menu_remove_from_playlist">Quitar de la llista</string>

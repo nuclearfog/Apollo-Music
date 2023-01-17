@@ -86,6 +86,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @return
 	 */
 	@Override

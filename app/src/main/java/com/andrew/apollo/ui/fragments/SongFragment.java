@@ -37,12 +37,12 @@ import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.SongAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.SongLoader;
-import com.andrew.apollo.utils.ContextMenuItems;
-import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.ui.activities.ActivityBase;
 import com.andrew.apollo.ui.activities.ActivityBase.MusicStateListener;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
+import com.andrew.apollo.utils.ContextMenuItems;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 

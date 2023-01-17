@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">All zoufälleg ofspillen</string>
 	<string name="menu_play_all">All ofspillen</string>
 	<string name="menu_sort_by">Zortéieren no</string>
-	<string name="menu_shop">Designe kafen</string>
 	<string name="menu_clear_queue">Waardeschlaang eidel maachen</string>
 	<string name="menu_save_queue">Waardeschlaang späicheren</string>
 	<string name="menu_share">Deelen</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Läschen</string>
 	<string name="context_menu_fetch_album_art">Album-Cover eroflueden</string>
 	<string name="context_menu_fetch_artist_image">Interpretebild eroflueden</string>
-	<string name="context_menu_open_in_play_store">Am Play-Store opmaachen</string>
 	<string name="context_menu_remove_from_recent">Aus der \"viru kuerzem gelauschtert\" Lëscht läschen</string>
 	<string name="context_menu_use_as_ringtone">Als Schelltoun benotzen</string>
 	<string name="context_menu_remove_from_playlist">Aus der Ofspilllëscht läschen</string>

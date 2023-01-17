@@ -48,13 +48,13 @@ import com.andrew.apollo.IApolloService;
 import com.andrew.apollo.MusicPlaybackService;
 import com.andrew.apollo.R;
 import com.andrew.apollo.loaders.NowPlayingCursor;
-import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
-import com.andrew.apollo.ui.dialogs.DeleteDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.player.AudioEffects;
 import com.andrew.apollo.provider.FavoritesStore;
 import com.andrew.apollo.provider.PopularStore;
 import com.andrew.apollo.provider.RecentStore;
+import com.andrew.apollo.ui.dialogs.DeleteDialog;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.devspark.appmsg.AppMsg;
 
 import java.io.File;

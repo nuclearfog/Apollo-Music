@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Alles shufflen</string>
 	<string name="menu_play_all">Alles afspelen</string>
 	<string name="menu_sort_by">Sorteren op</string>
-	<string name="menu_shop">Zoeken naar thema\'s</string>
 	<string name="menu_clear_queue">Wachtrij wissen</string>
 	<string name="menu_save_queue">Wachtrij opslaan</string>
 	<string name="menu_share">Delen</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Verwijderen</string>
 	<string name="context_menu_fetch_album_art">Albumhoes ophalen</string>
 	<string name="context_menu_fetch_artist_image">Artiestenafbeelding ophalen</string>
-	<string name="context_menu_open_in_play_store">Openen in Play Store</string>
 	<string name="context_menu_remove_from_recent">Verwijderen uit recente</string>
 	<string name="context_menu_use_as_ringtone">Gebruiken als beltoon</string>
 	<string name="context_menu_remove_from_playlist">Verwijderen uit afspeellijst</string>

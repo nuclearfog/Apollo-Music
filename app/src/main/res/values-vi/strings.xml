@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Phát ngẫu nhiên tất cả</string>
 	<string name="menu_play_all">Phát tất cả</string>
 	<string name="menu_sort_by">Xếp theo</string>
-	<string name="menu_shop">Mua chủ đề</string>
 	<string name="menu_clear_queue">Xoá danh sách chờ</string>
 	<string name="menu_save_queue">Lưu danh sách chờ</string>
 	<string name="menu_share">Chia sẻ</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Xoá</string>
 	<string name="context_menu_fetch_album_art">Tải ảnh bìa album</string>
 	<string name="context_menu_fetch_artist_image">Tải ảnh nghệ sĩ</string>
-	<string name="context_menu_open_in_play_store">Mở trong CH Play</string>
 	<string name="context_menu_remove_from_recent">Xoá khỏi danh sách vừa nghe</string>
 	<string name="context_menu_use_as_ringtone">Dùng làm nhạc chuông</string>
 	<string name="context_menu_remove_from_playlist">Xoá khỏi danh sách</string>

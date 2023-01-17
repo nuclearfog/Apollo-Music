@@ -39,14 +39,14 @@ import com.andrew.apollo.adapters.SongAdapter;
 import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.loaders.NowPlayingCursor;
 import com.andrew.apollo.loaders.QueueLoader;
-import com.andrew.apollo.utils.ContextMenuItems;
-import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Song;
 import com.andrew.apollo.provider.FavoritesStore;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import com.andrew.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import com.andrew.apollo.utils.ContextMenuItems;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 

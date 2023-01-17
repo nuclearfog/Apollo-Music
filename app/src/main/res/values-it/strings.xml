@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Riproduzione casuale</string>
 	<string name="menu_play_all">Riproduci tutti</string>
 	<string name="menu_sort_by">Ordina per</string>
-	<string name="menu_shop">Negozio temi</string>
 	<string name="menu_clear_queue">Elimina coda</string>
 	<string name="menu_save_queue">Salva coda</string>
 	<string name="menu_share">Condividi</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Elimina</string>
 	<string name="context_menu_fetch_album_art">Recupera copertina album</string>
 	<string name="context_menu_fetch_artist_image">Recupera immagine artista</string>
-	<string name="context_menu_open_in_play_store">Apri in Play Store</string>
 	<string name="context_menu_remove_from_recent">Rimuovi dai recenti</string>
 	<string name="context_menu_use_as_ringtone">Usa come suoneria</string>
 	<string name="context_menu_remove_from_playlist">Rimuovi dalla playlist</string>

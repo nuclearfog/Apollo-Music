@@ -31,10 +31,10 @@ import com.andrew.apollo.Config;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.ArtistAlbumAdapter;
 import com.andrew.apollo.loaders.ArtistAlbumLoader;
-import com.andrew.apollo.utils.ContextMenuItems;
-import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.model.Album;
+import com.andrew.apollo.ui.dialogs.PlaylistCreateDialog;
 import com.andrew.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
+import com.andrew.apollo.utils.ContextMenuItems;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.NavUtils;
 

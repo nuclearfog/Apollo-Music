@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Véletlen sorrend</string>
 	<string name="menu_play_all">Összes lejátszása</string>
 	<string name="menu_sort_by">Rendezés</string>
-	<string name="menu_shop">Témák keresése</string>
 	<string name="menu_clear_queue">Lejátszási sor törlése</string>
 	<string name="menu_save_queue">Lejátszási sor elmentése</string>
 	<string name="menu_share">Megosztás</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Törlés</string>
 	<string name="context_menu_fetch_album_art">Albumborító betöltése</string>
 	<string name="context_menu_fetch_artist_image">Előadó képének betöltése</string>
-	<string name="context_menu_open_in_play_store">Megnyitás Play Áruházban</string>
 	<string name="context_menu_remove_from_recent">Törlés az előzményekből</string>
 	<string name="context_menu_use_as_ringtone">Beállítás csengőhangként</string>
 	<string name="context_menu_remove_from_playlist">Eltávolítás a lejátszási listából</string>

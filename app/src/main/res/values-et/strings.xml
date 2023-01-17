@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Juhuesita kõik</string>
 	<string name="menu_play_all">Esita kõik</string>
 	<string name="menu_sort_by">Sorteeri</string>
-	<string name="menu_shop">Külasta teemapoodi</string>
 	<string name="menu_clear_queue">Kustuta järjekord</string>
 	<string name="menu_save_queue">Salvesta järjekord</string>
 	<string name="menu_share">Jaga</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Kustuta</string>
 	<string name="context_menu_fetch_album_art">Lae albumipildid</string>
 	<string name="context_menu_fetch_artist_image">Tõmba artisti pilt</string>
-	<string name="context_menu_open_in_play_store">Ava Play poes</string>
 	<string name="context_menu_remove_from_recent">Eemalda hiljutistest</string>
 	<string name="context_menu_use_as_ringtone">Kasuta telefoni helinana</string>
 	<string name="context_menu_remove_from_playlist">Eemalda esitusloendist</string>

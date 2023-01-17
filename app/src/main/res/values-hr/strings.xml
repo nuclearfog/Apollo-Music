@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Miješaj sve</string>
 	<string name="menu_play_all">Sviraj sve</string>
 	<string name="menu_sort_by">Sortiraj po</string>
-	<string name="menu_shop">Trgovina za teme</string>
 	<string name="menu_clear_queue">Očisti red</string>
 	<string name="menu_save_queue">Spremi red</string>
 	<string name="menu_share">Dijeli</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Obriši</string>
 	<string name="context_menu_fetch_album_art">Dobavi fotografiju albuma</string>
 	<string name="context_menu_fetch_artist_image">Dobavi fotografiju izvođača</string>
-	<string name="context_menu_open_in_play_store">Otvori u play trgovini</string>
 	<string name="context_menu_remove_from_recent">Izbriši iz nedavnih</string>
 	<string name="context_menu_use_as_ringtone">Koristi kao melodiju zvona</string>
 	<string name="context_menu_remove_from_playlist">Obriši iz playliste</string>

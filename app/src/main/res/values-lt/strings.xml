@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Maišyti viską</string>
 	<string name="menu_play_all">Paleisti viską</string>
 	<string name="menu_sort_by">Rūšiuoti pagal</string>
-	<string name="menu_shop">Temų parduotuvė</string>
 	<string name="menu_clear_queue">Išvalyti eilę</string>
 	<string name="menu_save_queue">Išsaugti eilę</string>
 	<string name="menu_share">Bendrinti</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Ištrinti</string>
 	<string name="context_menu_fetch_album_art">Atsisiųsti albumo viršelį</string>
 	<string name="context_menu_fetch_artist_image">Atsisiųsti artisto vaizdą</string>
-	<string name="context_menu_open_in_play_store">Atidaryti „Play“ parduotuvę</string>
 	<string name="context_menu_remove_from_recent">Pašalinti iš naujų</string>
 	<string name="context_menu_use_as_ringtone">Naudoti kaip skambėjimo toną</string>
 	<string name="context_menu_remove_from_playlist">Pašalinti iš grojaraščio</string>

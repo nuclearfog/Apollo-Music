@@ -12,10 +12,8 @@
 package com.andrew.apollo.ui.activities;
 
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.andrew.apollo.R;
@@ -56,22 +54,9 @@ public class ThemesActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-		getMenuInflater().inflate(R.menu.theme_shop, menu);
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
 			finish();
-			return true;
-		} else if (item.getItemId() == R.id.menu_shop) {
-			ThemeUtils utils = new ThemeUtils(this);
-			utils.shopFor(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

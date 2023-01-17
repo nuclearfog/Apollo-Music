@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">모두 임의 재생</string>
 	<string name="menu_play_all">모두 재생</string>
 	<string name="menu_sort_by">정렬</string>
-	<string name="menu_shop">테마 샵</string>
 	<string name="menu_clear_queue">대기목록 비우기</string>
 	<string name="menu_save_queue">대기목록 저장</string>
 	<string name="menu_share">공유</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">삭제</string>
 	<string name="context_menu_fetch_album_art">앨범 아트 받아오기</string>
 	<string name="context_menu_fetch_artist_image">아티스트 이미지 받아오기</string>
-	<string name="context_menu_open_in_play_store">Play 스토어에서 열기</string>
 	<string name="context_menu_remove_from_recent">최근 목록에서 제거</string>
 	<string name="context_menu_use_as_ringtone">벨소리로 지정</string>
 	<string name="context_menu_remove_from_playlist">재생목록에서 제거</string>

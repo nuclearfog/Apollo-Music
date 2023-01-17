@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Τυχαία αναπαραγωγή όλων</string>
 	<string name="menu_play_all">Αναπαραγωγή όλων</string>
 	<string name="menu_sort_by">Ταξινόμηση κατά</string>
-	<string name="menu_shop">Κατάστημα για θέματα</string>
 	<string name="menu_clear_queue">Εκκαθάριση ουράς</string>
 	<string name="menu_save_queue">Αποθήκευση ουράς</string>
 	<string name="menu_share">Κοινή χρήση</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Διαγραφή</string>
 	<string name="context_menu_fetch_album_art">Λήψη εξώφυλλου άλμπουμ</string>
 	<string name="context_menu_fetch_artist_image">Λήψη εικόνας καλλιτέχνη</string>
-	<string name="context_menu_open_in_play_store">Άνοιγμα στο Play Store</string>
 	<string name="context_menu_remove_from_recent">Αφαίρεση από πρόσφατα</string>
 	<string name="context_menu_use_as_ringtone">Χρήση ως ήχος κλήσης</string>
 	<string name="context_menu_remove_from_playlist">Αφαίρεση από τη λίστα</string>

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ApolloApplication extends Application implements Thread.UncaughtExceptionHandler {
+public class ApolloApplication extends Application implements UncaughtExceptionHandler {
 
 	/**
 	 * {@inheritDoc}
@@ -42,7 +43,7 @@ public class ApolloApplication extends Application implements Thread.UncaughtExc
 		super.onCreate();
 		// Enable strict mode logging
 		if (BuildConfig.DEBUG) {
-			//enableStrictMode();
+			enableStrictMode();
 		}
 		// Turn off logging for jaudiotagger.
 		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
@@ -64,8 +65,8 @@ public class ApolloApplication extends Application implements Thread.UncaughtExc
 	 */
 	@Override
 	public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
+		// write stacktrace file to cache folder
 		try {
-			// write stacktrace file to cache folder
 			File outputFile = new File(getExternalCacheDir(), "stacktrace.txt");
 			FileOutputStream fos = new FileOutputStream(outputFile);
 			PrintStream ps = new PrintStream(fos);
@@ -73,7 +74,8 @@ public class ApolloApplication extends Application implements Thread.UncaughtExc
 		} catch (FileNotFoundException ex) {
 			// ignore
 		}
-		Thread.UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
+		// delegate error handling to Android system
+		UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
 		if (oldHandler != null) {
 			oldHandler.uncaughtException(t, e);
 		} else {

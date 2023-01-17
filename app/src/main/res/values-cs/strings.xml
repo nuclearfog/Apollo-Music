@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Vše náhodně</string>
 	<string name="menu_play_all">Přehrát vše</string>
 	<string name="menu_sort_by">Řadit podle\u2026</string>
-	<string name="menu_shop">Obchod s motivy</string>
 	<string name="menu_clear_queue">Vyčistit frontu</string>
 	<string name="menu_save_queue">Uložit frontu</string>
 	<string name="menu_share">Sdílet\u2026</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Smazat</string>
 	<string name="context_menu_fetch_album_art">Stáhnout obal alba</string>
 	<string name="context_menu_fetch_artist_image">Stáhnout obrázek umělce</string>
-	<string name="context_menu_open_in_play_store">Otevřít v Google Play</string>
 	<string name="context_menu_remove_from_recent">Odstranit z nedávných</string>
 	<string name="context_menu_use_as_ringtone">Použít jako zvuk vyzvánění</string>
 	<string name="context_menu_remove_from_playlist">Odstranit ze seznamu skladeb</string>

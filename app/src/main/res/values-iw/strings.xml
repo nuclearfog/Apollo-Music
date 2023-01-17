@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">ערבב את כולם</string>
 	<string name="menu_play_all">נגן את כולם</string>
 	<string name="menu_sort_by">מיין על פי</string>
-	<string name="menu_shop">קנה ערכות נושא</string>
 	<string name="menu_clear_queue">נקה תור השמעה</string>
 	<string name="menu_save_queue">שמור תור השמעה</string>
 	<string name="menu_share">שתף</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">מחק</string>
 	<string name="context_menu_fetch_album_art">קבל תמונת אלבום</string>
 	<string name="context_menu_fetch_artist_image">קבל תמונת אומן</string>
-	<string name="context_menu_open_in_play_store">פתח בחנות Play</string>
 	<string name="context_menu_remove_from_recent">הסר מרשימת אחרונים</string>
 	<string name="context_menu_use_as_ringtone">השתמש כצלצול</string>
 	<string name="context_menu_remove_from_playlist">הסר מרשימת השמעה</string>

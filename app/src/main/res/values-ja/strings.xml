@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">すべてシャッフル</string>
 	<string name="menu_play_all">すべて再生</string>
 	<string name="menu_sort_by">並べ替え</string>
-	<string name="menu_shop">テーマショップ</string>
 	<string name="menu_clear_queue">キューを消去</string>
 	<string name="menu_save_queue">キューを保存</string>
 	<string name="menu_share">共有</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">削除</string>
 	<string name="context_menu_fetch_album_art">アルバムアートを取得</string>
 	<string name="context_menu_fetch_artist_image">アーティスト画像を取得</string>
-	<string name="context_menu_open_in_play_store">Playストアで開く</string>
 	<string name="context_menu_remove_from_recent">履歴から削除</string>
 	<string name="context_menu_use_as_ringtone">着信音として使用</string>
 	<string name="context_menu_remove_from_playlist">プレイリストから削除</string>

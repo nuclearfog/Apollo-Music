@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Репродукуј све насумично</string>
 	<string name="menu_play_all">Пусти све</string>
 	<string name="menu_sort_by">Сортирај по</string>
-	<string name="menu_shop">Купи тему</string>
 	<string name="menu_clear_queue">Избриши редослед</string>
 	<string name="menu_save_queue">Сачувај редослед</string>
 	<string name="menu_share">Дели</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Избриши</string>
 	<string name="context_menu_fetch_album_art">Преузми слику албума</string>
 	<string name="context_menu_fetch_artist_image">Преузми слику извођача</string>
-	<string name="context_menu_open_in_play_store">Отвори у Play Продавници</string>
 	<string name="context_menu_remove_from_recent">Уклони из недавних</string>
 	<string name="context_menu_use_as_ringtone">Користи као тон звона</string>
 	<string name="context_menu_remove_from_playlist">Уклони из плејлисте</string>

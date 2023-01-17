@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">هه‌ڕه‌مه‌کی</string>
 	<string name="menu_play_all">لێدانی هه‌مووی</string>
 	<string name="menu_sort_by">ڕیزکردن به‌پێی</string>
-	<string name="menu_shop">کڕینی باکگراوه‌ند</string>
 	<string name="menu_clear_queue">پاککردنه‌وه‌ی ڕیزه‌کان</string>
 	<string name="menu_save_queue">پاشه‌که‌وتکردنی ڕیزه‌کان</string>
 	<string name="menu_share">به‌شداریپێکردن</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">سڕینه‌وه‌</string>
 	<string name="context_menu_fetch_album_art">ده‌رهێنانی هونه‌ری ئه‌لبوم</string>
 	<string name="context_menu_fetch_artist_image">ده‌رهێنانی وێنه‌ی هونه‌رمه‌ند</string>
-	<string name="context_menu_open_in_play_store">کردنه‌وه‌ له‌ پله‌ی ستۆر</string>
 	<string name="context_menu_remove_from_recent">سڕینه‌وه‌ له‌ تازه‌کان</string>
 	<string name="context_menu_use_as_ringtone">خستنه‌ سه‌ر زه‌نگ</string>
 	<string name="context_menu_remove_from_playlist">سڕینه‌وه‌ له‌ لیستی لێدراوه‌کان</string>

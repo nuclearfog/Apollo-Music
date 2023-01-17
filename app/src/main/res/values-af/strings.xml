@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Skommel almal</string>
 	<string name="menu_play_all">Speel almal</string>
 	<string name="menu_sort_by">Sorteer volgens</string>
-	<string name="menu_shop">Koop temas</string>
 	<string name="menu_clear_queue">Vee lys uit</string>
 	<string name="menu_save_queue">Stoor speellys</string>
 	<string name="menu_share">Deel</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Verwyder</string>
 	<string name="context_menu_fetch_album_art">Vind album inliging</string>
 	<string name="context_menu_fetch_artist_image">Vind kunstenaar foto</string>
-	<string name="context_menu_open_in_play_store">Maak in Play-winkel oop</string>
 	<string name="context_menu_remove_from_recent">Verwyder van onlangse lys</string>
 	<string name="context_menu_use_as_ringtone">Gebruik as luitoon</string>
 	<string name="context_menu_remove_from_playlist">Verwyder van speellys</string>

@@ -14,21 +14,13 @@ package com.andrew.apollo.ui.fragments;
 import static android.content.Intent.CATEGORY_DEFAULT;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -46,29 +38,12 @@ import com.andrew.apollo.adapters.recycler.RecycleHolder;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.devspark.appmsg.AppMsg;
 
-import java.util.List;
-
 /**
  * Used to show all of the available themes on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ThemeFragment extends Fragment implements OnItemClickListener {
-
-	/**
-	 * context menu item ID
-	 */
-	private static final int OPEN_IN_PLAY_STORE = 0x5E31DA11;
-
-	/**
-	 * context menu ID
-	 */
-	private static final int GROUP_ID = 0x500FC67C;
-
-	/**
-	 *
-	 */
-	private static final String THEME_PREVIEW = "theme_preview";
 
 	/**
 	 * grid list adapter to show themes
@@ -79,12 +54,6 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 	 * utils to setup theme
 	 */
 	private ThemeUtils mTheme;
-
-	/**
-	 * selected theme
-	 */
-	@Nullable
-	private ThemeHolder holder;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -130,10 +99,6 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		apolloThemeIntent.addCategory(CATEGORY_DEFAULT);
 		mTheme = new ThemeUtils(requireContext());
 
-		// get all compatible themes
-		PackageManager mPackageManager = requireActivity().getPackageManager();
-		List<ResolveInfo> mThemes = mPackageManager.queryIntentActivities(apolloThemeIntent, 0);
-
 		// Default theme
 		String defName = getString(R.string.app_name);
 		String defPack = BuildConfig.APPLICATION_ID;
@@ -141,60 +106,7 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		ThemeHolder defTheme = new ThemeHolder(defPack, defName, defPrev);
 		mAdapter.add(defTheme);
 
-		for (int i = 0; i < mThemes.size(); i++) {
-			try {
-				Drawable prev = null;
-				String tPackage = mThemes.get(i).activityInfo.packageName;
-				Resources mThemeResources = mPackageManager.getResourcesForApplication(tPackage);
-				String name = mThemes.get(i).loadLabel(mPackageManager).toString();
-
-				// get preview
-				int previewId = mThemeResources.getIdentifier(THEME_PREVIEW, "drawable", tPackage);
-				if (previewId > 0) {
-					prev = ResourcesCompat.getDrawable(mThemeResources, previewId, null);
-				}
-
-				// add to adapter
-				ThemeHolder holder = new ThemeHolder(tPackage, name, prev);
-				mAdapter.add(holder);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		if (menuInfo instanceof AdapterContextMenuInfo) {
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-			if (info.position > 0) {
-				holder = mAdapter.getItem(info.position);
-				// Open to the theme's Play Store page
-				menu.add(GROUP_ID, OPEN_IN_PLAY_STORE, Menu.NONE, R.string.context_menu_open_in_play_store);
-				return;
-			}
-		}
-		// reset selection
-		holder = null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && holder != null) {
-			if (item.getItemId() == OPEN_IN_PLAY_STORE) {
-				ThemeUtils.openAppPage(requireContext(), holder.mName);
-				return true;
-			}
-		}
-		return super.onContextItemSelected(item);
+		// todo add app builtin themes since Android doesn't support themes from foreign apps
 	}
 
 	/**

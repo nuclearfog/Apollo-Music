@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Bland alle</string>
 	<string name="menu_play_all">Afspil alle</string>
 	<string name="menu_sort_by">Sortér efter</string>
-	<string name="menu_shop">Hent temaer</string>
 	<string name="menu_clear_queue">Ryd kø</string>
 	<string name="menu_save_queue">Gem kø</string>
 	<string name="menu_share">Del</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Slet</string>
 	<string name="context_menu_fetch_album_art">Hent albumgrafik</string>
 	<string name="context_menu_fetch_artist_image">Hent kunstnerbillede</string>
-	<string name="context_menu_open_in_play_store">Åbn i Play Butik</string>
 	<string name="context_menu_remove_from_recent">Fjern fra seneste</string>
 	<string name="context_menu_use_as_ringtone">Brug som ringetone</string>
 	<string name="context_menu_remove_from_playlist">Fjern fra playliste</string>

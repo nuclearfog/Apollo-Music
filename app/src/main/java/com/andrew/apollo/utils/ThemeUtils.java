@@ -11,16 +11,13 @@
 
 package com.andrew.apollo.utils;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -57,18 +54,6 @@ public class ThemeUtils {
 	 */
 	public static final String PACKAGE_NAME = "theme_package_name";
 	/**
-	 * Used to search the "Apps" section of the Play Store for "Apollo Themes".
-	 */
-	private static final String SEARCH_URI = "https://market.android.com/search?q=%s&c=apps&featured=APP_STORE_SEARCH";
-	/**
-	 * Used to search the Play Store for a specific theme.
-	 */
-	private static final String APP_URI = "market://details?id=";
-	/**
-	 * The keyword to use when search for different themes.
-	 */
-	private static String sApolloSearch;
-	/**
 	 * Used to get and set the theme package name.
 	 */
 	private final SharedPreferences mPreferences;
@@ -89,8 +74,6 @@ public class ThemeUtils {
 	 * @param context The {@link Context} to use.
 	 */
 	public ThemeUtils(Context context) {
-		// Get the search query
-		sApolloSearch = context.getString(R.string.apollo_themes_shop_key);
 		// Get the preferences
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		// Get the theme package name
@@ -109,24 +92,6 @@ public class ThemeUtils {
 		}
 		// Inflate the custom layout
 		mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
-	}
-
-	/**
-	 * Used to search the Play Store for a specific app.
-	 *
-	 * @param context   The {@link Context} to use.
-	 * @param themeName The theme name to search for.
-	 */
-	public static void openAppPage(Context context, String themeName) {
-		Intent shopIntent = new Intent(Intent.ACTION_VIEW);
-		shopIntent.setData(Uri.parse(APP_URI + themeName));
-		shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		try {
-			context.startActivity(shopIntent);
-		} catch (ActivityNotFoundException err) {
-			// ignore
-		}
 	}
 
 	/**
@@ -223,23 +188,6 @@ public class ThemeUtils {
 			actionBarSubtitle.setTextColor(color);
 			// Set the subtitle
 			actionBarSubtitle.setText(subtitle);
-		}
-	}
-
-	/**
-	 * Used to search the Play Store for "Apollo Themes".
-	 *
-	 * @param context The {@link Context} to use.
-	 */
-	public void shopFor(Context context) {
-		Intent shopIntent = new Intent(Intent.ACTION_VIEW);
-		shopIntent.setData(Uri.parse(String.format(SEARCH_URI, Uri.encode(sApolloSearch))));
-		shopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		shopIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		try {
-			context.startActivity(shopIntent);
-		} catch (ActivityNotFoundException err) {
-			// ignore
 		}
 	}
 

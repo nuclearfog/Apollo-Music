@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Hepsini karıştır</string>
 	<string name="menu_play_all">Hepsini oynat</string>
 	<string name="menu_sort_by">Sırala...</string>
-	<string name="menu_shop">Tema satın al</string>
 	<string name="menu_clear_queue">Kuyruğu temizle</string>
 	<string name="menu_save_queue">Kuyruğu kaydet</string>
 	<string name="menu_share">Paylaş</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Sil</string>
 	<string name="context_menu_fetch_album_art">Albüm kapağını getir</string>
 	<string name="context_menu_fetch_artist_image">Sanatçı resmini getir</string>
-	<string name="context_menu_open_in_play_store">Play Store\'da aç</string>
 	<string name="context_menu_remove_from_recent">En son listesinden kaldır</string>
 	<string name="context_menu_use_as_ringtone">Zil sesi olarak kullan</string>
 	<string name="context_menu_remove_from_playlist">Çalma listesinden sil</string>

@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Barreja-ho tot</string>
 	<string name="menu_play_all">Reprodueix tot</string>
 	<string name="menu_sort_by">Ordena per</string>
-	<string name="menu_shop">Compra per temes</string>
 	<string name="menu_clear_queue">Neteja la cua</string>
 	<string name="menu_save_queue">Desa la cua</string>
 	<string name="menu_share">Comparteix</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Esborra</string>
 	<string name="context_menu_fetch_album_art">Ves a buscar la coberta</string>
 	<string name="context_menu_fetch_artist_image">Ves a buscar una imatge de l\'artista</string>
-	<string name="context_menu_open_in_play_store">Obre a la Play Store</string>
 	<string name="context_menu_remove_from_recent">Treu dels recents</string>
 	<string name="context_menu_use_as_ringtone">Utilitza com a to de trucada</string>
 	<string name="context_menu_remove_from_playlist">Treu de la llista de reproducció</string>

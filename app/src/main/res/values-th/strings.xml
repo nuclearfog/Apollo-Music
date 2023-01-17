@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">สลับทั้งหมด</string>
 	<string name="menu_play_all">เล่นทั้งหมด</string>
 	<string name="menu_sort_by">เรียงโดย</string>
-	<string name="menu_shop">เลือกซื้อธีม</string>
 	<string name="menu_clear_queue">ล้างคิว</string>
 	<string name="menu_save_queue">บันทึกคิว</string>
 	<string name="menu_share">แบ่งบัน</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">ลบ</string>
 	<string name="context_menu_fetch_album_art">เรียกปกอัลบั้ม</string>
 	<string name="context_menu_fetch_artist_image">เรียกรูปศิลปิน</string>
-	<string name="context_menu_open_in_play_store">เปิดใน Play สโตร์</string>
 	<string name="context_menu_remove_from_recent">นำออกจากรายการล่าสุด</string>
 	<string name="context_menu_use_as_ringtone">ใช้เป็นเสียงเรียกเข้า</string>
 	<string name="context_menu_remove_from_playlist">นำออกจากรายการเพลง</string>

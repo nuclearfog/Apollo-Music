@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">خلْط الكل</string>
 	<string name="menu_play_all">تشغيل الكل</string>
 	<string name="menu_sort_by">الترتيب حسب</string>
-	<string name="menu_shop">متجر للمواضيع</string>
 	<string name="menu_clear_queue">مسح قائمة انتظار</string>
 	<string name="menu_save_queue">حفظ قائمة الانتظار</string>
 	<string name="menu_share">مشاركة</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">حذف</string>
 	<string name="context_menu_fetch_album_art">إحضار صورة الألبوم</string>
 	<string name="context_menu_fetch_artist_image">إحضار صورة الفنان</string>
-	<string name="context_menu_open_in_play_store">فتح في  Play Store</string>
 	<string name="context_menu_remove_from_recent">إزالة من الأخيرة</string>
 	<string name="context_menu_use_as_ringtone">استخدام كنغمة رنين</string>
 	<string name="context_menu_remove_from_playlist">إزالة من قائمة التشغيل</string>

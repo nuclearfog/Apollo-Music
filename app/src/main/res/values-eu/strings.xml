@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Nahastu guztiak</string>
 	<string name="menu_play_all">Erreproduzitu guztiak</string>
 	<string name="menu_sort_by">Honela ordenatu</string>
-	<string name="menu_shop">Gaiak deskargatu</string>
 	<string name="menu_clear_queue">Garbitu ilara</string>
 	<string name="menu_save_queue">Gorde ilara</string>
 	<string name="menu_share">Partekatu</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Ezabatu</string>
 	<string name="context_menu_fetch_album_art">Eskuratu albumaren karatula</string>
 	<string name="context_menu_fetch_artist_image">Eskuratu artistaren argazkia</string>
-	<string name="context_menu_open_in_play_store">Ireki Play Storen</string>
 	<string name="context_menu_remove_from_recent">Kendu azkenetatik</string>
 	<string name="context_menu_use_as_ringtone">Erabili dei doinu gisa</string>
 	<string name="context_menu_remove_from_playlist">Kendu erreprodukzio-zerrendatik</string>

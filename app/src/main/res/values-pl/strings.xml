@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Losuj wszystko</string>
 	<string name="menu_play_all">Odtwórz wszystko</string>
 	<string name="menu_sort_by">Sortuj wg</string>
-	<string name="menu_shop">Szukaj motywów w sklepie</string>
 	<string name="menu_clear_queue">Wyczyść kolejkę</string>
 	<string name="menu_save_queue">Zapisz kolejkę</string>
 	<string name="menu_share">Udostępnij</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Usuń</string>
 	<string name="context_menu_fetch_album_art">Pobierz okładkę albumu</string>
 	<string name="context_menu_fetch_artist_image">Pobierz zdjęcie wykonawcy</string>
-	<string name="context_menu_open_in_play_store">Otwórz w sklepie Play</string>
 	<string name="context_menu_remove_from_recent">Usuń z ostatnio słuchanych</string>
 	<string name="context_menu_use_as_ringtone">Ustaw jako dzwonek</string>
 	<string name="context_menu_remove_from_playlist">Usuń z playlisty</string>

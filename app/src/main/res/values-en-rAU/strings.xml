@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Shuffle all</string>
 	<string name="menu_play_all">Play all</string>
 	<string name="menu_sort_by">Sort by</string>
-	<string name="menu_shop">Shop for themes</string>
 	<string name="menu_clear_queue">Clear queue</string>
 	<string name="menu_save_queue">Save queue</string>
 	<string name="menu_share">Share</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Delete</string>
 	<string name="context_menu_fetch_album_art">Fetch album art</string>
 	<string name="context_menu_fetch_artist_image">Fetch artist image</string>
-	<string name="context_menu_open_in_play_store">Open in Play Store</string>
 	<string name="context_menu_remove_from_recent">Remove from recent</string>
 	<string name="context_menu_use_as_ringtone">Use as ringtone</string>
 	<string name="context_menu_remove_from_playlist">Remove from playlist</string>

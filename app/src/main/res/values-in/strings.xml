@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Acak semua</string>
 	<string name="menu_play_all">Putar semua</string>
 	<string name="menu_sort_by">Urut berdasarkan</string>
-	<string name="menu_shop">Beli tema</string>
 	<string name="menu_clear_queue">Bersihkan antrian</string>
 	<string name="menu_save_queue">Simpan antrian</string>
 	<string name="menu_share">Bagikan</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Hapus</string>
 	<string name="context_menu_fetch_album_art">Mengambil seni album</string>
 	<string name="context_menu_fetch_artist_image">Mengambil gambar artis</string>
-	<string name="context_menu_open_in_play_store">Buka di Play Store</string>
 	<string name="context_menu_remove_from_recent">Hapus dari terakhir</string>
 	<string name="context_menu_use_as_ringtone">Gunakan sebagai nada dering</string>
 	<string name="context_menu_remove_from_playlist">Hapus dari daftar putar</string>

@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">Alle zufällig anordnen</string>
 	<string name="menu_play_all">Alle wiedergeben</string>
 	<string name="menu_sort_by">Sortieren</string>
-	<string name="menu_shop">Designs beziehen</string>
 	<string name="menu_clear_queue">Warteschlange leeren</string>
 	<string name="menu_save_queue">Warteschlange speichern</string>
 	<string name="menu_share">Teilen</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">Löschen</string>
 	<string name="context_menu_fetch_album_art">Albumcover herunterladen</string>
 	<string name="context_menu_fetch_artist_image">Interpretenbild herunterladen</string>
-	<string name="context_menu_open_in_play_store">Im Play Store öffnen</string>
 	<string name="context_menu_remove_from_recent">Aus \"Kürzlich gehört\" entfernen</string>
 	<string name="context_menu_use_as_ringtone">Als Klingelton verwenden</string>
 	<string name="context_menu_remove_from_playlist">Aus Wiedergabeliste entfernen</string>

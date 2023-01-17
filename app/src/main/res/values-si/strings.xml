@@ -27,7 +27,6 @@
 	<string name="menu_shuffle">සියල්ල කලවම් කරන්න</string>
 	<string name="menu_play_all">සියල්ල වාදනය කරන්න</string>
 	<string name="menu_sort_by">මඟින් සුබෙදන්න</string>
-	<string name="menu_shop">තේමා සඳහා සාප්පු යන්න</string>
 	<string name="menu_clear_queue">පෝලිම හිස් කරන්න</string>
 	<string name="menu_save_queue">පෝලිම සුරකින්න</string>
 	<string name="menu_share">බෙදාහදාගන්න</string>
@@ -76,7 +75,6 @@
 	<string name="context_menu_delete">මකන්න</string>
 	<string name="context_menu_fetch_album_art">ඇල්බමයේ කවරය ගෙන එන්න</string>
 	<string name="context_menu_fetch_artist_image">කලාකරුගේ පින්තූරය ගෙන එන්න</string>
-	<string name="context_menu_open_in_play_store">Play Store තුල දිගහරින්න</string>
 	<string name="context_menu_remove_from_recent">මෑතවූ දෙයින් ඉවත්කරන්න</string>
 	<string name="context_menu_use_as_ringtone">රින්ග්ටෝනය ලෙස භාවිතාකරන්න</string>
 	<string name="context_menu_remove_from_playlist">ධාවනලැයිස්තුවෙන් ඉවත්කරන්න</string>

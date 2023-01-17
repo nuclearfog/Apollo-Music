@@ -117,7 +117,8 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		ThemeHolder selection = mAdapter.getItem(position);
 		if (selection != null) {
 			String name = getString(R.string.theme_set, selection.mName);
-			mTheme.setThemePackageName(selection.mPackage);
+			mTheme.setThemeSelectionIndex(position);
+			// todo save index of the theme selection
 			AppMsg.makeText(requireActivity(), name, AppMsg.STYLE_CONFIRM).show();
 		}
 	}

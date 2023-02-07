@@ -605,7 +605,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				boolean isForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
-					mNotificationHelper.ignoreUpdate();
+					mNotificationHelper.cancelNotification();
 				} else if (isPlaying()) {
 					mNotificationHelper.buildNotification();
 				}
@@ -651,6 +651,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			mPausedByTransientLossOfFocus = false;
 			seek(0);
 			releaseServiceUiAndStop();
+			mNotificationHelper.cancelNotification();
 		} else if (REPEAT_ACTION.equals(action)) {
 			if (mRepeatMode == REPEAT_NONE) {
 				setRepeatMode(REPEAT_ALL);
@@ -815,7 +816,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 						notifyChange(PLAYSTATE_CHANGED);
 					}
 					cancelShutdown();
-					updateNotification();
+					mNotificationHelper.updateNotification();
 				} else if (mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
 				}
@@ -941,7 +942,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		}
 		updateCursor(mPlayList.get(mPlayPos));
 		notifyChange(META_CHANGED);
-		updateNotification();
+		mNotificationHelper.updateNotification();
 		setNextTrack();
 	}
 
@@ -1438,13 +1439,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 		}
 		mIntentReceiver.updateWidgets(this, what);
-	}
-
-	/**
-	 *
-	 */
-	private void updateNotification() {
-		mNotificationHelper.updateNotification();
 	}
 
 	/**

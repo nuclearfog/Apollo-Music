@@ -28,7 +28,7 @@ import com.andrew.apollo.R;
 
 /**
  * In-layout notifications. Based on {@link android.widget.Toast} notifications
- * and article by Cyril Mottier (http://android.cyrilmottier.com/?p=773).
+ * and article by Cyril Mottier (<a href="http://android.cyrilmottier.com/?p=773">...</a>).
  *
  * @author e.shishkin
  */

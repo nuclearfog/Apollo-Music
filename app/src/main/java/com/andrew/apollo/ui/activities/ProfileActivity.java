@@ -31,6 +31,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -75,13 +79,9 @@ import java.util.Random;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends ActivityBase implements OnPageChangeListener,
-		Listener, OnClickListener, DeleteDialogCallback {
+public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>,
+		OnPageChangeListener, Listener, OnClickListener, DeleteDialogCallback {
 
-	/**
-	 * request code to load new photo
-	 */
-	private static final int NEW_PHOTO = 0x487B;
 	/**
 	 * page index of the {@link com.andrew.apollo.ui.fragments.profile.ArtistSongFragment}
 	 * if {@link Type#ARTIST} is set
@@ -122,6 +122,11 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 	 *
 	 */
 	private static final String[] GET_MEDIA = {MediaColumns.DATA};
+
+	/**
+	 *
+	 */
+	private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
 
 	/**
 	 * View pager
@@ -653,8 +658,20 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		if (resultCode == RESULT_OK) {
-			if (requestCode == NEW_PHOTO && intent != null && intent.getData() != null) {
+		 if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+			MusicUtils.onPostDelete(this);
+			refreshAll();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onActivityResult(ActivityResult result) {
+		if (result.getResultCode() == RESULT_OK) {
+			Intent intent = result.getData();
+			if (intent != null && intent.getData() != null) {
 				Cursor cursor = getContentResolver().query(intent.getData(), GET_MEDIA, null, null, null);
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
@@ -677,9 +694,6 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 				} else {
 					selectOldPhoto();
 				}
-			} else if (requestCode == REQUEST_DELETE_FILES) {
-				MusicUtils.onPostDelete(this);
-				refreshAll();
 			}
 		}
 	}
@@ -724,7 +738,7 @@ public class ProfileActivity extends ActivityBase implements OnPageChangeListene
 		// Now open the gallery
 		Intent intent = new Intent(Intent.ACTION_PICK, null);
 		intent.setType(MIME_IMAGE);
-		startActivityForResult(intent, NEW_PHOTO);
+		activityResultLauncher.launch(intent);
 	}
 
 	/**

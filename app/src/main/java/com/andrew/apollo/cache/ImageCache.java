@@ -174,7 +174,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * http://stackoverflow.com/questions/332079
+	 * <a href="http://stackoverflow.com/questions/332079">...</a>
 	 *
 	 * @param bytes The bytes to convert.
 	 * @return A {@link String} converted from the bytes of a hashable key used

@@ -6,7 +6,7 @@ plugins {
 
 android {
 	compileSdkVersion 33
-	buildToolsVersion '33.0.1'
+	buildToolsVersion '33.0.2'
 	useLibrary 'org.apache.http.legacy'
 
 	defaultConfig {
@@ -57,7 +57,7 @@ proguardDictionaries {
 }
 
 dependencies {
-	implementation 'androidx.appcompat:appcompat:1.6.0'
+	implementation 'androidx.appcompat:appcompat:1.6.1'
 	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 	implementation 'androidx.preference:preference:1.2.0'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

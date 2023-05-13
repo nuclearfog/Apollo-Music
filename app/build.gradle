@@ -1,13 +1,13 @@
 plugins {
+	id 'org.jetbrains.kotlin.android' version '1.8.10'
 	id 'com.android.application'
-	id 'io.michaelrocks.paranoid'
-	id 'ru.cleverpumpkin.proguard-dictionaries-generator'
 }
 
 android {
 	compileSdkVersion 33
 	buildToolsVersion '33.0.2'
 	useLibrary 'org.apache.http.legacy'
+	namespace 'com.andrew.apollo'
 
 	defaultConfig {
 		applicationId 'com.andrew.apollo'
@@ -44,16 +44,9 @@ android {
 		exclude '/Debug*'
 	}
 
-	paranoid {
-		enabled true
+	buildFeatures {
+		aidl true
 	}
-}
-
-proguardDictionaries {
-	minLineLength 4
-	maxLineLength 8
-	linesCountInDictionary 15000
-	dictionaryNames = ['dict/class-dictionary', 'dict/package-dictionary', 'dict/obfuscation-dictionary']
 }
 
 dependencies {
@@ -62,5 +55,5 @@ dependencies {
 	implementation 'androidx.preference:preference:1.2.0'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'androidx.media:media:1.6.0'
-	implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+	implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
 }

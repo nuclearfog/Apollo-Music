@@ -54,8 +54,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import io.michaelrocks.paranoid.Obfuscate;
-
 /**
  * The <code>Caller</code> class handles the low-level communication between the
  * client and last.fm.<br/>
@@ -68,7 +66,7 @@ import io.michaelrocks.paranoid.Obfuscate;
  *
  * @author Janni Kovacs
  */
-@Obfuscate
+
 public class Caller {
 
 	/**

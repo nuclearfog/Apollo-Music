@@ -25,6 +25,6 @@
 #-renamesourcefileattribute SourceFile
 
 # use dictionaries to create random class/package names
--obfuscationdictionary dict/obfuscation-dictionary.txt
--classobfuscationdictionary dict/class-dictionary.txt
--packageobfuscationdictionary dict/package-dictionary.txt
+#-obfuscationdictionary dict/obfuscation-dictionary.txt
+#-classobfuscationdictionary dict/class-dictionary.txt
+#-packageobfuscationdictionary dict/package-dictionary.txt

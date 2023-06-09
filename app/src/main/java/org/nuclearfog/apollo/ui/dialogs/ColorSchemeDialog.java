@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
-
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 

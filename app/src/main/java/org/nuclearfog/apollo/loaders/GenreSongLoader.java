@@ -58,7 +58,8 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 			// Gather the data
 			if (mCursor != null) {
 				if (mCursor.moveToFirst()) {
-					do {
+					do
+					{
 						// Copy the song Id
 						long id = mCursor.getLong(0);
 						// Copy the song name

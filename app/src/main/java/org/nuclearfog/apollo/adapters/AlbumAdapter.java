@@ -26,7 +26,6 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.RecentFragment;
-
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 

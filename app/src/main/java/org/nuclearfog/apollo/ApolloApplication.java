@@ -16,8 +16,6 @@ import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 
-import org.nuclearfog.apollo.BuildConfig;
-
 import org.nuclearfog.apollo.cache.ImageCache;
 
 import java.io.File;

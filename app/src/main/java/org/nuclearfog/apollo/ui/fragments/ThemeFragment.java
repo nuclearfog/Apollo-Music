@@ -30,13 +30,14 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import com.devspark.appmsg.AppMsg;
+
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.ThemesAdapter;
 import org.nuclearfog.apollo.adapters.ThemesAdapter.ThemeHolder;
 import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.utils.ThemeUtils;
-import com.devspark.appmsg.AppMsg;
 
 /**
  * Used to show all of the available themes on a user's device.

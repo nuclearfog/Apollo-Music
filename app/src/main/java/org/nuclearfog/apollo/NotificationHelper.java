@@ -87,7 +87,7 @@ public class NotificationHelper {
 		}
 		// initialize callbacks
 		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
-		callbacks = new PendingIntent[] {
+		callbacks = new PendingIntent[]{
 				PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.TOGGLEPAUSE_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
 				PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.NEXT_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
 				PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.PREVIOUS_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),

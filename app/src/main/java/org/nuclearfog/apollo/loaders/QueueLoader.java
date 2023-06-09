@@ -44,7 +44,8 @@ public class QueueLoader extends WrappedAsyncTaskLoader<List<Song>> {
 		NowPlayingCursor mCursor = new NowPlayingCursor(getContext());
 		// Gather the data
 		if (mCursor.moveToFirst()) {
-			do {
+			do
+			{
 				// Copy the song Id
 				long id = mCursor.getLong(0);
 				// Copy the song name

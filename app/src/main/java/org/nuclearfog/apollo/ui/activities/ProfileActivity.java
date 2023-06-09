@@ -658,7 +658,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		 if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
 			refreshAll();
 		}

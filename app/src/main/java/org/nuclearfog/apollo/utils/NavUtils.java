@@ -20,13 +20,14 @@ import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.devspark.appmsg.AppMsg;
+
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.SearchActivity;
 import org.nuclearfog.apollo.ui.activities.SettingsActivity;
-import com.devspark.appmsg.AppMsg;
 
 /**
  * Various navigation helpers.

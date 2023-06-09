@@ -18,9 +18,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.nuclearfog.apollo.R;
-
 import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
 import org.nuclearfog.apollo.ui.fragments.SongFragment;

@@ -46,7 +46,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 
-import org.nuclearfog.apollo.BuildConfig;
 import com.andrew.apollo.IApolloService;
 
 import org.nuclearfog.apollo.cache.ImageCache;

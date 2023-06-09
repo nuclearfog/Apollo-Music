@@ -40,6 +40,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
+import com.devspark.appmsg.AppMsg;
+
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
@@ -48,7 +50,6 @@ import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
-import com.devspark.appmsg.AppMsg;
 
 import java.io.File;
 

@@ -47,7 +47,8 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
 		// Gather the data
 		if (mCursor != null) {
 			if (mCursor.moveToFirst()) {
-				do {
+				do
+				{
 					// Copy the album id
 					long id = mCursor.getLong(0);
 					// Copy the album name

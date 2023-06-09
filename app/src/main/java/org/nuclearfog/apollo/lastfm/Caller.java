@@ -28,7 +28,6 @@ import android.content.Context;
 
 import org.nuclearfog.apollo.lastfm.Result.Status;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;

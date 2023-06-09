@@ -39,8 +39,8 @@ import android.view.ViewConfiguration;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.andrew.apollo.R;
-import com.andrew.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 

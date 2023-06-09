@@ -47,7 +47,7 @@
 	</queries>
 
 	<application
-		android:name=".ApolloApplication"
+		android:name="org.nuclearfog.apollo.ApolloApplication"
 		android:allowBackup="false"
 		android:fullBackupContent="false"
 		android:dataExtractionRules="@xml/rules"
@@ -80,12 +80,12 @@
 
 		<!-- Base activity -->
 		<activity
-			android:name=".ui.activities.ActivityBase"
+			android:name="org.nuclearfog.apollo.ui.activities.ActivityBase"
 			android:exported="true" />
 
 		<!-- Main activity -->
 		<activity
-			android:name=".ui.activities.HomeActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.HomeActivity"
 			android:windowSoftInputMode="adjustPan"
 			android:exported="true"
 			android:configChanges="orientation|keyboardHidden">
@@ -102,7 +102,7 @@
 
 		<!-- Now playing -->
 		<activity
-			android:name=".ui.activities.AudioPlayerActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.AudioPlayerActivity"
 			android:clearTaskOnLaunch="true"
 			android:exported="true"
 			android:launchMode="singleTask"
@@ -163,18 +163,18 @@
 
 		<!-- Profile phone Activity -->
 		<activity
-			android:name=".ui.activities.ProfileActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.ProfileActivity"
 			android:excludeFromRecents="true"
 			android:configChanges="orientation|keyboardHidden"/>
 
 		<!-- Audio FX Activity -->
 		<activity
-			android:name=".ui.activities.AudioFxActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.AudioFxActivity"
 			android:excludeFromRecents="true" />
 
 		<!-- Shortcut launcher Activity -->
 		<activity
-			android:name=".ui.activities.ShortcutActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.ShortcutActivity"
 			android:excludeFromRecents="true"
 			android:exported="true"
 			android:theme="@style/Theme.Transparent">
@@ -188,7 +188,7 @@
 
 		<!-- Search interface -->
 		<activity
-			android:name=".ui.activities.SearchActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.SearchActivity"
 			android:exported="true"
 			android:configChanges="orientation|keyboardHidden">
 
@@ -205,19 +205,19 @@
 
 		<!-- Used to set options -->
 		<activity
-			android:name=".ui.activities.SettingsActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.SettingsActivity"
 			android:label="@string/menu_settings"
 			android:theme="@style/Apollo.Theme.Dark" />
 
 		<!-- Themes Activity -->
 		<activity
-			android:name=".ui.activities.ThemesActivity"
+			android:name="org.nuclearfog.apollo.ui.activities.ThemesActivity"
 			android:excludeFromRecents="true"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- 4x1 App Widget -->
 		<receiver
-			android:name="com.andrew.apollo.widgets.AppWidgetSmall"
+			android:name="org.nuclearfog.apollo.widgets.AppWidgetSmall"
 			android:exported="false"
 			android:label="@string/app_widget_small">
 
@@ -232,7 +232,7 @@
 
 		<!-- 4x2  App Widget -->
 		<receiver
-			android:name="com.andrew.apollo.widgets.AppWidgetLarge"
+			android:name="org.nuclearfog.apollo.widgets.AppWidgetLarge"
 			android:exported="false"
 			android:label="@string/app_widget_large">
 
@@ -247,7 +247,7 @@
 
 		<!-- 4x2 alternate App Widget -->
 		<receiver
-			android:name="com.andrew.apollo.widgets.AppWidgetLargeAlternate"
+			android:name="org.nuclearfog.apollo.widgets.AppWidgetLargeAlternate"
 			android:exported="false"
 			android:label="@string/app_widget_large_alt">
 
@@ -262,7 +262,7 @@
 
 		<!-- Resizable recently listened App Widget -->
 		<receiver
-			android:name="com.andrew.apollo.widgets.RecentWidgetProvider"
+			android:name="org.nuclearfog.apollo.widgets.RecentWidgetProvider"
 			android:exported="false"
 			android:label="@string/app_widget_recent">
 
@@ -287,12 +287,12 @@
 
 		<!-- The service serving the RemoteViews to the recently listened App Widget -->
 		<service
-			android:name="com.andrew.apollo.widgets.RecentWidgetService"
+			android:name="org.nuclearfog.apollo.widgets.RecentWidgetService"
 			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 		<!-- Music service -->
 		<service
-			android:name=".MusicPlaybackService"
+			android:name="org.nuclearfog.apollo.MusicPlaybackService"
 			android:label="@string/app_name"
 			android:exported="false"
 			android:process=":music">

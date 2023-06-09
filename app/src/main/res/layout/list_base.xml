@@ -30,7 +30,7 @@
 		android:layout_gravity="center"
 		android:text="@string/empty_music" />
 
-	<com.andrew.apollo.ui.views.dragdrop.DragSortListView
+	<org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView
 		android:id="@+id/list_base"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

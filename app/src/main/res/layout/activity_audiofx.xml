@@ -14,7 +14,7 @@
 		app:layout_constraintTop_toTopOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<com.andrew.apollo.ui.views.theme.Colorstrip
+	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
 		android:id="@+id/audiofx_colorstrip"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/colorstrip_height"

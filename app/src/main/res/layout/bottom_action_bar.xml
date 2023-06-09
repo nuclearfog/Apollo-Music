@@ -32,7 +32,7 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<com.andrew.apollo.ui.views.theme.Colorstrip
+	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
 		android:id="@+id/colorstrip"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/colorstrip_height"
@@ -92,23 +92,23 @@
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent">
 
-			<com.andrew.apollo.ui.views.RepeatingImageButton
+			<org.nuclearfog.apollo.ui.views.RepeatingImageButton
 				android:id="@+id/action_button_previous"
 				style="@style/BottomActionBarItem.Previous" />
 
-			<com.andrew.apollo.ui.views.PlayPauseButton
+			<org.nuclearfog.apollo.ui.views.PlayPauseButton
 				android:id="@+id/action_button_play"
 				style="@style/BottomActionBarItem.Play" />
 
-			<com.andrew.apollo.ui.views.RepeatingImageButton
+			<org.nuclearfog.apollo.ui.views.RepeatingImageButton
 				android:id="@+id/action_button_next"
 				style="@style/BottomActionBarItem.Next" />
 
-			<com.andrew.apollo.ui.views.ShuffleButton
+			<org.nuclearfog.apollo.ui.views.ShuffleButton
 				android:id="@+id/action_button_shuffle"
 				style="@style/BottomActionBarItem.Shuffle" />
 
-			<com.andrew.apollo.ui.views.RepeatButton
+			<org.nuclearfog.apollo.ui.views.RepeatButton
 				android:id="@+id/action_button_repeat"
 				style="@style/BottomActionBarItem.Repeat" />
 

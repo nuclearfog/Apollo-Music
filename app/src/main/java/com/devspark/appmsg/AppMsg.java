@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.andrew.apollo.R;
+import org.nuclearfog.apollo.R;
 
 /**
  * In-layout notifications. Based on {@link android.widget.Toast} notifications

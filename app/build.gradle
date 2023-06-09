@@ -7,10 +7,10 @@ android {
 	compileSdkVersion 33
 	buildToolsVersion '33.0.2'
 	useLibrary 'org.apache.http.legacy'
-	namespace 'com.andrew.apollo'
+	namespace 'org.nuclearfog.apollo'
 
 	defaultConfig {
-		applicationId 'com.andrew.apollo'
+		applicationId 'org.nuclearfog.apollo'
 		minSdkVersion 16
 		targetSdkVersion 33
 		versionCode 20

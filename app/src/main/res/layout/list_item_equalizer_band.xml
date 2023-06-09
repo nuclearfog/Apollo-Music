@@ -10,7 +10,7 @@
 		android:layout_height="wrap_content"
 		android:gravity="center" />
 
-	<com.andrew.apollo.ui.views.VerticalSeekBar
+	<org.nuclearfog.apollo.ui.views.VerticalSeekBar
 		android:id="@+id/eq_seekbar"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"

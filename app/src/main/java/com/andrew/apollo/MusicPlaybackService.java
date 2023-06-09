@@ -11,20 +11,18 @@
 
 package com.andrew.apollo;
 
-import static android.app.NotificationManager.IMPORTANCE_LOW;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
 
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -192,10 +190,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	private static final String HANDLER_NAME = "MusicPlayerHandler";
-	/**
-	 * Notification name
-	 */
-	private static final String NOTFICIATION_NAME = "Apollo Controlpanel";
+
 	/**
 	 * Notification channel ID
 	 */
@@ -448,7 +443,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint({"InlinedApi", "UnspecifiedImmutableFlag"})
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -459,8 +453,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mPopularCache = PopularStore.getInstance(this);
 
 		// Initialize the notification helper
-		mNotificationHelper = new NotificationHelper(this);
-
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || checkSelfPermission(POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+			mNotificationHelper = new NotificationHelper(this);
+		}
 		// Initialize the image fetcher
 		mImageFetcher = ImageFetcher.getInstance(this);
 		// Initialize the image cache
@@ -521,13 +516,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mPlayer = new MultiPlayer(this);
 		mPlayer.setHandler(mPlayerHandler);
 
-		// Create notification channel on Android 8+
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationManager nManager = getSystemService(NotificationManager.class);
-			NotificationChannel channel = new NotificationChannel(NOTIFICAITON_ID, NOTFICIATION_NAME, IMPORTANCE_LOW);
-			nManager.createNotificationChannel(channel);
-		}
-
 		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
@@ -575,7 +563,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Nullable
 	@Override
 	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-		return null;
+		return new BrowserRoot("test", null);
 	}
 
 	/**
@@ -736,7 +724,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song album Name
 	 */
-	@SuppressLint("InlinedApi")
 	public String getAlbumName() {
 		synchronized (this) {
 			if (mCursor != null && mCursor.moveToFirst()) {
@@ -765,7 +752,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song artist name
 	 */
-	@SuppressLint("InlinedApi")
 	public String getArtistName() {
 		synchronized (this) {
 			if (mCursor != null && mCursor.moveToFirst()) {
@@ -1690,15 +1676,16 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		return -1;
 	}
 
-
-	@SuppressLint("InlinedApi")
+	/**
+	 *
+	 */
 	private long getDurationMillis() {
 		synchronized (this) {
 			if (mCursor != null && mCursor.moveToFirst()) {
 				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -1712,7 +1699,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				return mPlayList.get(mPlayPos);
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -1745,7 +1732,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (mPlayer.isInitialized()) {
 			return mPlayer.position();
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -1757,7 +1744,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (mPlayer.isInitialized()) {
 			return mPlayer.duration();
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**

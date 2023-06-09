@@ -12,6 +12,7 @@
 package com.andrew.apollo.ui.activities;
 
 import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_MEDIA_AUDIO;
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
@@ -61,7 +62,7 @@ public class HomeActivity extends ActivityBase {
 
 	static {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			PERMISSIONS = new String[]{ACCESS_MEDIA_LOCATION, READ_MEDIA_AUDIO, READ_MEDIA_IMAGES};
+			PERMISSIONS = new String[]{ACCESS_MEDIA_LOCATION, READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
 		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
 		} else {

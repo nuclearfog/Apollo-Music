@@ -71,6 +71,7 @@ public class ApolloApplication extends Application implements UncaughtExceptionH
 			FileOutputStream fos = new FileOutputStream(outputFile);
 			PrintStream ps = new PrintStream(fos);
 			e.printStackTrace(ps);
+			ps.close();
 		} catch (FileNotFoundException ex) {
 			// ignore
 		}

@@ -141,10 +141,10 @@ public final class MusicUtils {
 	public static ServiceToken bindToService(Activity activity, @Nullable ServiceConnection callback) {
 		if (activity.getParent() != null)
 			activity = activity.getParent();
-		ContextWrapper contextWrapper = new ContextWrapper(activity);
-		contextWrapper.startService(new Intent(contextWrapper, MusicPlaybackService.class));
+		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
+		contextWrapper.startService(new Intent(activity.getApplicationContext(), MusicPlaybackService.class));
 		ServiceBinder binder = new ServiceBinder(callback);
-		if (contextWrapper.bindService(new Intent().setClass(contextWrapper, MusicPlaybackService.class), binder, 0)) {
+		if (contextWrapper.bindService(new Intent().setClass(activity.getApplicationContext(), MusicPlaybackService.class), binder, 0)) {
 			mConnectionMap.put(contextWrapper, binder);
 			return new ServiceToken(contextWrapper);
 		}

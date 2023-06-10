@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo;
 
 import android.app.Application;
-import android.os.StrictMode;
 
 import androidx.annotation.NonNull;
 
@@ -41,10 +40,6 @@ public class ApolloApplication extends Application implements UncaughtExceptionH
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// Enable strict mode logging
-		if (BuildConfig.DEBUG) {
-			enableStrictMode();
-		}
 		// Turn off logging for jaudiotagger.
 		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
 		// add error handler to write stacktrace to file
@@ -82,16 +77,5 @@ public class ApolloApplication extends Application implements UncaughtExceptionH
 		} else {
 			System.exit(2);
 		}
-	}
-
-	/**
-	 *
-	 */
-	private void enableStrictMode() {
-		StrictMode.ThreadPolicy.Builder threadPolicyBuilder = new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog();
-		StrictMode.VmPolicy.Builder vmPolicyBuilder = new StrictMode.VmPolicy.Builder().detectAll().penaltyLog();
-		threadPolicyBuilder.penaltyFlashScreen();
-		StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-		StrictMode.setVmPolicy(vmPolicyBuilder.build());
 	}
 }

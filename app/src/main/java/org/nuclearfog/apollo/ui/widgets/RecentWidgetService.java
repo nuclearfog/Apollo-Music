@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.widgets;
+package org.nuclearfog.apollo.ui.widgets;
 
 import android.content.Context;
 import android.content.Intent;

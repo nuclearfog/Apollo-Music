@@ -231,7 +231,7 @@
 
 		<!-- 4x1 App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.widgets.AppWidgetSmall"
+			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetSmall"
 			android:exported="false"
 			android:label="@string/app_widget_small">
 
@@ -246,7 +246,7 @@
 
 		<!-- 4x2  App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.widgets.AppWidgetLarge"
+			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetLarge"
 			android:exported="false"
 			android:label="@string/app_widget_large">
 
@@ -261,7 +261,7 @@
 
 		<!-- 4x2 alternate App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.widgets.AppWidgetLargeAlternate"
+			android:name="org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate"
 			android:exported="false"
 			android:label="@string/app_widget_large_alt">
 
@@ -276,7 +276,7 @@
 
 		<!-- Resizable recently listened App Widget -->
 		<receiver
-			android:name="org.nuclearfog.apollo.widgets.RecentWidgetProvider"
+			android:name="org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider"
 			android:exported="false"
 			android:label="@string/app_widget_recent">
 
@@ -301,7 +301,7 @@
 
 		<!-- The service serving the RemoteViews to the recently listened App Widget -->
 		<service
-			android:name="org.nuclearfog.apollo.widgets.RecentWidgetService"
+			android:name="org.nuclearfog.apollo.ui.widgets.RecentWidgetService"
 			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 		<!-- Music service -->

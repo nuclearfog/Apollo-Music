@@ -40,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
-import com.devspark.appmsg.AppMsg;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;

@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import static org.nuclearfog.apollo.Config.FOLDER;
-import static org.nuclearfog.apollo.Config.MIME_IMAGE;
 import static org.nuclearfog.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 import android.annotation.SuppressLint;
@@ -152,6 +151,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * ID used for albums, artist genres etc
 	 */
 	private long[] ids = {0};
+
+	/**
+	 * MIME type for album/artist images
+	 */
+	private static final String MIME_IMAGE = "image/*";
 
 	/**
 	 * MIME type of the profile

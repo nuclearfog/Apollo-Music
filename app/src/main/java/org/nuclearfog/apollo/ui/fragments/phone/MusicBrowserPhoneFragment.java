@@ -25,8 +25,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import com.viewpagerindicator.TitlePageIndicator;
-import com.viewpagerindicator.TitlePageIndicator.OnCenterItemClickListener;
+import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
+import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.PagerAdapter;

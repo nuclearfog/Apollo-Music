@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.widgets;
+package org.nuclearfog.apollo.ui.widgets;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;

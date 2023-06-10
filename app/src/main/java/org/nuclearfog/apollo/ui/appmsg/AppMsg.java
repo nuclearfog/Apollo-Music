@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.devspark.appmsg;
+package org.nuclearfog.apollo.ui.appmsg;
 
 import android.app.Activity;
 import android.content.Context;

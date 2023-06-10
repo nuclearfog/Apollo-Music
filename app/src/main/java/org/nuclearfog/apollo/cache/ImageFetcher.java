@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lastfm.Album;
@@ -46,26 +45,25 @@ import javax.net.ssl.HttpsURLConnection;
  * A subclass of {@link ImageWorker} that fetches images from a URL.
  */
 public class ImageFetcher extends ImageWorker {
-	/**
-	 *
-	 */
+
 	public static final int IO_BUFFER_SIZE_BYTES = 1024;
-	/**
-	 *
-	 */
 	private static final int DEFAULT_MAX_IMAGE_HEIGHT = 1024;
-	/**
-	 *
-	 */
 	private static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
+
 	/**
 	 * size of the artist/album art of the notification image
 	 */
 	private static final int NOTIFICATION_SIZE = 200;
+
 	/**
 	 * location folder name of the image cache
 	 */
 	private static final String DEFAULT_CACHE_DIR = "download";
+
+	/**
+	 * Used to distinguish album art from artist images
+	 */
+	private static final String ALBUM_ART_SUFFIX = "album";
 
 	private static final ImageSize[] QUALITY = {
 			ImageSize.MEGA, ImageSize.EXTRALARGE, ImageSize.LARGE,
@@ -244,7 +242,7 @@ public class ImageFetcher extends ImageWorker {
 		if (albumName == null || artistName == null) {
 			return null;
 		}
-		return albumName + "_" + artistName + "_" + Config.ALBUM_ART_SUFFIX;
+		return albumName + "_" + artistName + "_" + ALBUM_ART_SUFFIX;
 	}
 
 	/**

@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static org.nuclearfog.apollo.Config.MIME_AUDIO;
-import static org.nuclearfog.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
-
 import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -94,6 +91,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Message to refresh the time
 	 */
 	private static final int MSG_ID = 0x65059CC4;
+
+	/**
+	 * MIME type for sharing songs
+	 */
+	private static final String MIME_AUDIO = "audio/*";
 
 	/**
 	 * The service token
@@ -499,7 +501,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
 		}
 	}

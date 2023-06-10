@@ -20,7 +20,7 @@ import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import com.devspark.appmsg.AppMsg;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;

@@ -19,10 +19,6 @@ package org.nuclearfog.apollo;
 public final class Config {
 
 	/**
-	 * Used to distinguish album art from artist images
-	 */
-	public static final String ALBUM_ART_SUFFIX = "album";
-	/**
 	 * The ID of an artist, album, genre, or playlist passed to the profile activity
 	 */
 	public static final String ID = "id";
@@ -50,25 +46,6 @@ public final class Config {
 	 * path to a music folder
 	 */
 	public static final String FOLDER = "folder_path";
-	/**
-	 * Play from search intent
-	 */
-	public static final String PLAY_FROM_SEARCH = "android.media.action.MEDIA_PLAY_FROM_SEARCH";
-	/**
-	 * user aent for Last FM
-	 */
-	public static final String USER_AGENT = "Apollo";
-
-	/**
-	 * MIME type for album/artist images
-	 */
-	public static final String MIME_IMAGE = "image/*";
-
-	/**
-	 * MIME type for sharing songs
-	 */
-	public static final String MIME_AUDIO = "audio/*";
-
 	/**
 	 * maximal scroll speed when dragging a list element
 	 */

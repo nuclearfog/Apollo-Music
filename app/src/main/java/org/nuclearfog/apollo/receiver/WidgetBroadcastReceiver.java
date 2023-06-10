@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.nuclearfog.apollo.MusicPlaybackService;
-import org.nuclearfog.apollo.widgets.AppWidgetBase;
-import org.nuclearfog.apollo.widgets.AppWidgetLarge;
-import org.nuclearfog.apollo.widgets.AppWidgetLargeAlternate;
-import org.nuclearfog.apollo.widgets.AppWidgetSmall;
-import org.nuclearfog.apollo.widgets.RecentWidgetProvider;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetBase;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate;
+import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
+import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 
 import java.lang.ref.WeakReference;
 

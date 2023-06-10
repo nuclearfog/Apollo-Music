@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.viewpagerindicator;
+package org.nuclearfog.apollo.ui.views;
 
 import static android.view.MotionEvent.ACTION_MASK;
 import static android.view.MotionEvent.ACTION_POINTER_DOWN;

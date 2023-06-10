@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import com.devspark.appmsg.AppMsg;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;

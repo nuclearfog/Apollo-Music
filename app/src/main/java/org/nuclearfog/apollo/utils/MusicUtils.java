@@ -44,7 +44,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.IApolloService;
-import com.devspark.appmsg.AppMsg;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.MusicPlaybackService;

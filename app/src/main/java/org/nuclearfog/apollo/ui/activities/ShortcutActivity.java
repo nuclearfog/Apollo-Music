@@ -11,12 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static org.nuclearfog.apollo.Config.ID;
-import static org.nuclearfog.apollo.Config.IDS;
-import static org.nuclearfog.apollo.Config.MIME_TYPE;
-import static org.nuclearfog.apollo.Config.NAME;
-import static org.nuclearfog.apollo.Config.PLAY_FROM_SEARCH;
-
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -31,6 +25,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
@@ -55,6 +50,10 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	 * ID of the loader
 	 */
 	private static final int LOADER_ID = 0x32942390;
+	/**
+	 * Play from search intent
+	 */
+	private static final String PLAY_FROM_SEARCH = "android.media.action.MEDIA_PLAY_FROM_SEARCH";
 	/**
 	 * If true, this class will begin playback and open
 	 * {@link AudioPlayerActivity}, false will close the class after playback,
@@ -105,8 +104,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 			LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
 		} else if (MusicUtils.isConnected()) {
 			//sHandler.post(new AsyncHandler(this));
-			String requestedMimeType = mIntent.getStringExtra(MIME_TYPE);
-			long id = mIntent.getLongExtra(ID, -1);
+			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
+			long id = mIntent.getLongExtra(Config.ID, -1);
 			if (requestedMimeType == null) {
 				return;
 			}
@@ -129,7 +128,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 					// Shuffle the genre track list
 					mShouldShuffle = true;
 					// Get the genre song list
-					long[] ids = ApolloUtils.readSerializedIDs(mIntent.getStringExtra(IDS));
+					long[] ids = ApolloUtils.readSerializedIDs(mIntent.getStringExtra(Config.IDS));
 					mList = MusicUtils.getSongListForGenres(getApplicationContext(), ids);
 					break;
 
@@ -158,7 +157,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 					// Don't shuffle the folders track list
 					mShouldShuffle = false;
 					// get folder path
-					String folder = "%" + mIntent.getStringExtra(NAME);
+					String folder = "%" + mIntent.getStringExtra(Config.NAME);
 					// Get folder song list
 					mList = MusicUtils.getSongListForFolder(getApplicationContext(), folder);
 					break;

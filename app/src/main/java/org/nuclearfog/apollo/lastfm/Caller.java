@@ -21,8 +21,6 @@
 
 package org.nuclearfog.apollo.lastfm;
 
-import static org.nuclearfog.apollo.Config.USER_AGENT;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 
@@ -70,6 +68,11 @@ public class Caller {
 	 *
 	 */
 	private static final String PARAM_API_KEY = "api_key";
+
+	/**
+	 * user aent for Last FM
+	 */
+	private static final String USER_AGENT = "Apollo";
 
 	/**
 	 *

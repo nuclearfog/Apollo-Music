@@ -23,6 +23,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -129,7 +130,9 @@ public class ColorSchemeDialog extends AlertDialog implements ColorPickerView.On
 			mColorPicker.setColor(color);
 			mNewColor.setBackgroundColor(color);
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 	}
 

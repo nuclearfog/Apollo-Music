@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo;
 
-import static android.app.NotificationManager.IMPORTANCE_LOW;
-import static org.nuclearfog.apollo.MusicPlaybackService.NOTIFICAITON_ID;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,6 +22,8 @@ import android.os.Build;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -82,7 +81,7 @@ public class NotificationHelper {
 		// get notificationmanager and create notificationchannel if required
 		notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationChannel channel = new NotificationChannel(NOTIFICAITON_ID, NOTFICIATION_NAME, IMPORTANCE_LOW);
+			NotificationChannel channel = new NotificationChannel(MusicPlaybackService.NOTIFICAITON_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
 			notificationManager.createNotificationChannel(channel);
 		}
 		// initialize callbacks
@@ -98,7 +97,7 @@ public class NotificationHelper {
 		// initialize expanded notification view
 		mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
 		// create notification builder
-		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICAITON_ID)
+		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(getPendingIntent())
 				.setPriority(NotificationCompat.PRIORITY_LOW)

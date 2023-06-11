@@ -47,7 +47,7 @@ import com.andrew.apollo.IApolloService;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
 import org.nuclearfog.apollo.model.Song;
@@ -195,7 +195,9 @@ public final class MusicUtils {
 			try {
 				service.goToNext();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -210,7 +212,9 @@ public final class MusicUtils {
 			try {
 				service.goToPrev();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -225,7 +229,9 @@ public final class MusicUtils {
 			try {
 				service.play();
 			} catch (Exception err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -239,7 +245,9 @@ public final class MusicUtils {
 			try {
 				service.pause();
 			} catch (Exception err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -269,7 +277,9 @@ public final class MusicUtils {
 						break;
 				}
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -297,7 +307,9 @@ public final class MusicUtils {
 						break;
 				}
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -311,7 +323,9 @@ public final class MusicUtils {
 			try {
 				return service.isPlaying();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -326,7 +340,9 @@ public final class MusicUtils {
 			try {
 				return service.getShuffleMode();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -341,7 +357,9 @@ public final class MusicUtils {
 			try {
 				return service.getRepeatMode();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -356,7 +374,9 @@ public final class MusicUtils {
 			try {
 				return service.getTrackName();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return null;
@@ -371,7 +391,9 @@ public final class MusicUtils {
 			try {
 				return service.getArtistName();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return null;
@@ -386,7 +408,9 @@ public final class MusicUtils {
 			try {
 				return service.getAlbumName();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return null;
@@ -401,7 +425,9 @@ public final class MusicUtils {
 			try {
 				return service.getAlbumId();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return -1;
@@ -416,7 +442,9 @@ public final class MusicUtils {
 			try {
 				return service.getAudioId();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return -1;
@@ -431,7 +459,9 @@ public final class MusicUtils {
 			try {
 				return service.getArtistId();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return -1;
@@ -446,7 +476,9 @@ public final class MusicUtils {
 			try {
 				return service.getAudioSessionId();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return -1;
@@ -462,7 +494,9 @@ public final class MusicUtils {
 			try {
 				return service.getQueue();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return EMPTY_LIST;
@@ -478,7 +512,9 @@ public final class MusicUtils {
 			try {
 				return service.removeTrack(id);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -495,7 +531,9 @@ public final class MusicUtils {
 			try {
 				service.removeTracks(pos, pos);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -509,7 +547,9 @@ public final class MusicUtils {
 			try {
 				return service.getQueuePosition();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -524,7 +564,9 @@ public final class MusicUtils {
 			try {
 				service.setQueuePosition(position);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -542,7 +584,9 @@ public final class MusicUtils {
 				return true;
 			}
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -662,7 +706,9 @@ public final class MusicUtils {
 			try {
 				service.openFile(uri);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -696,7 +742,9 @@ public final class MusicUtils {
 				service.open(list, forceShuffle ? 0 : position);
 				service.play();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -710,7 +758,9 @@ public final class MusicUtils {
 			try {
 				service.enqueue(list, MusicPlaybackService.NEXT);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -747,7 +797,9 @@ public final class MusicUtils {
 				service.open(mTrackList, pos);
 				service.play();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -948,7 +1000,9 @@ public final class MusicUtils {
 				// thrown when the app does not own the playlist
 				String message = activity.getString(R.string.error_add_playlist);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 			cursor.close();
 		}
@@ -999,7 +1053,9 @@ public final class MusicUtils {
 				String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1034,7 +1090,9 @@ public final class MusicUtils {
 				Settings.System.putString(resolver, Settings.System.RINGTONE, uri.toString());
 			}
 		} catch (Exception err) {
-			err.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				err.printStackTrace();
+			}
 			return;
 		}
 		// print message if succeded
@@ -1101,7 +1159,9 @@ public final class MusicUtils {
 			try {
 				service.moveQueueItem(from, to);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1115,7 +1175,9 @@ public final class MusicUtils {
 			try {
 				service.toggleFavorite();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1130,7 +1192,9 @@ public final class MusicUtils {
 				return service.isFavorite();
 
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return false;
@@ -1296,7 +1360,9 @@ public final class MusicUtils {
 			try {
 				service.refresh();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1323,7 +1389,9 @@ public final class MusicUtils {
 			try {
 				service.seek(position);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1337,7 +1405,9 @@ public final class MusicUtils {
 			try {
 				return service.position();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -1352,7 +1422,9 @@ public final class MusicUtils {
 			try {
 				return service.duration();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return 0;
@@ -1377,7 +1449,9 @@ public final class MusicUtils {
 			try {
 				service.removeTracks(0, Integer.MAX_VALUE);
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1415,7 +1489,9 @@ public final class MusicUtils {
 			try {
 				return service.getPath();
 			} catch (RemoteException err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		return null;
@@ -1444,7 +1520,9 @@ public final class MusicUtils {
 				activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
 			} catch (Exception err) {
 				// thrown when no audio file were found
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 		// remove tracks directly from storage
@@ -1458,7 +1536,9 @@ public final class MusicUtils {
 					}
 				} catch (Exception ex) {
 					// catch exception if file was not found
-					ex.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						ex.printStackTrace();
+					}
 				}
 			}
 			onPostDelete(activity);

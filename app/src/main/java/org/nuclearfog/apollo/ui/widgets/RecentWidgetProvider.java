@@ -28,7 +28,7 @@ import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;

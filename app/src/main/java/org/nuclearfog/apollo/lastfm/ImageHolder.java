@@ -23,6 +23,8 @@ package org.nuclearfog.apollo.lastfm;
 
 import androidx.annotation.NonNull;
 
+import org.nuclearfog.apollo.BuildConfig;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -52,7 +54,9 @@ public abstract class ImageHolder {
 				try {
 					size = ImageSize.valueOf(attribute.toUpperCase(Locale.ENGLISH));
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					// if they suddenly again introduce a new image size
 				}
 			}

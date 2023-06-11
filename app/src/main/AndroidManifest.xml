@@ -306,7 +306,7 @@
 
 		<!-- Music service -->
 		<service
-			android:name="org.nuclearfog.apollo.MusicPlaybackService"
+			android:name="org.nuclearfog.apollo.service.MusicPlaybackService"
 			android:label="@string/app_name"
 			android:enabled="true"
 			android:exported="false"

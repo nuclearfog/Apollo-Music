@@ -16,7 +16,8 @@ import android.os.ParcelFileDescriptor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 import java.lang.ref.WeakReference;
 
@@ -104,7 +105,9 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 				resetNextPlayer();
 			}
 		} catch (Exception err) {
-			err.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				err.printStackTrace();
+			}
 		}
 	}
 
@@ -119,7 +122,9 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 				mNextMediaPlayer = null;
 			}
 		} catch (Exception err) {
-			err.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				err.printStackTrace();
+			}
 		}
 	}
 
@@ -254,7 +259,9 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 				}
 				player.prepare();
 			} catch (Exception err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 				return false;
 			}
 			player.setOnCompletionListener(this);

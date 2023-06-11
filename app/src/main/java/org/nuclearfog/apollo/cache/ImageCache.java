@@ -29,6 +29,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.BuildConfig;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -167,7 +169,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 			digest.update(key.getBytes());
 			cacheKey = bytesToHexString(digest.digest());
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			cacheKey = String.valueOf(key.hashCode());
 		}
 		return cacheKey;
@@ -239,7 +243,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 					// Initialize the disk cache in a background thread
 					initDiskCache(folder);
 				} catch (Exception err) {
-					err.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						err.printStackTrace();
+					}
 				}
 			}
 		}).start();
@@ -263,7 +269,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 				try {
 					mDiskCache = DiskLruCache.open(cacheFolder, 1, 1, DISK_CACHE_SIZE);
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -315,7 +323,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 					snapshot.getInputStream(DISK_CACHE_INDEX).close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					e.printStackTrace();
+				}
 				Log.e(TAG, "addBitmapToCache - " + e);
 			} finally {
 				try {
@@ -323,10 +333,14 @@ public final class ImageCache implements ComponentCallbacks2 {
 						out.close();
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					Log.e(TAG, "addBitmapToCache - " + e);
 				} catch (IllegalStateException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					Log.e(TAG, "addBitmapToCache - " + e);
 				}
 			}
@@ -398,7 +412,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					e.printStackTrace();
+				}
 				Log.e(TAG, "getBitmapFromDiskCache - " + e);
 			} finally {
 				try {
@@ -406,7 +422,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 						inputStream.close();
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -483,7 +501,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 		} catch (FileNotFoundException e) {
 			// ignore
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		return artwork;
 	}
@@ -502,7 +522,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 							mDiskCache.flush();
 						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						if (BuildConfig.DEBUG) {
+							e.printStackTrace();
+						}
 						Log.e(TAG, "flush - " + e);
 					}
 				}
@@ -524,7 +546,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 						mDiskCache = null;
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					Log.e(TAG, "clearCaches - " + e);
 				}
 				// Clear the memory cache
@@ -562,7 +586,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 				mDiskCache.remove(hashKeyForDisk(key));
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			Log.e(TAG, "remove - " + e);
 		}
 		flush();

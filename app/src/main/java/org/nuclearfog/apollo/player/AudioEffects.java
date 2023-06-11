@@ -7,6 +7,7 @@ import android.media.audiofx.PresetReverb;
 
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -55,7 +56,9 @@ public final class AudioEffects {
 			return instance;
 		} catch (Exception e) {
 			// thrown if there is no support for audio effects
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}
@@ -105,8 +108,8 @@ public final class AudioEffects {
 	 * @return array with min and max limits
 	 */
 	public int[] getBandLevelRange() {
-		short[] test = equalizer.getBandLevelRange();
-		return new int[]{test[0], test[1]};
+		short[] ranges = equalizer.getBandLevelRange();
+		return new int[]{ranges[0], ranges[1]};
 	}
 
 	/**

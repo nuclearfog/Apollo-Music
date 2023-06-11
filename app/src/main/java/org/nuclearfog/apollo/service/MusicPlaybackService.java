@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo;
+package org.nuclearfog.apollo.service;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
@@ -46,8 +46,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 
-import com.andrew.apollo.IApolloService;
-
+import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.NotificationHelper;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.player.MultiPlayer;
@@ -61,7 +61,6 @@ import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -986,7 +985,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				cursor.close();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -1294,7 +1295,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				cursor.close();
 			}
 		} catch (RuntimeException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
@@ -1380,53 +1383,82 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * Notify the change-receivers that something has changed.
+	 *
 	 */
-	private void notifyChange(String what) {
-		if (what.equals(POSITION_CHANGED)) {
-			return;
-		}
-		long audioId = getAudioId();
-		long albumId = getAlbumId();
-		String albumName = getAlbumName();
-		String artistName = getArtistName();
-		String trackName = getTrackName();
-
-		Intent intent = new Intent(what);
-		intent.putExtra("id", audioId);
-		intent.putExtra("artist", artistName);
-		intent.putExtra("album", albumName);
-		intent.putExtra("track", trackName);
-		intent.putExtra("playing", isPlaying());
-		intent.putExtra("isfavorite", isFavorite());
-		sendBroadcast(intent);
-
-		Intent musicIntent = new Intent(intent);
-		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
-		sendBroadcast(musicIntent);
-
-		if (what.equals(META_CHANGED)) {
-			// Increase the play count for favorite songs.
-			if (mFavoritesCache.exists(audioId)) {
-				mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-			}
-			mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-			// Add the track to the recently played list.
-			String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
-			String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
-			mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
-		} else if (what.equals(QUEUE_CHANGED)) {
-			saveQueue(true);
-			if (isPlaying()) {
-				setNextTrack();
-			}
-		} else {
-			saveQueue(false);
-			if (what.equals(PLAYSTATE_CHANGED)) {
-				mNotificationHelper.updateNotification();
+	private long getDurationMillis() {
+		synchronized (this) {
+			if (mCursor != null && mCursor.moveToFirst()) {
+				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
 			}
 		}
-		mIntentReceiver.updateWidgets(this, what);
+		return -1L;
+	}
+
+	/**
+	 * @param interval The duration the queue
+	 * @return The position of the next track to play
+	 */
+	private int nextInt(int interval) {
+		int next;
+		do
+		{
+			next = mRandom.nextInt(interval);
+		} while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
+		mPrevious = next;
+		mHistoryOfNumbers.add(mPrevious);
+		mPreviousNumbers.add(mPrevious);
+		// Removes old tracks and cleans up the history preparing for new tracks
+		// to be added to the mapping
+		if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MusicPlaybackService.MAX_HISTORY_SIZE) {
+			for (int i = 0; i < Math.max(1, MusicPlaybackService.MAX_HISTORY_SIZE / 2); i++) {
+				mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
+			}
+		}
+		return next;
+	}
+
+	/**
+	 * Opens a file and prepares it for playback
+	 *
+	 * @param path The path of the file to open
+	 */
+	private boolean openFile(String path) {
+		synchronized (this) {
+			if (path == null) {
+				return false;
+			}
+			// If mCursor is null, try to associate path with a database cursor
+			if (mCursor == null) {
+				Uri uri = Uri.parse(path);
+				long id = -1;
+				try {
+					if (uri != null && uri.getLastPathSegment() != null)
+						id = Long.parseLong(uri.getLastPathSegment());
+				} catch (NumberFormatException ex) {
+					if (BuildConfig.DEBUG) {
+						ex.printStackTrace();
+					}
+				}
+				if (id != -1 && path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
+					updateCursor(uri);
+				} else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
+					updateCursor(id);
+				} else {
+					updateCursor(path);
+				}
+				if (mCursor != null && mCursor.moveToFirst()) {
+					id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
+					mPlayList.addFirst(id);
+					mPlayPos = 0;
+				}
+			}
+			mPlayer.setDataSource(path);
+			if (mPlayer.isInitialized()) {
+				return true;
+			}
+			stop(true);
+			return false;
+		}
 	}
 
 	/**
@@ -1505,11 +1537,61 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
+	 * Notify the change-receivers that something has changed.
+	 */
+	void notifyChange(String what) {
+		if (what.equals(POSITION_CHANGED)) {
+			return;
+		}
+		long audioId = getAudioId();
+		long albumId = getAlbumId();
+		String albumName = getAlbumName();
+		String artistName = getArtistName();
+		String trackName = getTrackName();
+
+		Intent intent = new Intent(what);
+		intent.putExtra("id", audioId);
+		intent.putExtra("artist", artistName);
+		intent.putExtra("album", albumName);
+		intent.putExtra("track", trackName);
+		intent.putExtra("playing", isPlaying());
+		intent.putExtra("isfavorite", isFavorite());
+		sendBroadcast(intent);
+
+		Intent musicIntent = new Intent(intent);
+		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
+		sendBroadcast(musicIntent);
+
+		if (what.equals(META_CHANGED)) {
+			// Increase the play count for favorite songs.
+			if (mFavoritesCache.exists(audioId)) {
+				mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
+			}
+			mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
+			// Add the track to the recently played list.
+			String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
+			String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
+			mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+		} else if (what.equals(QUEUE_CHANGED)) {
+			saveQueue(true);
+			if (isPlaying()) {
+				setNextTrack();
+			}
+		} else {
+			saveQueue(false);
+			if (what.equals(PLAYSTATE_CHANGED)) {
+				mNotificationHelper.updateNotification();
+			}
+		}
+		mIntentReceiver.updateWidgets(this, what);
+	}
+
+	/**
 	 * Returns the audio session ID
 	 *
 	 * @return The current media player audio session ID
 	 */
-	private int getAudioSessionId() {
+	int getAudioSessionId() {
 		return mPlayer.getAudioSessionId();
 	}
 
@@ -1518,7 +1600,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
 	 */
-	private int getMediaMountedCount() {
+	int getMediaMountedCount() {
 		return mMediaMountedCount;
 	}
 
@@ -1531,7 +1613,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param last  The last file to be removed
 	 * @return the number of tracks deleted
 	 */
-	private int removeTracks(int first, int last) {
+	int removeTracks(int first, int last) {
 		int numremoved = removeTracksInternal(first, last);
 		if (numremoved > 0) {
 			notifyChange(QUEUE_CHANGED);
@@ -1540,53 +1622,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * Opens a file and prepares it for playback
-	 *
-	 * @param path The path of the file to open
-	 */
-	private boolean openFile(String path) {
-		synchronized (this) {
-			if (path == null) {
-				return false;
-			}
-			// If mCursor is null, try to associate path with a database cursor
-			if (mCursor == null) {
-				Uri uri = Uri.parse(path);
-				long id = -1;
-				try {
-					if (uri != null && uri.getLastPathSegment() != null)
-						id = Long.parseLong(uri.getLastPathSegment());
-				} catch (NumberFormatException ex) {
-					ex.printStackTrace();
-				}
-				if (id != -1 && path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
-					updateCursor(uri);
-				} else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
-					updateCursor(id);
-				} else {
-					updateCursor(path);
-				}
-				if (mCursor != null && mCursor.moveToFirst()) {
-					id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
-					mPlayList.addFirst(id);
-					mPlayPos = 0;
-				}
-			}
-			mPlayer.setDataSource(path);
-			if (mPlayer.isInitialized()) {
-				return true;
-			}
-			stop(true);
-			return false;
-		}
-	}
-
-	/**
 	 * Sets the shuffle mode
 	 *
 	 * @param shufflemode The shuffle mode to use
 	 */
-	private void setShuffleMode(int shufflemode) {
+	void setShuffleMode(int shufflemode) {
 		synchronized (this) {
 			if (mShuffleMode == shufflemode && !mPlayList.isEmpty()) {
 				return;
@@ -1626,7 +1666,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The path to the current song
 	 */
-	private String getPath() {
+	String getPath() {
 		synchronized (this) {
 			if (mCursor != null && mCursor.moveToFirst()) {
 				return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
@@ -1640,7 +1680,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @param index The position to place the track
 	 */
-	private void setQueuePosition(int index) {
+	void setQueuePosition(int index) {
 		synchronized (this) {
 			stop(false);
 			mPlayPos = index;
@@ -1658,7 +1698,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return the current position in the queue
 	 */
-	private int getQueuePosition() {
+	int getQueuePosition() {
 		synchronized (this) {
 			return mPlayPos;
 		}
@@ -1669,7 +1709,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song artist ID
 	 */
-	private long getArtistId() {
+	long getArtistId() {
 		synchronized (this) {
 			if (mCursor != null && mCursor.moveToFirst()) {
 				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
@@ -1679,23 +1719,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 *
-	 */
-	private long getDurationMillis() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
-			}
-		}
-		return -1L;
-	}
-
-	/**
 	 * Returns the current audio ID
 	 *
 	 * @return The current track ID
 	 */
-	private long getAudioId() {
+	long getAudioId() {
 		synchronized (this) {
 			if (mPlayPos >= 0 && mPlayer.isInitialized()) {
 				return mPlayList.get(mPlayPos);
@@ -1710,7 +1738,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param id The id to be removed
 	 * @return how many instances of the track were removed
 	 */
-	private int removeTrack(long id) {
+	int removeTrack(long id) {
 		synchronized (this) {
 			int numremoved = 0;
 			for (int pos = 0; pos < mPlayList.size(); pos++) {
@@ -1730,7 +1758,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current playback position in miliseconds
 	 */
-	private long position() {
+	long position() {
 		if (mPlayer.isInitialized()) {
 			return mPlayer.position();
 		}
@@ -1742,7 +1770,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The duration of the current track in miliseconds
 	 */
-	private long duration() {
+	long duration() {
 		if (mPlayer.isInitialized()) {
 			return mPlayer.duration();
 		}
@@ -1754,7 +1782,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The queue as a long[]
 	 */
-	private long[] getQueue() {
+	long[] getQueue() {
 		synchronized (this) {
 			int len = mPlayList.size();
 			long[] list = new long[len];
@@ -1768,7 +1796,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * True if the current track is a "favorite", false otherwise
 	 */
-	private boolean isFavorite() {
+	boolean isFavorite() {
 		synchronized (this) {
 			if (mFavoritesCache != null) {
 				return mFavoritesCache.exists(getAudioId());
@@ -1782,7 +1810,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @param repeatmode The repeat mode to use
 	 */
-	private void setRepeatMode(int repeatmode) {
+	void setRepeatMode(int repeatmode) {
 		synchronized (this) {
 			mRepeatMode = repeatmode;
 			setNextTrack();
@@ -1797,7 +1825,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param list     The list of tracks to open
 	 * @param position The position to start playback at
 	 */
-	private void open(long[] list, int position) {
+	void open(long[] list, int position) {
 		synchronized (this) {
 			if (mShuffleMode == SHUFFLE_AUTO) {
 				mShuffleMode = SHUFFLE_NORMAL;
@@ -1832,7 +1860,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Changes from the current track to the previous played track
 	 */
-	private void prev() {
+	void prev() {
 		synchronized (this) {
 			if (mShuffleMode == SHUFFLE_NORMAL) {
 				// Go to previously-played track and remove it from the history
@@ -1858,7 +1886,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Toggles the current song as a favorite.
 	 */
-	private void toggleFavorite() {
+	void toggleFavorite() {
 		synchronized (this) {
 			if (mFavoritesCache != null) {
 				long trackId = getAudioId();
@@ -1878,7 +1906,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param from The position the item is currently at
 	 * @param to   The position the item is being moved to
 	 */
-	private void moveQueueItem(int from, int to) {
+	void moveQueueItem(int from, int to) {
 		synchronized (this) {
 			if (from >= mPlayList.size()) {
 				from = mPlayList.size() - 1;
@@ -1908,7 +1936,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param list   The list to queue
 	 * @param action The action to take
 	 */
-	private void enqueue(long[] list, int action) {
+	void enqueue(long[] list, int action) {
 		synchronized (this) {
 			if (action == NEXT && mPlayPos + 1 < mPlayList.size()) {
 				addToPlayList(list, mPlayPos + 1);
@@ -1930,411 +1958,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				play();
 				notifyChange(META_CHANGED);
 			}
-		}
-	}
-
-	/**
-	 * @param interval The duration the queue
-	 * @return The position of the next track to play
-	 */
-	public int nextInt(int interval) {
-		int next;
-		do
-		{
-			next = mRandom.nextInt(interval);
-		} while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
-		mPrevious = next;
-		mHistoryOfNumbers.add(mPrevious);
-		mPreviousNumbers.add(mPrevious);
-		// Removes old tracks and cleans up the history preparing for new tracks
-		// to be added to the mapping
-		if (!mHistoryOfNumbers.isEmpty() && mHistoryOfNumbers.size() >= MusicPlaybackService.MAX_HISTORY_SIZE) {
-			for (int i = 0; i < Math.max(1, MusicPlaybackService.MAX_HISTORY_SIZE / 2); i++) {
-				mPreviousNumbers.remove(mHistoryOfNumbers.removeFirst());
-			}
-		}
-		return next;
-	}
-
-	/**
-	 * callback used to communicate with activities
-	 */
-	private static class ServiceStub extends IApolloService.Stub {
-
-		private final WeakReference<MusicPlaybackService> mService;
-
-		private ServiceStub(MusicPlaybackService service) {
-			mService = new WeakReference<>(service);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void openFile(Uri uri) {
-			MusicPlaybackService service = mService.get();
-			if (service != null && uri != null)
-				service.openFile(uri);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void open(long[] list, int position) {
-			MusicPlaybackService service = mService.get();
-			if (mService.get() != null && list != null)
-				service.open(list, position);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void stop() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.stop();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void pause() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.pause();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void play() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.play();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void prev() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.prev();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void goToNext() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.gotoNext(true);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void goToPrev() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.goToPrev();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void enqueue(long[] list, int action) {
-			MusicPlaybackService service = mService.get();
-			if (service != null && list != null)
-				service.enqueue(list, action);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void moveQueueItem(int from, int to) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.moveQueueItem(from, to);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void toggleFavorite() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.toggleFavorite();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void refresh() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.notifyChange(REFRESH);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean isFavorite() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.isFavorite();
-			return false;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public boolean isPlaying() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.isPlaying();
-			return false;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long[] getQueue() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getQueue();
-			return new long[]{};
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long duration() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.duration();
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long position() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.position();
-			return -1;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long seek(long position) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.seek(position);
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long getAudioId() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getAudioId();
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long getArtistId() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getArtistId();
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public long getAlbumId() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getAlbumId();
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getArtistName() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getArtistName();
-			return "";
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getTrackName() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getTrackName();
-			return "";
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getAlbumName() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getAlbumName();
-			return "";
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getPath() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getPath();
-			return "";
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int getQueuePosition() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getQueuePosition();
-			return -1;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void setQueuePosition(int index) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.setQueuePosition(index);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int getShuffleMode() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getShuffleMode();
-			return SHUFFLE_NONE;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void setShuffleMode(int shufflemode) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.setShuffleMode(shufflemode);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int getRepeatMode() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getRepeatMode();
-			return REPEAT_NONE;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void setRepeatMode(int repeatmode) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				service.setRepeatMode(repeatmode);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int removeTracks(int first, int last) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.removeTracks(first, last);
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int removeTrack(long id) {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.removeTrack(id);
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int getMediaMountedCount() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getMediaMountedCount();
-			return 0;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public int getAudioSessionId() {
-			MusicPlaybackService service = mService.get();
-			if (service != null)
-				return service.getAudioSessionId();
-			return 0;
 		}
 	}
 }

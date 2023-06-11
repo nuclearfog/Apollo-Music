@@ -11,14 +11,14 @@
 
 package org.nuclearfog.apollo.utils;
 
-import static org.nuclearfog.apollo.MusicPlaybackService.REPEAT_NONE;
-import static org.nuclearfog.apollo.MusicPlaybackService.SHUFFLE_NONE;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.REPEAT_NONE;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.SHUFFLE_NONE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.ArtistFragment;

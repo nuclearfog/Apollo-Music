@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 import java.lang.ref.WeakReference;
 

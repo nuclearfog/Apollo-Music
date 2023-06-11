@@ -1,11 +1,11 @@
 package org.nuclearfog.apollo.player;
 
-import static org.nuclearfog.apollo.MusicPlaybackService.FADEDOWN;
-import static org.nuclearfog.apollo.MusicPlaybackService.FADEUP;
-import static org.nuclearfog.apollo.MusicPlaybackService.FOCUSCHANGE;
-import static org.nuclearfog.apollo.MusicPlaybackService.SERVER_DIED;
-import static org.nuclearfog.apollo.MusicPlaybackService.TRACK_ENDED;
-import static org.nuclearfog.apollo.MusicPlaybackService.TRACK_WENT_TO_NEXT;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.FADEDOWN;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.FADEUP;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.FOCUSCHANGE;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.SERVER_DIED;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.TRACK_ENDED;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.TRACK_WENT_TO_NEXT;
 
 import android.media.AudioManager;
 import android.os.Handler;
@@ -14,7 +14,7 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 import java.lang.ref.WeakReference;
 

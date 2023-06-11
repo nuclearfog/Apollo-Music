@@ -35,6 +35,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -1536,7 +1537,9 @@ public class DragSortListView extends ListView implements OnScrollListener {
 						view.addView(child);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 				}
 			} else {
 				AbsListView.LayoutParams params = new AbsListView.LayoutParams(
@@ -1551,7 +1554,9 @@ public class DragSortListView extends ListView implements OnScrollListener {
 					}
 					view.addView(child);
 				} catch (Exception e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 				}
 			}
 			adjustItem(position + getHeaderViewsCount(), view, true);

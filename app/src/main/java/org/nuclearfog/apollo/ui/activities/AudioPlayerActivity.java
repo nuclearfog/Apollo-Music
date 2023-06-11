@@ -54,7 +54,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.PagerAdapter;
 import org.nuclearfog.apollo.cache.ImageFetcher;
@@ -859,7 +859,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			}
 			return smoothrefreshtime;
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		return 500;
 	}
@@ -895,7 +897,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 					shareIntent.setClipData(ClipData.newRawUri("", fileUri));
 				startActivity(Intent.createChooser(shareIntent, getString(R.string.share_track_using)));
 			} catch (Exception err) {
-				err.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
 			}
 		}
 	}

@@ -20,6 +20,7 @@ import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.Config;
@@ -88,7 +89,9 @@ public final class NavUtils {
 			activity.startActivity(effects);
 		} catch (ActivityNotFoundException notFound) {
 			AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
-			notFound.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				notFound.printStackTrace();
+			}
 		}
 	}
 

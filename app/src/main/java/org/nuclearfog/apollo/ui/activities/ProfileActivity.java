@@ -44,6 +44,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.PagerAdapter;
@@ -791,7 +792,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		try {
 			startActivity(googleSearch);
 		} catch (ActivityNotFoundException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 	}
 

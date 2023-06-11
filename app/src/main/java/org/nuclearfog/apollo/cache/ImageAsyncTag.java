@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.BitmapUtils;
@@ -57,7 +58,9 @@ public class ImageAsyncTag {
 			bitmapWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mKey, artistName, albumName, Long.toString(albumId));
 		} catch (RejectedExecutionException e) {
 			// Executor has exhausted queue space, show default artwork
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -169,7 +172,9 @@ public class ImageAsyncTag {
 					return new Drawable[]{result, layerBlur};
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					e.printStackTrace();
+				}
 			}
 			return null;
 		}

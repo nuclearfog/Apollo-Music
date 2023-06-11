@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 public abstract class AppWidgetBase extends AppWidgetProvider {
 

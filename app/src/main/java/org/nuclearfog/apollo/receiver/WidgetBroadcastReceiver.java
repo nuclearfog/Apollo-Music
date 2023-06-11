@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetBase;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLarge;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate;

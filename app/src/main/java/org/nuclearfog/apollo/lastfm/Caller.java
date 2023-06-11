@@ -24,6 +24,7 @@ package org.nuclearfog.apollo.lastfm;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.lastfm.Result.Status;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.w3c.dom.Document;
@@ -147,13 +148,15 @@ public class Caller {
 		try {
 			lastResult = createResultFromInputStream(inputStream);
 		} catch (IOException ioEx) {
-			ioEx.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				ioEx.printStackTrace();
+			}
 			lastResult = new Result(ioEx.getLocalizedMessage());
-			ioEx.printStackTrace();
 		} catch (SAXException saxEx) {
-			saxEx.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				saxEx.printStackTrace();
+			}
 			lastResult = new Result(saxEx.getLocalizedMessage());
-			saxEx.printStackTrace();
 		}
 		return lastResult;
 	}
@@ -224,7 +227,9 @@ public class Caller {
 			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 			return builderFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			// better never happens
 			throw new RuntimeException(e);
 		}

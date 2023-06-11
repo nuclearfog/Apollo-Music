@@ -22,7 +22,8 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.nuclearfog.apollo.MusicPlaybackService;
+import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lastfm.Album;
 import org.nuclearfog.apollo.lastfm.Artist;
@@ -139,7 +140,9 @@ public class ImageFetcher extends ImageWorker {
 			}
 			return tempFile;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		} finally {
 			if (urlConnection != null) {
 				urlConnection.disconnect();
@@ -148,7 +151,9 @@ public class ImageFetcher extends ImageWorker {
 				try {
 					out.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

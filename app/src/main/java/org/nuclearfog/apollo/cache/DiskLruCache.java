@@ -13,6 +13,8 @@ package org.nuclearfog.apollo.cache;
 
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.BuildConfig;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -232,7 +234,9 @@ public final class DiskLruCache implements Closeable {
 			try {
 				closeable.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -282,7 +286,9 @@ public final class DiskLruCache implements Closeable {
 				cache.journalWriter = new BufferedWriter(new FileWriter(cache.journalFile, true), IO_BUFFER_SIZE);
 				return cache;
 			} catch (IOException journalIsCorrupt) {
-				journalIsCorrupt.printStackTrace();
+				if (BuildConfig.DEBUG) {
+					journalIsCorrupt.printStackTrace();
+				}
 				cache.delete();
 			}
 		}
@@ -442,7 +448,9 @@ public final class DiskLruCache implements Closeable {
 				ins[i] = new FileInputStream(entry.getCleanFile(i));
 			}
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 			// a file must have been deleted manually!
 			return null;
 		}
@@ -728,7 +736,9 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.write(oneByte);
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					hasErrors = true;
 				}
 			}
@@ -738,7 +748,9 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.write(buffer, offset, length);
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					hasErrors = true;
 				}
 			}
@@ -748,7 +760,9 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					hasErrors = true;
 				}
 			}
@@ -758,7 +772,9 @@ public final class DiskLruCache implements Closeable {
 				try {
 					out.flush();
 				} catch (IOException e) {
-					e.printStackTrace();
+					if (BuildConfig.DEBUG) {
+						e.printStackTrace();
+					}
 					hasErrors = true;
 				}
 			}

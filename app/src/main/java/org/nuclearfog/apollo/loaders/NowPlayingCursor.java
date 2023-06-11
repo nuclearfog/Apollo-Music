@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
@@ -183,7 +184,9 @@ public class NowPlayingCursor extends AbstractCursor {
 				cursor = null;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			if (BuildConfig.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		super.close();
 	}

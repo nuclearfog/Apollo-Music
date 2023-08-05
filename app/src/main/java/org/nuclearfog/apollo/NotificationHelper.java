@@ -104,6 +104,7 @@ public class NotificationHelper {
 				.setCustomBigContentView(mExpandedView)
 				.setCustomContentView(mSmallContent)
 				.setDefaults(Notification.DEFAULT_ALL)
+				.setOnlyAlertOnce(true)
 				.setAutoCancel(false)
 				.setSilent(true)
 				.setOngoing(true);
@@ -113,16 +114,9 @@ public class NotificationHelper {
 	 * Call this to build the {@link Notification}.
 	 */
 	public void buildNotification() {
-		// Control playback from the notification
-		initPlaybackActions(mService.isPlaying());
-		// Set up the content view
-		updateCollapsedLayout();
-		// Control playback from the notification
-		initExpandedPlaybackActions(mService.isPlaying());
-		// Set up the expanded content view
-		updateExpandedLayout();
-		// update notification content
-		notificationManager.notify(APOLLO_MUSIC_SERVICE, notificationBuilder.build());
+		initPlaybackActions();
+		initExpandedPlaybackActions();
+		updateNotification();
 	}
 
 	/**
@@ -159,7 +153,7 @@ public class NotificationHelper {
 	 * Lets the buttons in the remote view control playback in the expanded
 	 * layout
 	 */
-	private void initExpandedPlaybackActions(boolean isPlaying) {
+	private void initExpandedPlaybackActions() {
 		// Play and pause
 		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, callbacks[0]);
 		// Skip tracks
@@ -168,14 +162,12 @@ public class NotificationHelper {
 		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbacks[2]);
 		// Stop and collapse the notification
 		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbacks[3]);
-		// Update the play button image
-		mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
 	}
 
 	/**
 	 * Lets the buttons in the remote view control playback in the normal layout
 	 */
-	private void initPlaybackActions(boolean isPlaying) {
+	private void initPlaybackActions() {
 		// Play and pause
 		mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbacks[0]);
 		// Skip tracks
@@ -184,8 +176,6 @@ public class NotificationHelper {
 		mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbacks[2]);
 		// Stop and collapse the notification
 		mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbacks[3]);
-		// Update the play button image
-		mSmallContent.setImageViewResource(R.id.notification_base_play, isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
 	}
 
 	/**

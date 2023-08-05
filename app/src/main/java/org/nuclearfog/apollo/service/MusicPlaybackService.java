@@ -30,21 +30,17 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.media.MediaBrowserServiceCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
@@ -64,7 +60,6 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -73,7 +68,7 @@ import java.util.TreeSet;
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
-public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener {
+public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
 	/**
 	 *
 	 */
@@ -447,12 +442,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		// Initialize the favorites and recents databases
 		mRecentsCache = RecentStore.getInstance(this);
 		mFavoritesCache = FavoritesStore.getInstance(this);
 		mPopularCache = PopularStore.getInstance(this);
-
 		// Initialize the notification helper
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || checkSelfPermission(POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
 			mNotificationHelper = new NotificationHelper(this);
@@ -461,7 +454,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mImageFetcher = ImageFetcher.getInstance(this);
 		// Initialize the image cache
 		mImageFetcher.setImageCache(ImageCache.getInstance(this));
-
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
@@ -556,22 +548,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		}
 		mNotificationHelper.cancelNotification();
 		super.onDestroy();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Nullable
-	@Override
-	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-		return new BrowserRoot("test", null);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
 	}
 
 	/**

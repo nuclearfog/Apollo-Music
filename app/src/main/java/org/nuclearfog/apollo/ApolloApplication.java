@@ -13,15 +13,8 @@ package org.nuclearfog.apollo;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
-
 import org.nuclearfog.apollo.cache.ImageCache;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ApolloApplication extends Application implements UncaughtExceptionHandler {
+public class ApolloApplication extends Application {
 
 	/**
 	 * {@inheritDoc}
@@ -42,8 +35,6 @@ public class ApolloApplication extends Application implements UncaughtExceptionH
 		super.onCreate();
 		// Turn off logging for jaudiotagger.
 		Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
-		// add error handler to write stacktrace to file
-		Thread.setDefaultUncaughtExceptionHandler(this);
 	}
 
 	/**
@@ -53,29 +44,5 @@ public class ApolloApplication extends Application implements UncaughtExceptionH
 	public void onLowMemory() {
 		ImageCache.getInstance(this).evictAll();
 		super.onLowMemory();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void uncaughtException(@NonNull Thread t, @NonNull Throwable e) {
-		// write stacktrace file to cache folder
-		try {
-			File outputFile = new File(getExternalCacheDir(), "stacktrace.txt");
-			FileOutputStream fos = new FileOutputStream(outputFile);
-			PrintStream ps = new PrintStream(fos);
-			e.printStackTrace(ps);
-			ps.close();
-		} catch (FileNotFoundException ex) {
-			// ignore
-		}
-		// delegate error handling to Android system
-		UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
-		if (oldHandler != null) {
-			oldHandler.uncaughtException(t, e);
-		} else {
-			System.exit(2);
-		}
 	}
 }

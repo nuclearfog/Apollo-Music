@@ -30,6 +30,7 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.service.RecentWidgetService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -159,7 +160,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyChange(final MusicPlaybackService service, String what) {
+	public void notifyChange(MusicPlaybackService service, String what) {
 		if (hasInstances(service)) {
 			if (MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
 				performUpdate(service, null);
@@ -264,13 +265,11 @@ public class RecentWidgetProvider extends AppWidgetBase {
 		@Override
 		public void run() {
 			Service service = this.service.get();
-			if (service == null)
-				return;
-			AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(service);
-			ComponentName componentName = new ComponentName(service, RecentWidgetProvider.class);
-			appWidgetManager.notifyAppWidgetViewDataChanged(
-					appWidgetManager.getAppWidgetIds(componentName),
-					R.id.app_widget_recents_list);
+			if (service != null) {
+				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(service);
+				ComponentName componentName = new ComponentName(service, RecentWidgetProvider.class);
+				appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(componentName), R.id.app_widget_recents_list);
+			}
 		}
 	}
 }

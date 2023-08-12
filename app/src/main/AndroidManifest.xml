@@ -301,7 +301,7 @@
 
 		<!-- The service serving the RemoteViews to the recently listened App Widget -->
 		<service
-			android:name="org.nuclearfog.apollo.ui.widgets.RecentWidgetService"
+			android:name="org.nuclearfog.apollo.service.RecentWidgetService"
 			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 		<!-- Music service -->

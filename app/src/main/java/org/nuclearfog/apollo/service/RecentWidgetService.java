@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.widgets;
+package org.nuclearfog.apollo.service;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +25,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.provider.RecentStore.RecentStoreColumns;
+import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 /**

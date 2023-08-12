@@ -378,6 +378,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Used to track what type of audio focus loss caused the playback to pause
 	 */
 	private boolean mPausedByTransientLossOfFocus = false;
+	/**
+	 * used to chekc if application is running in the foreground
+	 */
+	private boolean isForeground = true;
 
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
@@ -453,6 +457,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
 
+		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
 		// Start up the thread running the service. Note that we create a
 		// separate thread because the service normally runs in the process's
 		// main thread, which we don't want to block. We also make it
@@ -470,8 +477,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
 		mSession.setPlaybackState(state);
 		mSession.setActive(true);
-
-		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
@@ -504,7 +509,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mPlayer = new MultiPlayer(this);
 		mPlayer.setHandler(mPlayerHandler);
 
-		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
 		// Listen for the idle state
@@ -561,7 +565,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceStartId = startId;
 		if (intent != null) {
 			String action = intent.getAction();
-			boolean isForeground = false;
 			if (intent.hasExtra(NOW_IN_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(NOW_IN_FOREGROUND, false);
 				if (isForeground) {
@@ -576,7 +579,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				releaseServiceUiAndStop();
 				return START_NOT_STICKY;
 			}
-			handleCommandIntent(intent, isForeground);
+			handleCommandIntent(intent);
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
@@ -587,20 +590,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * used by widgets or other intents to
 	 */
-	public void handleCommandIntent(Intent intent, boolean isInForeground) {
+	public void handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
 		String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
 		// next track
 		if (CMDNEXT.equals(command) || NEXT_ACTION.equals(action)) {
 			gotoNext(true);
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
 		// previous track
 		else if (CMDPREVIOUS.equals(command) || PREVIOUS_ACTION.equals(action)) {
 			goToPrev();
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
@@ -612,7 +615,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			} else {
 				play();
 			}
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
@@ -620,14 +623,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (CMDPAUSE.equals(command) || PAUSE_ACTION.equals(action)) {
 			pause();
 			mPausedByTransientLossOfFocus = false;
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
 		// play track
 		else if (CMDPLAY.equals(command)) {
 			play();
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
@@ -638,7 +641,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			seek(0);
 			releaseServiceUiAndStop();
 			mNotificationHelper.cancelNotification();
-			if (!isInForeground) {
+			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
 		}
@@ -1574,6 +1577,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
 			String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
 			mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+			if (!isForeground) {
+				mNotificationHelper.updateNotification();
+			}
 		} else if (what.equals(QUEUE_CHANGED)) {
 			saveQueue(true);
 			if (isPlaying()) {

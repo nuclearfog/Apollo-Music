@@ -50,7 +50,7 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 			} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
 				recentWidget.performUpdate(mService, small);
 			} else {
-				mService.handleCommandIntent(intent, false);
+				mService.handleCommandIntent(intent);
 			}
 		}
 	}

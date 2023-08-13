@@ -17,14 +17,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/action_bar_color"
 	android:layout_margin="0dp"
 	tools:ignore="RelativeOverlap,ContentDescription">
 
 	<RelativeLayout
 		android:id="@+id/app_widget_recents_action_bar"
 		android:layout_width="match_parent"
-		android:layout_height="@dimen/app_widget_recents_action_bar_height">
+		android:layout_height="@dimen/app_widget_recents_action_bar_height"
+		android:background="@color/action_bar_color">
 
 		<ImageView
 			android:id="@+id/app_widget_recents_icon"

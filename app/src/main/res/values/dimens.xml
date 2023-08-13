@@ -103,6 +103,8 @@
 	<dimen name="app_widget_small_button_padding">8.0dp</dimen>
 	<dimen name="app_widget_small_button_height">48.0dp</dimen>
 	<dimen name="app_widget_recents_action_bar_height">48.0dp</dimen>
+	<dimen name="app_widget_recents_action_bar_icon_size">32.0dp</dimen>
+	<dimen name="app_widget_recents_action_bar_icon_margin">8.0dp</dimen>
 	<dimen name="app_widget_recents_action_bar_item_padding">8.0dp</dimen>
 	<dimen name="app_widget_bottom_margin">4.0dp</dimen>
 

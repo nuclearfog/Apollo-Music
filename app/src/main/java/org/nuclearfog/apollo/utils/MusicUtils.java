@@ -165,7 +165,9 @@ public final class MusicUtils {
 		}
 		mContextWrapper.unbindService(mBinder);
 		if (mConnectionMap.isEmpty()) {
-			Log.v("Utils", "All connections closed, cleaning Service");
+			if (BuildConfig.DEBUG) {
+				Log.v("Utils", "All connections closed, cleaning Service");
+			}
 			// destroying instance
 			mService = null;
 		}
@@ -1532,7 +1534,9 @@ public final class MusicUtils {
 					File file = new File(filename);
 					// File.delete can throw a security exception
 					if (!file.delete()) {
-						Log.e("MusicUtils", "Failed to delete file " + filename);
+						if (BuildConfig.DEBUG) {
+							Log.e("MusicUtils", "Failed to delete file " + filename);
+						}
 					}
 				} catch (Exception ex) {
 					// catch exception if file was not found

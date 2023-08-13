@@ -60,6 +60,11 @@ public class PopularStore extends SQLiteOpenHelper {
 	/**
 	 *
 	 */
+	private final Object LOCK = new Object();
+
+	/**
+	 *
+	 */
 	private PopularStore(Context context) {
 		super(context, DB_NAME, null, VERSION);
 	}
@@ -99,23 +104,25 @@ public class PopularStore extends SQLiteOpenHelper {
 	 * @param duration   Track duration in milliseconds
 	 */
 	public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
-		if (songId > 0 && songName != null && albumName != null && artistName != null) {
-			// increment by 1
-			long playCount = getPlayCount(songId) + 1;
-			SQLiteDatabase database = getWritableDatabase();
-			ContentValues values = new ContentValues(6);
-			database.beginTransaction();
+		synchronized (LOCK) {
+			if (songId > 0 && songName != null && albumName != null && artistName != null) {
+				// increment by 1
+				long playCount = getPlayCount(songId) + 1;
+				SQLiteDatabase database = getWritableDatabase();
+				ContentValues values = new ContentValues(6);
+				database.beginTransaction();
 
-			values.put(PopularColumns.ID, songId);
-			values.put(PopularColumns.SONGNAME, songName);
-			values.put(PopularColumns.ALBUMNAME, albumName);
-			values.put(PopularColumns.ARTISTNAME, artistName);
-			values.put(PopularColumns.PLAYCOUNT, playCount);
-			values.put(PopularColumns.DURATION, duration);
+				values.put(PopularColumns.ID, songId);
+				values.put(PopularColumns.SONGNAME, songName);
+				values.put(PopularColumns.ALBUMNAME, albumName);
+				values.put(PopularColumns.ARTISTNAME, artistName);
+				values.put(PopularColumns.PLAYCOUNT, playCount);
+				values.put(PopularColumns.DURATION, duration);
 
-			database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
-			database.setTransactionSuccessful();
-			database.endTransaction();
+				database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
+				database.setTransactionSuccessful();
+				database.endTransaction();
+			}
 		}
 	}
 
@@ -125,17 +132,21 @@ public class PopularStore extends SQLiteOpenHelper {
 	 * @param trackId ID of the track to remove
 	 */
 	public void removeItem(long trackId) {
-		String[] args = {Long.toString(trackId)};
-		SQLiteDatabase database = getWritableDatabase();
-		database.delete(PopularColumns.NAME, TRACK_SELECT, args);
+		synchronized (LOCK) {
+			String[] args = {Long.toString(trackId)};
+			SQLiteDatabase database = getWritableDatabase();
+			database.delete(PopularColumns.NAME, TRACK_SELECT, args);
+		}
 	}
 
 	/**
 	 * remove all popular tracks from playlist
 	 */
 	public void removeAll() {
-		SQLiteDatabase database = getWritableDatabase();
-		database.delete(PopularColumns.NAME, null, null);
+		synchronized (LOCK) {
+			SQLiteDatabase database = getWritableDatabase();
+			database.delete(PopularColumns.NAME, null, null);
+		}
 	}
 
 	/**
@@ -145,19 +156,21 @@ public class PopularStore extends SQLiteOpenHelper {
 	 * @return The play count for a song
 	 */
 	private long getPlayCount(long songId) {
-		long result = 0;
-		if (songId >= 0) {
-			String[] having = {Long.toString(songId)};
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					result = cursor.getLong(4);
+		synchronized (LOCK) {
+			long result = 0;
+			if (songId >= 0) {
+				String[] having = {Long.toString(songId)};
+				SQLiteDatabase database = getReadableDatabase();
+				Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
+						result = cursor.getLong(4);
+					}
+					cursor.close();
 				}
-				cursor.close();
 			}
+			return result;
 		}
-		return result;
 	}
 
 	/**

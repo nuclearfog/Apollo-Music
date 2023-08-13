@@ -89,6 +89,11 @@ public class RecentStore extends SQLiteOpenHelper {
 	private static RecentStore sInstance;
 
 	/**
+	 *
+	 */
+	private final Object LOCK = new Object();
+
+	/**
 	 * Constructor of <code>RecentStore</code>
 	 *
 	 * @param context The {@link Context} to use
@@ -101,7 +106,7 @@ public class RecentStore extends SQLiteOpenHelper {
 	 * @param context The {@link Context} to use
 	 * @return A new instance of this class.
 	 */
-	public static synchronized RecentStore getInstance(Context context) {
+	public static RecentStore getInstance(Context context) {
 		if (sInstance == null) {
 			// initialize with application context to avoid memory leak
 			sInstance = new RecentStore(context.getApplicationContext());
@@ -135,21 +140,23 @@ public class RecentStore extends SQLiteOpenHelper {
 	 * @param albumYear  The year the album was released.
 	 */
 	public void addAlbumId(long albumId, String albumName, String artistName, String songCount, String albumYear) {
-		if (albumId > 0 && albumName != null && artistName != null && songCount != null) {
-			SQLiteDatabase database = getWritableDatabase();
-			ContentValues values = new ContentValues(6);
+		synchronized (LOCK) {
+			if (albumId > 0 && albumName != null && artistName != null && songCount != null) {
+				SQLiteDatabase database = getWritableDatabase();
+				ContentValues values = new ContentValues(6);
 
-			values.put(RecentStoreColumns.ID, albumId);
-			values.put(RecentStoreColumns.ALBUMNAME, albumName);
-			values.put(RecentStoreColumns.ARTISTNAME, artistName);
-			values.put(RecentStoreColumns.ALBUMSONGCOUNT, songCount);
-			values.put(RecentStoreColumns.ALBUMYEAR, albumYear);
-			values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
+				values.put(RecentStoreColumns.ID, albumId);
+				values.put(RecentStoreColumns.ALBUMNAME, albumName);
+				values.put(RecentStoreColumns.ARTISTNAME, artistName);
+				values.put(RecentStoreColumns.ALBUMSONGCOUNT, songCount);
+				values.put(RecentStoreColumns.ALBUMYEAR, albumYear);
+				values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
 
-			database.beginTransaction();
-			database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			database.setTransactionSuccessful();
-			database.endTransaction();
+				database.beginTransaction();
+				database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+				database.setTransactionSuccessful();
+				database.endTransaction();
+			}
 		}
 	}
 
@@ -161,20 +168,22 @@ public class RecentStore extends SQLiteOpenHelper {
 	 */
 	@Nullable
 	public String getAlbumName(String artistName) {
-		String result = null;
-		if (!TextUtils.isEmpty(artistName)) {
-			String[] having = {artistName};
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME,
-					having, null, null, RECENT_ORDER);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					result = cursor.getString(1);
+		synchronized (LOCK) {
+			String result = null;
+			if (!TextUtils.isEmpty(artistName)) {
+				String[] having = {artistName};
+				SQLiteDatabase database = getReadableDatabase();
+				Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME,
+						having, null, null, RECENT_ORDER);
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
+						result = cursor.getString(1);
+					}
+					cursor.close();
 				}
-				cursor.close();
 			}
+			return result;
 		}
-		return result;
 	}
 
 	/**
@@ -183,12 +192,16 @@ public class RecentStore extends SQLiteOpenHelper {
 	 * @param albumId ID of the album to remove
 	 */
 	public void removeItem(long albumId) {
-		String[] args = {Long.toString(albumId)};
-		SQLiteDatabase database = getWritableDatabase();
-		database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
+		synchronized (LOCK) {
+			String[] args = {Long.toString(albumId)};
+			SQLiteDatabase database = getWritableDatabase();
+			database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
+		}
 	}
 
-
+	/**
+	 * table columns of recent played tracks
+	 */
 	public interface RecentStoreColumns {
 
 		/* Table name */

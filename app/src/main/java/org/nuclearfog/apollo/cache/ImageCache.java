@@ -325,8 +325,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 			} catch (IOException e) {
 				if (BuildConfig.DEBUG) {
 					e.printStackTrace();
+					Log.e(TAG, "addBitmapToCache - " + e);
 				}
-				Log.e(TAG, "addBitmapToCache - " + e);
 			} finally {
 				try {
 					if (out != null) {
@@ -335,13 +335,13 @@ public final class ImageCache implements ComponentCallbacks2 {
 				} catch (IOException e) {
 					if (BuildConfig.DEBUG) {
 						e.printStackTrace();
+						Log.e(TAG, "addBitmapToCache - " + e);
 					}
-					Log.e(TAG, "addBitmapToCache - " + e);
 				} catch (IllegalStateException e) {
 					if (BuildConfig.DEBUG) {
 						e.printStackTrace();
+						Log.e(TAG, "addBitmapToCache - " + e);
 					}
-					Log.e(TAG, "addBitmapToCache - " + e);
 				}
 			}
 		}
@@ -414,8 +414,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 			} catch (IOException e) {
 				if (BuildConfig.DEBUG) {
 					e.printStackTrace();
+					Log.e(TAG, "getBitmapFromDiskCache - " + e);
 				}
-				Log.e(TAG, "getBitmapFromDiskCache - " + e);
 			} finally {
 				try {
 					if (inputStream != null) {
@@ -524,8 +524,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 					} catch (IOException e) {
 						if (BuildConfig.DEBUG) {
 							e.printStackTrace();
+							Log.e(TAG, "flush - " + e);
 						}
-						Log.e(TAG, "flush - " + e);
 					}
 				}
 			}
@@ -548,8 +548,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 				} catch (IOException e) {
 					if (BuildConfig.DEBUG) {
 						e.printStackTrace();
+						Log.e(TAG, "clearCaches - " + e);
 					}
-					Log.e(TAG, "clearCaches - " + e);
 				}
 				// Clear the memory cache
 				evictAll();
@@ -588,8 +588,8 @@ public final class ImageCache implements ComponentCallbacks2 {
 		} catch (IOException e) {
 			if (BuildConfig.DEBUG) {
 				e.printStackTrace();
+				Log.e(TAG, "remove - " + e);
 			}
-			Log.e(TAG, "remove - " + e);
 		}
 		flush();
 	}

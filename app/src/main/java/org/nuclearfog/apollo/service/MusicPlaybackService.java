@@ -634,7 +634,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mNotificationHelper.updateNotification();
 			}
 		}
-		// stop track
+		// stop track/dismiss notification
 		else if (CMDSTOP.equals(command) || STOP_ACTION.equals(action)) {
 			pause();
 			mPausedByTransientLossOfFocus = false;
@@ -642,7 +642,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			releaseServiceUiAndStop();
 			mNotificationHelper.cancelNotification();
 			if (!isForeground) {
-				mNotificationHelper.updateNotification();
+				mNotificationHelper.cancelNotification();
 			}
 		}
 		// repeat set
@@ -1206,11 +1206,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						updateCursor(mPlayList.get(mPlayPos));
 					}
 				}
-				Log.w(TAG, "Failed to open file for playback");
 				scheduleDelayedShutdown();
 				if (mIsSupposedToBePlaying) {
 					mIsSupposedToBePlaying = false;
 					notifyChange(PLAYSTATE_CHANGED);
+				}
+				if (BuildConfig.DEBUG) {
+					Log.w(TAG, "Failed to open file for playback");
 				}
 			}
 		}
@@ -1577,6 +1579,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
 			String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
 			mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+			// update notification on track change
 			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}

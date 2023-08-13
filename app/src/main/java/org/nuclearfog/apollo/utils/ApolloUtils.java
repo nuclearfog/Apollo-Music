@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.Config;
@@ -267,7 +268,9 @@ public final class ApolloUtils {
 				}
 			}
 		} catch (Exception e) {
-			Log.e("ApolloUtils", "createShortcutIntent", e);
+			if (BuildConfig.DEBUG) {
+				Log.e("ApolloUtils", "createShortcutIntent", e);
+			}
 			String resultMsg = activity.getString(R.string.could_not_be_pinned_to_home_screen, displayName);
 			AppMsg.makeText(activity, resultMsg, AppMsg.STYLE_ALERT).show();
 		}

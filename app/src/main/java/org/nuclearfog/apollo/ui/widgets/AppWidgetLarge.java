@@ -55,8 +55,8 @@ public class AppWidgetLarge extends AppWidgetBase {
 	@Override
 	public void notifyChange(MusicPlaybackService service, String what) {
 		if (hasInstances(service)) {
-			if (MusicPlaybackService.META_CHANGED.equals(what)
-					|| MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
+			if (MusicPlaybackService.CHANGED_META.equals(what)
+					|| MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)) {
 				performUpdate(service, null);
 			}
 		}
@@ -153,15 +153,15 @@ public class AppWidgetLarge extends AppWidgetBase {
 		views.setOnClickPendingIntent(R.id.app_widget_large_image, pendingIntent);
 
 		// Previous track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.PREVIOUS_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_previous, pendingIntent);
 
 		// Play and pause
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.TOGGLEPAUSE_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_play, pendingIntent);
 
 		// Next track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.NEXT_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_next, pendingIntent);
 	}
 }

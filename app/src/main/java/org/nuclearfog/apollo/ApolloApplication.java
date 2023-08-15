@@ -13,6 +13,8 @@ package org.nuclearfog.apollo;
 
 import android.app.Application;
 
+import androidx.core.app.NotificationManagerCompat;
+
 import org.nuclearfog.apollo.cache.ImageCache;
 
 import java.util.logging.Level;
@@ -42,7 +44,23 @@ public class ApolloApplication extends Application {
 	 */
 	@Override
 	public void onLowMemory() {
+		// clear image cache
 		ImageCache.getInstance(this).evictAll();
 		super.onLowMemory();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onTerminate() {
+		// remove notification
+		try {
+			NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+			notificationManager.cancelAll();
+		} catch (SecurityException exception) {
+			// ignore
+		}
+		super.onTerminate();
 	}
 }

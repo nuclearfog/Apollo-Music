@@ -16,12 +16,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
@@ -57,7 +57,7 @@ public class NotificationHelper {
 	/**
 	 * manage and update notification
 	 */
-	private NotificationManager notificationManager;
+	private NotificationManagerCompat notificationManager;
 
 	private NotificationCompat.Builder notificationBuilder;
 
@@ -79,25 +79,25 @@ public class NotificationHelper {
 	public NotificationHelper(MusicPlaybackService service) {
 		mService = service;
 		// get notificationmanager and create notificationchannel if required
-		notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager = NotificationManagerCompat.from(service);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationChannel channel = new NotificationChannel(MusicPlaybackService.NOTIFICAITON_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
+			NotificationChannel channel = new NotificationChannel(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
 			notificationManager.createNotificationChannel(channel);
 		}
 		// initialize callbacks
 		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
 		callbacks = new PendingIntent[]{
-				PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.TOGGLEPAUSE_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.NEXT_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.PREVIOUS_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.STOP_ACTION).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE)
+				PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.ACTION_TOGGLEPAUSE).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
+				PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.ACTION_NEXT).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
+				PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.ACTION_PREVIOUS).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
+				PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE)
 		};
 		// initialize small notification view
 		mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_base);
 		// initialize expanded notification view
 		mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
 		// create notification builder
-		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_ID)
+		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(getPendingIntent())
 				.setPriority(NotificationCompat.PRIORITY_LOW)
@@ -130,14 +130,23 @@ public class NotificationHelper {
 		updateCollapsedLayout();
 		// Update notification
 		notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
-		notificationManager.notify(APOLLO_MUSIC_SERVICE, notificationBuilder.build());
+		try {
+			notificationManager.notify(APOLLO_MUSIC_SERVICE, notificationBuilder.build());
+		} catch (SecurityException e) {
+			// caught on missing permission. Normally app requires permission to post notification
+			// so this scenario can't happen
+		}
 	}
 
 	/**
 	 * cancel notification when app is in foreground
 	 */
 	public void cancelNotification() {
-		notificationManager.cancel(APOLLO_MUSIC_SERVICE);
+		try {
+			notificationManager.cancel(APOLLO_MUSIC_SERVICE);
+		} catch (SecurityException e) {
+			// ignore
+		}
 	}
 
 	/**

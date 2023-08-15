@@ -758,7 +758,7 @@ public final class MusicUtils {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				service.enqueue(list, MusicPlaybackService.NEXT);
+				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1051,7 +1051,7 @@ public final class MusicUtils {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				service.enqueue(list, MusicPlaybackService.LAST);
+				service.enqueue(list, MusicPlaybackService.MOVE_LAST);
 				String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			} catch (RemoteException err) {
@@ -1471,11 +1471,10 @@ public final class MusicUtils {
 		} else {
 			sForegroundActivities--;
 		}
-
 		if (old == 0 || sForegroundActivities == 0) {
 			Intent intent = new Intent(context, MusicPlaybackService.class);
-			intent.setAction(MusicPlaybackService.FOREGROUND_STATE_CHANGED);
-			intent.putExtra(MusicPlaybackService.NOW_IN_FOREGROUND, sForegroundActivities != 0);
+			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
+			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
 			context.startService(intent);
 		}
 	}

@@ -1,11 +1,11 @@
 package org.nuclearfog.apollo.player;
 
-import static org.nuclearfog.apollo.service.MusicPlaybackService.FADEDOWN;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.FADEUP;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.FOCUSCHANGE;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.SERVER_DIED;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.TRACK_ENDED;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.TRACK_WENT_TO_NEXT;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FADEDOWN;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FADEUP;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FOCUS_CHANGE;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_SERVER_DIED;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_ENDED;
+import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_WENT_TO_NEXT;
 
 import android.media.AudioManager;
 import android.os.Handler;
@@ -48,27 +48,27 @@ public class MusicPlayerHandler extends Handler {
 		}
 
 		switch (msg.what) {
-			case FADEDOWN:
+			case MESSAGE_FADEDOWN:
 				mCurrentVolume -= .05f;
 				if (mCurrentVolume > .2f) {
-					sendEmptyMessageDelayed(FADEDOWN, 10);
+					sendEmptyMessageDelayed(MESSAGE_FADEDOWN, 10);
 				} else {
 					mCurrentVolume = .2f;
 				}
 				service.setVolume(mCurrentVolume);
 				break;
 
-			case FADEUP:
+			case MESSAGE_FADEUP:
 				mCurrentVolume += .01f;
 				if (mCurrentVolume < 1.0f) {
-					sendEmptyMessageDelayed(FADEUP, 10);
+					sendEmptyMessageDelayed(MESSAGE_FADEUP, 10);
 				} else {
 					mCurrentVolume = 1.0f;
 				}
 				service.setVolume(mCurrentVolume);
 				break;
 
-			case SERVER_DIED:
+			case MESSAGE_SERVER_DIED:
 				if (service.isPlaying()) {
 					service.gotoNext(true);
 				} else {
@@ -76,15 +76,15 @@ public class MusicPlayerHandler extends Handler {
 				}
 				break;
 
-			case TRACK_WENT_TO_NEXT:
+			case MESSAGE_TRACK_WENT_TO_NEXT:
 				service.onWentToNext();
 				break;
 
-			case TRACK_ENDED:
+			case MESSAGE_TRACK_ENDED:
 				service.onTrackEnded();
 				break;
 
-			case FOCUSCHANGE:
+			case MESSAGE_FOCUS_CHANGE:
 				switch (msg.arg1) {
 					case AudioManager.AUDIOFOCUS_LOSS:
 					case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
@@ -92,16 +92,16 @@ public class MusicPlayerHandler extends Handler {
 						break;
 
 					case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-						removeMessages(FADEUP);
-						sendEmptyMessage(FADEDOWN);
+						removeMessages(MESSAGE_FADEUP);
+						sendEmptyMessage(MESSAGE_FADEDOWN);
 						break;
 
 					case AudioManager.AUDIOFOCUS_GAIN:
 						if (service.onAudioFocusGain()) {
 							mCurrentVolume = 0f;
 						} else {
-							removeMessages(FADEDOWN);
-							sendEmptyMessage(FADEUP);
+							removeMessages(MESSAGE_FADEDOWN);
+							sendEmptyMessage(MESSAGE_FADEUP);
 						}
 						break;
 				}

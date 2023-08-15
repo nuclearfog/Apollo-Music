@@ -268,14 +268,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		super.onStart();
 		IntentFilter filter = new IntentFilter();
 		// Play and pause changes
-		filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
 		// Shuffle and repeat changes
-		filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
-		filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
+		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
 		// Track changes
-		filter.addAction(MusicPlaybackService.META_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
-		filter.addAction(MusicPlaybackService.REFRESH);
+		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		registerReceiver(mPlaybackStatus, filter);
 		// Refresh the current time
 		long next = refreshCurrentTime();

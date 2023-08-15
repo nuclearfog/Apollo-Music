@@ -36,20 +36,20 @@ public class PlaybackStatus extends BroadcastReceiver {
 
 		if (action != null && callback != null) {
 			switch (action) {
-				case MusicPlaybackService.META_CHANGED:
+				case MusicPlaybackService.CHANGED_META:
 					callback.onMetaChange();
 					break;
 
-				case MusicPlaybackService.PLAYSTATE_CHANGED:
+				case MusicPlaybackService.CHANGED_PLAYSTATE:
 					callback.onStateChange();
 					break;
 
-				case MusicPlaybackService.REPEATMODE_CHANGED:
-				case MusicPlaybackService.SHUFFLEMODE_CHANGED:
+				case MusicPlaybackService.CHANGED_REPEATMODE:
+				case MusicPlaybackService.CHANGED_SHUFFLEMODE:
 					callback.onModeChange();
 					break;
 
-				case MusicPlaybackService.REFRESH:
+				case MusicPlaybackService.ACTION_REFRESH:
 					callback.refresh();
 					break;
 			}

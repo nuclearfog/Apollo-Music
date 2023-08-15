@@ -138,7 +138,7 @@ public class ServiceStub extends IApolloService.Stub {
 	public void refresh() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
-			service.notifyChange(MusicPlaybackService.REFRESH);
+			service.notifyChange(MusicPlaybackService.ACTION_REFRESH);
 	}
 
 	/**

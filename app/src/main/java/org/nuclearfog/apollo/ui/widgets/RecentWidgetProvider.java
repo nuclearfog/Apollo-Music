@@ -162,9 +162,9 @@ public class RecentWidgetProvider extends AppWidgetBase {
 	@Override
 	public void notifyChange(MusicPlaybackService service, String what) {
 		if (hasInstances(service)) {
-			if (MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)) {
+			if (MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)) {
 				performUpdate(service, null);
-			} else if (MusicPlaybackService.META_CHANGED.equals(what)) {
+			} else if (MusicPlaybackService.CHANGED_META.equals(what)) {
 				sWorkerQueue.post(new Updater(service));
 			}
 		}
@@ -239,15 +239,15 @@ public class RecentWidgetProvider extends AppWidgetBase {
 		views.setOnClickPendingIntent(R.id.app_widget_recents_action_bar, pendingIntent);
 
 		// Previous track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.PREVIOUS_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_previous, pendingIntent);
 
 		// Play and pause
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.TOGGLEPAUSE_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_play, pendingIntent);
 
 		// Next track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.NEXT_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_next, pendingIntent);
 	}
 

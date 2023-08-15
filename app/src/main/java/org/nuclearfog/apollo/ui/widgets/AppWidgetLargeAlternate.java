@@ -56,10 +56,10 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 	@Override
 	public void notifyChange(MusicPlaybackService service, String what) {
 		if (hasInstances(service)) {
-			if (MusicPlaybackService.META_CHANGED.equals(what)
-					|| MusicPlaybackService.PLAYSTATE_CHANGED.equals(what)
-					|| MusicPlaybackService.REPEATMODE_CHANGED.equals(what)
-					|| MusicPlaybackService.SHUFFLEMODE_CHANGED.equals(what)) {
+			if (MusicPlaybackService.CHANGED_META.equals(what)
+					|| MusicPlaybackService.CHANGED_PLAYSTATE.equals(what)
+					|| MusicPlaybackService.CHANGED_REPEATMODE.equals(what)
+					|| MusicPlaybackService.CHANGED_SHUFFLEMODE.equals(what)) {
 				performUpdate(service, null);
 			}
 		}
@@ -183,23 +183,23 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_image, pendingIntent);
 
 		// Shuffle modes
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.SHUFFLE_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_SHUFFLE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_shuffle, pendingIntent);
 
 		// Previous track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.PREVIOUS_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_previous, pendingIntent);
 
 		// Play and pause
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.TOGGLEPAUSE_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_play, pendingIntent);
 
 		// Next track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.NEXT_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_next, pendingIntent);
 
 		// Repeat modes
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.REPEAT_ACTION, serviceName);
+		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_REPEAT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_large_alternate_repeat, pendingIntent);
 	}
 }

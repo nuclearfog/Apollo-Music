@@ -194,14 +194,14 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		super.onStart();
 		IntentFilter filter = new IntentFilter();
 		// Play and pause changes
-		filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
 		// Shuffle and repeat changes
-		filter.addAction(MusicPlaybackService.SHUFFLEMODE_CHANGED);
-		filter.addAction(MusicPlaybackService.REPEATMODE_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
+		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
 		// Track changes
-		filter.addAction(MusicPlaybackService.META_CHANGED);
+		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
-		filter.addAction(MusicPlaybackService.REFRESH);
+		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		registerReceiver(mPlaybackStatus, filter);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
@@ -379,12 +379,12 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		boolean isDetached();
 
 		/**
-		 * Called when {@link MusicPlaybackService#REFRESH} is invoked
+		 * Called when {@link MusicPlaybackService#ACTION_REFRESH} is invoked
 		 */
 		void restartLoader();
 
 		/**
-		 * Called when {@link MusicPlaybackService#META_CHANGED} is invoked
+		 * Called when {@link MusicPlaybackService#CHANGED_META} is invoked
 		 */
 		void onMetaChanged();
 	}

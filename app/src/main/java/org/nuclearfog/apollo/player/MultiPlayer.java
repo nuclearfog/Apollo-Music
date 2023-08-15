@@ -53,7 +53,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
 			mIsInitialized = false;
 			mCurrentMediaPlayer.reset();
-			mHandler.sendMessageDelayed(mHandler.obtainMessage(MusicPlaybackService.SERVER_DIED), 2000);
+			mHandler.sendMessageDelayed(mHandler.obtainMessage(MusicPlaybackService.MESSAGE_SERVER_DIED), 2000);
 			return true;
 		}
 		return false;
@@ -70,9 +70,9 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			mCurrentMediaPlayer = mNextMediaPlayer;
 			mNextMediaPlayer = null;
 			//
-			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_WENT_TO_NEXT);
+			mHandler.sendEmptyMessage(MusicPlaybackService.MESSAGE_TRACK_WENT_TO_NEXT);
 		} else {
-			mHandler.sendEmptyMessage(MusicPlaybackService.TRACK_ENDED);
+			mHandler.sendEmptyMessage(MusicPlaybackService.MESSAGE_TRACK_ENDED);
 		}
 	}
 

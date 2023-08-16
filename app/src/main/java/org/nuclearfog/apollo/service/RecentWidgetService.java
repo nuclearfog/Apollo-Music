@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -47,12 +46,16 @@ public class RecentWidgetService extends RemoteViewsService {
 	/**
 	 * This is the factory that will provide data to the collection widget.
 	 */
-	private static final class WidgetRemoteViewsFactory implements
-			RemoteViewsService.RemoteViewsFactory {
+	private static class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 		/**
 		 * Number of views (ImageView and TextView)
 		 */
 		private static final int VIEW_TYPE_COUNT = 1;
+
+		/**
+		 * max recent item number
+		 */
+		private static final int RECENT_LIMIT = 20;
 
 		/**
 		 * Image cache
@@ -90,7 +93,7 @@ public class RecentWidgetService extends RemoteViewsService {
 			if (mCursor == null || mCursor.isClosed() || mCursor.getCount() <= 0) {
 				return 0;
 			}
-			return mCursor.getCount();
+			return Math.min(RECENT_LIMIT, mCursor.getCount());
 		}
 
 		/**
@@ -107,19 +110,14 @@ public class RecentWidgetService extends RemoteViewsService {
 		@Override
 		public RemoteViews getViewAt(int position) {
 			mCursor.moveToPosition(position);
-
 			// Create the remote views
 			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
-
 			// Copy the album id
 			long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
-
 			// Copy the album name
 			String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
-
 			// Copy the artist name
 			String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
-
 			// Set the album names
 			mViews.setTextViewText(R.id.app_widget_recents_line_one, albumName);
 			// Set the artist names
@@ -133,21 +131,16 @@ public class RecentWidgetService extends RemoteViewsService {
 			}
 			// Open the profile of the touched album
 			Intent profileIntent = new Intent();
-			Bundle profileExtras = new Bundle();
-			profileExtras.putLong(Config.ID, id);
-			profileExtras.putString(Config.NAME, albumName);
-			profileExtras.putString(Config.ARTIST_NAME, artist);
-			profileExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
-			profileIntent.putExtras(profileExtras);
+			profileIntent.putExtra(Config.ID, id);
+			profileIntent.putExtra(Config.NAME, albumName);
+			profileIntent.putExtra(Config.ARTIST_NAME, artist);
+			profileIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
-
 			// Play the album when the artwork is touched
-			Intent playAlbum = new Intent();
-			Bundle playAlbumExtras = new Bundle();
-			playAlbumExtras.putLong(Config.ID, id);
-			playAlbumExtras.putString(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
-			playAlbum.putExtras(playAlbumExtras);
-			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbum);
+			Intent playAlbumIntent = new Intent();
+			playAlbumIntent.putExtra(Config.ID, id);
+			playAlbumIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
+			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbumIntent);
 			return mViews;
 		}
 

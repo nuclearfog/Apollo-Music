@@ -11,26 +11,58 @@
 
 package org.nuclearfog.apollo.ui.widgets;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.widget.RemoteViews;
+
+import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
+/**
+ * super class for all app widgets
+ *
+ * @author nuclearfog
+ */
 public abstract class AppWidgetBase extends AppWidgetProvider {
 
-	@SuppressLint("UnspecifiedImmutableFlag")
-	protected PendingIntent buildPendingIntent(Context context, String action, ComponentName serviceName) {
+	/**
+	 * create pending intent used for playback control
+	 *
+	 * @param action type of playback control action used by {@link MusicPlaybackService}
+	 * @return PendingIntent instance
+	 */
+	protected PendingIntent createPlaybackControlIntent(Context context, String action, ComponentName serviceName) {
 		Intent intent = new Intent(action);
 		intent.setComponent(serviceName);
 		intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, false);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-			return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-		return PendingIntent.getService(context, 0, intent, 0);
+		return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+	}
+
+	/**
+	 * Check against {@link AppWidgetManager} if there are any instances of this
+	 * widget.
+	 */
+	protected boolean hasInstances(Context context) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
+		return mAppWidgetIds.length > 0;
+	}
+
+	/**
+	 *
+	 */
+	protected void pushUpdate(Context context, Class<?> widgetClass, @Nullable int[] appWidgetIds, RemoteViews views) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		if (appWidgetIds != null) {
+			appWidgetManager.updateAppWidget(appWidgetIds, views);
+		} else {
+			appWidgetManager.updateAppWidget(new ComponentName(context, widgetClass), views);
+		}
 	}
 
 	/**

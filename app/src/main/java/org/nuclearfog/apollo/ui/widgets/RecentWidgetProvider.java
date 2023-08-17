@@ -79,32 +79,31 @@ public class RecentWidgetProvider extends AppWidgetBase {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		int intentFlag = PendingIntent.FLAG_UPDATE_CURRENT;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			intentFlag |= PendingIntent.FLAG_IMMUTABLE;
+			intentFlag |= PendingIntent.FLAG_MUTABLE;
 		}
 		for (int appWidgetId : appWidgetIds) {
 			// Create the remote views
 			mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents);
 			// Link actions buttons to intents
 			linkButtons(context, mViews, false);
-
+			// fill list with recent albums
 			Intent recentIntent = new Intent(context, RecentWidgetService.class);
 			recentIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 			recentIntent.setData(Uri.parse(recentIntent.toUri(Intent.URI_INTENT_SCHEME)));
 			mViews.setRemoteAdapter(R.id.app_widget_recents_list, recentIntent);
-
+			// init playback control
 			Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
 			updateIntent.putExtra(MusicPlaybackService.CMDNAME, RecentWidgetProvider.CMDAPPWIDGETUPDATE);
 			updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
 			updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
 			context.sendBroadcast(updateIntent);
-
+			// regtister this class
 			Intent onClickIntent = new Intent(context, RecentWidgetProvider.class);
 			onClickIntent.setAction(RecentWidgetProvider.CLICK_ACTION);
 			onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 			onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
 			PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, REQUEST_RECENT, onClickIntent, intentFlag);
 			mViews.setPendingIntentTemplate(R.id.app_widget_recents_list, onClickPendingIntent);
-
 			// Update the widget
 			appWidgetManager.updateAppWidget(appWidgetId, mViews);
 		}
@@ -115,7 +114,9 @@ public class RecentWidgetProvider extends AppWidgetBase {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (CLICK_ACTION.equals(intent.getAction())) { // fixme albumId and action invalid on Android 10+ (see RecentWidgetService.WidgetRemoteViewsFactory.getViewAt(int))
+		super.onReceive(context, intent);
+		context = context.getApplicationContext();
+		if (CLICK_ACTION.equals(intent.getAction())) {
 			long albumId = intent.getLongExtra(Config.ID, -1);
 			String action = intent.getStringExtra(SET_ACTION);
 			if (PLAY_ALBUM.equals(action)) {
@@ -142,7 +143,6 @@ public class RecentWidgetProvider extends AppWidgetBase {
 				context.startActivity(profileIntent);
 			}
 		}
-		super.onReceive(context, intent);
 	}
 
 	/**
@@ -175,29 +175,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 		// Link actions buttons to intents
 		linkButtons(service, mViews, isPlaying);
 		// Update the app-widget
-		pushUpdate(service, appWidgetIds, mViews);
-	}
-
-	/**
-	 * Check against {@link AppWidgetManager} if there are any instances of this
-	 * widget.
-	 */
-	private boolean hasInstances(Context context) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass()));
-		return appWidgetIds.length > 0;
-	}
-
-	/**
-	 *
-	 */
-	private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		if (appWidgetIds != null) {
-			appWidgetManager.updateAppWidget(appWidgetIds, views);
-		} else {
-			appWidgetManager.updateAppWidget(new ComponentName(context, this.getClass()), views);
-		}
+		pushUpdate(service, getClass(), appWidgetIds, mViews);
 	}
 
 	/**
@@ -206,29 +184,19 @@ public class RecentWidgetProvider extends AppWidgetBase {
 	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
 	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
-		Intent action;
-		if (playerActive) {
-			// Now playing
-			action = new Intent(context, AudioPlayerActivity.class);
-		} else {
-			// Home
-			action = new Intent(context, HomeActivity.class);
-		}
-		int intentFlag = PendingIntent.FLAG_UPDATE_CURRENT;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			intentFlag |= PendingIntent.FLAG_IMMUTABLE;
-		}
 		ComponentName serviceName = new ComponentName(context, MusicPlaybackService.class);
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, intentFlag);
+		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
+		//
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_action_bar, pendingIntent);
 		// Previous track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_previous, pendingIntent);
 		// Play and pause
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_play, pendingIntent);
 		// Next track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_recents_next, pendingIntent);
 	}
 

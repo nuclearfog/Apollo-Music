@@ -11,14 +11,12 @@
 
 package org.nuclearfog.apollo.ui.widgets;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -74,7 +72,6 @@ public class AppWidgetSmall extends AppWidgetBase {
 		CharSequence trackName = service.getTrackName();
 		CharSequence artistName = service.getArtistName();
 		Bitmap bitmap = service.getAlbumArt();
-
 		// Set the titles and artwork
 		if (TextUtils.isEmpty(trackName) && TextUtils.isEmpty(artistName)) {
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
@@ -96,7 +93,7 @@ public class AppWidgetSmall extends AppWidgetBase {
 		// Link actions buttons to intents
 		linkButtons(service, appWidgetView, isPlaying);
 		// Update the app-widget
-		pushUpdate(service, appWidgetIds, appWidgetView);
+		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
 	}
 
 	/**
@@ -107,69 +104,29 @@ public class AppWidgetSmall extends AppWidgetBase {
 		RemoteViews appWidgetViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
 		appWidgetViews.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
 		linkButtons(context, appWidgetViews, false);
-		pushUpdate(context, appWidgetIds, appWidgetViews);
-	}
-
-	/**
-	 *
-	 */
-	private void pushUpdate(Context context, int[] appWidgetIds, RemoteViews views) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		if (appWidgetIds != null) {
-			appWidgetManager.updateAppWidget(appWidgetIds, views);
-		} else {
-			appWidgetManager.updateAppWidget(new ComponentName(context, getClass()), views);
-		}
-	}
-
-	/**
-	 * Check against {@link AppWidgetManager} if there are any instances of this
-	 * widget.
-	 */
-	private boolean hasInstances(Context context) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		int[] mAppWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
-		return mAppWidgetIds.length > 0;
+		pushUpdate(context, getClass(), appWidgetIds, appWidgetViews);
 	}
 
 	/**
 	 * Link up various button actions using {@link PendingIntent}.
 	 *
-	 * @param playerActive True if player is active in background, which means
-	 *                     widget click will launch {@link AudioPlayerActivity}
+	 * @param playerActive True if player is active in background, which means widget click will launch {@link AudioPlayerActivity}
 	 */
-	@SuppressLint("UnspecifiedImmutableFlag")
 	private void linkButtons(Context context, RemoteViews views, boolean playerActive) {
-		Intent action;
-		PendingIntent pendingIntent;
-		int intentFlag = 0;
-
 		ComponentName serviceName = new ComponentName(context, MusicPlaybackService.class);
-
-		if (playerActive) {
-			// Now playing
-			action = new Intent(context, AudioPlayerActivity.class);
-		} else {
-			// Home
-			action = new Intent(context, HomeActivity.class);
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			intentFlag |= PendingIntent.FLAG_IMMUTABLE;
-		}
-		pendingIntent = PendingIntent.getActivity(context, 0, action, intentFlag);
+		Intent action = new Intent(context, playerActive ? AudioPlayerActivity.class : HomeActivity.class);
+		//
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
 		views.setOnClickPendingIntent(R.id.app_widget_small_info_container, pendingIntent);
 		views.setOnClickPendingIntent(R.id.app_widget_small_image, pendingIntent);
-
 		// Previous track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_PREVIOUS, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_small_previous, pendingIntent);
-
 		// Play and pause
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_TOGGLEPAUSE, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_small_play, pendingIntent);
-
 		// Next track
-		pendingIntent = buildPendingIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
+		pendingIntent = createPlaybackControlIntent(context, MusicPlaybackService.ACTION_NEXT, serviceName);
 		views.setOnClickPendingIntent(R.id.app_widget_small_next, pendingIntent);
 	}
 }

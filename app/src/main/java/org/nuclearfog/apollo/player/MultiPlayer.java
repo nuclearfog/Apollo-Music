@@ -257,7 +257,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 					player.setDataSource(path);
 					player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				}
-				player.prepareAsync();
+				player.prepare();
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();

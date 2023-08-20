@@ -12,14 +12,12 @@
 package org.nuclearfog.apollo;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Build;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -78,12 +76,11 @@ public class NotificationHelper {
 	 */
 	public NotificationHelper(MusicPlaybackService service) {
 		mService = service;
-		// get notificationmanager and create notificationchannel if required
+		// init notification manager & channel
+		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW);
+		channelBuilder.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationChannel channel = new NotificationChannel(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NOTFICIATION_NAME, NotificationManager.IMPORTANCE_LOW);
-			notificationManager.createNotificationChannel(channel);
-		}
+		notificationManager.createNotificationChannel(channelBuilder.build());
 		// initialize callbacks
 		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
 		callbacks = new PendingIntent[]{
@@ -114,7 +111,7 @@ public class NotificationHelper {
 	 * Call this to build the {@link Notification}.
 	 */
 	public void buildNotification() {
-		initPlaybackActions();
+		initCollapsedPlaybackActions();
 		initExpandedPlaybackActions();
 		updateNotification();
 	}
@@ -126,8 +123,8 @@ public class NotificationHelper {
 		int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
 		mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
 		mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-		updateExpandedLayout();
 		updateCollapsedLayout();
+		updateExpandedLayout();
 		// Update notification
 		notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
 		try {
@@ -159,6 +156,20 @@ public class NotificationHelper {
 	}
 
 	/**
+	 * Lets the buttons in the remote view control playback in the normal layout
+	 */
+	private void initCollapsedPlaybackActions() {
+		// Play and pause
+		mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbacks[0]);
+		// Skip tracks
+		mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbacks[1]);
+		// Previous tracks
+		mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbacks[2]);
+		// Stop and collapse the notification
+		mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbacks[3]);
+	}
+
+	/**
 	 * Lets the buttons in the remote view control playback in the expanded
 	 * layout
 	 */
@@ -171,20 +182,6 @@ public class NotificationHelper {
 		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbacks[2]);
 		// Stop and collapse the notification
 		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbacks[3]);
-	}
-
-	/**
-	 * Lets the buttons in the remote view control playback in the normal layout
-	 */
-	private void initPlaybackActions() {
-		// Play and pause
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbacks[0]);
-		// Skip tracks
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbacks[1]);
-		// Previous tracks
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbacks[2]);
-		// Stop and collapse the notification
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbacks[3]);
 	}
 
 	/**

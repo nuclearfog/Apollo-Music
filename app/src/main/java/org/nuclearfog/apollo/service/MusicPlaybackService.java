@@ -924,6 +924,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		updateCursor(mPlayList.get(mPlayPos));
 		notifyChange(CHANGED_META);
 		setNextTrack();
+		if (!isForeground) {
+			mNotificationHelper.updateNotification();
+		}
 	}
 
 	/**

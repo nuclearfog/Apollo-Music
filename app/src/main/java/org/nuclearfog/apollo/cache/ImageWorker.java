@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 
 /**
@@ -127,6 +128,11 @@ public abstract class ImageWorker {
 	@SuppressWarnings("SameParameterValue")
 	protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageviews) {
 		if (key != null && mImageCache != null && imageviews.length > 0) {
+			// reset artwork
+			imageviews[0].setImageResource(R.drawable.default_artwork);
+			if (imageviews.length > 1) {
+				imageviews[1].setImageResource(0);
+			}
 			// First, check the cache for the image
 			Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
 			if (lruBitmap != null) {

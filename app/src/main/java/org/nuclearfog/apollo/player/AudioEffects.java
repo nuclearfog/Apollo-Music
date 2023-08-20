@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +18,8 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  */
 public final class AudioEffects {
 
+	private static final String TAG = "AudioEffects";
+
 	/**
 	 * max limit of the bass boost effect defined in {@link BassBoost}
 	 */
@@ -26,6 +29,11 @@ public final class AudioEffects {
 	 * max reverb steps definded in {@link PresetReverb}
 	 */
 	public static final int MAX_REVERB = 6;
+
+	/**
+	 * priority used by audiofx (default 0, high > 0, low < 0)
+	 */
+	private static final int FX_PRIORITY = 1;
 
 	/**
 	 * singleton instance
@@ -52,6 +60,9 @@ public final class AudioEffects {
 		try {
 			if (instance == null || instance.sessionId != sessionId) {
 				instance = new AudioEffects(context, sessionId);
+				if (BuildConfig.DEBUG) {
+					Log.v(TAG, "session_id=" + sessionId);
+				}
 			}
 			return instance;
 		} catch (Exception e) {
@@ -67,9 +78,9 @@ public final class AudioEffects {
 	 * @param sessionId current audio session ID
 	 */
 	private AudioEffects(Context context, int sessionId) {
-		equalizer = new Equalizer(0, sessionId);
-		bassBooster = new BassBoost(0, sessionId);
-		reverb = new PresetReverb(0, sessionId);
+		equalizer = new Equalizer(FX_PRIORITY, sessionId);
+		bassBooster = new BassBoost(FX_PRIORITY, sessionId);
+		reverb = new PresetReverb(FX_PRIORITY, sessionId);
 		prefs = PreferenceUtils.getInstance(context);
 		this.sessionId = sessionId;
 		boolean active = prefs.isAudioFxEnabled();

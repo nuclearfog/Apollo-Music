@@ -303,15 +303,16 @@ public class ImageFetcher extends ImageWorker {
 	 * Used to fetch album images.
 	 */
 	public void loadAlbumImage(String artistName, String albumName, long albumId, ImageView... imageViews) {
-		loadImage(generateAlbumCacheKey(albumName, artistName), artistName, albumName, albumId, ImageType.ALBUM, imageViews);
+		String key = generateAlbumCacheKey(albumName, artistName);
+		loadImage(key, artistName, albumName, albumId, ImageType.ALBUM, imageViews);
 	}
 
 	/**
 	 * Used to fetch the current artwork.
 	 */
 	public void loadCurrentArtwork(ImageView imageView) {
-		loadImage(generateAlbumCacheKey(MusicUtils.getAlbumName(), MusicUtils.getArtistName()),
-				MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(), ImageType.ALBUM, imageView);
+		String key = generateAlbumCacheKey(MusicUtils.getAlbumName(), MusicUtils.getArtistName());
+		loadImage(key, MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(), ImageType.ALBUM, imageView);
 	}
 
 	/**

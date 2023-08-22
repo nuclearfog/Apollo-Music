@@ -138,7 +138,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
 				case SELECTION:
-					MusicUtils.playAll(selectedFolderSongs, 0, false);
+					MusicUtils.playAll(requireContext(), selectedFolderSongs, 0, false);
 					return true;
 
 				case ADD_QUEUE:

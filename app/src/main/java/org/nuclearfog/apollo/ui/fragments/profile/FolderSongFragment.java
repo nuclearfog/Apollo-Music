@@ -82,7 +82,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 
 	@Override
 	protected void onItemClick(View v, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 					return super.onContextItemSelected(item);
 
 				case PLAY_SELECTION:
-					MusicUtils.playAll(ids, 0, false);
+					MusicUtils.playAll(requireContext(), ids, 0, false);
 					return true;
 
 				case PLAY_NEXT:

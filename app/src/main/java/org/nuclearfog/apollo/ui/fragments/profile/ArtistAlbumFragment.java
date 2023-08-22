@@ -96,7 +96,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		if (v.getId() == R.id.image) {
 			// Album art was clicked
 			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(list, 0, false);
+			MusicUtils.playAll(requireContext(), list, 0, false);
 		} else {
 			// open Album
 			if (pos > 0) {
@@ -158,7 +158,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(mAlbumList, 0, false);
+					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:

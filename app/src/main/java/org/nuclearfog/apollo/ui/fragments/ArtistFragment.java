@@ -209,7 +209,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(mArtistList, 0, true);
+					MusicUtils.playAll(requireContext(), mArtistList, 0, true);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -257,7 +257,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
 		if (view.getId() == R.id.image) {
 			long[] list = MusicUtils.getSongListForArtist(getContext(), id);
-			MusicUtils.playAll(list, 0, false);
+			MusicUtils.playAll(requireContext(), list, 0, false);
 		} else {
 			Artist selectedArtist = mAdapter.getItem(position);
 			if (selectedArtist != null) {

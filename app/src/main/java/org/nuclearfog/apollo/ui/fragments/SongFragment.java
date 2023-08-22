@@ -185,7 +185,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(trackIds, 0, false);
+					MusicUtils.playAll(requireContext(), trackIds, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
@@ -231,7 +231,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
 	}
 
 	/**

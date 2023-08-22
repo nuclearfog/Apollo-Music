@@ -61,16 +61,32 @@ public final class AudioEffects {
 			if (instance == null || instance.sessionId != sessionId) {
 				instance = new AudioEffects(context, sessionId);
 				if (BuildConfig.DEBUG) {
-					Log.v(TAG, "session_id=" + sessionId);
+					Log.d(TAG, "audio_session_id=" + sessionId);
 				}
 			}
-			return instance;
 		} catch (Exception e) {
 			// thrown if there is no support for audio effects
 			if (BuildConfig.DEBUG) {
 				e.printStackTrace();
 			}
-			return null;
+		}
+		return instance;
+	}
+
+	/**
+	 * release all audioeffects from usage
+	 */
+	public static void release() {
+		if (instance != null) {
+			try {
+				instance.equalizer.release();
+				instance.bassBooster.release();
+				instance.reverb.release();
+			} catch (RuntimeException exception) {
+				if (BuildConfig.DEBUG) {
+					exception.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -87,21 +103,8 @@ public final class AudioEffects {
 
 		equalizer.setEnabled(active);
 		bassBooster.setEnabled(active);
+		reverb.setEnabled(active);
 		if (active) {
-			setEffectValues();
-		}
-	}
-
-	/**
-	 * enable/disable audio effects
-	 *
-	 * @param enable true to enable all audio effects
-	 */
-	public void enableAudioFx(boolean enable) {
-		equalizer.setEnabled(enable);
-		bassBooster.setEnabled(enable);
-		prefs.setAudioFxEnabled(enable);
-		if (enable) {
 			setEffectValues();
 		}
 	}
@@ -114,13 +117,41 @@ public final class AudioEffects {
 	}
 
 	/**
+	 * enable/disable audio effects
+	 *
+	 * @param enable true to enable all audio effects
+	 */
+	public void enableAudioFx(boolean enable) {
+		try {
+			equalizer.setEnabled(enable);
+			bassBooster.setEnabled(enable);
+			reverb.setEnabled(enable);
+			prefs.setAudioFxEnabled(enable);
+			if (enable) {
+				setEffectValues();
+			}
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * get min, max limits of the eq band
 	 *
 	 * @return array with min and max limits
 	 */
 	public int[] getBandLevelRange() {
-		short[] ranges = equalizer.getBandLevelRange();
-		return new int[]{ranges[0], ranges[1]};
+		try {
+			short[] ranges = equalizer.getBandLevelRange();
+			return new int[]{ranges[0], ranges[1]};
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
+		return new int[2];
 	}
 
 	/**
@@ -129,12 +160,19 @@ public final class AudioEffects {
 	 * @return array of band frequencies, starting with the lowest frequency
 	 */
 	public int[] getBandFrequencies() {
-		short bandCount = equalizer.getNumberOfBands();
-		int[] freq = new int[bandCount];
-		for (short i = 0; i < bandCount; i++) {
-			freq[i] = equalizer.getCenterFreq(i) / 1000;
+		try {
+			short bandCount = equalizer.getNumberOfBands();
+			int[] freq = new int[bandCount];
+			for (short i = 0; i < bandCount; i++) {
+				freq[i] = equalizer.getCenterFreq(i) / 1000;
+			}
+			return freq;
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
-		return freq;
+		return new int[0];
 	}
 
 	/**
@@ -143,12 +181,19 @@ public final class AudioEffects {
 	 * @return array of band levels and frequencies starting from the lowest equalizer frequency
 	 */
 	public int[] getBandLevel() {
-		short bandCount = equalizer.getNumberOfBands();
-		int[] level = new int[bandCount];
-		for (short i = 0; i < bandCount; i++) {
-			level[i] = equalizer.getBandLevel(i);
+		try {
+			short bandCount = equalizer.getNumberOfBands();
+			int[] level = new int[bandCount];
+			for (short i = 0; i < bandCount; i++) {
+				level[i] = equalizer.getBandLevel(i);
+			}
+			return level;
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
-		return level;
+		return new int[0];
 	}
 
 	/**
@@ -158,15 +203,21 @@ public final class AudioEffects {
 	 * @param level level of the band
 	 */
 	public void setBandLevel(int band, int level) {
-		// set single band level
-		equalizer.setBandLevel((short) band, (short) level);
-		// save all equalizer band levels
-		short bandCount = equalizer.getNumberOfBands();
-		int[] bands = new int[bandCount];
-		for (short i = 0; i < bandCount; i++) {
-			bands[i] = equalizer.getBandLevel(i);
+		try {
+			// set single band level
+			equalizer.setBandLevel((short) band, (short) level);
+			// save all equalizer band levels
+			short bandCount = equalizer.getNumberOfBands();
+			int[] bands = new int[bandCount];
+			for (short i = 0; i < bandCount; i++) {
+				bands[i] = equalizer.getBandLevel(i);
+			}
+			prefs.setEqualizerBands(bands);
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
-		prefs.setEqualizerBands(bands);
 	}
 
 	/**
@@ -175,7 +226,14 @@ public final class AudioEffects {
 	 * @return bassbost strength value from 0 to 1000
 	 */
 	public int getBassLevel() {
-		return bassBooster.getRoundedStrength();
+		try {
+			return bassBooster.getRoundedStrength();
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -184,8 +242,14 @@ public final class AudioEffects {
 	 * @param level bassbost strength value from 0 to 1000
 	 */
 	public void setBassLevel(int level) {
-		bassBooster.setStrength((short) level);
-		prefs.setBassLevel(level);
+		try {
+			bassBooster.setStrength((short) level);
+			prefs.setBassLevel(level);
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -194,7 +258,14 @@ public final class AudioEffects {
 	 * @return reverb level
 	 */
 	public int getReverbLevel() {
-		return reverb.getPreset();
+		try {
+			return reverb.getPreset();
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -203,20 +274,32 @@ public final class AudioEffects {
 	 * @param level reverb level
 	 */
 	public void setReverbLevel(int level) {
-		reverb.setPreset((short) level);
-		prefs.setReverbLevel(level);
+		try {
+			reverb.setPreset((short) level);
+			prefs.setReverbLevel(level);
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
 	}
 
 	/**
 	 * set saved values for audio effects
 	 */
 	private void setEffectValues() {
-		// setup audio effects
-		bassBooster.setStrength((short) prefs.getBassLevel());
-		reverb.setPreset((short) prefs.getReverbLevel());
-		int[] bandLevel = prefs.getEqualizerBands();
-		for (short i = 0; i < bandLevel.length; i++) {
-			equalizer.setBandLevel(i, (short) bandLevel[i]);
+		try {
+			// setup audio effects
+			bassBooster.setStrength((short) prefs.getBassLevel());
+			reverb.setPreset((short) prefs.getReverbLevel());
+			int[] bandLevel = prefs.getEqualizerBands();
+			for (short i = 0; i < bandLevel.length; i++) {
+				equalizer.setBandLevel(i, (short) bandLevel[i]);
+			}
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
 	}
 }

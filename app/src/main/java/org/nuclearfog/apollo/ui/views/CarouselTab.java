@@ -134,9 +134,8 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 			mPhoto.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					long[] albumList = MusicUtils.getSongListForAlbum(getContext(),
-							MusicUtils.getIdForAlbum(context, lastAlbum, artist));
-					MusicUtils.playAll(albumList, 0, false);
+					long[] albumList = MusicUtils.getSongListForAlbum(getContext(), MusicUtils.getIdForAlbum(context, lastAlbum, artist));
+					MusicUtils.playAll(getContext(), albumList, 0, false);
 				}
 			});
 		} else {

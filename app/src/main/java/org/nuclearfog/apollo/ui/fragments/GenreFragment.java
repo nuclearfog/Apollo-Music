@@ -155,7 +155,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(mGenreList, 0, false);
+					MusicUtils.playAll(requireContext(), mGenreList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:

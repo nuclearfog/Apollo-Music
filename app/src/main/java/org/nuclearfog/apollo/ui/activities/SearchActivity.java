@@ -233,7 +233,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		}
 		switch (item.getItemId()) {
 			case ContextMenuItems.PLAY_SELECTION:
-				MusicUtils.playAll(ids, 0, false);
+				MusicUtils.playAll(getApplicationContext(), ids, 0, false);
 				return true;
 
 			case ContextMenuItems.ADD_TO_QUEUE:
@@ -362,7 +362,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		else if (music instanceof Song) {
 			Song song = (Song) music;
 			long[] list = new long[]{song.getId()};
-			MusicUtils.playAll(list, 0, false);
+			MusicUtils.playAll(getApplicationContext(), list, 0, false);
 		}
 		// All done
 		finish();

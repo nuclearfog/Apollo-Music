@@ -102,7 +102,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 
 	@Override
 	protected void onItemClick(View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
 		// mark playlist as current queue
 		queueIsPlaylist = true;
 	}
@@ -149,7 +149,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(trackId, 0, false);
+					MusicUtils.playAll(requireContext(), trackId, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:

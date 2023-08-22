@@ -506,7 +506,7 @@ public final class MusicUtils {
 
 	/**
 	 * @param id The ID of the track to remove.
-	 * @return removes track from a playlist or the queue.
+	 * @return how many instances of the track were removed
 	 */
 	public static int removeTrack(long id) {
 		IApolloService service = mService;
@@ -648,7 +648,7 @@ public final class MusicUtils {
 	public static void playArtist(Context context, long artistId, int position) {
 		long[] artistList = getSongListForArtist(context, artistId);
 		if (artistList.length > position) {
-			playAll(artistList, position, false);
+			playAll(context, artistList, position, false);
 		}
 	}
 
@@ -720,9 +720,10 @@ public final class MusicUtils {
 	 * @param position     Specify where to start.
 	 * @param forceShuffle True to force a shuffle, false otherwise.
 	 */
-	public static void playAll(long[] list, int position, boolean forceShuffle) {
+	public static void playAll(Context context, long[] list, int position, boolean forceShuffle) {
 		IApolloService service = mService;
 		if (list.length > 0 && service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
@@ -916,7 +917,7 @@ public final class MusicUtils {
 	public static void playAlbum(Context context, long albumId, int position) {
 		long[] albumList = getSongListForAlbum(context, albumId);
 		if (albumList.length > 0) {
-			playAll(albumList, position, false);
+			playAll(context, albumList, position, false);
 		}
 	}
 
@@ -1231,7 +1232,7 @@ public final class MusicUtils {
 	 */
 	public static void playPlaylist(Context context, long playlistId) {
 		long[] playlistList = getSongListForPlaylist(context, playlistId);
-		playAll(playlistList, -1, false);
+		playAll(context, playlistList, -1, false);
 	}
 
 	/**
@@ -1261,7 +1262,7 @@ public final class MusicUtils {
 	 * @param context The {@link Context} to use
 	 */
 	public static void playFavorites(Context context) {
-		playAll(getSongListForFavorites(context), 0, false);
+		playAll(context, getSongListForFavorites(context), 0, false);
 	}
 
 	/**
@@ -1310,14 +1311,14 @@ public final class MusicUtils {
 	 * @param context The {@link Context} to use
 	 */
 	public static void playLastAdded(Context context) {
-		playAll(getSongListForLastAdded(context), 0, false);
+		playAll(context, getSongListForLastAdded(context), 0, false);
 	}
 
 	/**
 	 * Plays popular tracks starting with the most listened tracks
 	 */
 	public static void playPopular(Context context) {
-		playAll(getPopularSongList(context), 0, false);
+		playAll(context, getPopularSongList(context), 0, false);
 	}
 
 	/**
@@ -1551,7 +1552,7 @@ public final class MusicUtils {
 	/**
 	 *
 	 */
-	public static void playAllFromUserItemClick(ArrayAdapter<Song> adapter, int position) {
+	public static void playAllFromUserItemClick(Context context, ArrayAdapter<Song> adapter, int position) {
 		if (position < adapter.getViewTypeCount() - 1) {
 			// invalid position
 			return;
@@ -1569,7 +1570,7 @@ public final class MusicUtils {
 			list[i] = adapter.getItemId(i + off);
 		}
 		// play whole ID list
-		playAll(list, position, false);
+		playAll(context, list, position, false);
 	}
 
 	/**

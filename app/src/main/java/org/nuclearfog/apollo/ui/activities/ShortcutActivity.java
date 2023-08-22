@@ -280,7 +280,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		boolean shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		// Play the list
 		if (mList.length > 0) {
-			MusicUtils.playAll(mList, 0, mShouldShuffle);
+			MusicUtils.playAll(getApplicationContext(), mList, 0, mShouldShuffle);
 		}
 		// Open the now playing screen
 		if (shouldOpenAudioPlayer) {

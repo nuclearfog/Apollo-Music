@@ -215,7 +215,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		if (item.getGroupId() == GROUP_ID && mAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(mAlbumList, 0, false);
+					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -272,7 +272,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
 			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(list, 0, false);
+			MusicUtils.playAll(requireContext(), list, 0, false);
 		} else {
 			Album selection = mAdapter.getItem(position);
 			if (selection != null) {

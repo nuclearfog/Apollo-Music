@@ -16,6 +16,7 @@ import android.app.Application;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.nuclearfog.apollo.cache.ImageCache;
+import org.nuclearfog.apollo.player.AudioEffects;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,10 +55,12 @@ public class ApolloApplication extends Application {
 	 */
 	@Override
 	public void onTerminate() {
-		// remove notification
 		try {
+			// remove notification
 			NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 			notificationManager.cancelAll();
+			// release audioeffects
+			AudioEffects.release();
 		} catch (SecurityException exception) {
 			// ignore
 		}

@@ -85,7 +85,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 
 	@Override
 	protected void onItemClick(View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 			long[] trackId = {mSong.getId()};
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(trackId, 0, false);
+					MusicUtils.playAll(requireContext(), trackId, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:

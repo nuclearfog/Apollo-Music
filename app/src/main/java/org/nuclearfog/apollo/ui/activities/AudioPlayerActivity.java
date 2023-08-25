@@ -883,7 +883,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	private void shareCurrentTrack() {
 		String path = MusicUtils.getPlaybackFilePath();
-		if (path != null) {
+		if (path != null && !path.isEmpty()) {
 			try {
 				File file = new File(path);
 				Uri fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);

@@ -1427,18 +1427,17 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			// If mCursor is null, try to associate path with a database cursor
 			if (mCursor == null) {
 				Uri uri = Uri.parse(path);
-				long id = -1;
+				long id = -1L;
 				try {
-					if (uri != null && uri.getLastPathSegment() != null)
-						id = Long.parseLong(uri.getLastPathSegment());
+					String lastSeg = uri.getLastPathSegment();
+					if (lastSeg != null)
+						id = Long.parseLong(lastSeg);
 				} catch (NumberFormatException ex) {
-					if (BuildConfig.DEBUG) {
-						ex.printStackTrace();
-					}
+					// proceed without ID
 				}
-				if (id != -1 && path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
+				if (path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
 					updateCursor(uri);
-				} else if (id != -1 && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
+				} else if (id != -1L && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
 					updateCursor(id);
 				} else {
 					updateCursor(path);
@@ -1452,9 +1451,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayer.setDataSource(path);
 			if (mPlayer.isInitialized()) {
 				return true;
+			} else {
+				stop(true);
+				return false;
 			}
-			stop(true);
-			return false;
 		}
 	}
 

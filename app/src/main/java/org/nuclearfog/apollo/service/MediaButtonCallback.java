@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 
-import org.nuclearfog.apollo.service.MusicPlaybackService;
-
 /**
  * callback class used by media buttons to control playback
  * todo add more button methods

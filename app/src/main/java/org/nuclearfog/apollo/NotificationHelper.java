@@ -148,8 +148,9 @@ public class NotificationHelper {
 	}
 
 	/**
+	 * post/cancel notification
 	 *
-	 * @param notification
+	 * @param notification notification to post or null to remove existing notification
 	 */
 	private void postNotification(@Nullable Notification notification) {
 		try {

@@ -44,10 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import com.andrew.apollo.IApolloService;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
 import org.nuclearfog.apollo.model.Song;
@@ -55,6 +53,8 @@ import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.provider.PopularStore;
 import org.nuclearfog.apollo.provider.RecentStore;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 

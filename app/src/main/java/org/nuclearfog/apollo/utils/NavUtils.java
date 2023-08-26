@@ -21,14 +21,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
-
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.SearchActivity;
 import org.nuclearfog.apollo.ui.activities.SettingsActivity;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 
 /**
  * Various navigation helpers.

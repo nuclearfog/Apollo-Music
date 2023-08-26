@@ -34,10 +34,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;

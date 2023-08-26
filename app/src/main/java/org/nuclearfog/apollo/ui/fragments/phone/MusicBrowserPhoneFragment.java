@@ -25,9 +25,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
-import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
-
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.PagerAdapter;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
@@ -38,6 +35,8 @@ import org.nuclearfog.apollo.ui.fragments.GenreFragment;
 import org.nuclearfog.apollo.ui.fragments.PlaylistFragment;
 import org.nuclearfog.apollo.ui.fragments.RecentFragment;
 import org.nuclearfog.apollo.ui.fragments.SongFragment;
+import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
+import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;

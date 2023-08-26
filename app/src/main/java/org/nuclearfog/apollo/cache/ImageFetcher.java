@@ -23,12 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.lastfm.Album;
 import org.nuclearfog.apollo.lastfm.Artist;
 import org.nuclearfog.apollo.lastfm.ImageSize;
 import org.nuclearfog.apollo.lastfm.MusicEntry;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 

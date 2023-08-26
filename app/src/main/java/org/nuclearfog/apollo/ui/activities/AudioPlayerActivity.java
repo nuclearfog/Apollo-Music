@@ -54,12 +54,12 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.adapters.PagerAdapter;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
+import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
 import org.nuclearfog.apollo.ui.fragments.FragmentCallback;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;

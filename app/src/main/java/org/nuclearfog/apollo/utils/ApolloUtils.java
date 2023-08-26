@@ -41,14 +41,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.ui.appmsg.AppMsg;
-
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 

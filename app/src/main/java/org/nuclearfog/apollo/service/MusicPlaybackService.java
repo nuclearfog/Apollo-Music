@@ -570,7 +570,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					stopForeground(true);
 					mNotificationHelper.cancelNotification();
 				} else if (isPlaying()) {
-					mNotificationHelper.buildNotification();
+					mNotificationHelper.createNotification();
 				}
 			}
 			if (ACTION_SHUTDOWN.equals(action)) {
@@ -1113,7 +1113,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param path music file path
 	 */
 	private void updateCursor(String path) {
-		synchronized (this) {
+		synchronized (this) { // frixme can't find media file
 			closeCursor();
 			mCursor = CursorFactory.makeTrackCursor(this, path);
 			updateAlbumCursor();
@@ -1421,7 +1421,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private boolean openFile(String path) {
 		synchronized (this) {
-			if (path == null) {
+			if (path == null || path.isEmpty()) {
 				return false;
 			}
 			// If mCursor is null, try to associate path with a database cursor

@@ -17,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -110,39 +111,56 @@ public class NotificationHelper {
 	/**
 	 * Call this to build the {@link Notification}.
 	 */
-	public void buildNotification() {
+	public void createNotification() {
 		initCollapsedPlaybackActions();
 		initExpandedPlaybackActions();
-		updateNotification();
+		Notification notification = buildNotification();
+		postNotification(notification);
+		mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
 	}
 
 	/**
-	 * Changes the playback controls in and out of a paused state
+	 * update existing notification
 	 */
 	public void updateNotification() {
-		int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
-		mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
-		mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-		updateCollapsedLayout();
-		updateExpandedLayout();
-		// Update notification
-		notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
-		try {
-			notificationManager.notify(APOLLO_MUSIC_SERVICE, notificationBuilder.build());
-		} catch (SecurityException e) {
-			// caught on missing permission. Normally app requires permission to post notification
-			// so this scenario can't happen
-		}
+		postNotification(buildNotification());
 	}
 
 	/**
 	 * cancel notification when app is in foreground
 	 */
 	public void cancelNotification() {
+		postNotification(null);
+	}
+
+	/**
+	 * Changes the playback controls in and out of a paused state
+	 */
+	private Notification buildNotification() {
+		updateCollapsedLayout();
+		updateExpandedLayout();
+		int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
+		mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
+		mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
+
+		notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+		return notificationBuilder.build();
+	}
+
+	/**
+	 *
+	 * @param notification
+	 */
+	private void postNotification(@Nullable Notification notification) {
 		try {
-			notificationManager.cancel(APOLLO_MUSIC_SERVICE);
-		} catch (SecurityException e) {
-			// ignore
+			if (notification != null) {
+				notificationManager.notify(APOLLO_MUSIC_SERVICE, notification);
+			} else {
+				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
+			}
+		} catch (SecurityException exception) {
+			// caught on missing permission. Normally app requires permission to post notification
+			// so this scenario can't happen
 		}
 	}
 

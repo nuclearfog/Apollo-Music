@@ -108,6 +108,8 @@
 	<string name="settings_download_missing_artwork_title">Fehlende Albencover laden</string>
 	<string name="settings_download_artist_images_title">Fehlende Interpretenbilder laden</string>
 	<string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
+	<string name="settings_disable_bat_opt_title">Batterie-Optimierungen deaktivieren</string>
+	<string name="settings_disable_bat_opt_summary">Batterie-Optimierungen deaktivieren falls es Unterbrechungen beim Abspielen kommt</string>
 	<string name="settings_version_title">Version</string>
 	<string name="share_track_using">Titel teilen</string>
 	<string name="menu_clear_popular">Liste leeren</string>

@@ -144,6 +144,8 @@
 	<string name="settings_theme_chooser_title">Theme chooser</string>
 	<string name="settings_delete_cache_title">Delete cache</string>
 	<string name="settings_delete_cache_summary">Remove all cached images</string>
+	<string name="settings_disable_bat_opt_title">Disable battery optimization</string>
+	<string name="settings_disable_bat_opt_summary">Battery optimization may cause playback to stop when running in the background</string>
 	<string name="settings_download_only_on_wifi_title">Download via Wi-Fi only</string>
 	<string name="settings_prefer_external_equalizer">Prefer external equalizer</string>
 	<string name="settings_download_only_on_wifi_summary">To reduce carrier charges, don\'t download over mobile networks</string>

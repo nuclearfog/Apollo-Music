@@ -11,8 +11,13 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
+import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -106,6 +111,8 @@ public class SettingsActivity extends AppCompatActivity {
 
 		private static final String VERSION = "version";
 
+		private static final String BAT_OPT = "disable_battery_opt";
+
 		/**
 		 * dialogs to ask the user for actions
 		 */
@@ -115,11 +122,11 @@ public class SettingsActivity extends AppCompatActivity {
 		@Override
 		public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 			addPreferencesFromResource(R.xml.settings);
-
 			Preference mOpenSourceLicenses = findPreference(LICENSE);
 			Preference deleteCache = findPreference(DEL_CACHE);
 			Preference themeChooser = findPreference(THEME_SEL);
 			Preference colorScheme = findPreference(COLOR_SEL);
+			Preference batteryOpt = findPreference(BAT_OPT);
 			Preference version = findPreference(VERSION);
 
 			if (version != null)
@@ -132,7 +139,13 @@ public class SettingsActivity extends AppCompatActivity {
 				themeChooser.setOnPreferenceClickListener(this);
 			if (colorScheme != null)
 				colorScheme.setOnPreferenceClickListener(this);
-
+			if (batteryOpt != null) {
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+					batteryOpt.setVisible(false);
+				} else {
+					batteryOpt.setOnPreferenceClickListener(this);
+				}
+			}
 			licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
 			cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());
 			colorPicker = ApolloUtils.showColorPicker(requireActivity());
@@ -140,6 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 		@Override
+		@SuppressLint("BatteryLife")
 		public boolean onPreferenceClick(@NonNull Preference preference) {
 			switch (preference.getKey()) {
 				case LICENSE:
@@ -160,6 +174,20 @@ public class SettingsActivity extends AppCompatActivity {
 				case THEME_SEL:
 					Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
 					startActivity(themeChooserIntent);
+					return true;
+
+				case BAT_OPT:
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+						Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+						intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+						try {
+							startActivity(intent);
+						} catch (Exception exception) {
+							if (BuildConfig.DEBUG) {
+								exception.printStackTrace();
+							}
+						}
+					}
 					return true;
 			}
 			return false;

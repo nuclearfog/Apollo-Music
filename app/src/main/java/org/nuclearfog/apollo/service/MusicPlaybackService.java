@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo.service;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static android.provider.MediaStore.VOLUME_EXTERNAL;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -32,7 +31,6 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
-import android.provider.MediaStore.Files;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -716,13 +714,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current song album Name
 	 */
-	public String getAlbumName() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+	public synchronized String getAlbumName() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.ALBUM);
+			if (idx >= 0) {
+				return mCursor.getString(idx);
 			}
-			return "";
 		}
+		return "";
 	}
 
 	/**
@@ -730,10 +729,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current song name
 	 */
-	public String getTrackName() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+	public synchronized String getTrackName() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.TITLE);
+			if (idx >= 0) {
+				return mCursor.getString(idx);
 			}
 		}
 		return "";
@@ -744,10 +744,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current song artist name
 	 */
-	public String getArtistName() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+	public synchronized String getArtistName() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.ARTIST);
+			if (idx >= 0) {
+				return mCursor.getString(idx);
 			}
 		}
 		return "";
@@ -758,13 +759,29 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return The current song album ID
 	 */
-	public long getAlbumId() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getLong(mCursor.getColumnIndexOrThrow(Media.ALBUM_ID));
+	public synchronized long getAlbumId() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(Media.ALBUM_ID);
+			if (idx >= 0) {
+				return mCursor.getLong(idx);
 			}
 		}
-		return -1;
+		return -1L;
+	}
+
+	/**
+	 * Returns the album ID
+	 *
+	 * @return The current song album ID
+	 */
+	public synchronized long getTrackId() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(Media._ID);
+			if (idx >= 0) {
+				return mCursor.getLong(idx);
+			}
+		}
+		return -1L;
 	}
 
 	/**
@@ -824,11 +841,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Changes from the current track to the next track
 	 */
 	public void gotoNext(boolean force) {
-		synchronized (this) {
-			if (mPlayList.isEmpty()) {
-				scheduleDelayedShutdown();
-				return;
-			}
+		if (mPlayList.isEmpty()) {
+			scheduleDelayedShutdown();
+		} else {
 			int pos = getNextPosition(force);
 			if (pos < 0) {
 				scheduleDelayedShutdown();
@@ -836,13 +851,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mIsSupposedToBePlaying = false;
 					notifyChange(CHANGED_PLAYSTATE);
 				}
-				return;
+			} else {
+				stop(false);
+				mPlayPos = pos;
+				openCurrentAndNext();
+				play();
+				notifyChange(CHANGED_META);
 			}
-			stop(false);
-			mPlayPos = pos;
-			openCurrentAndNext();
-			play();
-			notifyChange(CHANGED_META);
 		}
 	}
 
@@ -884,16 +899,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param uri URI of the local file
 	 */
 	public void openFile(Uri uri) {
+		stop();
 		// If this is a file:// URI, just use the path directly instead
 		// of going through the open-from-filedescriptor codepath.
-		String filename;
-		if ("file".equals(uri.getScheme())) {
-			filename = uri.getPath();
+		if (uri.getScheme() != null && uri.getScheme().startsWith("file://")) {
+			openTrack(uri.getPath());
+		} else if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
+			openTrack(uri);
 		} else {
-			filename = uri.toString();
+			openTrack(Uri.decode(uri.toString()));
 		}
-		stop();
-		openFile(filename);
 		play();
 	}
 
@@ -916,7 +931,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * notify if track chages
 	 */
-	public void onWentToNext() {
+	public synchronized void onWentToNext() {
 		mPlayPos = mNextPlayPos;
 		if (mCursor != null) {
 			mCursor.close();
@@ -966,6 +981,401 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Notify the change-receivers that something has changed.
+	 */
+	void notifyChange(String what) {
+		if (!what.equals(CHANGED_POSITION)) {
+			long audioId = getAudioId();
+			long albumId = getAlbumId();
+			String albumName = getAlbumName();
+			String artistName = getArtistName();
+			String trackName = getTrackName();
+
+			Intent intent = new Intent(what);
+			intent.putExtra("id", audioId);
+			intent.putExtra("artist", artistName);
+			intent.putExtra("album", albumName);
+			intent.putExtra("track", trackName);
+			intent.putExtra("playing", isPlaying());
+			intent.putExtra("isfavorite", isFavorite());
+			sendBroadcast(intent);
+
+			Intent musicIntent = new Intent(intent);
+			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
+			sendBroadcast(musicIntent);
+
+			if (what.equals(CHANGED_META)) {
+				// Increase the play count for favorite songs.
+				if (mFavoritesCache.exists(audioId)) {
+					mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
+				}
+				mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
+				// Add the track to the recently played list.
+				String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
+				String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
+				mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+			} else if (what.equals(CHANGED_QUEUE)) {
+				saveQueue(true);
+				if (isPlaying()) {
+					setNextTrack();
+				}
+			} else {
+				saveQueue(false);
+			}
+			mIntentReceiver.updateWidgets(this, what);
+		}
+	}
+
+	/**
+	 * Returns the audio session ID
+	 *
+	 * @return The current media player audio session ID
+	 */
+	int getAudioSessionId() {
+		return mPlayer.getAudioSessionId();
+	}
+
+	/**
+	 * Indicates if the media storeage device has been mounted or not
+	 *
+	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
+	 */
+	int getMediaMountedCount() {
+		return mMediaMountedCount;
+	}
+
+	/**
+	 * Removes the range of tracks specified from the play list. If a file
+	 * within the range is the file currently being played, playback will move
+	 * to the next file after the range.
+	 *
+	 * @param first The first file to be removed
+	 * @param last  The last file to be removed
+	 * @return the number of tracks deleted
+	 */
+	synchronized int removeTracks(int first, int last) {
+		int numremoved = removeTracksInternal(first, last);
+		if (numremoved > 0) {
+			notifyChange(CHANGED_QUEUE);
+		}
+		return numremoved;
+	}
+
+	/**
+	 * Sets the shuffle mode
+	 *
+	 * @param shufflemode The shuffle mode to use
+	 */
+	synchronized void setShuffleMode(int shufflemode) {
+		if (mShuffleMode != shufflemode || mPlayList.isEmpty()) {
+			mShuffleMode = shufflemode;
+			// setup party shuffle
+			if (mShuffleMode == SHUFFLE_AUTO) {
+				if (makeAutoShuffleList()) {
+					doAutoShuffleUpdate();
+					mPlayPos = 0;
+					openCurrentAndNext();
+					play();
+					notifyChange(CHANGED_META);
+				} else {
+					mShuffleMode = SHUFFLE_NONE;
+				}
+			}
+			// setup queue shuffle
+			else if (mShuffleMode == SHUFFLE_NORMAL) {
+				if (makeNormalShuffleList()) {
+					mPlayPos = 0;
+					openCurrentAndNext();
+					play();
+					notifyChange(CHANGED_META);
+				} else {
+					mShuffleMode = SHUFFLE_NONE;
+				}
+			}
+			saveQueue(false);
+			notifyChange(CHANGED_SHUFFLEMODE);
+		}
+	}
+
+	/**
+	 * Sets the position of a track in the queue
+	 *
+	 * @param index The position to place the track
+	 */
+	synchronized void setQueuePosition(int index) {
+		stop(false);
+		mPlayPos = index;
+		openCurrentAndNext();
+		play();
+		notifyChange(CHANGED_META);
+		if (mShuffleMode == SHUFFLE_AUTO) {
+			doAutoShuffleUpdate();
+		}
+	}
+
+	/**
+	 * Returns the position in the queue
+	 *
+	 * @return the current position in the queue
+	 */
+	int getQueuePosition() {
+		return mPlayPos;
+	}
+
+	/**
+	 * Returns the path to current song
+	 *
+	 * @return The path to the current song
+	 */
+	synchronized String getPath() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.DATA);
+			if (idx >= 0) {
+				return mCursor.getString(idx);
+			}
+		}
+		return "";
+	}
+
+	/**
+	 * Returns the artist ID
+	 *
+	 * @return The current song artist ID
+	 */
+	synchronized long getArtistId() {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.ARTIST_ID);
+			if (idx >= 0) {
+				return mCursor.getLong(idx);
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns the current audio ID
+	 *
+	 * @return The current track ID
+	 */
+	synchronized long getAudioId() {
+		if (mPlayPos >= 0 && mPlayer.isInitialized()) {
+			return mPlayList.get(mPlayPos);
+		}
+		return -1L;
+	}
+
+	/**
+	 * Removes all instances of the track with the given ID from the playlist.
+	 *
+	 * @param id The id to be removed
+	 * @return how many instances of the track were removed
+	 */
+	synchronized int removeTrack(long id) {
+		int numremoved = 0;
+		for (int pos = 0; pos < mPlayList.size(); pos++) {
+			if (mPlayList.get(pos) == id) {
+				numremoved += removeTracksInternal(pos, pos);
+			}
+		}
+		if (numremoved > 0) {
+			notifyChange(CHANGED_QUEUE);
+		}
+		return numremoved;
+	}
+
+	/**
+	 * Returns the current position in time of the currenttrack
+	 *
+	 * @return The current playback position in miliseconds
+	 */
+	long position() {
+		if (mPlayer.isInitialized()) {
+			return mPlayer.position();
+		}
+		return -1L;
+	}
+
+	/**
+	 * Returns the full duration of the current track
+	 *
+	 * @return The duration of the current track in miliseconds
+	 */
+	long duration() {
+		if (mPlayer.isInitialized()) {
+			return mPlayer.duration();
+		}
+		return -1L;
+	}
+
+	/**
+	 * Returns the queue
+	 *
+	 * @return The queue as a long[]
+	 */
+	synchronized long[] getQueue() {
+		int len = mPlayList.size();
+		long[] list = new long[len];
+		for (int i = 0; i < len; i++) {
+			list[i] = mPlayList.get(i);
+		}
+		return list;
+	}
+
+	/**
+	 * True if the current track is a "favorite", false otherwise
+	 */
+	synchronized boolean isFavorite() {
+		if (mFavoritesCache != null) {
+			return mFavoritesCache.exists(getAudioId());
+		}
+		return false;
+	}
+
+	/**
+	 * Sets the repeat mode
+	 *
+	 * @param repeatmode The repeat mode to use
+	 */
+	synchronized void setRepeatMode(int repeatmode) {
+		mRepeatMode = repeatmode;
+		setNextTrack();
+		saveQueue(false);
+		notifyChange(CHANGED_REPEATMODE);
+	}
+
+	/**
+	 * Opens a list for playback
+	 *
+	 * @param list     The list of tracks to open
+	 * @param position The position to start playback at
+	 */
+	synchronized void open(long[] list, int position) {
+		if (mShuffleMode == SHUFFLE_AUTO) {
+			mShuffleMode = SHUFFLE_NORMAL;
+		}
+		long oldId = getAudioId();
+		mPlayPos = position >= 0 ? position : nextInt(mPlayList.size() - 1);
+
+		boolean newlist = true;
+		if (mPlayList.size() == list.length) {
+			newlist = false;
+			for (int i = 0; i < list.length; i++) {
+				if (list[i] != mPlayList.get(i)) {
+					newlist = true;
+					break;
+				}
+			}
+		}
+		if (newlist) {
+			mPlayList.clear();
+			for (long track : list)
+				mPlayList.add(track);
+			notifyChange(CHANGED_QUEUE);
+		}
+		mHistory.clear();
+		openCurrentAndNext();
+		if (oldId != getAudioId()) {
+			notifyChange(CHANGED_META);
+		}
+	}
+
+	/**
+	 * Changes from the current track to the previous played track
+	 */
+	synchronized void prev() {
+		if (mShuffleMode == SHUFFLE_NORMAL) {
+			// Go to previously-played track and remove it from the history
+			int histsize = mHistory.size();
+			if (histsize == 0) {
+				return;
+			}
+			mPlayPos = mHistory.removeLast();
+		} else {
+			if (mPlayPos > 0) {
+				mPlayPos--;
+			} else {
+				mPlayPos = mPlayList.size() - 1;
+			}
+		}
+		stop(false);
+		openCurrentTrack();
+		play();
+		notifyChange(CHANGED_META);
+	}
+
+	/**
+	 * Toggles the current song as a favorite.
+	 */
+	synchronized void toggleFavorite() {
+		if (mFavoritesCache != null) {
+			long trackId = getAudioId();
+			// remove track if exists from the favorites
+			if (mFavoritesCache.exists(trackId)) {
+				mFavoritesCache.removeItem(trackId);
+			} else {
+				mFavoritesCache.addSongId(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDurationMillis());
+			}
+		}
+	}
+
+	/**
+	 * Moves an item in the queue from one position to another
+	 *
+	 * @param from The position the item is currently at
+	 * @param to   The position the item is being moved to
+	 */
+	synchronized void moveQueueItem(int from, int to) {
+		if (from >= mPlayList.size()) {
+			from = mPlayList.size() - 1;
+		}
+		if (to >= mPlayList.size()) {
+			to = mPlayList.size() - 1;
+		}
+		// move track
+		long trackId = mPlayList.remove(from);
+		mPlayList.add(to, trackId);
+		// set current play pos
+		if (mPlayPos == from) {
+			mPlayPos = to;
+		} else if (mPlayPos >= from && mPlayPos <= to) {
+			mPlayPos--;
+		} else if (mPlayPos <= from && mPlayPos >= to) {
+			mPlayPos++;
+		}
+		mNextPlayPos = getNextPosition(false);
+		notifyChange(CHANGED_QUEUE);
+	}
+
+	/**
+	 * Queues a new list for playback
+	 *
+	 * @param list   The list to queue
+	 * @param action The action to take
+	 */
+	synchronized void enqueue(long[] list, int action) {
+		if (action == MOVE_NEXT && mPlayPos + 1 < mPlayList.size()) {
+			addToPlayList(list, mPlayPos + 1);
+			notifyChange(CHANGED_QUEUE);
+		} else {
+			addToPlayList(list, Integer.MAX_VALUE);
+			notifyChange(CHANGED_QUEUE);
+			if (action == MOVE_NOW) {
+				mPlayPos = mPlayList.size() - list.length;
+				openCurrentAndNext();
+				play();
+				notifyChange(CHANGED_META);
+				return;
+			}
+		}
+		if (mPlayPos < 0) {
+			mPlayPos = 0;
+			openCurrentAndNext();
+			play();
+			notifyChange(CHANGED_META);
+		}
 	}
 
 	/**
@@ -1033,45 +1443,43 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return the number of tracks deleted
 	 */
 	private int removeTracksInternal(int first, int last) {
-		synchronized (this) {
-			if (last < first) {
-				return 0;
-			} else if (first < 0) {
-				first = 0;
-			} else if (last >= mPlayList.size()) {
-				last = mPlayList.size() - 1;
-			}
-			boolean gotonext = false;
-			if (first <= mPlayPos && mPlayPos <= last) {
-				mPlayPos = first;
-				gotonext = true;
-			} else if (mPlayPos > last) {
-				mPlayPos -= last - first + 1;
-			}
-			// remove a range of tracks from playlist
-			mPlayList.subList(first, last + 1).clear();
-			if (gotonext) {
-				if (mPlayList.isEmpty()) {
-					stop(true);
-					mPlayPos = -1;
-					closeCursor();
-				} else {
-					if (mShuffleMode != SHUFFLE_NONE) {
-						mPlayPos = getNextPosition(true);
-					} else if (mPlayPos >= mPlayList.size()) {
-						mPlayPos = 0;
-					}
-					boolean wasPlaying = isPlaying();
-					stop(false);
-					openCurrentAndNext();
-					if (wasPlaying) {
-						play();
-					}
-				}
-				notifyChange(CHANGED_META);
-			}
-			return last - first + 1;
+		if (last < first) {
+			return 0;
+		} else if (first < 0) {
+			first = 0;
+		} else if (last >= mPlayList.size()) {
+			last = mPlayList.size() - 1;
 		}
+		boolean gotonext = false;
+		if (first <= mPlayPos && mPlayPos <= last) {
+			mPlayPos = first;
+			gotonext = true;
+		} else if (mPlayPos > last) {
+			mPlayPos -= last - first + 1;
+		}
+		// remove a range of tracks from playlist
+		mPlayList.subList(first, last + 1).clear();
+		if (gotonext) {
+			if (mPlayList.isEmpty()) {
+				stop(true);
+				mPlayPos = -1;
+				closeCursor();
+			} else {
+				if (mShuffleMode != SHUFFLE_NONE) {
+					mPlayPos = getNextPosition(true);
+				} else if (mPlayPos >= mPlayList.size()) {
+					mPlayPos = 0;
+				}
+				boolean wasPlaying = isPlaying();
+				stop(false);
+				openCurrentAndNext();
+				if (wasPlaying) {
+					play();
+				}
+			}
+			notifyChange(CHANGED_META);
+		}
+		return last - first + 1;
 	}
 
 	/**
@@ -1100,11 +1508,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param trackId The track ID
 	 */
 	private void updateCursor(long trackId) {
-		synchronized (this) {
-			closeCursor();
-			mCursor = CursorFactory.makeTrackCursor(this, trackId);
-			updateAlbumCursor();
-		}
+		closeCursor();
+		mCursor = CursorFactory.makeTrackCursor(this, trackId);
+		updateAlbumCursor();
 	}
 
 	/**
@@ -1113,22 +1519,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param path music file path
 	 */
 	private void updateCursor(String path) {
-		synchronized (this) { // frixme can't find media file
-			closeCursor();
-			mCursor = CursorFactory.makeTrackCursor(this, path);
-			updateAlbumCursor();
-		}
+		// fixme can't find media file
+		closeCursor();
+		mCursor = CursorFactory.makeTrackCursor(this, path);
+		updateAlbumCursor();
 	}
 
 	/**
 	 *
 	 */
 	private void updateCursor(Uri uri) {
-		synchronized (this) {
-			closeCursor();
-			mCursor = CursorFactory.makeTrackCursor(this, uri);
-			updateAlbumCursor();
-		}
+		closeCursor();
+		mCursor = CursorFactory.makeTrackCursor(this, uri);
+		updateAlbumCursor();
 	}
 
 	/**
@@ -1161,50 +1564,47 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Called to open a new file as the current track and prepare the next for playback
 	 */
 	private void openCurrentTrack() {
-		synchronized (this) {
-			closeCursor();
-			if (mPlayList.isEmpty()) {
-				return;
-			}
-			stop(false);
-			updateCursor(mPlayList.get(mPlayPos));
-			boolean fileOpenFailed;
-			if (mCursor != null && mCursor.moveToFirst()) {
-				long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
-				String path = Media.EXTERNAL_CONTENT_URI + "/" + id;
-				fileOpenFailed = !openFile(path);
-			} else {
-				fileOpenFailed = true;
-			}
-			if (fileOpenFailed || mCursor.isClosed()) {
-				// if we get here then opening the file failed. We can close the
-				// cursor now, because
-				// we're either going to create a new one next, or stop trying
-				if (mPlayList.size() > 1) {
-					for (int i = 0; i < 10; i++) { // retrying 10 times until failure
-						int pos = getNextPosition(false);
-						if (pos < 0) {
-							scheduleDelayedShutdown();
-							if (mIsSupposedToBePlaying) {
-								mIsSupposedToBePlaying = false;
-								notifyChange(CHANGED_PLAYSTATE);
-							}
-							return;
+		closeCursor();
+		if (mPlayList.isEmpty()) {
+			return;
+		}
+		stop(false);
+		updateCursor(mPlayList.get(mPlayPos));
+		boolean fileOpenFailed;
+		long id = getTrackId();
+		if (id != -1L) {
+			fileOpenFailed = !openTrack(id);
+		} else {
+			fileOpenFailed = true;
+		}
+		if (fileOpenFailed || (mCursor != null && mCursor.isClosed())) {
+			// if we get here then opening the file failed. We can close the
+			// cursor now, because
+			// we're either going to create a new one next, or stop trying
+			if (mPlayList.size() > 1) {
+				for (int i = 0; i < 10; i++) { // retrying 10 times until failure
+					int pos = getNextPosition(false);
+					if (pos < 0) {
+						scheduleDelayedShutdown();
+						if (mIsSupposedToBePlaying) {
+							mIsSupposedToBePlaying = false;
+							notifyChange(CHANGED_PLAYSTATE);
 						}
-						mPlayPos = pos;
-						stop(false);
-						mPlayPos = pos;
-						updateCursor(mPlayList.get(mPlayPos));
+						return;
 					}
+					mPlayPos = pos;
+					stop(false);
+					mPlayPos = pos;
+					updateCursor(mPlayList.get(mPlayPos));
 				}
-				scheduleDelayedShutdown();
-				if (mIsSupposedToBePlaying) {
-					mIsSupposedToBePlaying = false;
-					notifyChange(CHANGED_PLAYSTATE);
-				}
-				if (BuildConfig.DEBUG) {
-					Log.w(TAG, "Failed to open file for playback");
-				}
+			}
+			scheduleDelayedShutdown();
+			if (mIsSupposedToBePlaying) {
+				mIsSupposedToBePlaying = false;
+				notifyChange(CHANGED_PLAYSTATE);
+			}
+			if (BuildConfig.DEBUG) {
+				Log.w(TAG, "Failed to open file for playback");
 			}
 		}
 	}
@@ -1330,8 +1730,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		for (int i = 0; i < toAdd; i++) {
 			int lookback = mHistory.size();
 			int idx;
-			do
-			{
+			do {
 				idx = nextInt(mAutoShuffleList.size() - 1);
 				lookback /= 2;
 			} while (wasRecentlyUsed(idx, lookback));
@@ -1384,9 +1783,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 */
 	private long getDurationMillis() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
+		if (mCursor != null && mCursor.moveToFirst()) {
+			int idx = mCursor.getColumnIndex(AudioColumns.DURATION);
+			if (idx >= 0) {
+				return mCursor.getLong(idx);
 			}
 		}
 		return -1L;
@@ -1415,46 +1815,65 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
+	 * open media file using its content ID and prepare for playback
+	 *
+	 * @param id content ID
+	 * @return true if playback is initialized successfully
+	 */
+	private boolean openTrack(long id) {
+		String path = Media.EXTERNAL_CONTENT_URI + "/" + id;
+		updateCursor(id);
+		//mPlayList.addFirst(id);
+		//mPlayPos = 0;
+		mPlayer.setDataSource(path);
+		if (mPlayer.isInitialized()) {
+			return true;
+		} else {
+			stop(true);
+			return false;
+		}
+	}
+
+	/**
 	 * Opens a file and prepares it for playback
 	 *
 	 * @param path The path of the file to open
 	 */
-	private boolean openFile(String path) {
-		synchronized (this) {
-			if (path == null || path.isEmpty()) {
-				return false;
-			}
+	private void openTrack(String path) {
+		if (path != null && !path.isEmpty()) {
 			// If mCursor is null, try to associate path with a database cursor
 			if (mCursor == null) {
-				Uri uri = Uri.parse(path);
-				long id = -1L;
-				try {
-					String lastSeg = uri.getLastPathSegment();
-					if (lastSeg != null)
-						id = Long.parseLong(lastSeg);
-				} catch (NumberFormatException ex) {
-					// proceed without ID
-				}
-				if (path.startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
-					updateCursor(uri);
-				} else if (id != -1L && path.startsWith(Files.getContentUri(VOLUME_EXTERNAL).toString())) {
-					updateCursor(id);
-				} else {
-					updateCursor(path);
-				}
-				if (mCursor != null && mCursor.moveToFirst()) {
-					id = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
+				updateCursor(path);
+				long id = getTrackId();
+				if (id > 0L) {
 					mPlayList.addFirst(id);
 					mPlayPos = 0;
 				}
 			}
 			mPlayer.setDataSource(path);
-			if (mPlayer.isInitialized()) {
-				return true;
-			} else {
+			if (!mPlayer.isInitialized()) {
 				stop(true);
-				return false;
 			}
+		}
+	}
+
+	/**
+	 * Opens a file and prepares it for playback
+	 *
+	 * @param uri content uri of the media file to open
+	 */
+	private void openTrack(Uri uri) {
+		if (mCursor == null) {
+			updateCursor(uri);
+			long id = getTrackId();
+			if (id > 0L) {
+				mPlayList.addFirst(id);
+				mPlayPos = 0;
+			}
+		}
+		mPlayer.setDataSource(uri.toString());
+		if (!mPlayer.isInitialized()) {
+			stop(true);
 		}
 	}
 
@@ -1464,20 +1883,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param full True if the queue is full
 	 */
 	private void saveQueue(boolean full) {
-		if (!mQueueIsSaveable) {
-			return;
-		}
-		if (full) {
-			settings.setPlayList(mPlayList, mCardId);
-			if (mShuffleMode != SHUFFLE_NONE) {
-				settings.setHistory(mHistory);
+		if (mQueueIsSaveable) {
+			if (full) {
+				settings.setPlayList(mPlayList, mCardId);
+				if (mShuffleMode != SHUFFLE_NONE) {
+					settings.setHistory(mHistory);
+				}
 			}
+			settings.setCursorPosition(mPlayPos);
+			if (mPlayer.isInitialized()) {
+				settings.setSeekPosition(mPlayer.position());
+			}
+			settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 		}
-		settings.setCursorPosition(mPlayPos);
-		if (mPlayer.isInitialized()) {
-			settings.setSeekPosition(mPlayer.position());
-		}
-		settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 	}
 
 	/**
@@ -1496,10 +1914,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				return;
 			}
 			mPlayPos = pos;
-			updateCursor(mPlayList.get(mPlayPos));
-			if (mCursor == null) {
-				updateCursor(mPlayList.get(mPlayPos));
-			}
 			synchronized (this) {
 				closeCursor();
 				openCurrentAndNext();
@@ -1530,428 +1944,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 			mShuffleMode = shufmode;
-		}
-	}
-
-	/**
-	 * Notify the change-receivers that something has changed.
-	 */
-	void notifyChange(String what) {
-		if (what.equals(CHANGED_POSITION)) {
-			return;
-		}
-		long audioId = getAudioId();
-		long albumId = getAlbumId();
-		String albumName = getAlbumName();
-		String artistName = getArtistName();
-		String trackName = getTrackName();
-
-		Intent intent = new Intent(what);
-		intent.putExtra("id", audioId);
-		intent.putExtra("artist", artistName);
-		intent.putExtra("album", albumName);
-		intent.putExtra("track", trackName);
-		intent.putExtra("playing", isPlaying());
-		intent.putExtra("isfavorite", isFavorite());
-		sendBroadcast(intent);
-
-		Intent musicIntent = new Intent(intent);
-		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
-		sendBroadcast(musicIntent);
-
-		if (what.equals(CHANGED_META)) {
-			// Increase the play count for favorite songs.
-			if (mFavoritesCache.exists(audioId)) {
-				mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-			}
-			mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-			// Add the track to the recently played list.
-			String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
-			String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
-			mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
-		} else if (what.equals(CHANGED_QUEUE)) {
-			saveQueue(true);
-			if (isPlaying()) {
-				setNextTrack();
-			}
-		} else {
-			saveQueue(false);
-		}
-		mIntentReceiver.updateWidgets(this, what);
-	}
-
-	/**
-	 * Returns the audio session ID
-	 *
-	 * @return The current media player audio session ID
-	 */
-	int getAudioSessionId() {
-		return mPlayer.getAudioSessionId();
-	}
-
-	/**
-	 * Indicates if the media storeage device has been mounted or not
-	 *
-	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
-	 */
-	int getMediaMountedCount() {
-		return mMediaMountedCount;
-	}
-
-	/**
-	 * Removes the range of tracks specified from the play list. If a file
-	 * within the range is the file currently being played, playback will move
-	 * to the next file after the range.
-	 *
-	 * @param first The first file to be removed
-	 * @param last  The last file to be removed
-	 * @return the number of tracks deleted
-	 */
-	int removeTracks(int first, int last) {
-		int numremoved = removeTracksInternal(first, last);
-		if (numremoved > 0) {
-			notifyChange(CHANGED_QUEUE);
-		}
-		return numremoved;
-	}
-
-	/**
-	 * Sets the shuffle mode
-	 *
-	 * @param shufflemode The shuffle mode to use
-	 */
-	void setShuffleMode(int shufflemode) {
-		synchronized (this) {
-			if (mShuffleMode == shufflemode && !mPlayList.isEmpty()) {
-				return;
-			}
-			mShuffleMode = shufflemode;
-
-			// setup party shuffle
-			if (mShuffleMode == SHUFFLE_AUTO) {
-				if (makeAutoShuffleList()) {
-					doAutoShuffleUpdate();
-					mPlayPos = 0;
-					openCurrentAndNext();
-					play();
-					notifyChange(CHANGED_META);
-				} else {
-					mShuffleMode = SHUFFLE_NONE;
-				}
-			}
-			// setup queue shuffle
-			else if (mShuffleMode == SHUFFLE_NORMAL) {
-				if (makeNormalShuffleList()) {
-					mPlayPos = 0;
-					openCurrentAndNext();
-					play();
-					notifyChange(CHANGED_META);
-				} else {
-					mShuffleMode = SHUFFLE_NONE;
-				}
-			}
-			saveQueue(false);
-			notifyChange(CHANGED_SHUFFLEMODE);
-		}
-	}
-
-	/**
-	 * Returns the path to current song
-	 *
-	 * @return The path to the current song
-	 */
-	String getPath() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
-			}
-			return "";
-		}
-	}
-
-	/**
-	 * Sets the position of a track in the queue
-	 *
-	 * @param index The position to place the track
-	 */
-	void setQueuePosition(int index) {
-		synchronized (this) {
-			stop(false);
-			mPlayPos = index;
-			openCurrentAndNext();
-			play();
-			notifyChange(CHANGED_META);
-			if (mShuffleMode == SHUFFLE_AUTO) {
-				doAutoShuffleUpdate();
-			}
-		}
-	}
-
-	/**
-	 * Returns the position in the queue
-	 *
-	 * @return the current position in the queue
-	 */
-	int getQueuePosition() {
-		synchronized (this) {
-			return mPlayPos;
-		}
-	}
-
-	/**
-	 * Returns the artist ID
-	 *
-	 * @return The current song artist ID
-	 */
-	long getArtistId() {
-		synchronized (this) {
-			if (mCursor != null && mCursor.moveToFirst()) {
-				return mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * Returns the current audio ID
-	 *
-	 * @return The current track ID
-	 */
-	long getAudioId() {
-		synchronized (this) {
-			if (mPlayPos >= 0 && mPlayer.isInitialized()) {
-				return mPlayList.get(mPlayPos);
-			}
-		}
-		return -1L;
-	}
-
-	/**
-	 * Removes all instances of the track with the given ID from the playlist.
-	 *
-	 * @param id The id to be removed
-	 * @return how many instances of the track were removed
-	 */
-	int removeTrack(long id) {
-		synchronized (this) {
-			int numremoved = 0;
-			for (int pos = 0; pos < mPlayList.size(); pos++) {
-				if (mPlayList.get(pos) == id) {
-					numremoved += removeTracksInternal(pos, pos);
-				}
-			}
-			if (numremoved > 0) {
-				notifyChange(CHANGED_QUEUE);
-			}
-			return numremoved;
-		}
-	}
-
-	/**
-	 * Returns the current position in time of the currenttrack
-	 *
-	 * @return The current playback position in miliseconds
-	 */
-	long position() {
-		if (mPlayer.isInitialized()) {
-			return mPlayer.position();
-		}
-		return -1L;
-	}
-
-	/**
-	 * Returns the full duration of the current track
-	 *
-	 * @return The duration of the current track in miliseconds
-	 */
-	long duration() {
-		if (mPlayer.isInitialized()) {
-			return mPlayer.duration();
-		}
-		return -1L;
-	}
-
-	/**
-	 * Returns the queue
-	 *
-	 * @return The queue as a long[]
-	 */
-	long[] getQueue() {
-		synchronized (this) {
-			int len = mPlayList.size();
-			long[] list = new long[len];
-			for (int i = 0; i < len; i++) {
-				list[i] = mPlayList.get(i);
-			}
-			return list;
-		}
-	}
-
-	/**
-	 * True if the current track is a "favorite", false otherwise
-	 */
-	boolean isFavorite() {
-		synchronized (this) {
-			if (mFavoritesCache != null) {
-				return mFavoritesCache.exists(getAudioId());
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Sets the repeat mode
-	 *
-	 * @param repeatmode The repeat mode to use
-	 */
-	void setRepeatMode(int repeatmode) {
-		synchronized (this) {
-			mRepeatMode = repeatmode;
-			setNextTrack();
-			saveQueue(false);
-			notifyChange(CHANGED_REPEATMODE);
-		}
-	}
-
-	/**
-	 * Opens a list for playback
-	 *
-	 * @param list     The list of tracks to open
-	 * @param position The position to start playback at
-	 */
-	void open(long[] list, int position) {
-		synchronized (this) {
-			if (mShuffleMode == SHUFFLE_AUTO) {
-				mShuffleMode = SHUFFLE_NORMAL;
-			}
-			long oldId = getAudioId();
-			mPlayPos = position >= 0 ? position : nextInt(mPlayList.size() - 1);
-
-			boolean newlist = true;
-			if (mPlayList.size() == list.length) {
-				newlist = false;
-				for (int i = 0; i < list.length; i++) {
-					if (list[i] != mPlayList.get(i)) {
-						newlist = true;
-						break;
-					}
-				}
-			}
-			if (newlist) {
-				mPlayList.clear();
-				for (long track : list)
-					mPlayList.add(track);
-				notifyChange(CHANGED_QUEUE);
-			}
-			mHistory.clear();
-			openCurrentAndNext();
-			if (oldId != getAudioId()) {
-				notifyChange(CHANGED_META);
-			}
-		}
-	}
-
-	/**
-	 * Changes from the current track to the previous played track
-	 */
-	void prev() {
-		synchronized (this) {
-			if (mShuffleMode == SHUFFLE_NORMAL) {
-				// Go to previously-played track and remove it from the history
-				int histsize = mHistory.size();
-				if (histsize == 0) {
-					return;
-				}
-				mPlayPos = mHistory.removeLast();
-			} else {
-				if (mPlayPos > 0) {
-					mPlayPos--;
-				} else {
-					mPlayPos = mPlayList.size() - 1;
-				}
-			}
-			stop(false);
-			openCurrentTrack();
-			play();
-			notifyChange(CHANGED_META);
-		}
-	}
-
-	/**
-	 * Toggles the current song as a favorite.
-	 */
-	void toggleFavorite() {
-		synchronized (this) {
-			if (mFavoritesCache != null) {
-				long trackId = getAudioId();
-				// remove track if exists from the favorites
-				if (mFavoritesCache.exists(trackId)) {
-					mFavoritesCache.removeItem(trackId);
-				} else {
-					mFavoritesCache.addSongId(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDurationMillis());
-				}
-			}
-		}
-	}
-
-	/**
-	 * Moves an item in the queue from one position to another
-	 *
-	 * @param from The position the item is currently at
-	 * @param to   The position the item is being moved to
-	 */
-	void moveQueueItem(int from, int to) {
-		synchronized (this) {
-			if (from >= mPlayList.size()) {
-				from = mPlayList.size() - 1;
-			}
-			if (to >= mPlayList.size()) {
-				to = mPlayList.size() - 1;
-			}
-			// move track
-			long trackId = mPlayList.remove(from);
-			mPlayList.add(to, trackId);
-			// set current play pos
-			if (mPlayPos == from) {
-				mPlayPos = to;
-			} else if (mPlayPos >= from && mPlayPos <= to) {
-				mPlayPos--;
-			} else if (mPlayPos <= from && mPlayPos >= to) {
-				mPlayPos++;
-			}
-			mNextPlayPos = getNextPosition(false);
-			notifyChange(CHANGED_QUEUE);
-		}
-	}
-
-	/**
-	 * Queues a new list for playback
-	 *
-	 * @param list   The list to queue
-	 * @param action The action to take
-	 */
-	void enqueue(long[] list, int action) {
-		synchronized (this) {
-			if (action == MOVE_NEXT && mPlayPos + 1 < mPlayList.size()) {
-				addToPlayList(list, mPlayPos + 1);
-				notifyChange(CHANGED_QUEUE);
-			} else {
-				addToPlayList(list, Integer.MAX_VALUE);
-				notifyChange(CHANGED_QUEUE);
-				if (action == MOVE_NOW) {
-					mPlayPos = mPlayList.size() - list.length;
-					openCurrentAndNext();
-					play();
-					notifyChange(CHANGED_META);
-					return;
-				}
-			}
-			if (mPlayPos < 0) {
-				mPlayPos = 0;
-				openCurrentAndNext();
-				play();
-				notifyChange(CHANGED_META);
-			}
 		}
 	}
 }

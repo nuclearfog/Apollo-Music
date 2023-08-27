@@ -27,8 +27,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void openFile(Uri uri) {
 		MusicPlaybackService service = mService.get();
-		if (service != null && uri != null)
+		if (service != null && uri != null) {
 			service.openFile(uri);
+		}
 	}
 
 	/**
@@ -37,8 +38,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void open(long[] list, int position) {
 		MusicPlaybackService service = mService.get();
-		if (mService.get() != null && list != null)
+		if (mService.get() != null && list != null) {
 			service.open(list, position);
+		}
 	}
 
 	/**
@@ -47,8 +49,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void stop() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.stop();
+		}
 	}
 
 	/**
@@ -57,8 +60,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void pause() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.pause();
+		}
 	}
 
 	/**
@@ -67,8 +71,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void play() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.play();
+		}
 	}
 
 	/**
@@ -77,8 +82,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void prev() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.prev();
+		}
 	}
 
 	/**
@@ -87,8 +93,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void goToNext() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.gotoNext(true);
+		}
 	}
 
 	/**
@@ -97,8 +104,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void goToPrev() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.goToPrev();
+		}
 	}
 
 	/**
@@ -107,8 +115,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void enqueue(long[] list, int action) {
 		MusicPlaybackService service = mService.get();
-		if (service != null && list != null)
+		if (service != null && list != null) {
 			service.enqueue(list, action);
+		}
 	}
 
 	/**
@@ -117,8 +126,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void moveQueueItem(int from, int to) {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.moveQueueItem(from, to);
+		}
 	}
 
 	/**
@@ -127,8 +137,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void toggleFavorite() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.toggleFavorite();
+		}
 	}
 
 	/**
@@ -137,8 +148,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void refresh() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.notifyChange(MusicPlaybackService.ACTION_REFRESH);
+		}
 	}
 
 	/**
@@ -301,8 +313,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void setQueuePosition(int index) {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.setQueuePosition(index);
+		}
 	}
 
 	/**
@@ -322,8 +335,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void setShuffleMode(int shufflemode) {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.setShuffleMode(shufflemode);
+		}
 	}
 
 	/**
@@ -343,8 +357,9 @@ public class ServiceStub extends IApolloService.Stub {
 	@Override
 	public void setRepeatMode(int repeatmode) {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
+		if (service != null) {
 			service.setRepeatMode(repeatmode);
+		}
 	}
 
 	/**

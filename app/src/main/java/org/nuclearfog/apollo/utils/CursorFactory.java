@@ -750,6 +750,7 @@ public class CursorFactory {
 	 */
 	@Nullable
 	public static Cursor makeTrackCursor(Context context, String path) {
+		// fixme can't find media information. find replacement to get metadata
 		String[] args = {path};
 		ContentResolver resolver = context.getContentResolver();
 
@@ -766,7 +767,7 @@ public class CursorFactory {
 	public static Cursor makeTrackCursor(Context context, Uri path) {
 		ContentResolver resolver = context.getContentResolver();
 
-		return resolver.query(path, null, TRACK_PATH_SELECT, null, null);
+		return resolver.query(path, null, null, null, null);
 	}
 
 	/**

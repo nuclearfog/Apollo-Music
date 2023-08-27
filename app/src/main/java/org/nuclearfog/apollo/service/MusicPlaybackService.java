@@ -907,7 +907,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
 			openTrack(uri);
 		} else {
-			openTrack(Uri.decode(uri.toString()));
+			openTrack(uri.toString());
 		}
 		play();
 	}

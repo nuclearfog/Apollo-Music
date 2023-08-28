@@ -659,7 +659,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			boolean handled = false;
 			// open file
 			if (uri != null && uri.toString().length() > 0) {
-				MusicUtils.playFile(uri);
+				MusicUtils.playFile(getApplicationContext(), uri);
 				handled = true;
 			}
 			// open playlist

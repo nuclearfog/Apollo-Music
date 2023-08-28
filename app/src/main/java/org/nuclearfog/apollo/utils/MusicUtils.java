@@ -702,9 +702,10 @@ public final class MusicUtils {
 	/**
 	 * @param uri The source of the file
 	 */
-	public static void playFile(Uri uri) {
+	public static void playFile(Context context, Uri uri) {
 		IApolloService service = mService;
 		if (uri != null && service != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.openFile(uri);
 			} catch (RemoteException err) {
@@ -775,6 +776,7 @@ public final class MusicUtils {
 		Cursor cursor = CursorFactory.makeTrackCursor(context);
 		IApolloService service = mService;
 		if (service != null && cursor != null) {
+			AudioEffects.getInstance(context, getAudioSessionId());
 			cursor.moveToFirst();
 			long[] mTrackList = new long[cursor.getCount()];
 			for (int i = 0; i < mTrackList.length; i++) {

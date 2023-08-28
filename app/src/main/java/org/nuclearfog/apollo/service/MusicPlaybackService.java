@@ -254,7 +254,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * track instead of skipping to the previous track when getting the PREVIOUS
 	 * command
 	 */
-	private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000;
+	private static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 3000L;
 	/**
 	 * The max size allowed for the track history
 	 */
@@ -890,7 +890,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			notifyChange(CHANGED_POSITION);
 			return position;
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -898,25 +898,32 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param uri URI of the local file
 	 */
-	public void openFile(Uri uri) {
+	public synchronized void openFile(Uri uri) {
 		stop();
-		// If this is a file:// URI, just use the path directly instead
-		// of going through the open-from-filedescriptor codepath.
-		if (uri.getScheme() != null && uri.getScheme().startsWith("file://")) {
-			openTrack(uri.getPath());
-		} else if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
-			openTrack(uri);
-		} else {
-			openTrack(uri.toString());
+		if (uri != null) {
+			// If mCursor is null, try to associate path with a database cursor
+			if (mCursor == null) {
+				updateCursor(uri);
+				long id = getTrackId();
+				if (id > 0L) {
+					mPlayList.addFirst(id);
+					mPlayPos = 0;
+				}
+			}
+			mPlayer.setDataSource(uri);
+			if (mPlayer.isInitialized()) {
+				play();
+			} else {
+				stop(true);
+			}
 		}
-		play();
 	}
 
 	/**
 	 * Called to open a new file as the current track and prepare the next for
 	 * playback
 	 */
-	public void openCurrentAndNext() {
+	public synchronized void openCurrentAndNext() {
 		openCurrentTrack();
 		setNextTrack();
 	}
@@ -986,7 +993,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Notify the change-receivers that something has changed.
 	 */
-	void notifyChange(String what) {
+	synchronized void notifyChange(String what) {
 		if (!what.equals(CHANGED_POSITION)) {
 			long audioId = getAudioId();
 			long albumId = getAlbumId();
@@ -1152,7 +1159,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				return mCursor.getLong(idx);
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -1271,8 +1278,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		if (newlist) {
 			mPlayList.clear();
-			for (long track : list)
-				mPlayList.add(track);
+			for (long trackId : list)
+				mPlayList.add(trackId);
 			notifyChange(CHANGED_QUEUE);
 		}
 		mHistory.clear();
@@ -1495,8 +1502,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (position > mPlayList.size()) {
 			position = mPlayList.size();
 		}
-		for (long l : list) {
-			mPlayList.add(position++, l);
+		for (long trackId : list) {
+			mPlayList.add(position++, trackId);
 		}
 		if (mPlayList.isEmpty()) {
 			closeCursor();
@@ -1514,41 +1521,48 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * update track cursor
+	 * update track & album cursor uring Uri
 	 *
-	 * @param path music file path
-	 */
-	private void updateCursor(String path) {
-		closeCursor();
-		// get file information
-		Cursor searchRes = CursorFactory.makeTrackCursor(this, Uri.parse(path));
-		// search for file in the MediaStore
-		if (searchRes != null && searchRes.moveToFirst()) {
-			// find track by file path
-			int idxDocumentId = searchRes.getColumnIndex("document_id");
-			// if not found, find track by file name (less precise)
-			if (idxDocumentId < 0)
-				idxDocumentId = searchRes.getColumnIndex("_display_name");
-			// if found, get track information
-			if (idxDocumentId >= 0) {
-				String docId = searchRes.getString(idxDocumentId);
-				int cut = docId.indexOf(":");
-				if (cut > 0 && cut < docId.length() + 1) {
-					docId = docId.substring(cut + 1);
-				}
-				// set track information
-				mCursor = CursorFactory.makeTrackCursor(this, docId);
-			}
-		}
-		updateAlbumCursor();
-	}
-
-	/**
-	 *
+	 * @param uri uri of the audio track
 	 */
 	private void updateCursor(Uri uri) {
 		closeCursor();
-		mCursor = CursorFactory.makeTrackCursor(this, uri);
+		// get information from MediaStore directly
+		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
+			mCursor = CursorFactory.makeTrackCursor(this, uri);
+		}
+		// use audio ID to get information
+		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("audio:\\d{1,18}")) {
+			long id = Long.parseLong(uri.getLastPathSegment().substring(6));
+			mCursor = CursorFactory.makeTrackCursor(this, id);
+		}
+		// use file path to get information
+		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
+			mCursor = CursorFactory.makeTrackCursor(this, uri.getPath());
+		}
+		// use file name/relative path to get information
+		else {
+			// get file information
+			Cursor searchRes = CursorFactory.makeTrackCursor(this, uri);
+			// search for file in the MediaStore
+			if (searchRes != null && searchRes.moveToFirst()) {
+				// find track by file path
+				int idxName = searchRes.getColumnIndex("document_id");
+				// if not found, find track by file name (less precise)
+				if (idxName < 0)
+					idxName = searchRes.getColumnIndex("_display_name");
+				// if found, get track information
+				if (idxName >= 0) {
+					String name = searchRes.getString(idxName);
+					int cut = name.indexOf(":");
+					if (cut > 0 && cut < name.length() + 1) {
+						name = name.substring(cut + 1);
+					}
+					// set track information
+					mCursor = CursorFactory.makeTrackCursor(this, name);
+				}
+			}
+		}
 		updateAlbumCursor();
 	}
 
@@ -1685,7 +1699,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mNextPlayPos = getNextPosition(false);
 		if (mNextPlayPos >= 0) {
 			long id = mPlayList.get(mNextPlayPos);
-			mPlayer.setNextDataSource(Media.EXTERNAL_CONTENT_URI + "/" + id);
+			Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
+			mPlayer.setNextDataSource(uri);
 		} else {
 			mPlayer.resetNextPlayer();
 		}
@@ -1839,57 +1854,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return true if playback is initialized successfully
 	 */
 	private boolean openTrack(long id) {
-		String path = Media.EXTERNAL_CONTENT_URI + "/" + id;
+		Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 		updateCursor(id);
-		mPlayer.setDataSource(path);
+		mPlayer.setDataSource(uri);
 		if (mPlayer.isInitialized()) {
 			return true;
 		} else {
 			stop(true);
 			return false;
-		}
-	}
-
-	/**
-	 * Opens a file and prepares it for playback
-	 *
-	 * @param path The path of the file to open
-	 */
-	private void openTrack(String path) {
-		if (path != null && !path.isEmpty()) {
-			// If mCursor is null, try to associate path with a database cursor
-			if (mCursor == null) {
-				updateCursor(path);
-				long id = getTrackId();
-				if (id > 0L) {
-					mPlayList.addFirst(id);
-					mPlayPos = 0;
-				}
-			}
-			mPlayer.setDataSource(path);
-			if (!mPlayer.isInitialized()) {
-				stop(true);
-			}
-		}
-	}
-
-	/**
-	 * Opens a file and prepares it for playback
-	 *
-	 * @param uri content uri of the media file to open
-	 */
-	private void openTrack(Uri uri) {
-		if (mCursor == null) {
-			updateCursor(uri);
-			long id = getTrackId();
-			if (id > 0L) {
-				mPlayList.addFirst(id);
-				mPlayPos = 0;
-			}
-		}
-		mPlayer.setDataSource(uri.toString());
-		if (!mPlayer.isInitialized()) {
-			stop(true);
 		}
 	}
 

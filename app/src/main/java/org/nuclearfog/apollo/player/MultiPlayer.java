@@ -1,6 +1,5 @@
 package org.nuclearfog.apollo.player;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -11,7 +10,6 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,11 +75,11 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	}
 
 	/**
-	 * @param path The path of the file, or the http/rtsp URL of the stream
+	 * @param uri The path of the file, or the http/rtsp URL of the stream
 	 *             you want to play
 	 */
-	public void setDataSource(String path) {
-		mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path);
+	public void setDataSource(Uri uri) {
+		mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, uri);
 		if (mIsInitialized) {
 			resetNextPlayer();
 		}
@@ -90,14 +88,14 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	/**
 	 * Set the MediaPlayer to start when this MediaPlayer finishes playback.
 	 *
-	 * @param path The path of the file, or the http/rtsp URL of the stream
+	 * @param uri The path of the file, or the http/rtsp URL of the stream
 	 *             you want to play
 	 */
-	public void setNextDataSource(@NonNull String path) {
+	public void setNextDataSource(@NonNull Uri uri) {
 		try {
 			mNextMediaPlayer = createPlayer();
 			mNextMediaPlayer.setAudioSessionId(getAudioSessionId());
-			if (setDataSourceImpl(mNextMediaPlayer, path)) {
+			if (setDataSourceImpl(mNextMediaPlayer, uri)) {
 				// prepare next player
 				mCurrentMediaPlayer.setNextMediaPlayer(mNextMediaPlayer);
 			} else {
@@ -237,26 +235,19 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
 	/**
 	 * @param player The {@link MediaPlayer} to use
-	 * @param path   The path of the file, or the http/rtsp URL of the stream
+	 * @param uri   The path of the file, or the http/rtsp URL of the stream
 	 *               you want to play
 	 * @return True if the <code>player</code> has been prepared and is
 	 * ready to play, false otherwise
 	 */
-	private boolean setDataSourceImpl(MediaPlayer player, @NonNull String path) {
+	private boolean setDataSourceImpl(MediaPlayer player, @NonNull Uri uri) {
 		MusicPlaybackService musicService = mService.get();
 		if (musicService != null) {
 			try {
 				player.reset();
 				player.setOnPreparedListener(null);
-				if (path.startsWith("content://")) {
-					ContentResolver resolver = musicService.getApplicationContext().getContentResolver();
-					ParcelFileDescriptor pfd = resolver.openFileDescriptor(Uri.parse(path), "r");
-					player.setDataSource(pfd.getFileDescriptor(), 0, pfd.getStatSize());
-					pfd.close();
-				} else {
-					player.setDataSource(path);
-					player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				}
+				player.setDataSource(musicService.getApplicationContext(), uri);
+				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				player.prepare();
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {

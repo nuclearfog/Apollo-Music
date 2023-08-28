@@ -1519,9 +1519,27 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param path music file path
 	 */
 	private void updateCursor(String path) {
-		// fixme can't find media file
 		closeCursor();
-		mCursor = CursorFactory.makeTrackCursor(this, path);
+		// get file information
+		Cursor searchRes = CursorFactory.makeTrackCursor(this, Uri.parse(path));
+		// search for file in the MediaStore
+		if (searchRes != null && searchRes.moveToFirst()) {
+			// find track by file path
+			int idxDocumentId = searchRes.getColumnIndex("document_id");
+			// if not found, find track by file name (less precise)
+			if (idxDocumentId < 0)
+				idxDocumentId = searchRes.getColumnIndex("_display_name");
+			// if found, get track information
+			if (idxDocumentId >= 0) {
+				String docId = searchRes.getString(idxDocumentId);
+				int cut = docId.indexOf(":");
+				if (cut > 0 && cut < docId.length() + 1) {
+					docId = docId.substring(cut + 1);
+				}
+				// set track information
+				mCursor = CursorFactory.makeTrackCursor(this, docId);
+			}
+		}
 		updateAlbumCursor();
 	}
 
@@ -1823,8 +1841,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private boolean openTrack(long id) {
 		String path = Media.EXTERNAL_CONTENT_URI + "/" + id;
 		updateCursor(id);
-		//mPlayList.addFirst(id);
-		//mPlayPos = 0;
 		mPlayer.setDataSource(path);
 		if (mPlayer.isInitialized()) {
 			return true;

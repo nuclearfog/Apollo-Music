@@ -261,7 +261,7 @@ public class CursorFactory {
 	/**
 	 * select track matching an audio ID
 	 */
-	private static final String TRACK_PATH_SELECT = Media.DATA + "=?";
+	private static final String TRACK_PATH_SELECT = Media.DATA + " LIKE ?";
 
 	/**
 	 * select specific album matching artist and name
@@ -750,8 +750,7 @@ public class CursorFactory {
 	 */
 	@Nullable
 	public static Cursor makeTrackCursor(Context context, String path) {
-		// fixme can't find media information. find replacement to get metadata
-		String[] args = {path};
+		String[] args = {'%' + path + '%'};
 		ContentResolver resolver = context.getContentResolver();
 
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_PATH_SELECT, args, null);

@@ -256,7 +256,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	public boolean onQueryTextSubmit(String query) {
 		// Open the search activity
-		NavUtils.openSearch(this, query);
+		NavUtils.openSearch(getApplicationContext(), query);
 		return true;
 	}
 
@@ -276,9 +276,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		invalidateOptionsMenu();
 		// Let the listener know to the meta changed
 		for (MusicStateListener listener : mMusicStateListener) {
-			if (!listener.isDetached()) {
-				listener.onMetaChanged();
-			}
+			listener.onMetaChanged();
 		}
 	}
 
@@ -303,9 +301,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	public final void refresh() {
 		// Let the listener know to update a list
 		for (MusicStateListener listener : mMusicStateListener) {
-			if (!listener.isDetached()) {
-				listener.restartLoader();
-			}
+			listener.restartLoader();
 		}
 	}
 
@@ -370,13 +366,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * Listens for playback changes to send the the fragments bound to this activity
 	 */
 	public interface MusicStateListener {
-
-		/**
-		 * check if (fragment) is detached
-		 *
-		 * @return true if detached
-		 */
-		boolean isDetached();
 
 		/**
 		 * Called when {@link MusicPlaybackService#ACTION_REFRESH} is invoked

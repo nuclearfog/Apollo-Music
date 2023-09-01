@@ -339,11 +339,13 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 */
 	@Override
 	public void restartLoader() {
-		// Update the list when the user deletes any items
-		if (mShouldRefresh) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			// Update the list when the user deletes any items
+			if (mShouldRefresh) {
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+			}
+			mShouldRefresh = false;
 		}
-		mShouldRefresh = false;
 	}
 
 	/**

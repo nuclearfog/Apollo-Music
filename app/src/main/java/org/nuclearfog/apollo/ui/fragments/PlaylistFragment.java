@@ -301,13 +301,15 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public void onLoadFinished(@NonNull Loader<List<Playlist>> loader, @NonNull List<Playlist> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Playlist playlist : data) {
-			mAdapter.add(playlist);
+		if (!isRemoving() && !isDetached()) {
+			// disable loader
+			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Playlist playlist : data) {
+				mAdapter.add(playlist);
+			}
 		}
 	}
 
@@ -316,8 +318,10 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Playlist>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
+		if (mAdapter != null) {
+			// Clear the data in the adapter
+			mAdapter.clear();
+		}
 	}
 
 	/**
@@ -325,8 +329,10 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public void restartLoader() {
-		// Refresh the list when a playlist is deleted or renamed
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			// Refresh the list when a playlist is deleted or renamed
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
 
 	/**

@@ -519,7 +519,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public boolean onQueryTextSubmit(String query) {
 		// Open the search activity
-		NavUtils.openSearch(AudioPlayerActivity.this, query);
+		NavUtils.openSearch(getApplicationContext(), query);
 		return true;
 	}
 

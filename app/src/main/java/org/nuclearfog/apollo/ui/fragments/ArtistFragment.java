@@ -241,8 +241,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// Pause disk cache access to ensure smoother scrolling
-		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-				|| scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
 			mAdapter.setPauseDiskCache(true);
 		} else {
 			mAdapter.setPauseDiskCache(false);
@@ -261,7 +260,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 		} else {
 			Artist selectedArtist = mAdapter.getItem(position);
 			if (selectedArtist != null) {
-				NavUtils.openArtistProfile(requireActivity(), selectedArtist.getName());
+				NavUtils.openArtistProfile(requireContext(), selectedArtist.getName());
 			}
 		}
 	}
@@ -280,13 +279,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void onLoadFinished(@NonNull Loader<List<Artist>> loader, @NonNull List<Artist> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Artist artist : data) {
-			mAdapter.add(artist);
+		if (!isRemoving() && !isDetached()) {
+			// disable loader
+			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Artist artist : data) {
+				mAdapter.add(artist);
+			}
 		}
 	}
 
@@ -295,8 +296,10 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Artist>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
+		if (mAdapter != null) {
+			// Clear the data in the adapter
+			mAdapter.clear();
+		}
 	}
 
 	/**
@@ -304,8 +307,10 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void refresh() {
-		initList();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			initList();
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
 
 
@@ -336,11 +341,13 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void restartLoader() {
-		// Update the list when the user deletes any items
-		if (mShouldRefresh) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			// Update the list when the user deletes any items
+			if (mShouldRefresh) {
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+			}
+			mShouldRefresh = false;
 		}
-		mShouldRefresh = false;
 	}
 
 	/**

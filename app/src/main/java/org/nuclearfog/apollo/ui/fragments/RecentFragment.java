@@ -256,8 +256,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		// Pause disk cache access to ensure smoother scrolling
-		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-				|| scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
 			mAdapter.setPauseDiskCache(true);
 		} else {
 			mAdapter.setPauseDiskCache(false);
@@ -295,13 +294,15 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	@Override
 	public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Album album : data) {
-			mAdapter.add(album);
+		if (mAdapter != null) {
+			// disable loader
+			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Album album : data) {
+				mAdapter.add(album);
+			}
 		}
 	}
 
@@ -310,8 +311,10 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
+		if (mAdapter != null) {
+			// Clear the data in the adapter
+			mAdapter.clear();
+		}
 	}
 
 	/**
@@ -327,9 +330,11 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	@Override
 	public void restartLoader() {
-		// Update the list when the user deletes any items
-		if (mShouldRefresh) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			// Update the list when the user deletes any items
+			if (mShouldRefresh) {
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+			}
 		}
 		mShouldRefresh = false;
 	}
@@ -339,15 +344,19 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	@Override
 	public void onMetaChanged() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
 
 
 	@Override
 	public void refresh() {
-		// re init list
-		initList();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		if (!isRemoving() && !isDetached()) {
+			// re init list
+			initList();
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
 
 

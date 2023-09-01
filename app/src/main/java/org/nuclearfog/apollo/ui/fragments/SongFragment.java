@@ -210,7 +210,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
+					NavUtils.openArtistProfile(requireContext(), mSong.getArtist());
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:
@@ -248,13 +248,15 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 */
 	@Override
 	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Song song : data) {
-			mAdapter.add(song);
+		if (!isRemoving() && !isDetached()) {
+			// disable loader
+			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Song song : data) {
+				mAdapter.add(song);
+			}
 		}
 	}
 
@@ -263,8 +265,10 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
+		if (mAdapter != null) {
+			// Clear the data in the adapter
+			mAdapter.clear();
+		}
 	}
 
 	/**
@@ -295,10 +299,12 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 */
 	@Override
 	public void restartLoader() {
-		// Update the list when the user deletes any items
-		if (mShouldRefresh) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-			mShouldRefresh = false;
+		if (!isRemoving() && !isDetached()) {
+			// Update the list when the user deletes any items
+			if (mShouldRefresh) {
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mShouldRefresh = false;
+			}
 		}
 	}
 

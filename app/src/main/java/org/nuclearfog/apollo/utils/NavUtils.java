@@ -107,19 +107,19 @@ public final class NavUtils {
 	/**
 	 * Opens to {@link SearchActivity}.
 	 *
-	 * @param activity The {@link Activity} to start a new Activity.
+	 * @param context The {@link Context} to start a new Activity.
 	 * @param query    The search query.
 	 */
-	public static void openSearch(Activity activity, String query) {
-		Intent intent = new Intent(activity, SearchActivity.class);
+	public static void openSearch(Context context, String query) {
+		Intent intent = new Intent(context, SearchActivity.class);
 		intent.putExtra(SearchManager.QUERY, query);
-		activity.startActivity(intent);
+		context.startActivity(intent);
 	}
 
 	/**
 	 * Opens to {@link HomeActivity}.
 	 *
-	 * @param activity The {@link Activity} to use.
+	 * @param activity The {@link Activity} to replace with home activity
 	 */
 	public static void goHome(Activity activity) {
 		Intent intent = new Intent(activity, HomeActivity.class);

@@ -177,8 +177,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 	private PreferenceUtils mPrefs;
 
-	private long mPosOverride = -1;
-	private long mStartSeekPos = 0;
+	private long mPosOverride = -1L;
+	private long mStartSeekPos = 0L;
 	private long mLastSeekEventTime;
 	private long mLastShortSeekEventTime;
 	private boolean mIsPaused = false;
@@ -455,23 +455,22 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	@Override
 	public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-		if (!fromuser || !MusicUtils.isConnected()) {
-			return;
-		}
-		long now = SystemClock.elapsedRealtime();
-		if (now - mLastSeekEventTime > 250) {
-			mLastSeekEventTime = now;
-			mLastShortSeekEventTime = now;
-			mPosOverride = MusicUtils.duration() * progress / 1000;
-			MusicUtils.seek(mPosOverride);
-			if (!mFromTouch) {
-				// refreshCurrentTime();
-				mPosOverride = -1;
+		if (fromuser && MusicUtils.isConnected()) {
+			long now = SystemClock.elapsedRealtime();
+			if (now - mLastSeekEventTime > 250L) {
+				mLastSeekEventTime = now;
+				mLastShortSeekEventTime = now;
+				mPosOverride = MusicUtils.duration() * progress / 1000L;
+				MusicUtils.seek(mPosOverride);
+				if (!mFromTouch) {
+					// refreshCurrentTime();
+					mPosOverride = -1L;
+				}
+			} else if (now - mLastShortSeekEventTime > 5L) {
+				mLastShortSeekEventTime = now;
+				mPosOverride = MusicUtils.duration() * progress / 1000L;
+				refreshCurrentTimeText(mPosOverride);
 			}
-		} else if (now - mLastShortSeekEventTime > 5) {
-			mLastShortSeekEventTime = now;
-			mPosOverride = MusicUtils.duration() * progress / 1000;
-			refreshCurrentTimeText(mPosOverride);
 		}
 	}
 
@@ -480,7 +479,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	@Override
 	public void onStartTrackingTouch(SeekBar bar) {
-		mLastSeekEventTime = 0;
+		mLastSeekEventTime = 0L;
 		mFromTouch = true;
 		mCurrentTime.setVisibility(View.VISIBLE);
 	}
@@ -490,10 +489,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	@Override
 	public void onStopTrackingTouch(SeekBar bar) {
-		if (mPosOverride != -1) {
+		if (mPosOverride != -1L) {
 			MusicUtils.seek(mPosOverride);
 		}
-		mPosOverride = -1;
+		mPosOverride = -1L;
 		mFromTouch = false;
 	}
 
@@ -519,7 +518,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public boolean onQueryTextSubmit(String query) {
 		// Open the search activity
-		NavUtils.openSearch(getApplicationContext(), query);
+		NavUtils.openSearch(this, query);
 		return true;
 	}
 
@@ -633,8 +632,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 *
 	 */
 	private long parseIdFromIntent(@NonNull Intent intent, String longKey, String stringKey) {
-		long id = intent.getLongExtra(longKey, -1);
-		if (id < 0) {
+		long id = intent.getLongExtra(longKey, -1L);
+		if (id == -1L) {
 			String idString = intent.getStringExtra(stringKey);
 			if (idString != null) {
 				try {
@@ -665,7 +664,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// open playlist
 			else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "playlistId", "playlist");
-				if (id >= 0) {
+				if (id != -1L) {
 					MusicUtils.playPlaylist(this, id);
 					handled = true;
 				}
@@ -733,14 +732,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		}
 		if (repcnt == 0) {
 			mStartSeekPos = MusicUtils.position();
-			mLastSeekEventTime = 0;
+			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
 				// seek at 10x speed for the first 5 seconds
-				delta = delta * 10;
+				delta = delta * 10L;
 			} else {
 				// seek at 40x after that
-				delta = 50000 + (delta - 5000) * 40;
+				delta = 50000L + (delta - 5000L) * 40L;
 			}
 			long newpos = mStartSeekPos - delta;
 			if (newpos < 0) {
@@ -750,14 +749,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				mStartSeekPos += duration;
 				newpos += duration;
 			}
-			if (delta - mLastSeekEventTime > 250 || repcnt < 0) {
+			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
 				MusicUtils.seek(newpos);
 				mLastSeekEventTime = delta;
 			}
 			if (repcnt >= 0) {
 				mPosOverride = newpos;
 			} else {
-				mPosOverride = -1;
+				mPosOverride = -1L;
 			}
 			refreshCurrentTime();
 		}
@@ -775,7 +774,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		}
 		if (repcnt == 0) {
 			mStartSeekPos = MusicUtils.position();
-			mLastSeekEventTime = 0;
+			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
 				// seek at 10x speed for the first 5 seconds
@@ -792,14 +791,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				mStartSeekPos -= duration; // is OK to go negative
 				newpos -= duration;
 			}
-			if (delta - mLastSeekEventTime > 250 || repcnt < 0) {
+			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
 				MusicUtils.seek(newpos);
 				mLastSeekEventTime = delta;
 			}
 			if (repcnt >= 0) {
 				mPosOverride = newpos;
 			} else {
-				mPosOverride = -1;
+				mPosOverride = -1L;
 			}
 			refreshCurrentTime();
 		}

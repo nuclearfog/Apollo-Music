@@ -226,7 +226,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0);
+					long id = item.getIntent().getLongExtra("playlist", -1L);
 					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
 					return true;
 

@@ -210,9 +210,9 @@ public class ImageFetcher extends ImageWorker {
 
 		if (height > reqHeight || width > reqWidth) {
 			if (width > height) {
-				inSampleSize = Math.round((float) height / (float) reqHeight);
+				inSampleSize = Math.round(height / (float) reqHeight);
 			} else {
-				inSampleSize = Math.round((float) width / (float) reqWidth);
+				inSampleSize = Math.round(width / (float) reqWidth);
 			}
 
 			// This offers some additional logic in case the image has a strange
@@ -320,7 +320,7 @@ public class ImageFetcher extends ImageWorker {
 	 */
 	public void loadArtistImage(String key, ImageView imageView) {
 		// fixme last FM does not return artist images anymore so try to download an album artwork instead
-		loadImage(key, key, null, -1, ImageType.ALBUM, imageView);
+		loadImage(key, key, null, -1L, ImageType.ALBUM, imageView);
 	}
 
 	/**

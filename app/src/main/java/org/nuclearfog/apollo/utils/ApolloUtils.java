@@ -60,6 +60,8 @@ import java.io.File;
  */
 public final class ApolloUtils {
 
+	private static final String TAG = "ApolloUtils";
+
 	/* This class is never initiated */
 	private ApolloUtils() {
 	}
@@ -323,17 +325,20 @@ public final class ApolloUtils {
 	 * @return ID array
 	 */
 	public static long[] readSerializedIDs(String idsStr) {
-		String[] ids = idsStr.split(";");
-		long[] result = new long[ids.length];
-		for (int i = 0; i < ids.length; i++) {
-			String id = ids[i];
-			if (!id.isEmpty()) {
-				result[i] = Long.parseLong(id);
-			} else {
-				result[i] = -1;
+		String[] items = idsStr.split(";");
+		long[] ids = new long[items.length];
+		for (int i = 0; i < items.length; i++) {
+			String item = items[i];
+			try {
+				ids[i] = Long.parseLong(item);
+			} catch (NumberFormatException exception) {
+				ids[i] = -1L;
+				if (BuildConfig.DEBUG) {
+					Log.w(TAG, "bad id: " + item);
+				}
 			}
 		}
-		return result;
+		return ids;
 	}
 
 	/**

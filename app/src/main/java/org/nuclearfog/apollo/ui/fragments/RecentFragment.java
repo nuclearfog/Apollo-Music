@@ -231,7 +231,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0);
+					long id = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
 					return true;
 

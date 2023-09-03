@@ -113,7 +113,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	public void fetchAlbumPhoto(Context context, String album, String artist) {
 		if (!TextUtils.isEmpty(album)) {
 			mFetcher.removeFromCache(ImageFetcher.generateAlbumCacheKey(album, artist));
-			mFetcher.loadAlbumImage(artist, album, -1, mAlbumArt);
+			mFetcher.loadAlbumImage(artist, album, -1L, mAlbumArt);
 		} else {
 			setDefault(context);
 		}

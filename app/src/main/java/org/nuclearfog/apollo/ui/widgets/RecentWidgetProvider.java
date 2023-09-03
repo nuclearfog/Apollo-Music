@@ -117,7 +117,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 		super.onReceive(context, intent);
 		context = context.getApplicationContext();
 		if (CLICK_ACTION.equals(intent.getAction())) {
-			long albumId = intent.getLongExtra(Config.ID, -1);
+			long albumId = intent.getLongExtra(Config.ID, -1L);
 			String action = intent.getStringExtra(SET_ACTION);
 			if (PLAY_ALBUM.equals(action)) {
 				// Play the selected album
@@ -126,8 +126,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 				shortcutIntent.putExtra(Config.ID, albumId);
 				shortcutIntent.putExtra(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
 				shortcutIntent.putExtra(ShortcutActivity.OPEN_AUDIO_PLAYER, false);
-				shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(shortcutIntent);
 			} else if (OPEN_PROFILE.equals(action)) {
 				// Transfer the album name and MIME type
@@ -138,8 +137,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 				profileIntent.putExtra(Config.ARTIST_NAME, intent.getStringExtra(Config.ARTIST_NAME));
 				profileIntent.putExtra(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
 				profileIntent.putExtra(Config.ID, albumId);
-				profileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				profileIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				profileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(profileIntent);
 			}
 		}

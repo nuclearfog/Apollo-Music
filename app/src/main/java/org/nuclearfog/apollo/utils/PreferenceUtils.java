@@ -17,7 +17,9 @@ import static org.nuclearfog.apollo.service.MusicPlaybackService.SHUFFLE_NONE;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
@@ -38,6 +40,8 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class PreferenceUtils {
+
+	private static final String TAG = "PreferenceUtils";
 
 	/* Default start page (Artist page) */
 	public static final int DEFFAULT_PAGE = 3;
@@ -284,14 +288,16 @@ public final class PreferenceUtils {
 		List<Long> playList = new LinkedList<>();
 		String trackQueue = mPreferences.getString(QUEUE, "");
 		if (!trackQueue.isEmpty()) {
-			int separatorPos = trackQueue.indexOf(";");
-			int cut = 0;
-			while (separatorPos != -1) {
-				String part = trackQueue.substring(cut, separatorPos);
-				long trackId = Long.parseLong(part, 16);
-				cut = separatorPos + 1;
-				playList.add(trackId);
-				separatorPos = trackQueue.indexOf(";", cut);
+			String[] items = trackQueue.split(";");
+			for (String item : items) {
+				try {
+					long trackId = Long.parseLong(item, 16);
+					playList.add(trackId);
+				} catch (NumberFormatException exception) {
+					if (BuildConfig.DEBUG) {
+						Log.w(TAG, "bad playlist id: " + item);
+					}
+				}
 			}
 		}
 		return playList;
@@ -306,14 +312,16 @@ public final class PreferenceUtils {
 		List<Integer> history = new LinkedList<>();
 		String trackHistory = mPreferences.getString(HISTORY, "");
 		if (!trackHistory.isEmpty()) {
-			int separatorPos = trackHistory.indexOf(";");
-			int cut = 0;
-			while (separatorPos != -1) {
-				String part = trackHistory.substring(cut, separatorPos);
-				int num = Integer.parseInt(part, 16);
-				cut = separatorPos + 1;
-				history.add(num);
-				separatorPos = trackHistory.indexOf(";", cut);
+			String[] items = trackHistory.split(";");
+			for (String item : items) {
+				try {
+					int idx = Integer.parseInt(item, 16);
+					history.add(idx);
+				} catch (NumberFormatException exception) {
+					if (BuildConfig.DEBUG) {
+						Log.w(TAG, "bad history index: " + item);
+					}
+				}
 			}
 		}
 		return history;
@@ -359,7 +367,7 @@ public final class PreferenceUtils {
 	 * @return position of the seekbar
 	 */
 	public long getSeekPosition() {
-		return mPreferences.getLong(POS_SEEK, 0);
+		return mPreferences.getLong(POS_SEEK, 0L);
 	}
 
 	/**

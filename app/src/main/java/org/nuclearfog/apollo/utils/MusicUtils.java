@@ -432,7 +432,7 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -449,7 +449,7 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -466,7 +466,7 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -628,8 +628,7 @@ public final class MusicUtils {
 			if (cursor.moveToFirst()) {
 				int index = 0;
 				result = new long[cursor.getCount()];
-				do
-				{
+				do {
 					result[index++] = cursor.getLong(0);
 				} while (cursor.moveToNext());
 			}
@@ -818,11 +817,10 @@ public final class MusicUtils {
 	 */
 	public static long getIdForPlaylist(Context context, String name) {
 		Cursor cursor = CursorFactory.makePlaylistCursor(context);
-		long playlistId = -1;
+		long playlistId = -1L;
 		if (cursor != null) {
 			if (cursor.moveToFirst() && name != null) {
-				do
-				{
+				do {
 					String playlist = cursor.getString(1);
 					if (name.equals(playlist)) {
 						playlistId = cursor.getLong(0);
@@ -844,7 +842,7 @@ public final class MusicUtils {
 	 */
 	public static long getIdForArtist(Context context, String name) {
 		Cursor cursor = CursorFactory.makeArtistCursor(context, name);
-		long id = -1;
+		long id = -1L;
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				id = cursor.getLong(0);
@@ -870,8 +868,7 @@ public final class MusicUtils {
 				// use dynamic array because the result size differs from cursor size
 				List<Long> ids = new LinkedList<>();
 				int idxName = folder.length() + 1;
-				do
-				{
+				do {
 					String filename = cursor.getString(5);
 					// filter sub folders from results
 					if (filename.indexOf('/', idxName) < 0) {
@@ -899,10 +896,10 @@ public final class MusicUtils {
 	 */
 	public static long getIdForAlbum(Context context, String albumName, String artistName) {
 		Cursor cursor = CursorFactory.makeAlbumCursor(context, albumName, artistName);
-		int id = -1;
+		long id = -1L;
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				id = cursor.getInt(0);
+				id = cursor.getLong(0);
 			}
 			cursor.close();
 		}
@@ -965,7 +962,7 @@ public final class MusicUtils {
 				cursor.close();
 			}
 		}
-		return -1;
+		return -1L;
 	}
 
 	/**
@@ -1233,8 +1230,8 @@ public final class MusicUtils {
 	 * @param playlistId The playlist Id.
 	 */
 	public static void playPlaylist(Context context, long playlistId) {
-		long[] playlistList = getSongListForPlaylist(context, playlistId);
-		playAll(context, playlistList, -1, false);
+		long[] trackIds = getSongListForPlaylist(context, playlistId);
+		playAll(context, trackIds, -1, false);
 	}
 
 	/**
@@ -1342,8 +1339,7 @@ public final class MusicUtils {
 		Cursor cursor = CursorFactory.makePlaylistCursor(context);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				do
-				{
+				do {
 					String name = cursor.getString(1);
 					if (name != null) {
 						Intent intent = new Intent();

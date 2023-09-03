@@ -147,7 +147,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
 					return true;
 

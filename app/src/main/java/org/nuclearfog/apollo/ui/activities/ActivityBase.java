@@ -237,13 +237,13 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.bottom_action_bar_album_art) {
-			if (MusicUtils.getCurrentAudioId() != -1) {
+			if (MusicUtils.getCurrentAudioId() != -1L) {
 				NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
 			} else {
 				MusicUtils.shuffleAll(this);
 			}
 		} else if (v.getId() == R.id.bottom_action_bar_background) {
-			if (MusicUtils.getCurrentAudioId() != -1) {
+			if (MusicUtils.getCurrentAudioId() != -1L) {
 				Intent intent = new Intent(this, AudioPlayerActivity.class);
 				startActivity(intent);
 			} else {
@@ -256,7 +256,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	public boolean onQueryTextSubmit(String query) {
 		// Open the search activity
-		NavUtils.openSearch(getApplicationContext(), query);
+		NavUtils.openSearch(this, query);
 		return true;
 	}
 

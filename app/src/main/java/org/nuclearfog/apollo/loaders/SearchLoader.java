@@ -49,8 +49,7 @@ public class SearchLoader extends WrappedAsyncTaskLoader<List<Song>> {
 		Cursor mCursor = CursorFactory.makeSearchCursor(getContext(), query);
 		if (mCursor != null) {
 			if (mCursor.moveToFirst()) {
-				do
-				{
+				do {
 					// Copy the song Id
 					long id = mCursor.getLong(0);
 					// Copy the artist name

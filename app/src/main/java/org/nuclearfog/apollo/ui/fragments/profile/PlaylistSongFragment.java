@@ -169,10 +169,10 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long playlistId = item.getIntent().getLongExtra("playlist", 0);
+					long playlistId = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
 					// reload if track was added to this playlist
-					if (this.mPlaylistId == playlistId)
+					if (mPlaylistId == playlistId)
 						refresh();
 					return true;
 

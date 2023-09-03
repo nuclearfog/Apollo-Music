@@ -105,7 +105,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		} else if (MusicUtils.isConnected()) {
 			//sHandler.post(new AsyncHandler(this));
 			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
-			long id = mIntent.getLongExtra(Config.ID, -1);
+			long id = mIntent.getLongExtra(Config.ID, -1L);
 			if (requestedMimeType == null) {
 				return;
 			}

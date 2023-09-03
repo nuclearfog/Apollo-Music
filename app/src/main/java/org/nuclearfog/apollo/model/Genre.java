@@ -35,7 +35,7 @@ public class Genre extends Music implements Comparable<Genre> {
 	 * @param genreName The genre name
 	 */
 	public Genre(List<Long> idList, String genreName) {
-		super(-1, genreName);
+		super(-1L, genreName);
 		this.ids = new long[idList.size()];
 		for (int i = 0; i < ids.length; i++) {
 			ids[i] = idList.get(i);

@@ -14,7 +14,6 @@ package org.nuclearfog.apollo.utils;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
@@ -39,41 +38,41 @@ public final class NavUtils {
 	/**
 	 * Opens the profile of an artist.
 	 *
-	 * @param context    The {@link Context} to use.
+	 * @param activity   The {@link Activity} to use.
 	 * @param artistName The name of the artist
 	 */
-	public static void openArtistProfile(Context context, String artistName) {
+	public static void openArtistProfile(Activity activity, String artistName) {
 		// Create a new bundle to transfer the artist info
 		Bundle bundle = new Bundle();
-		bundle.putLong(Config.ID, MusicUtils.getIdForArtist(context, artistName));
+		bundle.putLong(Config.ID, MusicUtils.getIdForArtist(activity, artistName));
 		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
 		bundle.putString(Config.ARTIST_NAME, artistName);
 		// Create the intent to launch the profile activity
-		Intent intent = new Intent(context, ProfileActivity.class);
+		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);
-		context.startActivity(intent);
+		activity.startActivity(intent);
 	}
 
 	/**
 	 * Opens the profile of an album.
 	 *
-	 * @param context    The {@link Context} to use.
+	 * @param activity   The {@link Activity} to use.
 	 * @param albumName  The name of the album
 	 * @param artistName The name of the album artist
 	 * @param albumId    The id of the album
 	 */
-	public static void openAlbumProfile(Context context, String albumName, String artistName, long albumId) {
+	public static void openAlbumProfile(Activity activity, String albumName, String artistName, long albumId) {
 		// Create a new bundle to transfer the album info
 		Bundle bundle = new Bundle();
-		bundle.putString(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
+		bundle.putString(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(activity.getApplicationContext(), albumId));
 		bundle.putString(Config.ARTIST_NAME, artistName);
 		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
 		bundle.putLong(Config.ID, albumId);
 		bundle.putString(Config.NAME, albumName);
 		// Create the intent to launch the profile activity
-		Intent intent = new Intent(context, ProfileActivity.class);
+		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);
-		context.startActivity(intent);
+		activity.startActivity(intent);
 	}
 
 	/**
@@ -97,23 +96,23 @@ public final class NavUtils {
 	/**
 	 * Opens to {@link SettingsActivity}.
 	 *
-	 * @param context The {@link Context} to use.
+	 * @param activity The {@link Activity} to use.
 	 */
-	public static void openSettings(Context context) {
-		Intent intent = new Intent(context, SettingsActivity.class);
-		context.startActivity(intent);
+	public static void openSettings(Activity activity) {
+		Intent intent = new Intent(activity, SettingsActivity.class);
+		activity.startActivity(intent);
 	}
 
 	/**
 	 * Opens to {@link SearchActivity}.
 	 *
-	 * @param context The {@link Context} to start a new Activity.
+	 * @param activity The {@link Activity} to start a new Activity.
 	 * @param query    The search query.
 	 */
-	public static void openSearch(Context context, String query) {
-		Intent intent = new Intent(context, SearchActivity.class);
+	public static void openSearch(Activity activity, String query) {
+		Intent intent = new Intent(activity, SearchActivity.class);
 		intent.putExtra(SearchManager.QUERY, query);
-		context.startActivity(intent);
+		activity.startActivity(intent);
 	}
 
 	/**

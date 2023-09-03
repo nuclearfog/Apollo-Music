@@ -113,7 +113,7 @@ public class NowPlayingCursor extends AbstractCursor {
 			return cursor.getLong(column);
 		} catch (Exception ignored) {
 			onChange(true);
-			return 0;
+			return 0L;
 		}
 	}
 

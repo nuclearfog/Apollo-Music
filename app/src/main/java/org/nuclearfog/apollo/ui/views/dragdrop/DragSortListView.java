@@ -1046,7 +1046,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 			if (mFloatViewMid < slideEdgeTop) {
 				mFirstExpPos = itemPos - 1;
 				mSecondExpPos = itemPos;
-				mSlideFrac = 0.5f * (slideEdgeTop - mFloatViewMid) / (float) slideRgnHeight;
+				mSlideFrac = 0.5f * (slideEdgeTop - mFloatViewMid) / slideRgnHeight;
 			} else if (mFloatViewMid < slideEdgeBottom) {
 				mFirstExpPos = itemPos;
 				mSecondExpPos = itemPos;
@@ -1265,8 +1265,8 @@ public class DragSortListView extends ListView implements OnScrollListener {
 		int padTop = getPaddingTop();
 		int listHeight = getHeight() - padTop - getPaddingBottom();
 
-		mUpScrollStartYF = padTop + mDragUpScrollStartFrac * (float) listHeight;
-		mDownScrollStartYF = padTop + (1.0f - mDragDownScrollStartFrac) * (float) listHeight;
+		mUpScrollStartYF = padTop + mDragUpScrollStartFrac * listHeight;
+		mDownScrollStartYF = padTop + (1.0f - mDragDownScrollStartFrac) * listHeight;
 
 		mUpScrollStartY = (int) mUpScrollStartYF;
 		mDownScrollStartY = (int) mDownScrollStartYF;

@@ -205,12 +205,12 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), trackIds, mPlaylistId);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireContext(), mSong.getArtist());
+					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:

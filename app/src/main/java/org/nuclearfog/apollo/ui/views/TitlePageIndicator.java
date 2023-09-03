@@ -105,7 +105,7 @@ public class TitlePageIndicator extends View implements ViewPager.OnPageChangeLi
 	private float mClipPadding;
 	private float mFooterLine;
 	private int mTouchSlop;
-	private float mLastMotionX = -1;
+	private float mLastMotionX = -1.0f;
 	private int mActivePointerId = INVALID_POINTER;
 	private boolean mIsDragging;
 

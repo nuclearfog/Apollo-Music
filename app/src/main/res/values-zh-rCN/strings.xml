@@ -15,7 +15,6 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-	<string name="app_name" translatable="false">Apollo</string>
 
 	<!-- 页面标题 -->
 	<string name="page_recent">最近</string>
@@ -133,10 +132,6 @@
 	<string name="settings_remastered_title">由以下作者进一步开发</string>
 	<string name="settings_about_apollo">关于 Apollo</string>
 	<string name="settings_special_thanks">特别鸣谢</string>
-	<string name="settings_cyanogenmod_title" translatable="false">CyanogenMod</string>
-	<string name="settings_self_title" translatable="false">Andrew Neal</string>
-	<string name="settings_lopez_title" translatable="false">A.J. Lopez</string>
-	<string name="settings_nuclearfog_title" translatable="false">nuclearfog</string>
 	<string name="settings_lopez_summary">图标和 Play Store 横幅设计</string>
 	<string name="settings_color_scheme_title">选择 Apollo 的默认颜色方案</string>
 	<string name="settings_color_scheme_summary">更改 Apollo 中的强调颜色</string>
@@ -156,16 +151,12 @@
 
 	<!-- 颜色选择器 -->
 	<string name="color_picker_title">颜色方案</string>
-	<string name="hex" translatable="false">#</string>
 	<string name="current_color">当前</string>
 	<string name="new_color">新的</string>
 
 	<!-- App 小部件 -->
-	<string name="app_widget_small" translatable="false">Apollo：4×1</string>
-	<string name="app_widget_large" translatable="false">Apollo：4×2</string>
 	<string name="app_widget_large_alt">Apollo：4×2（另一种）</string>
 	<string name="app_widget_recent">Apollo：最近播放</string>
-	<string name="app_widget_text_separator" translatable="false">-</string>
 
 	<!-- 购买 Apollo 主题时要使用的关键词 -->
 
@@ -186,8 +177,6 @@
 	<string name="title_audio_effects">音频效果</string>
 
 	<!-- 小于1小时的时长格式 -->
-	<string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>
-	<string name="durationformatlong" translatable="false"><xliff:g id="format">%1$d:%2$02d:%3$02d</xliff:g></string>
 	<string name="lastfm_api_key">LastFM API 密钥</string>
 
 </resources>

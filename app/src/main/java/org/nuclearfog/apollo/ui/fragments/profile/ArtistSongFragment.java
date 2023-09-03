@@ -149,7 +149,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
 					return true;
 
@@ -172,7 +172,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	@NonNull
 	@Override
 	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long songId = args != null ? args.getLong(Config.ID) : 0;
+		long songId = args != null ? args.getLong(Config.ID) : 0L;
 		return new ArtistSongLoader(requireContext(), songId);
 	}
 

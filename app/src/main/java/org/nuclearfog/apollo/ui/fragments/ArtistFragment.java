@@ -221,7 +221,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0);
+					long id = item.getIntent().getLongExtra("playlist", 0L);
 					MusicUtils.addToPlaylist(requireActivity(), mArtistList, id);
 					return true;
 
@@ -260,7 +260,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 		} else {
 			Artist selectedArtist = mAdapter.getItem(position);
 			if (selectedArtist != null) {
-				NavUtils.openArtistProfile(requireContext(), selectedArtist.getName());
+				NavUtils.openArtistProfile(requireActivity(), selectedArtist.getName());
 			}
 		}
 	}

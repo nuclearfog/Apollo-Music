@@ -170,7 +170,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 				if (x < thirdWidth) {
 					alpha = 1.0f;
 				} else if (x < width - thirdWidth) {
-					alpha = ((float) (width - thirdWidth - x)) / ((float) thirdWidth);
+					alpha = (width - thirdWidth - x) / ((float) thirdWidth);
 				} else {
 					alpha = 0.0f;
 				}
@@ -182,7 +182,7 @@ public class DragSortController extends SimpleFloatViewManager implements View.O
 				if (x < thirdWidth) {
 					alpha = 0.0f;
 				} else if (x < width - thirdWidth) {
-					alpha = ((float) (x - thirdWidth)) / ((float) thirdWidth);
+					alpha = (x - thirdWidth) / ((float) thirdWidth);
 				} else {
 					alpha = 1.0f;
 				}

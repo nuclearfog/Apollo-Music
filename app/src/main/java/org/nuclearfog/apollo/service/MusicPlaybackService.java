@@ -800,7 +800,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
 				if (mPlayer.isInitialized()) {
 					long duration = mPlayer.duration();
-					if (mRepeatMode != REPEAT_CURRENT && duration > 2000 && mPlayer.position() >= duration - 2000) {
+					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.position() >= duration - 2000L) {
 						gotoNext(true);
 					}
 					mPlayer.start();
@@ -1716,8 +1716,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				if (cursor.moveToFirst()) {
 					mAutoShuffleList.clear();
 					mAutoShuffleList.ensureCapacity(cursor.getColumnCount());
-					do
-					{
+					do {
 						long id = cursor.getLong(0);
 						mAutoShuffleList.add(id);
 					} while (cursor.moveToNext());

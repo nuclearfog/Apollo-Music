@@ -26,16 +26,21 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media.MediaBrowserServiceCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
@@ -55,6 +60,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -63,7 +69,7 @@ import java.util.TreeSet;
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
  */
-public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener {
+public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener {
 	/**
 	 *
 	 */
@@ -444,8 +450,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mRecentsCache = RecentStore.getInstance(this);
 		mFavoritesCache = FavoritesStore.getInstance(this);
 		mPopularCache = PopularStore.getInstance(this);
-		// Initialize the notification helper
-		mNotificationHelper = new NotificationHelper(this);
 		// Initialize the image fetcher
 		mImageFetcher = ImageFetcher.getInstance(this);
 		// Initialize the image cache
@@ -470,10 +474,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 		// Initialize the handler
 		mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
+
+		// Initialize the media player
+		mPlayer = new MultiPlayer(this);
+		mPlayer.setHandler(mPlayerHandler);
+
+		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
 		mSession.setPlaybackState(state);
 		mSession.setActive(true);
+		setPlaybackState(false);
+
+		// Initialize the notification helper
+		mNotificationHelper = new NotificationHelper(this, mSession);
 
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
@@ -501,10 +515,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// Initialize the delayed shutdown intent
 		Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
 		shutdownIntent.setAction(ACTION_SHUTDOWN);
-
-		// Initialize the media player
-		mPlayer = new MultiPlayer(this);
-		mPlayer.setHandler(mPlayerHandler);
 
 		mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
@@ -544,6 +554,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		mNotificationHelper.cancelNotification();
 		super.onDestroy();
+	}
+
+
+	@Nullable
+	@Override
+	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable @org.jetbrains.annotations.Nullable Bundle rootHints) {
+		return null;
+	}
+
+
+	@Override
+	public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
 	}
 
 	/**
@@ -818,6 +840,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (!isForeground) {
 				mNotificationHelper.updateNotification();
 			}
+			setPlaybackState(true);
 		}
 	}
 
@@ -835,6 +858,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!isForeground) {
 			mNotificationHelper.updateNotification();
 		}
+		setPlaybackState(false);
 	}
 
 	/**
@@ -949,6 +973,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!isForeground) {
 			mNotificationHelper.updateNotification();
 		}
+		setPlaybackState(true);
 	}
 
 	/**
@@ -1024,6 +1049,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
 				String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
 				mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+
+				mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
+						.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
+						.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDurationMillis()).build());
+
 			} else if (what.equals(CHANGED_QUEUE)) {
 				saveQueue(true);
 				if (isPlaying()) {
@@ -1383,6 +1413,19 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			play();
 			notifyChange(CHANGED_META);
 		}
+	}
+
+	/**
+	 * update playback state of the media session
+	 * @param play true to set play state, false to pause state
+	 */
+	private void setPlaybackState(boolean play) {
+		PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
+				.setState(play ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, position(), 1.0f)
+				.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE
+						| PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+				.build();
+		mSession.setPlaybackState(playbackState);
 	}
 
 	/**

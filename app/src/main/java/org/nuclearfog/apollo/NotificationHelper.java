@@ -15,12 +15,15 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
@@ -58,6 +61,9 @@ public class NotificationHelper {
 	 */
 	private NotificationManagerCompat notificationManager;
 
+	/**
+	 * Builder used to construct a notification
+	 */
 	private NotificationCompat.Builder notificationBuilder;
 
 	/**
@@ -68,52 +74,70 @@ public class NotificationHelper {
 	/**
 	 * callbacks to the service
 	 */
-	private PendingIntent[] callbacks;
+	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious;
 
 	/**
 	 * Constructor of <code>NotificationHelper</code>
 	 *
 	 * @param service callback to the service
 	 */
-	public NotificationHelper(MusicPlaybackService service) {
+	public NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
 		// init notification manager & channel
-		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW);
-		channelBuilder.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
+		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
+				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
 		notificationManager = NotificationManagerCompat.from(service);
-		notificationManager.createNotificationChannel(channelBuilder.build());
+		notificationManager.createNotificationChannel(notificationChannel);
+
+		// initialize player activity callback
+		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
 		// initialize callbacks
 		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
-		callbacks = new PendingIntent[]{
-				PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.ACTION_TOGGLEPAUSE).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.ACTION_NEXT).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.ACTION_PREVIOUS).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE),
-				PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_IMMUTABLE)
-		};
-		// initialize small notification view
-		mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_base);
-		// initialize expanded notification view
-		mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
+		callbackPlayPause = PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.ACTION_TOGGLEPAUSE).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		callbackNext = PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.ACTION_NEXT).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		callbackPrevious = PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.ACTION_PREVIOUS).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		PendingIntent callbackStop = PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
-				.setContentIntent(getPendingIntent())
+				.setContentIntent(contentIntent)
 				.setPriority(NotificationCompat.PRIORITY_LOW)
-				.setCustomBigContentView(mExpandedView)
-				.setCustomContentView(mSmallContent)
 				.setDefaults(Notification.DEFAULT_ALL)
-				.setOnlyAlertOnce(true)
-				.setAutoCancel(false)
-				.setSilent(true)
-				.setOngoing(true);
+				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+		// use embedded media control notification of Android
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			MediaStyle mediaStyle = new MediaStyle();
+			mediaStyle.setMediaSession(mSession.getSessionToken());
+			notificationBuilder.setStyle(mediaStyle);
+		}
+		// use custom notification layout for old Android version
+		else {
+			// initialize small notification view
+			mSmallContent = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_base);
+			mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbackPlayPause);
+			mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbackNext);
+			mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbackPrevious);
+			mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbackStop);
+			// initialize expanded notification view
+			mExpandedView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.notification_template_expanded_base);
+			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, callbackPlayPause);
+			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, callbackNext);
+			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);
+			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbackStop);
+			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent)
+					.setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
+		}
 	}
 
 	/**
 	 * Call this to build the {@link Notification}.
 	 */
 	public void createNotification() {
-		initCollapsedPlaybackActions();
-		initExpandedPlaybackActions();
 		Notification notification = buildNotification();
 		postNotification(notification);
 		mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
@@ -137,13 +161,39 @@ public class NotificationHelper {
 	 * Changes the playback controls in and out of a paused state
 	 */
 	private Notification buildNotification() {
-		updateCollapsedLayout();
-		updateExpandedLayout();
-		int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
-		mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
-		mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-
-		notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+		// build integrated media control
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			// set track information to notification directly
+			notificationBuilder.setContentTitle(mService.getTrackName());
+			notificationBuilder.setContentText(mService.getArtistName());
+			notificationBuilder.setLargeIcon(mService.getAlbumArt());
+			// init media control (fallback if not supported by MediaStyle)
+			notificationBuilder.clearActions();
+			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
+			if (mService.isPlaying()) {
+				notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
+			} else {
+				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
+			}
+			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+		}
+		// build legacy notification
+		else {
+			int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
+			// update small notification view
+			mSmallContent.setTextViewText(R.id.notification_base_line_one, mService.getTrackName());
+			mSmallContent.setTextViewText(R.id.notification_base_line_two, mService.getArtistName());
+			mSmallContent.setImageViewBitmap(R.id.notification_base_image, mService.getAlbumArt());
+			mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
+			// update expanded notification view
+			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, mService.getTrackName());
+			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, mService.getAlbumName());
+			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, mService.getArtistName());
+			mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, mService.getAlbumArt());
+			mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
+			// add view to notification
+			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+		}
 		return notificationBuilder.build();
 	}
 
@@ -163,70 +213,5 @@ public class NotificationHelper {
 			// caught on missing permission. Normally app requires permission to post notification
 			// so this scenario can't happen
 		}
-	}
-
-	/**
-	 * Open to the now playing screen
-	 */
-	private PendingIntent getPendingIntent() {
-		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		return PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-	}
-
-	/**
-	 * Lets the buttons in the remote view control playback in the normal layout
-	 */
-	private void initCollapsedPlaybackActions() {
-		// Play and pause
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_play, callbacks[0]);
-		// Skip tracks
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_next, callbacks[1]);
-		// Previous tracks
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_previous, callbacks[2]);
-		// Stop and collapse the notification
-		mSmallContent.setOnClickPendingIntent(R.id.notification_base_collapse, callbacks[3]);
-	}
-
-	/**
-	 * Lets the buttons in the remote view control playback in the expanded
-	 * layout
-	 */
-	private void initExpandedPlaybackActions() {
-		// Play and pause
-		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_play, callbacks[0]);
-		// Skip tracks
-		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, callbacks[1]);
-		// Previous tracks
-		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbacks[2]);
-		// Stop and collapse the notification
-		mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbacks[3]);
-	}
-
-	/**
-	 * Sets the track name, artist name, and album art in the normal layout
-	 */
-	private void updateCollapsedLayout() {
-		// Track name (line one)
-		mSmallContent.setTextViewText(R.id.notification_base_line_one, mService.getTrackName());
-		// Artist name (line two)
-		mSmallContent.setTextViewText(R.id.notification_base_line_two, mService.getArtistName());
-		// Album art
-		mSmallContent.setImageViewBitmap(R.id.notification_base_image, mService.getAlbumArt());
-	}
-
-	/**
-	 * Sets the track name, album name, artist name, and album art in the
-	 * expanded layout
-	 */
-	private void updateExpandedLayout() {
-		// Track name (line one)
-		mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, mService.getTrackName());
-		// Album name (line two)
-		mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, mService.getAlbumName());
-		// Artist name (line three)
-		mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, mService.getArtistName());
-		// Album art
-		mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, mService.getAlbumArt());
 	}
 }

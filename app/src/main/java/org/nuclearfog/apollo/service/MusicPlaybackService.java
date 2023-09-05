@@ -264,7 +264,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * The max size allowed for the track history
 	 */
-	public static final int MAX_HISTORY_SIZE = 100;
+	private static final int MAX_HISTORY_SIZE = 100;
+	/**
+	 *
+	 */
+	private static final String MEDIA_ID_ROOT = "apollo_root";
 	/**
 	 * Keeps a mapping of the track history
 	 */
@@ -484,6 +488,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
 		mSession.setPlaybackState(state);
 		mSession.setActive(true);
+		setSessionToken(mSession.getSessionToken());
 		setPlaybackState(false);
 
 		// Initialize the notification helper
@@ -560,12 +565,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Nullable
 	@Override
 	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable @org.jetbrains.annotations.Nullable Bundle rootHints) {
-		return null;
+		return new BrowserRoot(MEDIA_ID_ROOT, null);
 	}
 
 
 	@Override
 	public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+		result.sendResult(null);
 	}
 
 	/**

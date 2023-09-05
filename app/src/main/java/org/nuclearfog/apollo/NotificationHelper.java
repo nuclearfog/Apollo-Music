@@ -74,7 +74,7 @@ public class NotificationHelper {
 	/**
 	 * callbacks to the service
 	 */
-	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious;
+	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious, callbackStop;
 
 	/**
 	 * Constructor of <code>NotificationHelper</code>
@@ -98,15 +98,14 @@ public class NotificationHelper {
 		callbackPlayPause = PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.ACTION_TOGGLEPAUSE).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
 		callbackNext = PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.ACTION_NEXT).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
 		callbackPrevious = PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.ACTION_PREVIOUS).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
-		PendingIntent callbackStop = PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		callbackStop = PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(contentIntent)
-				.setPriority(NotificationCompat.PRIORITY_LOW)
-				.setDefaults(Notification.DEFAULT_ALL)
+				.setDefaults(NotificationCompat.DEFAULT_ALL)
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
 		// use embedded media control notification of Android
@@ -130,7 +129,7 @@ public class NotificationHelper {
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbackStop);
 			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent)
-					.setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
+					.setPriority(NotificationCompat.PRIORITY_LOW).setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
 		}
 	}
 
@@ -176,6 +175,7 @@ public class NotificationHelper {
 				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
 			}
 			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
 		}
 		// build legacy notification
 		else {

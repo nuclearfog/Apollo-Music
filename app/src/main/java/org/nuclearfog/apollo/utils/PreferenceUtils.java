@@ -90,6 +90,7 @@ public final class PreferenceUtils {
 	private static final String FX_BASSBOOST = "fx_bassbost";
 	private static final String FX_REVERB = "fx_reverb";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
+	private static final String NOTIFICATION_LAYOUT = "prefer_old_notification_layout";
 	private static final String LASTFM_API_KEY = "api_key";
 
 	private static volatile PreferenceUtils sInstance;
@@ -629,6 +630,15 @@ public final class PreferenceUtils {
 	 */
 	public boolean isExternalAudioFxPrefered() {
 		return mPreferences.getBoolean(FX_PREFER_EXT, false);
+	}
+
+	/**
+	 * check if old notification layout is enabled
+	 *
+	 * @return true if old notification layout should be used
+	 */
+	public boolean oldNotificationLayoutEnabled() {
+		return mPreferences.getBoolean(NOTIFICATION_LAYOUT, false);
 	}
 
 	/**

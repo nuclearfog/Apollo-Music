@@ -26,6 +26,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * Builds the notification for Apollo's service. Jelly Bean and higher uses the
@@ -66,6 +67,8 @@ public class NotificationHelper {
 	 */
 	private NotificationCompat.Builder notificationBuilder;
 
+	private PreferenceUtils mPreferences;
+
 	/**
 	 * notification views
 	 */
@@ -83,6 +86,7 @@ public class NotificationHelper {
 	 */
 	public NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
+		mPreferences = PreferenceUtils.getInstance(service.getApplicationContext());
 		// init notification manager & channel
 		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
 				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
@@ -109,7 +113,7 @@ public class NotificationHelper {
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
 		// use embedded media control notification of Android
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
 			MediaStyle mediaStyle = new MediaStyle();
 			mediaStyle.setMediaSession(mSession.getSessionToken());
 			notificationBuilder.setStyle(mediaStyle);
@@ -161,7 +165,7 @@ public class NotificationHelper {
 	 */
 	private Notification buildNotification() {
 		// build integrated media control
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
 			// set track information to notification directly
 			notificationBuilder.setContentTitle(mService.getTrackName());
 			notificationBuilder.setContentText(mService.getArtistName());

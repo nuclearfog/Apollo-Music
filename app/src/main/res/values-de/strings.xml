@@ -110,8 +110,8 @@
 	<string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
 	<string name="settings_disable_bat_opt_title">Batterie-Optimierungen deaktivieren</string>
 	<string name="settings_disable_bat_opt_summary">Batterie-Optimierungen deaktivieren falls es Unterbrechungen beim Abspielen kommt</string>
-	<string name="settings_prefer_old_notification">Altes Benachrichtigungs-Layout bevorzugen</string>
-	<string name="settings_prefer_old_notification_summary">Aktivieren, falls es zu Darstellungsproblemen kommt</string>
+	<string name="settings_use_old_notification">Altes Benachrichtigungs-Layout verwenden</string>
+	<string name="settings_use_old_notification_summary">Aktivieren, falls es zu Darstellungsproblemen kommt</string>
 	<string name="settings_version_title">Version</string>
 	<string name="share_track_using">Titel teilen</string>
 	<string name="menu_clear_popular">Liste leeren</string>

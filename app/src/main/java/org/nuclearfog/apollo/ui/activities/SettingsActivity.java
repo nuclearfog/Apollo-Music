@@ -112,6 +112,8 @@ public class SettingsActivity extends AppCompatActivity {
 
 		private static final String BAT_OPT = "disable_battery_opt";
 
+		private static final String OLD_NOTIFICATION = "old_notification_layout";
+
 		/**
 		 * dialogs to ask the user for actions
 		 */
@@ -126,6 +128,7 @@ public class SettingsActivity extends AppCompatActivity {
 			Preference themeChooser = findPreference(THEME_SEL);
 			Preference colorScheme = findPreference(COLOR_SEL);
 			Preference batteryOpt = findPreference(BAT_OPT);
+			Preference oldNotification = findPreference(OLD_NOTIFICATION);
 			Preference version = findPreference(VERSION);
 
 			if (version != null)
@@ -144,6 +147,9 @@ public class SettingsActivity extends AppCompatActivity {
 				} else {
 					batteryOpt.setOnPreferenceClickListener(this);
 				}
+			}
+			if (oldNotification != null) {
+				oldNotification.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
 			}
 			licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
 			cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());

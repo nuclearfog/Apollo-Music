@@ -472,10 +472,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
 		thread.start();
 
-		PlaybackStateCompat state = new PlaybackStateCompat.Builder().setActions(PlaybackStateCompat.ACTION_PLAY_FROM_URI | PlaybackStateCompat.ACTION_PLAY
-				| PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SEEK_TO
-				| PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
-
 		// Initialize the handler
 		mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
 
@@ -486,7 +482,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
-		mSession.setPlaybackState(state);
 		mSession.setActive(true);
 		setSessionToken(mSession.getSessionToken());
 		setPlaybackState(false);
@@ -553,10 +548,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// Close the cursor
 		closeCursor();
 		// Unregister the mount listener
+		unregisterReceiver(mUnmountReceiver);
 		unregisterReceiver(mIntentReceiver);
-		if (mUnmountReceiver != null) {
-			unregisterReceiver(mUnmountReceiver);
-		}
+		// remove notification
 		mNotificationHelper.cancelNotification();
 		super.onDestroy();
 	}
@@ -918,6 +912,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 			mPlayer.seek(position);
 			notifyChange(CHANGED_POSITION);
+			setPlaybackState(isPlaying());
 			return position;
 		}
 		return -1L;
@@ -1422,15 +1417,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * update playback state of the media session
+	 * update playback state of the media session (used to update
+	 *
 	 * @param play true to set play state, false to pause state
 	 */
 	private void setPlaybackState(boolean play) {
 		PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
 				.setState(play ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, position(), 1.0f)
-				.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE
-						| PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-				.build();
+				.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+						| PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
 		mSession.setPlaybackState(playbackState);
 	}
 

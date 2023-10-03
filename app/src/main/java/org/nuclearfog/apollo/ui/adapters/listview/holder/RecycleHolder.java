@@ -9,13 +9,12 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters.recycler;
+package org.nuclearfog.apollo.ui.adapters.listview.holder;
 
 import android.view.View;
 import android.widget.AbsListView.RecyclerListener;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.MusicHolder;
 
 /**
  * A @ {@link RecyclerListener} for {@link MusicHolder}'s views.

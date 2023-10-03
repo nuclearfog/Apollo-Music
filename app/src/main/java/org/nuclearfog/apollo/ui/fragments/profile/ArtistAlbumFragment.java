@@ -29,9 +29,9 @@ import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.ArtistAlbumAdapter;
 import org.nuclearfog.apollo.loaders.ArtistAlbumLoader;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.ui.adapters.listview.ArtistAlbumAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
 import org.nuclearfog.apollo.utils.ContextMenuItems;

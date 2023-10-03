@@ -23,20 +23,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.PagerAdapter;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
-import org.nuclearfog.apollo.ui.fragments.FolderFragment;
-import org.nuclearfog.apollo.ui.fragments.FragmentCallback;
-import org.nuclearfog.apollo.ui.fragments.GenreFragment;
-import org.nuclearfog.apollo.ui.fragments.PlaylistFragment;
-import org.nuclearfog.apollo.ui.fragments.RecentFragment;
-import org.nuclearfog.apollo.ui.fragments.SongFragment;
+import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
@@ -58,22 +52,22 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener {
 
 	/**
-	 * index of {@link RecentFragment}
+	 * index of {@link org.nuclearfog.apollo.ui.fragments.RecentFragment}
 	 */
 	private static final int RECENT_INDEX = 1;
 
 	/**
-	 * index of {@link ArtistFragment}
+	 * index of {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
 	 */
 	private static final int ARTIST_INDEX = 2;
 
 	/**
-	 * index of {@link AlbumFragment}
+	 * index of {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}
 	 */
 	private static final int ALBUMS_INDEX = 3;
 
 	/**
-	 * index of {@link SongFragment}
+	 * index of {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
 	 */
 	private static final int TRACKS_INDEX = 4;
 
@@ -83,29 +77,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	private ViewPager mViewPager;
 
 	/**
-	 * VP's adapter
-	 */
-	private PagerAdapter mPagerAdapter;
-
-	/**
 	 * Theme resources
 	 */
 	private ThemeUtils mResources;
 
 	private PreferenceUtils mPreferences;
 
-	/**
-	 * fragments used for pager
-	 */
-	private final Fragment[] PAGES = {
-			new PlaylistFragment(),
-			new RecentFragment(),
-			new ArtistFragment(),
-			new AlbumFragment(),
-			new SongFragment(),
-			new GenreFragment(),
-			new FolderFragment()
-	};
+	private FragmentViewModel viewModel;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -121,6 +99,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		super.onCreate(savedInstanceState);
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(requireContext());
+		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 	}
 
 	/**
@@ -131,17 +110,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
 		// Initialize the adapter
-		mPagerAdapter = new PagerAdapter(requireActivity(), getChildFragmentManager());
-		// Initialize pages
-		for (Fragment page : PAGES) {
-			mPagerAdapter.add(page, null);
-		}
+		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
 		// Initialize the ViewPager
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
 		// Attach the adapter
-		mViewPager.setAdapter(mPagerAdapter);
+		mViewPager.setAdapter(adapter);
 		// Offscreen pager loading limit
-		mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
+		mViewPager.setOffscreenPageLimit(adapter.getCount());
 		// Start on the last page the user was on
 		mViewPager.setCurrentItem(mPreferences.getStartPage());
 		// Initialize the TPI
@@ -239,124 +214,112 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		else if (item.getItemId() == R.id.menu_sort_by_az) {
 			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_A_Z);
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_A_Z);
-				refresh(ALBUMS_INDEX);
 			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_A_Z);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort track/album/artist list alphabetical reverse
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
 			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_Z_A);
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_Z_A);
-				refresh(ALBUMS_INDEX);
 			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_Z_A);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort albums/tracks by artist name
 		else if (item.getItemId() == R.id.menu_sort_by_artist) {
 			if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_ARTIST);
-				refresh(ALBUMS_INDEX);
 			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ARTIST);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort tracks by album name
 		else if (item.getItemId() == R.id.menu_sort_by_album) {
 			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ALBUM);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort albums/tracks by release date
 		else if (item.getItemId() == R.id.menu_sort_by_year) {
 			if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_YEAR);
-				refresh(ALBUMS_INDEX);
 			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_YEAR);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort tracks by duration
 		else if (item.getItemId() == R.id.menu_sort_by_duration) {
 			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_DURATION);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// sort artists/albums by song count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
 			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_SONGS);
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_NUMBER_OF_SONGS);
-				refresh(ALBUMS_INDEX);
 			}
+			refresh();
 		}
 		// sort artists by album count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_albums) {
 			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_ALBUMS);
-				refresh(ARTIST_INDEX);
 			}
+			refresh();
 		}
 		// sort tracks by file name
 		else if (item.getItemId() == R.id.menu_sort_by_filename) {
 			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_FILENAME);
-				refresh(TRACKS_INDEX);
 			}
+			refresh();
 		}
 		// set simple item view
 		else if (item.getItemId() == R.id.menu_view_as_simple) {
 			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
 				mPreferences.setRecentLayout("simple");
-				refresh(RECENT_INDEX);
 			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistLayout("simple");
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumLayout("simple");
-				refresh(ALBUMS_INDEX);
 			}
+			refresh();
 		}
 		// set detailed item view
 		else if (item.getItemId() == R.id.menu_view_as_detailed) {
 			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
 				mPreferences.setRecentLayout("detailed");
-				refresh(RECENT_INDEX);
 			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistLayout("detailed");
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumLayout("detailed");
-				refresh(ALBUMS_INDEX);
 			}
+			refresh();
 		}
 		// set grid item view
 		else if (item.getItemId() == R.id.menu_view_as_grid) {
 			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
 				mPreferences.setRecentLayout("grid");
-				refresh(RECENT_INDEX);
 			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
 				mPreferences.setArtistLayout("grid");
-				refresh(ARTIST_INDEX);
 			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
 				mPreferences.setAlbumLayout("grid");
-				refresh(ALBUMS_INDEX);
+
 			}
+			refresh();
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -368,28 +331,20 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	@Override
 	public void onCenterItemClick(int index) {
-		Fragment fragment = mPagerAdapter.getItem(index);
-		if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
-			((FragmentCallback) fragment).setCurrentTrack();
-		}
+		viewModel.notify(FragmentViewModel.SET_CURRENT_TRACK);
 	}
 
 	/**
 	 * refresh current page
 	 */
 	public void refreshCurrent() {
-		refresh(mViewPager.getCurrentItem());
+		refresh();
 	}
 
 	/**
 	 * refresh page
-	 *
-	 * @param index index of the page
 	 */
-	private void refresh(int index) {
-		Fragment fragment = mPagerAdapter.getItem(index);
-		if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
-			((FragmentCallback) fragment).refresh();
-		}
+	private void refresh() {
+		viewModel.notify(FragmentViewModel.REFRESH);
 	}
 }

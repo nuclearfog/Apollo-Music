@@ -34,20 +34,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.AlbumAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.AlbumLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.ActivityBase;
 import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
+import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -59,8 +62,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>,
-		OnScrollListener, OnItemClickListener, MusicStateListener, FragmentCallback {
+public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -98,6 +100,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	@Nullable
 	private Album mAlbum;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
 	 */
@@ -123,7 +127,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
 
 	/**
@@ -157,6 +161,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 		super.onViewCreated(view, savedInstanceState);
 		// Enable the options menu
 		setHasOptionsMenu(true);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Start the loader
 		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
 	}
@@ -168,6 +173,15 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	public void onPause() {
 		super.onPause();
 		mAdapter.flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -305,24 +319,24 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
 
 	@Override
-	public void refresh() {
-		// re init list
-		initList();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				// re init list
+				initList();
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 
-
-	@Override
-	public void setCurrentTrack() {
-		if (mAdapter != null && mList != null) {
-			long albumId = MusicUtils.getCurrentAlbumId();
-			for (int i = 0; i < mAdapter.getCount(); i++) {
-				Album album = mAdapter.getItem(i);
-				if (album != null && album.getId() == albumId) {
-					mList.setSelection(i);
-					break;
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				long albumId = MusicUtils.getCurrentAlbumId();
+				for (int i = 0; i < mAdapter.getCount(); i++) {
+					Album album = mAdapter.getItem(i);
+					if (album != null && album.getId() == albumId) {
+						mList.setSelection(i);
+						break;
+					}
 				}
-			}
+				break;
 		}
 	}
 

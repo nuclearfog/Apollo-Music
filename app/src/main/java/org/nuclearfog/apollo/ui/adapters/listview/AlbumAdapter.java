@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -24,15 +24,14 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.RecentFragment;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the albums on a user's
- * device for {@link RecentFragment}
- * and {@link AlbumFragment}.
+ * device for {@link org.nuclearfog.apollo.ui.fragments.RecentFragment}
+ * and {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

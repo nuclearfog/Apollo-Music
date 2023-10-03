@@ -1,4 +1,4 @@
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.recyclerview;
 
 import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
 

@@ -29,24 +29,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.SongAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
 import org.nuclearfog.apollo.loaders.QueueLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
+import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
@@ -57,7 +60,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, FragmentCallback,
+public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, Observer<String>,
 		OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
 
 	/**
@@ -86,6 +89,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	@Nullable
 	private Song mSong;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * Position of a context menu item
 	 */
@@ -103,6 +108,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adpater
 		mAdapter = new SongAdapter(requireContext(), true);
 	}
@@ -135,10 +142,20 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// Start the loader
 		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -331,19 +348,35 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 		mAdapter.moveTrack(from, to);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void refresh() {
-		if (isAdded()) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				refresh();
+				break;
+
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				setCurrentTrack();
+				break;
 		}
 	}
 
+	/**
+	 *
+	 */
+	private void refresh() {
+		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+	}
 
-	@Override
-	public void setCurrentTrack() {
+	/**
+	 *
+	 */
+	private void setCurrentTrack() {
 		int pos = MusicUtils.getQueuePosition();
-		if (mList != null && mAdapter != null && pos >= 0) {
+		if (pos >= 0) {
 			mList.smoothScrollToPosition(pos);
 			mAdapter.setCurrentTrackPos(pos);
 			mAdapter.notifyDataSetChanged();

@@ -50,25 +50,24 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.PagerAdapter;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
-import org.nuclearfog.apollo.ui.fragments.FragmentCallback;
-import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -159,10 +158,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	private TimeHandler mTimeHandler;
 	/**
-	 * Pager adpater
-	 */
-	private PagerAdapter mPagerAdapter;
-	/**
 	 * ViewPager
 	 */
 	private ViewPager mViewPager;
@@ -176,6 +171,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	private ThemeUtils mResources;
 
 	private PreferenceUtils mPrefs;
+
+	private FragmentViewModel viewModel;
 
 	private long mPosOverride = -1L;
 	private long mStartSeekPos = 0L;
@@ -235,13 +232,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			mResources.themeActionBar(actionBar, R.string.app_name);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
+		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// View pager
 		mViewPager = findViewById(R.id.audio_player_pager);
 		// Offscreen pager loading limit
 		mViewPager.setOffscreenPageLimit(1);
 		// Initialize the pager adapter and attach
-		mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
-		mPagerAdapter.add(new QueueFragment(), null);
+		QueueAdapter mPagerAdapter = new QueueAdapter(getSupportFragmentManager());
 		mViewPager.setAdapter(mPagerAdapter);
 		// set colors
 		int themeColor = mPrefs.getDefaultThemeColor();
@@ -329,7 +326,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		if (MusicUtils.isConnected()) {
 			MusicUtils.unbindFromService(mToken);
 		}
-		mPagerAdapter.clear();
 		super.onDestroy();
 	}
 
@@ -907,24 +903,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * reload queue tracks
 	 */
 	private void refreshQueue() {
-		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-			Fragment fragment = mPagerAdapter.getItem(0);
-			if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
-				((FragmentCallback) fragment).refresh();
-			}
-		}
+		viewModel.notify(FragmentViewModel.REFRESH);
 	}
 
 	/**
 	 * set current track in the queue
 	 */
 	private void setQueueTrack() {
-		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
-			Fragment fragment = mPagerAdapter.getItem(0);
-			if (fragment instanceof FragmentCallback && !fragment.isDetached()) {
-				((FragmentCallback) fragment).setCurrentTrack();
-			}
-		}
+		viewModel.notify(FragmentViewModel.SET_CURRENT_TRACK);
 	}
 
 	/**

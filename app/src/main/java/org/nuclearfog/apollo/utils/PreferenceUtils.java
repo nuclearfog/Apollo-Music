@@ -22,13 +22,6 @@ import android.util.Log;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
-import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
-import org.nuclearfog.apollo.ui.fragments.SongFragment;
-import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +127,7 @@ public final class PreferenceUtils {
 	 * Saves the current page the user is on when they close the app.
 	 *
 	 * @param value The last page the pager was on when the onDestroy is called
-	 *              in {@link MusicBrowserPhoneFragment}.
+	 *              in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}.
 	 */
 	public void setStartPage(int value) {
 		startPage = value;
@@ -201,7 +194,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the artist list in {@link ArtistFragment}
+	 * @return The sort order used for the artist list in {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
 	 */
 	public String getArtistSortOrder() {
 		// This is only to prevent return an invalid field name caused by bug BUGDUMP-21136
@@ -224,7 +217,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * @return The sort order used for the artist song list in
-	 * {@link ArtistSongFragment}
+	 * {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment}
 	 */
 	public String getArtistSongSortOrder() {
 		return mPreferences.getString(ARTIST_SONG_SORT_ORDER, SortOrder.ArtistSongSortOrder.SONG_A_Z);
@@ -241,7 +234,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * @return The sort order used for the artist album list in
-	 * {@link ArtistAlbumFragment}
+	 * {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment}
 	 */
 	public String getArtistAlbumSortOrder() {
 		return mPreferences.getString(ARTIST_ALBUM_SORT_ORDER, SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
@@ -257,7 +250,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the album list in {@link AlbumFragment}
+	 * @return The sort order used for the album list in {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}
 	 */
 	public String getAlbumSortOrder() {
 		return mPreferences.getString(ALBUM_SORT_ORDER, SortOrder.AlbumSortOrder.ALBUM_A_Z);
@@ -274,7 +267,7 @@ public final class PreferenceUtils {
 
 	/**
 	 * @return The sort order used for the album song in
-	 * {@link AlbumSongFragment}
+	 * {@link org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment}
 	 */
 	public String getAlbumSongSortOrder() {
 		return mPreferences.getString(ALBUM_SONG_SORT_ORDER, SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
@@ -356,7 +349,7 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * @return The sort order used for the song list in {@link SongFragment}
+	 * @return The sort order used for the song list in {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
 	 */
 	public String getSongSortOrder() {
 		return mPreferences.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);

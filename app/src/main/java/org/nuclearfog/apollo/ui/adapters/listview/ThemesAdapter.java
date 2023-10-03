@@ -1,4 +1,4 @@
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 
 /**

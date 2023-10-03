@@ -16,22 +16,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
-import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 
 /**
  * this fragment hosts a {@link ListView} with a {@link ProfileTabCarousel} header
  *
  * @author nuclearfog
  */
-public abstract class ProfileFragment extends Fragment implements OnItemClickListener,
-		DragSortListView.DropListener, DragSortListView.RemoveListener, ProfileActivity.FragmentCallback, DragSortListView.DragScrollProfile {
+public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>,
+		DragSortListView.DropListener, DragSortListView.RemoveListener, DragSortListView.DragScrollProfile {
 
 	/**
 	 * list view of this fragment
@@ -48,6 +50,8 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	private ProfileTabCarousel mProfileTabCarousel;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -56,6 +60,15 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 		super.onAttach(context);
 		Activity activity = (Activity) context;
 		mProfileTabCarousel = activity.findViewById(R.id.activity_profile_base_tab_carousel);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
 
 	/**
@@ -93,6 +106,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	@Override
 	public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		init();
 	}
 
@@ -109,6 +123,15 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public final void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		onItemClick(view, position, id);
 	}
@@ -119,6 +142,16 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	@Override
 	public float getSpeed(float w) {
 		return Config.DRAG_DROP_MAX_SPEED * w;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onChanged(String action) {
+		if (action.equals(FragmentViewModel.REFRESH)) {
+			refresh();
+		}
 	}
 
 	/**
@@ -147,7 +180,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	/**
 	 *
 	 */
-	public abstract void refresh();
+	protected abstract void refresh();
 
 	/**
 	 * initializes the fragment

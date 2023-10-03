@@ -40,31 +40,23 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.PagerAdapter;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.provider.PopularStore;
+import org.nuclearfog.apollo.ui.adapters.viewpager.PagerAdapter;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.ProfileType;
-import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -83,38 +75,34 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		OnPageChangeListener, Listener, OnClickListener, DeleteDialogCallback {
 
 	/**
-	 * page index of the {@link ArtistSongFragment}
+	 * page index of the {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment}
 	 * if {@link Type#ARTIST} is set
 	 */
 	private static final int ARTIST_SONG = 0;
 	/**
-	 * page index of the {@link ArtistAlbumFragment}
+	 * page index of the {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment}
 	 * if {@link Type#ARTIST} is set
 	 */
 	private static final int ARTIST_ALBUM = 1;
 	/**
-	 * page index of the {@link AlbumSongFragment}
+	 * page index of the {@link org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment}
 	 * if {@link Type#ARTIST} is not set
 	 */
 	private static final int ALBUM_SONG = 0;
 	/**
-	 * page index of the {@link PopularSongFragment}
-	 */
-	private static final int PLAYLIST_SONG = 0;
-	/**
-	 * mime type of the {@link FolderSongFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
 	 */
 	public static final String PAGE_FOLDERS = "page_folders";
 	/**
-	 * mime type of the {@link FavoriteSongFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment}
 	 */
 	public static final String PAGE_FAVORIT = "page_fav";
 	/**
-	 * mime type of the {@link LastAddedFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
 	 */
 	public static final String PAGE_LAST_ADDED = "last_added";
 	/**
-	 * mime type of the {@link LastAddedFragment}
+	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
 	 */
 	public static final String PAGE_MOST_PLAYED = "page_most";
 
@@ -132,11 +120,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * View pager
 	 */
 	private ViewPager mViewPager;
-
-	/**
-	 * Pager adapter
-	 */
-	private PagerAdapter mPagerAdapter;
 
 	/**
 	 * Profile header carousel
@@ -190,6 +173,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 	private PreferenceUtils mPreferences;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -210,6 +195,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		String year = "";
 		// Temporary until I can work out a nice landscape layout
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		// init fragment callback
+		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(this);
 		// Initialze the image fetcher
@@ -235,8 +222,9 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			// get folder name if defined
 			folderName = mArguments.getString(FOLDER, "");
 		}
+		type = Type.getEnum(mType);
 		// Initialize the pager adapter
-		mPagerAdapter = new PagerAdapter(this, getSupportFragmentManager());
+		PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), mArguments, type);
 		// Initialze the carousel
 		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mTabCarousel.reset();
@@ -244,13 +232,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// Set up the action bar
 		ActionBar actionBar = getSupportActionBar();
 
-		type = Type.getEnum(mType);
 		switch (type) {
 			case ALBUM:
 				// Add the carousel images
 				mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
 				// Album profile fragments
-				mPagerAdapter.add(new AlbumSongFragment(), mArguments);
 				if (actionBar != null) {
 					// Action bar title = album name
 					actionBar.setTitle(mProfileName);
@@ -261,23 +247,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				}
 				break;
 
-			case GENRE:
-				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-				// Genre profile fragments
-				mPagerAdapter.add(new GenreSongFragment(), mArguments);
-				// Action bar title = playlist name
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
 			case ARTIST:
 				// Add the carousel images
 				mTabCarousel.setArtistProfileHeader(this, mArtistName);
 				// Artist profile fragments
-				mPagerAdapter.add(new ArtistSongFragment(), mArguments);
-				mPagerAdapter.add(new ArtistAlbumFragment(), mArguments);
 				if (actionBar != null) {
 					actionBar.setDisplayHomeAsUpEnabled(true);
 					actionBar.setTitle(mArtistName);
@@ -286,50 +259,19 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 			case FOLDER:
 				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-				mPagerAdapter.add(new FolderSongFragment(), mArguments);
 				if (actionBar != null) {
 					actionBar.setTitle(this.mProfileName);
 				}
 				break;
 
+			case GENRE:
 			case FAVORITE:
-				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-				// Favorite fragment
-				mPagerAdapter.add(new FavoriteSongFragment(), null);
-				// Action bar title = Favorites
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
 			case PLAYLIST:
-				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-				// Playlist profile fragments
-				mPagerAdapter.add(new PlaylistSongFragment(), mArguments);
-				// Action bar title = playlist name
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
 			case LAST_ADDED:
-				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
-				// Last added fragment
-				mPagerAdapter.add(new LastAddedFragment(), null);
-				// Action bar title = Last added
-				if (actionBar != null) {
-					actionBar.setTitle(mProfileName);
-				}
-				break;
-
 			case MOST_PLAYED:
 				// Add the carousel images
 				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
 				// most played fragment
-				mPagerAdapter.add(new PopularSongFragment(), null);
 				// Action bar title = Last added
 				if (actionBar != null) {
 					actionBar.setTitle(mProfileName);
@@ -473,15 +415,15 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_A_Z);
-					refreshFragment(ARTIST_SONG);
+					refreshFragments();
 				} else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-					refreshFragment(ARTIST_ALBUM);
+					refreshFragments();
 				}
 			} else if (type == Type.ALBUM) {
 				if (mViewPager.getCurrentItem() == ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
-					refreshFragment(ALBUM_SONG);
+					refreshFragments();
 				}
 			}
 		}
@@ -490,15 +432,15 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_Z_A);
-					refreshFragment(ARTIST_SONG);
+					refreshFragments();
 				} else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_Z_A);
-					refreshFragment(ARTIST_ALBUM);
+					refreshFragments();
 				}
 			} else if (type == Type.ALBUM) {
 				if (mViewPager.getCurrentItem() == ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
-					refreshFragment(ALBUM_SONG);
+					refreshFragments();
 				}
 			}
 		}
@@ -506,7 +448,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_sort_by_album) {
 			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
 				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
-				refreshFragment(ARTIST_SONG);
+				refreshFragments();
 			}
 		}
 		// sort by release date
@@ -514,10 +456,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_YEAR);
-					refreshFragment(ARTIST_SONG);
+					refreshFragments();
 				} else if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
-					refreshFragment(ARTIST_ALBUM);
+					refreshFragments();
 				}
 			}
 		}
@@ -526,12 +468,12 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DURATION);
-					refreshFragment(ARTIST_SONG);
+					refreshFragments();
 				}
 			} else if (type == Type.ALBUM) {
 				if (mViewPager.getCurrentItem() == ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
-					refreshFragment(ALBUM_SONG);
+					refreshFragments();
 				}
 			}
 		}
@@ -539,40 +481,40 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_sort_by_date_added) {
 			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ARTIST_SONG) {
 				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
-				refreshFragment(ARTIST_SONG);
+				refreshFragments();
 			}
 		}
 		// sort by default order
 		else if (item.getItemId() == R.id.menu_sort_by_track_list) {
 			mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
-			refreshFragment(ALBUM_SONG);
+			refreshFragments();
 		}
 		// sort by file name
 		else if (item.getItemId() == R.id.menu_sort_by_filename) {
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_SONG) {
 					mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_FILENAME);
-					refreshFragment(ARTIST_SONG);
+					refreshFragments();
 				}
 			} else if (type == Type.ALBUM) {
 				if (mViewPager.getCurrentItem() == ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
-					refreshFragment(ALBUM_SONG);
+					refreshFragments();
 				}
 			}
 		}
 		// clear popular playlist
 		else if (item.getItemId() == R.id.menu_clear_popular) {
 			PopularStore.getInstance(this).removeAll();
-			refreshFragment(PLAYLIST_SONG);
+			refreshFragments();
 		}
 		// sort by track count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
 			if (type == Type.ARTIST) {
 				if (mViewPager.getCurrentItem() == ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_TRACK_COUNT);
-					refreshFragment(ARTIST_ALBUM);
 				}
+				refreshFragments();
 			}
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -665,7 +607,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-			refreshAll();
+			refreshFragments();
 		}
 	}
 
@@ -731,7 +673,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 	@Override
 	public void onDelete() {
-		refreshAll();
+		refreshFragments();
 	}
 
 	/**
@@ -822,41 +764,22 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 	/**
 	 * refresh single fragment
-	 *
-	 * @param index index of the fragment
 	 */
-	private void refreshFragment(int index) {
-		Fragment fragment = mPagerAdapter.getItem(index);
-		if (fragment instanceof FragmentCallback) {
-			((FragmentCallback) fragment).refresh();
-		}
+	private void refreshFragments() {
+		viewModel.notify(FragmentViewModel.REFRESH);
 	}
 
 	/**
 	 * scroll all list fragments to top
 	 */
 	private void scrollFragmentToTop() {
-		for (int i = 0; i < mPagerAdapter.getCount(); i++) {
-			Fragment fragment = mPagerAdapter.getItem(i);
-			if (fragment instanceof FragmentScroll) {
-				((FragmentScroll) fragment).scrollToTop();
-			}
-		}
-	}
-
-	/**
-	 * refresh all fragments
-	 */
-	private void refreshAll() {
-		for (int i = 0; i < mPagerAdapter.getCount(); i++) {
-			refreshFragment(i);
-		}
+		viewModel.notify(FragmentViewModel.SCROLL_TOP);
 	}
 
 	/**
 	 * constants defining fragment type
 	 */
-	private enum Type {
+	public enum Type {
 		ARTIST,
 		ALBUM,
 		GENRE,
@@ -887,21 +810,5 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					return LAST_ADDED;
 			}
 		}
-	}
-
-	/**
-	 * callback for sub fragments to refreshAll
-	 */
-	public interface FragmentCallback {
-
-		void refresh();
-	}
-
-	/**
-	 * callback to scroll listviews of the fragments to top
-	 */
-	public interface FragmentScroll extends FragmentCallback {
-
-		void scrollToTop();
 	}
 }

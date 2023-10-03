@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -23,15 +23,14 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.ui.fragments.QueueFragment;
-import org.nuclearfog.apollo.ui.fragments.SongFragment;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the songs on a user's
- * device for {@link SongFragment}. It is also used to show the queue in
- * {@link QueueFragment}.
+ * device for {@link org.nuclearfog.apollo.ui.fragments.SongFragment}. It is also used to show the queue in
+ * {@link org.nuclearfog.apollo.ui.fragments.QueueFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

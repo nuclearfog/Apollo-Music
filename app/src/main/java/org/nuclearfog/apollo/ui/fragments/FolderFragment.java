@@ -24,15 +24,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.FolderAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.FolderLoader;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 import java.io.File;
@@ -41,8 +44,7 @@ import java.util.List;
 /**
  * decompiled from Apollo 1.6 APK
  */
-public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>,
-		OnItemClickListener, FragmentCallback {
+public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 * context menu group ID
@@ -75,6 +77,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	private FolderAdapter mAdapter;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -82,6 +86,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	public void onCreate(@Nullable Bundle extras) {
 		super.onCreate(extras);
 		mAdapter = new FolderAdapter(requireContext());
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
 
 	/**
@@ -108,8 +113,18 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		setHasOptionsMenu(true);
 		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -202,15 +217,15 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setCurrentTrack() {
-		// do nothing
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				//
+				break;
+		}
 	}
 }

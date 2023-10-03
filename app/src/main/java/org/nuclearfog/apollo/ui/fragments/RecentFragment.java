@@ -34,21 +34,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.AlbumAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.RecentLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.provider.RecentStore;
 import org.nuclearfog.apollo.ui.activities.ActivityBase;
 import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
+import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -61,8 +64,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>,
-		OnScrollListener, OnItemClickListener, MusicStateListener, FragmentCallback {
+public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -105,6 +107,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	private PreferenceUtils preference;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
 	 */
@@ -114,10 +118,20 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		// init preferences
+		preference = PreferenceUtils.getInstance(requireContext());
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
-		// init preferences
-		preference = PreferenceUtils.getInstance(context);
 		if (context instanceof ActivityBase) {
 			// Register the music status listener
 			((ActivityBase) context).setMusicStateListenerListener(this);
@@ -157,6 +171,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// Start the loader
@@ -170,6 +185,15 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	public void onPause() {
 		super.onPause();
 		mAdapter.flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -349,21 +373,23 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void refresh() {
-		if (!isRemoving() && !isDetached()) {
-			// re init list
-			initList();
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
-	}
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				// re init list
+				initList();
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 
-
-	@Override
-	public void setCurrentTrack() {
-		if (mList != null && mList.getCount() > 0) {
-			mList.smoothScrollToPosition(0);
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				if (mList.getCount() > 0) {
+					mList.smoothScrollToPosition(0);
+				}
+				break;
 		}
 	}
 

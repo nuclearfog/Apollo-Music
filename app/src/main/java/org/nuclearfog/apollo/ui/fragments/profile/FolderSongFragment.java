@@ -1,6 +1,6 @@
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import static org.nuclearfog.apollo.adapters.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
+import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
 import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_FAVORITES;
 import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_PLAYLIST;
 import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_QUEUE;
@@ -28,10 +28,10 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.ProfileSongAdapter;
 import org.nuclearfog.apollo.loaders.FolderSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
+import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;

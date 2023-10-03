@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 

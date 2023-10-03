@@ -37,13 +37,13 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.SearchAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.MusicSearchLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.ui.adapters.listview.SearchAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;

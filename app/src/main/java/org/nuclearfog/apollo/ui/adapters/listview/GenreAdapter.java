@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.util.TypedValue;
@@ -19,18 +19,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.model.Playlist;
-import org.nuclearfog.apollo.ui.fragments.PlaylistFragment;
+import org.nuclearfog.apollo.model.Genre;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 /**
- * This {@link ArrayAdapter} is used to display all of the playlists on a user's
- * device for {@link PlaylistFragment}.
+ * This {@link ArrayAdapter} is used to display all of the genres on a user's
+ * device for {@link org.nuclearfog.apollo.ui.fragments.GenreFragment} .
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlaylistAdapter extends ArrayAdapter<Playlist> {
+public class GenreAdapter extends ArrayAdapter<Genre> {
 
 	/**
 	 * item layout reource
@@ -43,11 +44,11 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 	private LayoutInflater inflater;
 
 	/**
-	 * Constructor of <code>PlaylistAdapter</code>
+	 * Constructor of <code>GenreAdapter</code>
 	 *
 	 * @param context The {@link Context} to use.
 	 */
-	public PlaylistAdapter(Context context) {
+	public GenreAdapter(Context context) {
 		super(context, LAYOUT);
 		inflater = LayoutInflater.from(context);
 	}
@@ -57,7 +58,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 	 */
 	@NonNull
 	@Override
-	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 		// Recycle ViewHolder's items
 		MusicHolder holder;
 		if (convertView == null) {
@@ -73,10 +74,10 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 			holder = (MusicHolder) convertView.getTag();
 		}
 		// Retrieve the data holder
-		Playlist playlist = getItem(position);
-		if (playlist != null) {
-			// Set each playlist name (line one)
-			holder.mLineOne.setText(playlist.getName());
+		Genre genre = getItem(position);
+		if (genre != null) {
+			// Set each genre name (line one)
+			holder.mLineOne.setText(genre.getName());
 		}
 		return convertView;
 	}
@@ -85,18 +86,18 @@ public class PlaylistAdapter extends ArrayAdapter<Playlist> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean hasStableIds() {
-		return true;
+	public long getItemId(int position) {
+		Genre genre = getItem(position);
+		if (genre != null)
+			return genre.getId();
+		return super.getItemId(position);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getItemId(int position) {
-		Playlist list = getItem(position);
-		if (list != null)
-			return list.getId();
-		return super.getItemId(position);
+	public boolean hasStableIds() {
+		return true;
 	}
 }

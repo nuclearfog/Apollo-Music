@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.EqualizerAdapter;
-import org.nuclearfog.apollo.adapters.EqualizerAdapter.BandLevelChangeListener;
 import org.nuclearfog.apollo.player.AudioEffects;
+import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter;
+import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.BandLevelChangeListener;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;

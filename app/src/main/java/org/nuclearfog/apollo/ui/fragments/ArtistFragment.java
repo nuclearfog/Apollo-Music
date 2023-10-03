@@ -34,20 +34,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.ArtistAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.ArtistLoader;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.activities.ActivityBase;
 import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
+import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -59,8 +62,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>,
-		OnScrollListener, OnItemClickListener, MusicStateListener, FragmentCallback {
+public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -92,6 +94,8 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	private PreferenceUtils preference;
 
+	private FragmentViewModel viewModel;
+
 	/**
 	 * Represents an artist
 	 */
@@ -115,12 +119,22 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
-		// init app settings
-		preference = PreferenceUtils.getInstance(context);
 		// Register the music status listener
 		if (context instanceof ActivityBase) {
 			((ActivityBase) context).setMusicStateListenerListener(this);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		// init app settings
+		preference = PreferenceUtils.getInstance(requireContext());
 	}
 
 	/**
@@ -155,6 +169,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// Start the loader
@@ -168,6 +183,15 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	public void onPause() {
 		super.onPause();
 		mAdapter.flush();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -303,28 +327,26 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	}
 
 	/**
-	 * Restarts the loader.
+	 * {@inheritDoc}
 	 */
 	@Override
-	public void refresh() {
-		if (!isRemoving() && !isDetached()) {
-			initList();
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
-	}
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				initList();
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 
-
-	@Override
-	public void setCurrentTrack() {
-		if (mList != null && mAdapter != null) {
-			long artistId = MusicUtils.getCurrentArtistId();
-			for (int i = 0; i < mAdapter.getCount(); i++) {
-				Artist artist = mAdapter.getItem(i);
-				if (artist != null && artist.getId() == artistId) {
-					mList.setSelection(i);
-					break;
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				long artistId = MusicUtils.getCurrentArtistId();
+				for (int i = 0; i < mAdapter.getCount(); i++) {
+					Artist artist = mAdapter.getItem(i);
+					if (artist != null && artist.getId() == artistId) {
+						mList.setSelection(i);
+						break;
+					}
 				}
-			}
+				break;
 		}
 	}
 

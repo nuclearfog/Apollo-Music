@@ -30,19 +30,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.GenreAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.GenreLoader;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 import java.util.List;
@@ -52,8 +55,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>,
-		OnItemClickListener, FragmentCallback {
+public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -69,6 +71,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 * The adapter for the list
 	 */
 	private GenreAdapter mAdapter;
+
+	private FragmentViewModel viewModel;
 
 	/**
 	 * Genre song list
@@ -88,6 +92,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adapter
 		mAdapter = new GenreAdapter(requireContext());
 	}
@@ -116,10 +122,20 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// Start the loader
 		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -217,15 +233,13 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		mAdapter.clear();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
-
-
-	@Override
-	public void setCurrentTrack() {
-		// do nothing
+	public void onChanged(String action) {
+		if (action.equals(FragmentViewModel.REFRESH)) {
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
 }

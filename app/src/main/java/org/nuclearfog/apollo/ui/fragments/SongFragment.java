@@ -30,19 +30,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.SongAdapter;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
 import org.nuclearfog.apollo.loaders.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.activities.ActivityBase;
 import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
+import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
@@ -53,8 +56,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
-		OnItemClickListener, MusicStateListener, FragmentCallback {
+public class SongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -75,6 +77,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 * The list view
 	 */
 	private ListView mList;
+
+	private FragmentViewModel viewModel;
 
 	/**
 	 * current track
@@ -111,6 +115,8 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adapter
 		mAdapter = new SongAdapter(requireContext(), false);
 	}
@@ -139,10 +145,20 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// Start the loader
 		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -272,25 +288,25 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	}
 
 	/**
-	 * Restarts the loader.
+	 * {@inheritDoc}
 	 */
 	@Override
-	public void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
+	public void onChanged(String action) {
+		switch (action) {
+			case FragmentViewModel.REFRESH:
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 
-
-	@Override
-	public void setCurrentTrack() {
-		if (mList != null && mAdapter != null) {
-			// current unique track ID
-			long trackId = MusicUtils.getCurrentAudioId();
-			for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-				if (mAdapter.getItemId(pos) == trackId) {
-					mList.setSelection(pos);
-					break;
+			case FragmentViewModel.SET_CURRENT_TRACK:
+				// current unique track ID
+				long trackId = MusicUtils.getCurrentAudioId();
+				for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+					if (mAdapter.getItemId(pos) == trackId) {
+						mList.setSelection(pos);
+						break;
+					}
 				}
-			}
+				break;
 		}
 	}
 

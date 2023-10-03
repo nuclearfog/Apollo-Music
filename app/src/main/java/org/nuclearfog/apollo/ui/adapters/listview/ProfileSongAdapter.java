@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.adapters;
+package org.nuclearfog.apollo.ui.adapters.listview;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -22,19 +22,15 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display the songs for a particular
- * artist, album, playlist, or genre for {@link ArtistSongFragment},
- * {@link AlbumSongFragment},{@link PlaylistSongFragment},
- * {@link GenreSongFragment},{@link FavoriteSongFragment},{@link LastAddedFragment}.
+ * artist, album, playlist, or genre for {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment},
+ * {@link org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment},
+ * {@link org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment},
+ * {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

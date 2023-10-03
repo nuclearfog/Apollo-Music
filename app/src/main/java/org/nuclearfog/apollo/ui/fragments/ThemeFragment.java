@@ -32,9 +32,9 @@ import androidx.fragment.app.Fragment;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.adapters.ThemesAdapter;
-import org.nuclearfog.apollo.adapters.ThemesAdapter.ThemeHolder;
-import org.nuclearfog.apollo.adapters.recycler.RecycleHolder;
+import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
+import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter.ThemeHolder;
+import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 

@@ -19,9 +19,21 @@ import org.nuclearfog.apollo.ui.fragments.SongFragment;
 import java.util.Locale;
 
 /**
+ * {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment} adapter used to show lists of the main page
+ *
  * @author nuclearfog
  */
 public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
+
+	public static final int IDX_PLAYLIST = 0;
+	public static final int IDX_RECENT = 1;
+	public static final int IDX_ARTIST = 2;
+	public static final int IDX_ALBUM = 3;
+	public static final int IDX_TRACKS = 4;
+	public static final int IDX_GENRE = 5;
+	public static final int IDX_FOLDER = 6;
+
+	private static final int PAGE_COUNT = 7;
 
 	private String[] titles;
 
@@ -41,27 +53,26 @@ public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 	public Fragment getItem(int position) {
 		switch (position) {
 			default:
-			case 0:
+			case IDX_PLAYLIST:
 				return new PlaylistFragment();
 
-			case 1:
+			case IDX_RECENT:
 				return new RecentFragment();
 
-			case 2:
+			case IDX_ARTIST:
 				return new ArtistFragment();
 
-			case 3:
+			case IDX_ALBUM:
 				return new AlbumFragment();
 
-			case 4:
+			case IDX_TRACKS:
 				return new SongFragment();
 
-			case 5:
+			case IDX_GENRE:
 				return new GenreFragment();
 
-			case 6:
+			case IDX_FOLDER:
 				return new FolderFragment();
-
 		}
 	}
 
@@ -70,7 +81,7 @@ public class MusicBrowserAdapter extends FragmentStatePagerAdapter {
 	 */
 	@Override
 	public int getCount() {
-		return 7;
+		return PAGE_COUNT;
 	}
 
 	/**

@@ -58,6 +58,11 @@ import java.util.List;
 public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>, OnItemClickListener, Observer<String> {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "GenreFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x2D9C34D;
@@ -238,7 +243,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	@Override
 	public void onChanged(String action) {
-		if (action.equals(FragmentViewModel.REFRESH)) {
+		if (action.equals(REFRESH)) {
 			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		}
 	}

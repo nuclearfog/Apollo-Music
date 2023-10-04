@@ -50,6 +50,9 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	private ProfileTabCarousel mProfileTabCarousel;
 
+	/**
+	 * viewmodel used to communicate with this fragment
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
@@ -66,7 +69,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
+	public final void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
@@ -123,9 +126,9 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+	public final void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
+		super.onDestroyView();
 	}
 
 	/**
@@ -147,17 +150,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void onChanged(String action) {
-		if (action.equals(FragmentViewModel.REFRESH)) {
-			refresh();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public final void scrollToTop() {
+	protected void scrollToTop() {
 		mList.setSelection(0);
 	}
 
@@ -176,11 +169,6 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	protected void setAdapter(ListAdapter adapter) {
 		mList.setAdapter(adapter);
 	}
-
-	/**
-	 *
-	 */
-	protected abstract void refresh();
 
 	/**
 	 * initializes the fragment

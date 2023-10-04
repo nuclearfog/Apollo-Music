@@ -47,6 +47,11 @@ import java.util.List;
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "FolderFragment.refresh";
+
+	/**
 	 * context menu group ID
 	 */
 	private static final int GROUP_ID = 0x1E42C9C7;
@@ -218,14 +223,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@Override
 	public void onChanged(String action) {
-		switch (action) {
-			case FragmentViewModel.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				break;
-
-			case FragmentViewModel.SET_CURRENT_TRACK:
-				//
-				break;
+		if (action.equals(REFRESH)) {
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		}
 	}
 }

@@ -65,6 +65,16 @@ import java.util.List;
 public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
+	 *
+	 */
+	public static final String SCROLL_TOP = "AlbumFragment.scroll_top";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = "AlbumFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x515A2A6B;
@@ -321,13 +331,13 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	@Override
 	public void onChanged(String action) {
 		switch (action) {
-			case FragmentViewModel.REFRESH:
+			case REFRESH:
 				// re init list
 				initList();
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case FragmentViewModel.SET_CURRENT_TRACK:
+			case SCROLL_TOP:
 				long albumId = MusicUtils.getCurrentAlbumId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Album album = mAdapter.getItem(i);

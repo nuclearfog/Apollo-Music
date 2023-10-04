@@ -49,6 +49,11 @@ import java.util.List;
 public class LastAddedFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "LastAddedFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x461834C5;
@@ -203,17 +208,19 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 
 
 	@Override
-	public void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+	public void onChanged(String action) {
+		if (action.equals(REFRESH)) {
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		}
 	}
+
 
 	@Override
 	public void drop(int from, int to) {
-
 	}
+
 
 	@Override
 	public void remove(int which) {
-
 	}
 }

@@ -65,6 +65,16 @@ import java.util.List;
 public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
 
 	/**
+	 *
+	 */
+	public static final String SCROLL_TOP = "ArtistFragment.scroll_top";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = "ArtistFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x793F54E4;
@@ -332,12 +342,12 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	@Override
 	public void onChanged(String action) {
 		switch (action) {
-			case FragmentViewModel.REFRESH:
+			case REFRESH:
 				initList();
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case FragmentViewModel.SET_CURRENT_TRACK:
+			case SCROLL_TOP:
 				long artistId = MusicUtils.getCurrentArtistId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Artist artist = mAdapter.getItem(i);

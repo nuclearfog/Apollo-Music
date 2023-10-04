@@ -30,10 +30,16 @@ import org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment;
 import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
 
 /**
- * A {@link FragmentStatePagerAdapter} class for swiping between playlists, recent,
- * artists, albums, songs, and genre {@link Fragment}s on phones.<br/>
+ * {@link ProfileActivity} viewpager adapter
+ *
+ * @author nuclearfog
  */
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class ProfileAdapter extends FragmentStatePagerAdapter {
+
+	public static final int IDX_ALBUM_SONG = 0;
+	public static final int IDX_POPULAR = 0;
+	public static final int IDX_ARTIST_SONG = 0;
+	public static final int IDX_ARTIST_ALBUM = 1;
 
 	private ProfileActivity.Type type;
 	private Bundle args;
@@ -42,7 +48,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 	/**
 	 * Constructor of <code>PagerAdapter<code>
 	 */
-	public PagerAdapter(FragmentManager fm, Bundle args, ProfileActivity.Type type) {
+	public ProfileAdapter(FragmentManager fm, Bundle args, ProfileActivity.Type type) {
 		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 		this.type = type;
 		this.args = args;

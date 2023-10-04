@@ -30,10 +30,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
+import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -56,9 +58,10 @@ public class HomeActivity extends ActivityBase {
 	private static final String[] PERMISSIONS;
 
 	/**
-	 * audio
+	 *
 	 */
-	private MusicBrowserPhoneFragment fragment;
+	private FragmentViewModel viewModel;
+
 
 	static {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -78,7 +81,8 @@ public class HomeActivity extends ActivityBase {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
-
+		// init fragment callback
+		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
 		// Set the overflow style
@@ -124,7 +128,7 @@ public class HomeActivity extends ActivityBase {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-			fragment.refreshCurrent();
+			viewModel.notify(MusicBrowserPhoneFragment.REFRESH);
 		}
 	}
 
@@ -132,7 +136,6 @@ public class HomeActivity extends ActivityBase {
 	 * initialize fragment
 	 */
 	private void init() {
-		fragment = new MusicBrowserPhoneFragment();
-		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, fragment).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
 	}
 }

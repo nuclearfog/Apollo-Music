@@ -46,6 +46,11 @@ import java.util.List;
 public class FolderSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "FolderSongFragment.refresh";
+
+	/**
 	 * context menu ID
 	 */
 	private static final int GROUP_ID = 0x1CABF982;
@@ -166,7 +171,6 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 					break;
 			}
 			MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), ids);
-			refresh();
 			return true;
 		}
 		return false;
@@ -213,21 +217,23 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void refresh() {
-		// Scroll to the stop of the list before restarting the loader.
-		// Otherwise, if the user has scrolled enough to move the header, it
-		// becomes misplaced and needs to be reset.
-		scrollToTop();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+	public void onChanged(String action) {
+		if (action.equals(REFRESH)) {
+			// Scroll to the stop of the list before restarting the loader.
+			// Otherwise, if the user has scrolled enough to move the header, it
+			// becomes misplaced and needs to be reset.
+			scrollToTop();
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		}
 	}
+
 
 	@Override
 	public void drop(int from, int to) {
-
 	}
+
 
 	@Override
 	public void remove(int which) {
-
 	}
 }

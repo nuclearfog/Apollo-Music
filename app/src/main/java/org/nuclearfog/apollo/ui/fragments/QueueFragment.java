@@ -64,6 +64,16 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 		OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
 
 	/**
+	 *
+	 */
+	public static final String SCROLL_CURRENT = "QueueFragment.scroll_current";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = "QueueFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x4B079F4E;
@@ -354,11 +364,11 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	@Override
 	public void onChanged(String action) {
 		switch (action) {
-			case FragmentViewModel.REFRESH:
+			case REFRESH:
 				refresh();
 				break;
 
-			case FragmentViewModel.SET_CURRENT_TRACK:
+			case SCROLL_CURRENT:
 				setCurrentTrack();
 				break;
 		}

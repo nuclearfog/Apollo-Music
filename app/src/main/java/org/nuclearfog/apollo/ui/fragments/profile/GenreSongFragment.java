@@ -208,10 +208,16 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 		mAdapter.clear();
 	}
 
+
+	@Override
+	public void onChanged(String s) {
+	}
+
+
 	/**
 	 * Restarts the loader.
 	 */
-	public void refresh() {
+	private void refresh() {
 		// Scroll to the stop of the list before restarting the loader.
 		// Otherwise, if the user has scrolled enough to move the header, it
 		// becomes misplaced and needs to be reset.
@@ -219,13 +225,13 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
 	}
 
+
 	@Override
 	public void drop(int from, int to) {
-
 	}
+
 
 	@Override
 	public void remove(int which) {
-
 	}
 }

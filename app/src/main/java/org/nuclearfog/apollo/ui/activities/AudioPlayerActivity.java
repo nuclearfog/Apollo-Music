@@ -61,6 +61,7 @@ import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
+import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton;
@@ -903,14 +904,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * reload queue tracks
 	 */
 	private void refreshQueue() {
-		viewModel.notify(FragmentViewModel.REFRESH);
+		viewModel.notify(QueueFragment.REFRESH);
 	}
 
 	/**
 	 * set current track in the queue
 	 */
 	private void setQueueTrack() {
-		viewModel.notify(FragmentViewModel.SET_CURRENT_TRACK);
+		viewModel.notify(QueueFragment.SCROLL_CURRENT);
 	}
 
 	/**

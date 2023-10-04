@@ -52,6 +52,11 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 		DragSortListView.DropListener, DragSortListView.RemoveListener {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "PlaylistSongFragment.refresh";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x37B5704;
@@ -173,7 +178,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 					MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
 					// reload if track was added to this playlist
 					if (mPlaylistId == playlistId)
-						refresh();
+						LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -268,7 +273,9 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 
 
 	@Override
-	public void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+	public void onChanged(String action) {
+		if (action.equals(REFRESH)) {
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		}
 	}
 }

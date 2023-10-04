@@ -48,6 +48,16 @@ import java.util.List;
 public class ArtistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "ArtistSongFragment.refresh";
+
+	/**
+	 *
+	 */
+	public static final String SCROLL_TOP = "ArtistSongFragment.scroll_top";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x23CB1BD2;
@@ -159,7 +169,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-					refresh();
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
 					return true;
 			}
 		}
@@ -200,25 +210,27 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 		mAdapter.clear();
 	}
 
-	/**
-	 * Restarts the loader.
-	 */
+
 	@Override
-	public void refresh() {
-		// Scroll to the stop of the list before restarting the loader.
-		// Otherwise, if the user has scrolled enough to move the header, it
-		// becomes misplaced and needs to be reset.
-		super.scrollToTop();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+	public void onChanged(String action) {
+		switch (action) {
+			case REFRESH:
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+				// fall through
+
+			case SCROLL_TOP:
+				scrollToTop();
+				break;
+		}
 	}
+
 
 	@Override
 	public void drop(int from, int to) {
-
 	}
+
 
 	@Override
 	public void remove(int which) {
-
 	}
 }

@@ -23,11 +23,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
+import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
+import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
+import org.nuclearfog.apollo.ui.fragments.FolderFragment;
+import org.nuclearfog.apollo.ui.fragments.GenreFragment;
+import org.nuclearfog.apollo.ui.fragments.PlaylistFragment;
+import org.nuclearfog.apollo.ui.fragments.RecentFragment;
+import org.nuclearfog.apollo.ui.fragments.SongFragment;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator;
 import org.nuclearfog.apollo.ui.views.TitlePageIndicator.OnCenterItemClickListener;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -49,27 +57,12 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener {
+public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener, Observer<String> {
 
 	/**
-	 * index of {@link org.nuclearfog.apollo.ui.fragments.RecentFragment}
+	 *
 	 */
-	private static final int RECENT_INDEX = 1;
-
-	/**
-	 * index of {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
-	 */
-	private static final int ARTIST_INDEX = 2;
-
-	/**
-	 * index of {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}
-	 */
-	private static final int ALBUMS_INDEX = 3;
-
-	/**
-	 * index of {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
-	 */
-	private static final int TRACKS_INDEX = 4;
+	public static final String REFRESH = "MusicBrowserPhoneFragment.refresh";
 
 	/**
 	 * Pager
@@ -82,6 +75,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	private ThemeUtils mResources;
 
 	private PreferenceUtils mPreferences;
+
+	private MusicBrowserAdapter adapter;
 
 	private FragmentViewModel viewModel;
 
@@ -99,7 +94,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		super.onCreate(savedInstanceState);
 		// Get the preferences
 		mPreferences = PreferenceUtils.getInstance(requireContext());
-		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
 
 	/**
@@ -110,7 +105,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
 		// Initialize the adapter
-		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
+		adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
 		// Initialize the ViewPager
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
 		// Attach the adapter
@@ -140,8 +135,19 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		super.onViewCreated(view, savedInstanceState);
 		// Initialze the theme resources
 		mResources = new ThemeUtils(requireActivity());
+		//
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Enable the options menu
 		setHasOptionsMenu(true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		viewModel.getSelectedItem().removeObserver(this);
 	}
 
 	/**
@@ -176,20 +182,20 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		inflater.inflate(R.menu.shuffle, menu);
 		// Sort orders
 		switch (mViewPager.getCurrentItem()) {
-			case RECENT_INDEX:
+			case MusicBrowserAdapter.IDX_RECENT:
 				inflater.inflate(R.menu.view_as, menu);
 				break;
 
-			case ARTIST_INDEX:
+			case MusicBrowserAdapter.IDX_ARTIST:
 				inflater.inflate(R.menu.artist_sort_by, menu);
 				inflater.inflate(R.menu.view_as, menu);
 				break;
 
-			case TRACKS_INDEX:
+			case MusicBrowserAdapter.IDX_TRACKS:
 				inflater.inflate(R.menu.song_sort_by, menu);
 				break;
 
-			case ALBUMS_INDEX:
+			case MusicBrowserAdapter.IDX_ALBUM:
 				inflater.inflate(R.menu.album_sort_by, menu);
 				inflater.inflate(R.menu.view_as, menu);
 				break;
@@ -212,114 +218,114 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		}
 		// sort track/album/artist list alphabetical
 		else if (item.getItemId() == R.id.menu_sort_by_az) {
-			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_A_Z);
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_A_Z);
-			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_A_Z);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort track/album/artist list alphabetical reverse
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
-			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_Z_A);
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_Z_A);
-			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_Z_A);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort albums/tracks by artist name
 		else if (item.getItemId() == R.id.menu_sort_by_artist) {
-			if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_ARTIST);
-			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ARTIST);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort tracks by album name
 		else if (item.getItemId() == R.id.menu_sort_by_album) {
-			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_ALBUM);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort albums/tracks by release date
 		else if (item.getItemId() == R.id.menu_sort_by_year) {
-			if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_YEAR);
-			} else if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_YEAR);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort tracks by duration
 		else if (item.getItemId() == R.id.menu_sort_by_duration) {
-			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_DURATION);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort artists/albums by song count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
-			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_SONGS);
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumSortOrder(SortOrder.AlbumSortOrder.ALBUM_NUMBER_OF_SONGS);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort artists by album count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_albums) {
-			if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistSortOrder(SortOrder.ArtistSortOrder.ARTIST_NUMBER_OF_ALBUMS);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// sort tracks by file name
 		else if (item.getItemId() == R.id.menu_sort_by_filename) {
-			if (mViewPager.getCurrentItem() == TRACKS_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_TRACKS) {
 				mPreferences.setSongSortOrder(SortOrder.SongSortOrder.SONG_FILENAME);
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// set simple item view
 		else if (item.getItemId() == R.id.menu_view_as_simple) {
-			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
 				mPreferences.setRecentLayout("simple");
-			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistLayout("simple");
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout("simple");
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// set detailed item view
 		else if (item.getItemId() == R.id.menu_view_as_detailed) {
-			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
 				mPreferences.setRecentLayout("detailed");
-			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistLayout("detailed");
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout("detailed");
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		}
 		// set grid item view
 		else if (item.getItemId() == R.id.menu_view_as_grid) {
-			if (mViewPager.getCurrentItem() == RECENT_INDEX) {
+			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
 				mPreferences.setRecentLayout("grid");
-			} else if (mViewPager.getCurrentItem() == ARTIST_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
 				mPreferences.setArtistLayout("grid");
-			} else if (mViewPager.getCurrentItem() == ALBUMS_INDEX) {
+			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout("grid");
 
 			}
-			refresh();
+			refresh(mViewPager.getCurrentItem());
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -330,21 +336,72 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onChanged(String action) {
+		if (action.equals(REFRESH)) {
+			for (int i = 0; i < adapter.getCount() ; i++) {
+				refresh(i);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onCenterItemClick(int index) {
-		viewModel.notify(FragmentViewModel.SET_CURRENT_TRACK);
+		switch (index) {
+			case MusicBrowserAdapter.IDX_ALBUM:
+				viewModel.notify(AlbumFragment.SCROLL_TOP);
+				break;
+
+			case MusicBrowserAdapter.IDX_ARTIST:
+				viewModel.notify(ArtistFragment.SCROLL_TOP);
+				break;
+
+			case MusicBrowserAdapter.IDX_TRACKS:
+				viewModel.notify(SongFragment.SCROLL_TOP);
+				break;
+
+			case MusicBrowserAdapter.IDX_RECENT:
+				viewModel.notify(RecentFragment.SCROLL_TOP);
+				break;
+		}
 	}
 
 	/**
-	 * refresh current page
+	 * refresh fragment
+	 *
+	 * @param page page of the fragment to refresh
 	 */
-	public void refreshCurrent() {
-		refresh();
-	}
+	private void refresh(int page) {
+		switch (page) {
+			case MusicBrowserAdapter.IDX_PLAYLIST:
+				viewModel.notify(PlaylistFragment.REFRESH);
+				break;
 
-	/**
-	 * refresh page
-	 */
-	private void refresh() {
-		viewModel.notify(FragmentViewModel.REFRESH);
+			case MusicBrowserAdapter.IDX_ALBUM:
+				viewModel.notify(AlbumFragment.REFRESH);
+				break;
+
+			case MusicBrowserAdapter.IDX_ARTIST:
+				viewModel.notify(ArtistFragment.REFRESH);
+				break;
+
+			case MusicBrowserAdapter.IDX_FOLDER:
+				viewModel.notify(FolderFragment.REFRESH);
+				break;
+
+			case MusicBrowserAdapter.IDX_GENRE:
+				viewModel.notify(GenreFragment.REFRESH);
+				break;
+
+			case MusicBrowserAdapter.IDX_TRACKS:
+				viewModel.notify(SongFragment.REFRESH);
+				break;
+
+			case MusicBrowserAdapter.IDX_RECENT:
+				viewModel.notify(RecentFragment.REFRESH);
+				break;
+		}
 	}
 }

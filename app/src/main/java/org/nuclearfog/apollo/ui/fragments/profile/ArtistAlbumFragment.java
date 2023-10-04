@@ -48,6 +48,16 @@ import java.util.List;
 public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallbacks<List<Album>>, ScrollableHeader {
 
 	/**
+	 *
+	 */
+	public static final String REFRESH = "ArtistAlbumFragment.refresh";
+
+	/**
+	 *
+	 */
+	public static final String SCROLL_TOP = "ArtistAlbumFragment.scroll_top";
+
+	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x6CEDC429;
@@ -217,17 +227,20 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		mAdapter.clear();
 	}
 
-	/**
-	 * Restarts the loader.
-	 */
+
 	@Override
-	public void refresh() {
-		// Scroll to the top of the list before restarting the loader.
-		// Otherwise, if the user has scrolled enough to move the header, it
-		// becomes misplaced and needs to be reset.
-		scrollToTop();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+	public void onChanged(String action) {
+		switch (action) {
+			case REFRESH:
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+				// fall through
+
+			case SCROLL_TOP:
+				scrollToTop();
+				break;
+		}
 	}
+
 
 	/**
 	 * {@inheritDoc}

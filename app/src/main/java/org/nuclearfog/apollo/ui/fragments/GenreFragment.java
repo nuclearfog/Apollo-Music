@@ -60,7 +60,12 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	/**
 	 *
 	 */
-	public static final String REFRESH = "GenreFragment.refresh";
+	private static final String TAG = "GenreFragment";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -77,13 +82,16 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	private GenreAdapter mAdapter;
 
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
 	 * Genre song list
 	 */
 	@NonNull
-	private long[] mGenreList = {};
+	private long[] selectedGenreSongs = {};
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -156,7 +164,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 			Genre mGenre = mAdapter.getItem(info.position);
 			if (mGenre != null) {
 				// Create a list of the genre's songs
-				mGenreList = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
+				selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
 				// Play the genre
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the genre to the queue
@@ -165,7 +173,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 			}
 		}
 		// remove old selection if an error occurs
-		mGenreList = new long[0];
+		selectedGenreSongs = new long[0];
 	}
 
 	/**
@@ -176,11 +184,11 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		if (item.getGroupId() == GROUP_ID) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), mGenreList, 0, false);
+					MusicUtils.playAll(requireContext(), selectedGenreSongs, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					MusicUtils.addToQueue(requireActivity(), mGenreList);
+					MusicUtils.addToQueue(requireActivity(), selectedGenreSongs);
 					return true;
 			}
 		}

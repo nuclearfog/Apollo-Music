@@ -218,13 +218,19 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void drop(int from, int to) {
+		// not used
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void remove(int which) {
+		// not used
 	}
 }

@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -33,14 +32,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
-import org.nuclearfog.apollo.ui.activities.ActivityBase;
-import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -56,17 +54,27 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SongFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>, OnItemClickListener, MusicStateListener, Observer<String> {
+public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	public static final String SCROLL_TOP = "SongFragment.scroll_top";
+	private static final String TAG = "SongFragment";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "SongFragment.refresh";
+	public static final String RESTART_LOADER = TAG + ".restart_loader";
+
+	/**
+	 *
+	 */
+	public static final String META_CHANGED = TAG + ".scroll_top";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -88,13 +96,16 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 */
 	private ListView mList;
 
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
 	 * current track
 	 */
 	@Nullable
-	private Song mSong;
+	private Song selectedSong = null;
 
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
@@ -105,18 +116,6 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 	 * Empty constructor as per the {@link Fragment} documentation
 	 */
 	public SongFragment() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		// Register the music status listener
-		if (context instanceof ActivityBase) {
-			((ActivityBase) context).setMusicStateListenerListener(this);
-		}
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new song
-			mSong = mAdapter.getItem(info.position);
+			selectedSong = mAdapter.getItem(info.position);
 			// Play the song
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 			// Play next
@@ -199,15 +198,15 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 		} else {
 			// remove selection if an error occurs
-			mSong = null;
+			selectedSong = null;
 		}
 	}
 
 
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && mSong != null) {
-			long[] trackIds = {mSong.getId()};
+		if (item.getGroupId() == GROUP_ID && selectedSong != null) {
+			long[] trackIds = {selectedSong.getId()};
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
@@ -223,7 +222,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addSongId(mSong);
+					FavoritesStore.getInstance(requireContext()).addSongId(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
@@ -236,15 +235,15 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
+					NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:
-					MusicUtils.setRingtone(requireActivity(), mSong.getId());
+					MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackIds);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackIds);
 					mShouldRefresh = true;
 					return true;
 			}
@@ -307,7 +306,7 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case SCROLL_TOP:
+			case META_CHANGED:
 				// current unique track ID
 				long trackId = MusicUtils.getCurrentAudioId();
 				for (int pos = 0; pos < mAdapter.getCount(); pos++) {
@@ -317,28 +316,14 @@ public class SongFragment extends Fragment implements LoaderManager.LoaderCallba
 					}
 				}
 				break;
-		}
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void restartLoader() {
-		if (!isRemoving() && !isDetached()) {
-			// Update the list when the user deletes any items
-			if (mShouldRefresh) {
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				mShouldRefresh = false;
-			}
+			case RESTART_LOADER:
+				// Update the list when the user deletes any items
+				if (mShouldRefresh) {
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mShouldRefresh = false;
+				}
+				break;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onMetaChanged() {
-		// Nothing to do
 	}
 }

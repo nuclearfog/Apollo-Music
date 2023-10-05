@@ -216,13 +216,19 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 		mAdapter.clear();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void drop(int from, int to) {
-
+		// not used
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void remove(int which) {
-
+		// not used
 	}
 }

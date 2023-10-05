@@ -36,7 +36,8 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -48,8 +49,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>,
-		DragSortListView.DropListener, DragSortListView.RemoveListener {
+public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>, DropListener, RemoveListener {
 
 	/**
 	 *
@@ -271,7 +271,9 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onChanged(String action) {
 		if (action.equals(REFRESH)) {

@@ -347,7 +347,6 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Music music = mAdapter.getItem(position);
-
 		// If it's an artist, open the artist profile
 		if (music instanceof Artist) {
 			Artist artist = (Artist) music;
@@ -366,6 +365,22 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		}
 		// All done
 		finish();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onMetaChanged() {
+		// not used
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onRefresh() {
+		// not used
 	}
 
 	/**

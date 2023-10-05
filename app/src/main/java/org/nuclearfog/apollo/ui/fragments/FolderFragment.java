@@ -46,10 +46,11 @@ import java.util.List;
  */
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
 
+	private static final String TAG = "FolderFragment";
 	/**
 	 *
 	 */
-	public static final String REFRESH = "FolderFragment.refresh";
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * context menu group ID
@@ -72,17 +73,20 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	private static final int LOADER_ID = 0xE1E246AA;
 
 	/**
-	 * IDs of all tracks of the folder
-	 */
-	@NonNull
-	private long[] selectedFolderSongs = {};
-
-	/**
 	 * listview adapter for music folder view
 	 */
 	private FolderAdapter mAdapter;
 
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
 	private FragmentViewModel viewModel;
+
+	/**
+	 * IDs of all tracks of the folder
+	 */
+	@NonNull
+	private long[] selectedFolderSongs = {};
 
 	/**
 	 * {@inheritDoc}

@@ -60,7 +60,6 @@ import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
-import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
@@ -85,7 +84,7 @@ import java.lang.ref.WeakReference;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class AudioPlayerActivity extends AppCompatActivity implements ServiceConnection, OnSeekBarChangeListener,
-		OnQueryTextListener, DeleteDialogCallback, OnClickListener, RepeatListener, PlayStatusListener {
+		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
 
 	/**
 	 * Message to refresh the time
@@ -499,15 +498,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-		}
-	}
-
-
-	@Override
-	public void onDelete() {
-		refreshQueue();
-		if (MusicUtils.getQueue().length == 0) {
-			NavUtils.goHome(this);
 		}
 	}
 

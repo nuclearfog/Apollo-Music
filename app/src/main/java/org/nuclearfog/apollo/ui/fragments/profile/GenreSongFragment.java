@@ -43,7 +43,7 @@ import org.nuclearfog.apollo.utils.NavUtils;
 import java.util.List;
 
 /**
- * This class is used to display all of the songs from a particular playlist.
+ * This class is used to display all of the songs from a particular genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
@@ -208,11 +208,29 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 		mAdapter.clear();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onChanged(String s) {
+		// not used
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void drop(int from, int to) {
+		// not used
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void remove(int which) {
+		// not used
+	}
 
 	/**
 	 * Restarts the loader.
@@ -223,15 +241,5 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 		// becomes misplaced and needs to be reset.
 		scrollToTop();
 		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
-	}
-
-
-	@Override
-	public void drop(int from, int to) {
-	}
-
-
-	@Override
-	public void remove(int which) {
 	}
 }

@@ -24,13 +24,12 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display the albums for a particular
- * artist for {@link ArtistAlbumFragment} .
+ * artist for {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */

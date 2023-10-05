@@ -210,7 +210,9 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 		mAdapter.clear();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onChanged(String action) {
 		switch (action) {
@@ -224,13 +226,19 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void drop(int from, int to) {
+		// not used
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void remove(int which) {
+		// not used
 	}
 }

@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.fragments;
 
 import static org.nuclearfog.apollo.utils.PreferenceUtils.ALBUM_LAYOUT;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -43,8 +42,6 @@ import androidx.loader.content.Loader;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.AlbumLoader;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.ui.activities.ActivityBase;
-import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -62,17 +59,27 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
+public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	public static final String SCROLL_TOP = "AlbumFragment.scroll_top";
+	private static final String TAG = "AlbumFragment";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "AlbumFragment.refresh";
+	public static final String RESTART_LOADER = TAG + ".restart_loader";
+
+	/**
+	 *
+	 */
+	public static final String META_CHANGED = TAG + ".scroll_top";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -105,12 +112,15 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	private GridView mList;
 
 	/**
+	 * viewmodel used for communication with hosting activity
+	 */
+	private FragmentViewModel viewModel;
+
+	/**
 	 * Represents an album
 	 */
 	@Nullable
-	private Album mAlbum;
-
-	private FragmentViewModel viewModel;
+	private Album selectedAlbum = null;
 
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
@@ -121,22 +131,11 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		// init preferences
-		preference = PreferenceUtils.getInstance(context);
-		// Register the music status listener
-		if (context instanceof ActivityBase) {
-			((ActivityBase) context).setMusicStateListenerListener(this);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// init preferences
+		preference = PreferenceUtils.getInstance(requireContext());
+		// init fragment callback
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
 
@@ -204,8 +203,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new album
-			mAlbum = mAdapter.getItem(info.position);
-			if (mAlbum != null) {
+			selectedAlbum = mAdapter.getItem(info.position);
+			if (selectedAlbum != null) {
 				// Play the album
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
@@ -220,7 +219,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 			}
 		} else {
 			// remove selection
-			mAlbum = null;
+			selectedAlbum = null;
 		}
 	}
 
@@ -230,8 +229,8 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
-		if (item.getGroupId() == GROUP_ID && mAlbum != null) {
-			long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
+			long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
@@ -246,7 +245,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), mAlbum.getArtist());
+					NavUtils.openArtistProfile(requireActivity(), selectedAlbum.getArtist());
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
@@ -255,7 +254,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
 					mShouldRefresh = true;
 					return true;
 			}
@@ -337,7 +336,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case SCROLL_TOP:
+			case META_CHANGED:
 				long albumId = MusicUtils.getCurrentAlbumId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Album album = mAdapter.getItem(i);
@@ -347,6 +346,14 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 					}
 				}
 				break;
+
+			case RESTART_LOADER:
+				// Update the list when the user deletes any items
+				if (mShouldRefresh) {
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				}
+				mShouldRefresh = false;
+				break;
 		}
 	}
 
@@ -355,28 +362,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 */
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		// Nothing to do
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void restartLoader() {
-		if (!isRemoving() && !isDetached()) {
-			// Update the list when the user deletes any items
-			if (mShouldRefresh) {
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-			}
-			mShouldRefresh = false;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onMetaChanged() {
 		// Nothing to do
 	}
 

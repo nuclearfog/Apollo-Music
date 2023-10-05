@@ -46,7 +46,7 @@ public class ThemesActivity extends ActivityBase {
 		}
 		// Transact the theme fragment
 		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, new ThemeFragment()).commit();
+			getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, ThemeFragment.class, null).commit();
 		}
 	}
 
@@ -60,5 +60,17 @@ public class ThemesActivity extends ActivityBase {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+
+	@Override
+	protected void onMetaChanged() {
+		// not used
+	}
+
+
+	@Override
+	protected void onRefresh() {
+		// not used
 	}
 }

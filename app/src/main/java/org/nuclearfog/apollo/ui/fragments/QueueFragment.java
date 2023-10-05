@@ -60,18 +60,22 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, Observer<String>,
-		OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
+public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, Observer<String>, OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
 
 	/**
 	 *
 	 */
-	public static final String SCROLL_CURRENT = "QueueFragment.scroll_current";
+	private static final String TAG = "QueueFragment";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "QueueFragment.refresh";
+	public static final String SCROLL_CURRENT = TAG + ".scroll_current";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -94,12 +98,15 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	private DragSortListView mList;
 
 	/**
-	 * Represents a song
+	 * viewmodel used for communication with hosting activity
+	 */
+	private FragmentViewModel viewModel;
+
+	/**
+	 * Represents a selected song
 	 */
 	@Nullable
-	private Song mSong;
-
-	private FragmentViewModel viewModel;
+	private Song selectedSong = null;
 
 	/**
 	 * Position of a context menu item
@@ -118,7 +125,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//
+		// init fragment callback
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adpater
 		mAdapter = new SongAdapter(requireContext(), true);
@@ -204,7 +211,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			mSelectedPosition = info.position;
 			// Creat a new song
-			mSong = mAdapter.getItem(mSelectedPosition);
+			selectedSong = mAdapter.getItem(mSelectedPosition);
 			// Play the song next
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
 			// Add the song to a playlist
@@ -221,7 +228,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 		} else {
 			// remove old selection
 			mSelectedPosition = -1;
-			mSong = null;
+			selectedSong = null;
 		}
 	}
 
@@ -230,8 +237,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && mSong != null && mSelectedPosition >= 0) {
-			long[] trackId = {mSong.getId()};
+		if (item.getGroupId() == GROUP_ID && selectedSong != null && mSelectedPosition >= 0) {
+			long[] trackId = {selectedSong.getId()};
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_NEXT:
@@ -247,7 +254,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireActivity()).addSongId(mSong);
+					FavoritesStore.getInstance(requireActivity()).addSongId(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
@@ -260,15 +267,15 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
+					NavUtils.openArtistProfile(requireActivity(), selectedSong.getArtist());
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:
-					MusicUtils.setRingtone(requireActivity(), mSong.getId());
+					MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackId);
 					return true;
 			}
 		}

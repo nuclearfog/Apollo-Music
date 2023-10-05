@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.fragments;
 
 import static org.nuclearfog.apollo.utils.PreferenceUtils.ARTIST_LAYOUT;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -43,8 +42,6 @@ import androidx.loader.content.Loader;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.ArtistLoader;
 import org.nuclearfog.apollo.model.Artist;
-import org.nuclearfog.apollo.ui.activities.ActivityBase;
-import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -62,17 +59,27 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
+public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	public static final String SCROLL_TOP = "ArtistFragment.scroll_top";
+	private static final String TAG = "ArtistFragment";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "ArtistFragment.refresh";
+	public static final String RESTART_LOADER = TAG + ".restart_loader";
+
+	/**
+	 *
+	 */
+	public static final String META_CHANGED = TAG + ".scroll_top";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -104,13 +111,16 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	private PreferenceUtils preference;
 
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
 	 * Represents an artist
 	 */
 	@Nullable
-	private Artist mArtist;
+	private Artist selectedArtist = null;
 
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
@@ -127,21 +137,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		// Register the music status listener
-		if (context instanceof ActivityBase) {
-			((ActivityBase) context).setMusicStateListenerListener(this);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//
+		// init fragment callback
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// init app settings
 		preference = PreferenceUtils.getInstance(requireContext());
@@ -214,8 +212,8 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new model
-			mArtist = mAdapter.getItem(info.position);
-			if (mArtist != null) {
+			selectedArtist = mAdapter.getItem(info.position);
+			if (selectedArtist != null) {
 				// Play the artist
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the artist to the queue
@@ -228,7 +226,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 			}
 		} else {
 			// remove selection
-			mArtist = null;
+			selectedArtist = null;
 		}
 	}
 
@@ -238,9 +236,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
-		if (item.getGroupId() == GROUP_ID && mArtist != null) {
+		if (item.getGroupId() == GROUP_ID && selectedArtist != null) {
 			// Create a list of the artist's songs
-			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), mArtist.getId());
+			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), selectedArtist.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), mArtistList, 0, true);
@@ -261,7 +259,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 
 				case ContextMenuItems.DELETE:
 					mShouldRefresh = true;
-					String artist = mArtist.getName();
+					String artist = selectedArtist.getName();
 					MusicUtils.openDeleteDialog(requireActivity(), artist, mArtistList);
 					return true;
 			}
@@ -347,7 +345,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case SCROLL_TOP:
+			case META_CHANGED:
 				long artistId = MusicUtils.getCurrentArtistId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Artist artist = mAdapter.getItem(i);
@@ -357,6 +355,14 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					}
 				}
 				break;
+
+			case RESTART_LOADER:
+				// Update the list when the user deletes any items
+				if (mShouldRefresh) {
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				}
+				mShouldRefresh = false;
+				break;
 		}
 	}
 
@@ -365,28 +371,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		// Nothing to do
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void restartLoader() {
-		if (!isRemoving() && !isDetached()) {
-			// Update the list when the user deletes any items
-			if (mShouldRefresh) {
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-			}
-			mShouldRefresh = false;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onMetaChanged() {
 		// Nothing to do
 	}
 

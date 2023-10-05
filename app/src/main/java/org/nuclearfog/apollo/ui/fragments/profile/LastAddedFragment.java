@@ -206,7 +206,9 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 		mAdapter.clear();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onChanged(String action) {
 		if (action.equals(REFRESH)) {
@@ -214,13 +216,19 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void drop(int from, int to) {
+		// not used
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void remove(int which) {
+		// not used
 	}
 }

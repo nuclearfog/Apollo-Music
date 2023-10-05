@@ -59,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
 		}
 		//attach fragment
 		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, new AppPreference()).commit();
+			getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, AppPreference.class, null).commit();
 		}
 	}
 

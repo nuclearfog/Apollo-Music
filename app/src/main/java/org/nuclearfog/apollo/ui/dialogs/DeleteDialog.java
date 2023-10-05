@@ -96,19 +96,9 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 			mFetcher.removeFromCache(key);
 			// Delete the selected item(s)
 			MusicUtils.deleteTracks(requireActivity(), mItemList);
-			if (getActivity() instanceof DeleteDialogCallback) {
-				((DeleteDialogCallback) getActivity()).onDelete();
-			}
 			dialog.dismiss();
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 			dialog.dismiss();
 		}
-	}
-
-	/**
-	 *
-	 */
-	public interface DeleteDialogCallback {
-		void onDelete();
 	}
 }

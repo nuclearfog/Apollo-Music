@@ -50,7 +50,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.provider.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
-import org.nuclearfog.apollo.ui.dialogs.DeleteDialog.DeleteDialogCallback;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.ProfileType;
 import org.nuclearfog.apollo.ui.fragments.GenreFragment;
@@ -80,8 +79,7 @@ import java.util.Random;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>,
-		OnPageChangeListener, Listener, OnClickListener, DeleteDialogCallback {
+public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, OnPageChangeListener, Listener, OnClickListener {
 
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
@@ -610,7 +608,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-			onDelete();
 		}
 	}
 
@@ -673,9 +670,21 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void onDelete() {
+	protected void onRefresh() {
+		for (int i = 0 ; i < mPagerAdapter.getCount() ; i++) {
+			refreshFragment(i);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onMetaChanged() {
 		for (int i = 0 ; i < mPagerAdapter.getCount() ; i++) {
 			refreshFragment(i);
 		}

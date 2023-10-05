@@ -106,6 +106,18 @@ public class HomeActivity extends ActivityBase {
 
 
 	@Override
+	protected void onRefresh() {
+		viewModel.notify(MusicBrowserPhoneFragment.REFRESH);
+	}
+
+
+	@Override
+	protected void onMetaChanged() {
+		viewModel.notify(MusicBrowserPhoneFragment.META_CHANGED);
+	}
+
+
+	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		// check if permissions are granted
@@ -128,7 +140,6 @@ public class HomeActivity extends ActivityBase {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
-			viewModel.notify(MusicBrowserPhoneFragment.REFRESH);
 		}
 	}
 

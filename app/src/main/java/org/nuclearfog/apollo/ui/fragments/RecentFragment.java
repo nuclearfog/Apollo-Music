@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import static org.nuclearfog.apollo.utils.PreferenceUtils.RECENT_LAYOUT;
-
-import android.content.Context;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -44,8 +41,6 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.RecentLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.provider.RecentStore;
-import org.nuclearfog.apollo.ui.activities.ActivityBase;
-import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -64,17 +59,27 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, MusicStateListener, Observer<String> {
+public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	public static final String SCROLL_TOP = "RecentFragment.scroll_top";
+	private static final String TAG = "RecentFragment";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "RecentFragment.refresh";
+	public static final String META_CHANGED = TAG + ".meta_changed";
+
+	/**
+	 *
+	 */
+	public static final String RESTART_LOADER = TAG + ".restart_loader";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -102,6 +107,16 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	private GridView mList;
 
 	/**
+	 * app global prefs
+	 */
+	private PreferenceUtils preference;
+
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
+	private FragmentViewModel viewModel;
+
+	/**
 	 * Album song list
 	 */
 	private long[] mAlbumList = {};
@@ -110,14 +125,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * Represents an album
 	 */
 	@Nullable
-	private Album mAlbum;
-
-	/**
-	 * app global prefs
-	 */
-	private PreferenceUtils preference;
-
-	private FragmentViewModel viewModel;
+	private Album selectedAlbum = null;
 
 	/**
 	 * True if the list should execute {@code #restartLoader()}.
@@ -132,20 +140,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		super.onCreate(savedInstanceState);
 		// init preferences
 		preference = PreferenceUtils.getInstance(requireContext());
-		//
+		// init fragment callback
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		if (context instanceof ActivityBase) {
-			// Register the music status listener
-			((ActivityBase) context).setMusicStateListenerListener(this);
-		}
 	}
 
 	/**
@@ -216,10 +212,10 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new album
-			mAlbum = mAdapter.getItem(info.position);
-			if (mAlbum != null) {
+			selectedAlbum = mAdapter.getItem(info.position);
+			if (selectedAlbum != null) {
 				// Create a list of the album's songs
-				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
+				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 				// Play the album
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
@@ -236,7 +232,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 			}
 		} else {
 			// remove selection if an error occurs
-			mAlbum = null;
+			selectedAlbum = null;
 		}
 	}
 
@@ -246,7 +242,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
-		if (item.getGroupId() == GROUP_ID && mAlbum != null) {
+		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
@@ -261,7 +257,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
-					NavUtils.openArtistProfile(requireActivity(), mAlbum.getArtist());
+					NavUtils.openArtistProfile(requireActivity(), selectedAlbum.getArtist());
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
@@ -271,12 +267,12 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:
 					mShouldRefresh = true;
-					RecentStore.getInstance(requireActivity()).removeItem(mAlbum.getId());
+					RecentStore.getInstance(requireActivity()).removeItem(selectedAlbum.getId());
 					MusicUtils.refresh();
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
 					mShouldRefresh = true;
 					return true;
 			}
@@ -363,30 +359,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void restartLoader() {
-		if (!isRemoving() && !isDetached()) {
-			// Update the list when the user deletes any items
-			if (mShouldRefresh) {
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-			}
-		}
-		mShouldRefresh = false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onMetaChanged() {
-		if (!isRemoving() && !isDetached()) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
@@ -395,10 +367,19 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case SCROLL_TOP:
+			case RESTART_LOADER:
+				// Update the list when the user deletes any items
+				if (mShouldRefresh) {
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mShouldRefresh = false;
+				}
+				break;
+
+			case META_CHANGED:
 				if (mList.getCount() > 0) {
 					mList.smoothScrollToPosition(0);
 				}
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 		}
 	}
@@ -407,16 +388,16 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * initialize adapter & list
 	 */
 	private void initList() {
-		if (preference.isSimpleLayout(RECENT_LAYOUT)) {
+		if (preference.isSimpleLayout(PreferenceUtils.RECENT_LAYOUT)) {
 			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
-		} else if (preference.isDetailedLayout(RECENT_LAYOUT)) {
+		} else if (preference.isDetailedLayout(PreferenceUtils.RECENT_LAYOUT)) {
 			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
 		} else {
 			mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
 		}
-		if (preference.isSimpleLayout(RECENT_LAYOUT)) {
+		if (preference.isSimpleLayout(PreferenceUtils.RECENT_LAYOUT)) {
 			mList.setNumColumns(ONE);
-		} else if (preference.isDetailedLayout(RECENT_LAYOUT)) {
+		} else if (preference.isDetailedLayout(PreferenceUtils.RECENT_LAYOUT)) {
 			mAdapter.setLoadExtraData();
 			if (ApolloUtils.isLandscape(requireContext())) {
 				mList.setNumColumns(TWO);

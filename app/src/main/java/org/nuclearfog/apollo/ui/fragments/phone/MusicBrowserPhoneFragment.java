@@ -62,7 +62,17 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	/**
 	 *
 	 */
-	public static final String REFRESH = "MusicBrowserPhoneFragment.refresh";
+	private static final String TAG = "MusicBrowserPhoneFragment";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
+
+	/**
+	 *
+	 */
+	public static final String META_CHANGED = TAG + ".meta_changed";
 
 	/**
 	 * Pager
@@ -74,10 +84,14 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	private ThemeUtils mResources;
 
+	/**
+	 *
+	 */
 	private PreferenceUtils mPreferences;
 
-	private MusicBrowserAdapter adapter;
-
+	/**
+	 * viewmodel used to communicate with sub fragments
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
@@ -105,7 +119,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
 		// Initialize the adapter
-		adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
+		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
 		// Initialize the ViewPager
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
 		// Attach the adapter
@@ -337,11 +351,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	@Override
 	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			for (int i = 0; i < adapter.getCount() ; i++) {
-				refresh(i);
-			}
-		}
+		// todo update all fragments
 	}
 
 	/**
@@ -351,19 +361,19 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public void onCenterItemClick(int index) {
 		switch (index) {
 			case MusicBrowserAdapter.IDX_ALBUM:
-				viewModel.notify(AlbumFragment.SCROLL_TOP);
+				viewModel.notify(AlbumFragment.META_CHANGED);
 				break;
 
 			case MusicBrowserAdapter.IDX_ARTIST:
-				viewModel.notify(ArtistFragment.SCROLL_TOP);
+				viewModel.notify(ArtistFragment.META_CHANGED);
 				break;
 
 			case MusicBrowserAdapter.IDX_TRACKS:
-				viewModel.notify(SongFragment.SCROLL_TOP);
+				viewModel.notify(SongFragment.META_CHANGED);
 				break;
 
 			case MusicBrowserAdapter.IDX_RECENT:
-				viewModel.notify(RecentFragment.SCROLL_TOP);
+				viewModel.notify(RecentFragment.META_CHANGED);
 				break;
 		}
 	}

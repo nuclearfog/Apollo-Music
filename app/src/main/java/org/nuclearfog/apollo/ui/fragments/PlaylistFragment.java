@@ -16,7 +16,6 @@ import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDE
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -50,8 +49,6 @@ import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.PlaylistLoader;
 import org.nuclearfog.apollo.model.Playlist;
-import org.nuclearfog.apollo.ui.activities.ActivityBase;
-import org.nuclearfog.apollo.ui.activities.ActivityBase.MusicStateListener;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.PlaylistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -68,12 +65,22 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<Playlist>>, OnItemClickListener, MusicStateListener, Observer<String> {
+public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<Playlist>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = "PlaylistFragment.refresh";
+	private static final String TAG = "PlaylistFragment";
+
+	/**
+	 *
+	 */
+	public static final String RESTART_LOADER = TAG + ".restart_loader";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".refresh";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -90,30 +97,21 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	private PlaylistAdapter mAdapter;
 
+	/**
+	 * viewmodel used for communication with hosting activity
+	 */
 	private FragmentViewModel viewModel;
 
 	/**
 	 * Represents a playlist
 	 */
 	@Nullable
-	private Playlist mPlaylist;
+	private Playlist selectedPlaylist = null;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
 	 */
 	public PlaylistFragment() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onAttach(@NonNull Context context) {
-		super.onAttach(context);
-		if (context instanceof ActivityBase) {
-			// Register the music status listener
-			((ActivityBase) context).setMusicStateListenerListener(this);
-		}
 	}
 
 	/**
@@ -180,14 +178,14 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new playlist
-			mPlaylist = mAdapter.getItem(info.position);
+			selectedPlaylist = mAdapter.getItem(info.position);
 			// Delete and rename (user made playlists)
-			if (mPlaylist != null) {
+			if (selectedPlaylist != null) {
 				// Play the playlist
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the playlist to the queue
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-				if (!mPlaylist.isDefault()) {
+				if (!selectedPlaylist.isDefault()) {
 					// add options to edit playlist
 					menu.add(GROUP_ID, ContextMenuItems.RENAME_PLAYLIST, Menu.NONE, R.string.context_menu_rename_playlist);
 					menu.add(GROUP_ID, ContextMenuItems.COPY_PLAYLIST, Menu.NONE, R.string.context_menu_copy_playlist);
@@ -196,7 +194,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 			}
 		} else {
 			// remove old selection
-			mPlaylist = null;
+			selectedPlaylist = null;
 		}
 	}
 
@@ -205,58 +203,58 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && mPlaylist != null) {
+		if (item.getGroupId() == GROUP_ID && selectedPlaylist != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
+					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
 						// play favorite playlist
 						MusicUtils.playFavorites(requireContext());
-					} else if (mPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+					} else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
 						// play last added playlist
 						MusicUtils.playLastAdded(requireContext());
-					} else if (mPlaylist.getId() == Playlist.POPULAR_ID) {
+					} else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
 						// play popular playlist
 						MusicUtils.playPopular(requireContext());
 					} else {
 						// play custom playlist
-						MusicUtils.playPlaylist(requireContext(), mPlaylist.getId());
+						MusicUtils.playPlaylist(requireContext(), selectedPlaylist.getId());
 					}
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
 					long[] list;
-					if (mPlaylist.getId() == Playlist.FAVORITE_ID) {
+					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
 						// add favorite playlist
 						list = MusicUtils.getSongListForFavorites(requireContext());
-					} else if (mPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+					} else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
 						// add last added playlist
 						list = MusicUtils.getSongListForLastAdded(requireContext());
-					} else if (mPlaylist.getId() == Playlist.POPULAR_ID) {
+					} else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
 						// add popular playlist
 						list = MusicUtils.getPopularSongList(requireContext());
 					} else {
 						// add custom playlist to queue
-						list = MusicUtils.getSongListForPlaylist(requireContext(), mPlaylist.getId());
+						list = MusicUtils.getSongListForPlaylist(requireContext(), selectedPlaylist.getId());
 					}
 					MusicUtils.addToQueue(requireActivity(), list);
 					return true;
 
 				case ContextMenuItems.RENAME_PLAYLIST:
-					PlaylistRenameDialog.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), PlaylistRenameDialog.NAME);
+					PlaylistRenameDialog.getInstance(selectedPlaylist.getId()).show(getParentFragmentManager(), PlaylistRenameDialog.NAME);
 					return true;
 
 				case ContextMenuItems.COPY_PLAYLIST:
-					PlaylistCopyDialog.getInstance(mPlaylist.getId()).show(getParentFragmentManager(), PlaylistCopyDialog.NAME);
+					PlaylistCopyDialog.getInstance(selectedPlaylist.getId()).show(getParentFragmentManager(), PlaylistCopyDialog.NAME);
 					break;
 
 				case ContextMenuItems.DELETE:
-					String name = mPlaylist.getName();
+					String name = selectedPlaylist.getName();
 					new AlertDialog.Builder(requireContext())
 							.setTitle(getString(R.string.delete_dialog_title, name))
 							.setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, mPlaylist.getId());
+									Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, selectedPlaylist.getId());
 									requireActivity().getContentResolver().delete(mUri, null, null);
 									MusicUtils.refresh();
 								}
@@ -349,28 +347,13 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void restartLoader() {
-		if (!isRemoving() && !isDetached()) {
-			// Refresh the list when a playlist is deleted or renamed
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onMetaChanged() {
-		// Nothing to do
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		switch(action) {
+			case REFRESH:
+			case RESTART_LOADER:
+				// Refresh the list when a playlist is deleted or renamed
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 		}
 	}
 }

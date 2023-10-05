@@ -227,7 +227,9 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		mAdapter.clear();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onChanged(String action) {
 		switch (action) {
@@ -241,7 +243,6 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		}
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -252,13 +253,19 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 		mAdapter.setPauseDiskCache(pauseCache);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void drop(int from, int to) {
-
+		// not used
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void remove(int which) {
-
+		// not used
 	}
 }

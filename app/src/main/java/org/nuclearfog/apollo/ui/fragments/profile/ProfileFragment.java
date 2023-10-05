@@ -24,6 +24,9 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 
@@ -32,8 +35,7 @@ import org.nuclearfog.apollo.utils.FragmentViewModel;
  *
  * @author nuclearfog
  */
-public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>,
-		DragSortListView.DropListener, DragSortListView.RemoveListener, DragSortListView.DragScrollProfile {
+public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>, DropListener, RemoveListener, DragScrollProfile {
 
 	/**
 	 * list view of this fragment

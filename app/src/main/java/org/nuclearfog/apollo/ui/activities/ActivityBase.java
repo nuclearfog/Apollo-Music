@@ -47,9 +47,6 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
 import org.nuclearfog.apollo.utils.NavUtils;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and
  * bind to Apollo's service.
@@ -59,11 +56,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection, OnClickListener, OnQueryTextListener, PlayStatusListener {
-
-	/**
-	 * Playstate and meta change listener
-	 */
-	private List<MusicStateListener> mMusicStateListener = new LinkedList<>();
 
 	/**
 	 * The service token
@@ -226,8 +218,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		if (mToken != null) {
 			MusicUtils.unbindFromService(mToken);
 		}
-		// Remove any music status listeners
-		mMusicStateListener.clear();
 		super.onDestroy();
 	}
 
@@ -274,10 +264,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		updateBottomActionBarInfo();
 		// Update the favorites icon
 		invalidateOptionsMenu();
-		// Let the listener know to the meta changed
-		for (MusicStateListener listener : mMusicStateListener) {
-			listener.onMetaChanged();
-		}
+		onMetaChanged();
 	}
 
 
@@ -299,11 +286,18 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 
 	@Override
 	public final void refresh() {
-		// Let the listener know to update a list
-		for (MusicStateListener listener : mMusicStateListener) {
-			listener.restartLoader();
-		}
+		onRefresh();
 	}
+
+	/**
+	 * notify sub classes to reload information
+	 */
+	protected abstract void onRefresh();
+
+	/**
+	 * notify sub classes that meta information changed
+	 */
+	protected abstract void onMetaChanged();
 
 	/**
 	 * Initializes the items in the bottom action bar.
@@ -353,28 +347,5 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		mShuffleButton.updateShuffleState();
 		// Set the repeat image
 		mRepeatButton.updateRepeatState();
-	}
-
-	/**
-	 * @param status The {@link MusicStateListener} to use
-	 */
-	public void setMusicStateListenerListener(@NonNull MusicStateListener status) {
-		mMusicStateListener.add(status);
-	}
-
-	/**
-	 * Listens for playback changes to send the the fragments bound to this activity
-	 */
-	public interface MusicStateListener {
-
-		/**
-		 * Called when {@link MusicPlaybackService#ACTION_REFRESH} is invoked
-		 */
-		void restartLoader();
-
-		/**
-		 * Called when {@link MusicPlaybackService#CHANGED_META} is invoked
-		 */
-		void onMetaChanged();
 	}
 }

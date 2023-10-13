@@ -73,12 +73,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 	private ArtistAlbumAdapter mAdapter;
 
 	/**
-	 * Album song list
-	 */
-	@NonNull
-	private long[] mAlbumList = {};
-	/**
-	 * Represents an album
+	 * context menu selection
 	 */
 	@Nullable
 	private Album mAlbum;
@@ -141,7 +136,6 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 			mAlbum = mAdapter.getItem(info.position);
 			// Create a list of the album's songs
 			if (mAlbum != null) {
-				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
 				// Play the album
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
@@ -151,12 +145,10 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// Delete the album
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
-				return;
 			}
+		} else {
+			mAlbum = null;
 		}
-		// remove selected item if an error occurs
-		mAlbumList = new long[0];
-		mAlbum = null;
 	}
 
 	/**
@@ -165,7 +157,8 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
-		if (item.getGroupId() == GROUP_ID) {
+		if (item.getGroupId() == GROUP_ID && mAlbum != null) {
+			long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), mAlbum.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
@@ -180,17 +173,18 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+					long id = item.getIntent().getLongExtra("playlist", -1L);
+					if (id != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+					}
 					return true;
 
 				case ContextMenuItems.DELETE:
-					if (mAlbum != null)
-						MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
+					MusicUtils.openDeleteDialog(requireActivity(), mAlbum.getName(), mAlbumList);
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -199,7 +193,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 	@NonNull
 	@Override
 	public Loader<List<Album>> onCreateLoader(int id, @Nullable Bundle args) {
-		long artistId = args != null ? args.getLong(Config.ID) : 0L;
+		long artistId = args != null ? args.getLong(Config.ID) : -1L;
 		return new ArtistAlbumLoader(requireActivity(), artistId);
 	}
 

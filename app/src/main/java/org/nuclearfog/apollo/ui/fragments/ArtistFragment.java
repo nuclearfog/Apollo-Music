@@ -220,7 +220,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				// Add the artist to a playlist
 				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-				MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, false);
+				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// Delete the artist
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
@@ -235,7 +235,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		// Avoid leaking context menu selections
 		if (item.getGroupId() == GROUP_ID && selectedArtist != null) {
 			// Create a list of the artist's songs
 			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), selectedArtist.getId());
@@ -253,7 +252,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0L);
+					long id = item.getIntent().getLongExtra("playlist", -1L);
 					MusicUtils.addToPlaylist(requireActivity(), mArtistList, id);
 					return true;
 
@@ -264,7 +263,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

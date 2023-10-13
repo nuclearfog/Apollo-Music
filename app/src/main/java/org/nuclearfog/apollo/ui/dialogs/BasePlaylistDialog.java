@@ -158,15 +158,15 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 	/**
 	 * Initializes the prompt and default name
 	 */
-	public abstract void initObjects(Bundle savedInstanceState);
+	protected abstract void initObjects(Bundle savedInstanceState);
 
 	/**
 	 * Called when the save button of our {@link AlertDialog} is pressed
 	 */
-	public abstract void onSaveClick();
+	protected abstract void onSaveClick();
 
 	/**
 	 * Called in our {@link TextWatcher} during a text change
 	 */
-	public abstract void onTextChangedListener();
+	protected abstract void onTextChangedListener();
 }

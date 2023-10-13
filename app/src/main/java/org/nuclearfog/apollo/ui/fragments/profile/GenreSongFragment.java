@@ -65,7 +65,7 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * selected track
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -151,8 +151,10 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -169,7 +171,7 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

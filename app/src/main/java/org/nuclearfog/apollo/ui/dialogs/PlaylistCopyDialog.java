@@ -49,7 +49,7 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 	 */
 	@Override
 	@SuppressLint("StringFormatInvalid")
-	public void initObjects(Bundle savedInstanceState) {
+	protected void initObjects(Bundle savedInstanceState) {
 		// get ID of the playlist to copy
 		if (savedInstanceState != null) {
 			copyId = savedInstanceState.getLong(KEY_ID);
@@ -74,7 +74,7 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onSaveClick() {
+	protected void onSaveClick() {
 		String playlistName = mPlaylist.getText().toString();
 		long id = MusicUtils.getIdForPlaylist(requireContext(), playlistName);
 		if (playlistName.isEmpty()) {
@@ -92,6 +92,6 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onTextChangedListener() {
+	protected void onTextChangedListener() {
 	}
 }

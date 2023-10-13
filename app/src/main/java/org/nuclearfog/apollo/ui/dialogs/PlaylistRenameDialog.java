@@ -68,7 +68,7 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	 */
 	@Override
 	@SuppressLint("StringFormatInvalid")
-	public void initObjects(Bundle savedInstanceState) {
+	protected void initObjects(Bundle savedInstanceState) {
 		// get ID of the playlist to rename
 		if (savedInstanceState != null) {
 			mRenameId = savedInstanceState.getLong(KEY_ID);
@@ -95,7 +95,7 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onSaveClick() {
+	protected void onSaveClick() {
 		String playlistName = mPlaylist.getText().toString();
 		long id = MusicUtils.getIdForPlaylist(requireContext(), playlistName);
 		if (playlistName.isEmpty()) {
@@ -115,7 +115,7 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 
 
 	@Override
-	public void onTextChangedListener() {
+	protected void onTextChangedListener() {
 		String playlistName = mPlaylist.getText().toString();
 		if (mSaveButton == null) {
 			return;

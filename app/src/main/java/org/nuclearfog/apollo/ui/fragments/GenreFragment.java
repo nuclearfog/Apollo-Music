@@ -88,10 +88,10 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	private FragmentViewModel viewModel;
 
 	/**
-	 * Genre song list
+	 * context menus selection
 	 */
-	@NonNull
-	private long[] selectedGenreSongs = {};
+	@Nullable
+	private Genre selection;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -161,19 +161,16 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		if (menuInfo instanceof AdapterContextMenuInfo) {
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new genre
-			Genre mGenre = mAdapter.getItem(info.position);
-			if (mGenre != null) {
-				// Create a list of the genre's songs
-				selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), mGenre.getGenreIds());
+			selection = mAdapter.getItem(info.position);
+			if (selection != null) {
 				// Play the genre
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the genre to the queue
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-				return;
 			}
+		} else {
+			selection = null;
 		}
-		// remove old selection if an error occurs
-		selectedGenreSongs = new long[0];
 	}
 
 	/**
@@ -181,7 +178,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID) {
+		if (item.getGroupId() == GROUP_ID && selection != null) {
+			long[] selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
+
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), selectedGenreSongs, 0, false);
@@ -192,7 +191,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -207,9 +206,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
 		bundle.putString(Config.NAME, mGenre.getName());
 		// Create the intent to launch the profile activity
-		Intent intent = new Intent(requireContext(), ProfileActivity.class);
+		Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 		intent.putExtras(bundle);
-		startActivity(intent);
+		requireActivity().startActivity(intent);
 	}
 
 	/**

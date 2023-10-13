@@ -102,7 +102,7 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	private FragmentViewModel viewModel;
 
 	/**
-	 * current track
+	 * context menu selection
 	 */
 	@Nullable
 	private Song selectedSong = null;
@@ -230,8 +230,10 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackIds, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackIds, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -248,7 +250,7 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

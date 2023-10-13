@@ -72,7 +72,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * Represents a song
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -174,11 +174,13 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long playlistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
-					// reload if track was added to this playlist
-					if (mPlaylistId == playlistId)
-						LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+					long playlistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (playlistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
+						// reload if track was added to this playlist
+						if (mPlaylistId == playlistId)
+							LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -200,7 +202,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

@@ -103,7 +103,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	private FragmentViewModel viewModel;
 
 	/**
-	 * Represents a playlist
+	 * context menu selection
 	 */
 	@Nullable
 	private Playlist selectedPlaylist = null;
@@ -267,7 +267,7 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -300,9 +300,9 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 				bundle.putLong(Config.ID, selected.getId());
 			}
 			// Create the intent to launch the profile activity
-			Intent intent = new Intent(requireContext(), ProfileActivity.class);
+			Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 			intent.putExtras(bundle);
-			startActivity(intent);
+			requireActivity().startActivity(intent);
 		}
 	}
 

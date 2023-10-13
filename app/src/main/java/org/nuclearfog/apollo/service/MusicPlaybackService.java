@@ -930,7 +930,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			if (mCursor == null) {
 				updateCursor(uri);
 				long id = getTrackId();
-				if (id > 0L) {
+				if (id != -1L) {
 					mPlayList.addFirst(id);
 					mPlayPos = 0;
 				}

@@ -122,7 +122,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	private long[] mAlbumList = {};
 
 	/**
-	 * Represents an album
+	 * context menu selection
 	 */
 	@Nullable
 	private Album selectedAlbum = null;
@@ -261,8 +261,10 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+					long id = item.getIntent().getLongExtra("playlist", -1L);
+					if (id != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+					}
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:
@@ -277,7 +279,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

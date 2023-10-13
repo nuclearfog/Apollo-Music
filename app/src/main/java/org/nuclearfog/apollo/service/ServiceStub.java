@@ -205,7 +205,7 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.position();
-		return -1L;
+		return 0L;
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.getAudioId();
-		return 0L;
+		return -1L;
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.getArtistId();
-		return 0L;
+		return -1L;
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.getAlbumId();
-		return 0L;
+		return -1L;
 	}
 
 	/**

@@ -68,7 +68,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * Represents a song
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -134,6 +134,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && mSong != null) {
 			long[] trackId = {mSong.getId()};
+
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), trackId, 0, false);
@@ -152,8 +153,10 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -175,7 +178,7 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

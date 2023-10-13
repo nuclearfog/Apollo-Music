@@ -659,7 +659,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// open album
 			else if (Albums.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "albumId", "album");
-				if (id >= 0) {
+				if (id != -1L) {
 					int position = intent.getIntExtra("position", 0);
 					MusicUtils.playAlbum(this, id, position);
 					handled = true;
@@ -668,7 +668,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// open artist
 			else if (Artists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "artistId", "artist");
-				if (id >= 0) {
+				if (id != -1L) {
 					int position = intent.getIntExtra("position", 0);
 					MusicUtils.playArtist(this, id, position);
 					handled = true;

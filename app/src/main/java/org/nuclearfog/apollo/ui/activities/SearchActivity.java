@@ -44,7 +44,6 @@ import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.SearchAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -59,8 +58,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends ActivityBase implements LoaderCallbacks<List<Music>>,
-		OnScrollListener, OnQueryTextListener, OnItemClickListener {
+public class SearchActivity extends ActivityBase implements LoaderCallbacks<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
 	/**
 	 * ID of the loader
@@ -211,7 +209,9 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 			menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-			MusicUtils.makePlaylistMenu(this, GROUP_ID, subMenu, true);
+			MusicUtils.makePlaylistMenu(getApplicationContext(), GROUP_ID, subMenu, true);
+		} else {
+			selection = null;
 		}
 	}
 
@@ -220,53 +220,77 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (selection == null)
-			return super.onContextItemSelected(item);
-		// get selected item's ID
-		long[] ids = {};
-		if (selection instanceof Album) {
-			ids = MusicUtils.getSongListForAlbum(this, selection.getId());
-		} else if (selection instanceof Artist) {
-			ids = MusicUtils.getSongListForArtist(this, selection.getId());
-		} else if (selection instanceof Song) {
-			ids = new long[]{selection.getId()};
+		if (item.getGroupId() == GROUP_ID && selection != null) {
+			switch (item.getItemId()) {
+				case ContextMenuItems.PLAY_SELECTION:
+					if (selection instanceof Album) {
+						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
+						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+					} else if (selection instanceof Artist) {
+						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
+						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+					} else if (selection instanceof Song) {
+						long[] ids = new long[]{selection.getId()};
+						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+					}
+					return true;
+
+				case ContextMenuItems.ADD_TO_QUEUE:
+					if (selection instanceof Album) {
+						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
+						MusicUtils.addToQueue(this, ids);
+					} else if (selection instanceof Artist) {
+						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
+						MusicUtils.addToQueue(this, ids);
+					} else if (selection instanceof Song) {
+						long[] ids = new long[]{selection.getId()};
+						MusicUtils.addToQueue(this, ids);
+					}
+					return true;
+
+				case ContextMenuItems.DELETE:
+					String artist = selection.getName();
+					if (selection instanceof Album) {
+						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
+						MusicUtils.openDeleteDialog(this, artist, ids);
+					} else if (selection instanceof Artist) {
+						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
+						MusicUtils.openDeleteDialog(this, artist, ids);
+					} else if (selection instanceof Song) {
+						long[] ids = new long[]{selection.getId()};
+						MusicUtils.openDeleteDialog(this, artist, ids);
+					}
+					return true;
+
+				case ContextMenuItems.MORE_BY_ARTIST:
+					if (selection instanceof Album)
+						NavUtils.openArtistProfile(this, ((Album) selection).getArtist());
+					else if (selection instanceof Song)
+						NavUtils.openArtistProfile(this, ((Song) selection).getArtist());
+					return true;
+
+				case ContextMenuItems.PLAY_NEXT:
+					if (selection instanceof Song) {
+						long[] ids = new long[]{selection.getId()};
+						MusicUtils.playNext(ids);
+					}
+					return true;
+
+				case ContextMenuItems.PLAYLIST_SELECTED:
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						long[] ids = new long[]{selection.getId()};
+						MusicUtils.addToPlaylist(this, ids, mPlaylistId);
+					}
+					return true;
+
+				case ContextMenuItems.USE_AS_RINGTONE:
+					if (selection instanceof Song)
+						MusicUtils.setRingtone(this, selection.getId());
+					return true;
+			}
 		}
-		switch (item.getItemId()) {
-			case ContextMenuItems.PLAY_SELECTION:
-				MusicUtils.playAll(getApplicationContext(), ids, 0, false);
-				return true;
-
-			case ContextMenuItems.ADD_TO_QUEUE:
-				MusicUtils.addToQueue(this, ids);
-				return true;
-
-			case ContextMenuItems.ADD_TO_PLAYLIST:
-				PlaylistCreateDialog.getInstance(ids).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
-				return true;
-
-			case ContextMenuItems.DELETE:
-				String artist = selection.getName();
-				MusicUtils.openDeleteDialog(this, artist, ids);
-				return true;
-
-			case ContextMenuItems.MORE_BY_ARTIST:
-				if (selection instanceof Album)
-					NavUtils.openArtistProfile(this, ((Album) selection).getArtist());
-				else if (selection instanceof Song)
-					NavUtils.openArtistProfile(this, ((Song) selection).getArtist());
-				return true;
-
-			case ContextMenuItems.PLAY_NEXT:
-				if (selection instanceof Song)
-					MusicUtils.playNext(ids);
-				return true;
-
-			case ContextMenuItems.USE_AS_RINGTONE:
-				if (selection instanceof Song)
-					MusicUtils.setRingtone(this, selection.getId());
-				return true;
-		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

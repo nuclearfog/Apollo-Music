@@ -103,12 +103,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	private FragmentViewModel viewModel;
 
 	/**
-	 * Represents a selected song
-	 */
-	@Nullable
-	private Song selectedSong = null;
-
-	/**
 	 * Position of a context menu item
 	 */
 	private int mSelectedPosition = -1;
@@ -210,8 +204,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 			// Get the position of the selected item
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			mSelectedPosition = info.position;
-			// Creat a new song
-			selectedSong = mAdapter.getItem(mSelectedPosition);
 			// Play the song next
 			menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
 			// Add the song to a playlist
@@ -228,7 +220,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 		} else {
 			// remove old selection
 			mSelectedPosition = -1;
-			selectedSong = null;
 		}
 	}
 
@@ -237,7 +228,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && selectedSong != null && mSelectedPosition >= 0) {
+		if (item.getGroupId() == GROUP_ID && mSelectedPosition >= 0) {
+			Song selectedSong = mAdapter.getItem(mSelectedPosition);
 			long[] trackId = {selectedSong.getId()};
 
 			switch (item.getItemId()) {
@@ -262,8 +254,10 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -279,7 +273,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

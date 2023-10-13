@@ -57,7 +57,7 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * Selected track
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -147,7 +147,7 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
 					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
 					return true;
 
@@ -170,7 +170,7 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 

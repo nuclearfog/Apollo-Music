@@ -69,7 +69,7 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * selected track
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -154,8 +154,10 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:
@@ -167,7 +169,7 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -176,7 +178,7 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	@NonNull
 	@Override
 	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long albumId = args != null ? args.getLong(Config.ID) : 0L;
+		long albumId = args != null ? args.getLong(Config.ID) : -1L;
 		return new AlbumSongLoader(requireContext(), albumId);
 	}
 

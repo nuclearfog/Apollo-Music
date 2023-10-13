@@ -117,7 +117,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	private FragmentViewModel viewModel;
 
 	/**
-	 * Represents an album
+	 * context menu selection
 	 */
 	@Nullable
 	private Album selectedAlbum = null;
@@ -259,7 +259,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**

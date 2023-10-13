@@ -85,8 +85,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	/**
 	 * IDs of all tracks of the folder
 	 */
-	@NonNull
-	private long[] selectedFolderSongs = {};
+	@Nullable
+	private long[] selectedFolderSongs;
 
 	/**
 	 * {@inheritDoc}
@@ -150,7 +150,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 			menu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
 		} else {
 			// remove selection
-			selectedFolderSongs = new long[0];
+			selectedFolderSongs = null;
 		}
 	}
 
@@ -159,7 +159,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID) {
+		if (item.getGroupId() == GROUP_ID && selectedFolderSongs != null) {
 			switch (item.getItemId()) {
 				case SELECTION:
 					MusicUtils.playAll(requireContext(), selectedFolderSongs, 0, false);
@@ -170,7 +170,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -180,13 +180,13 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		File mFolder = mAdapter.getItem(position);
 		Bundle bundle = new Bundle();
-		bundle.putLong(ID, 0L);
+		bundle.putLong(ID, -1L);
 		bundle.putString(NAME, mFolder.getPath());
 		bundle.putString(MIME_TYPE, PAGE_FOLDERS);
 		bundle.putString(FOLDER, mFolder.toString());
-		Intent intent = new Intent(requireContext(), ProfileActivity.class);
+		Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 		intent.putExtras(bundle);
-		startActivity(intent);
+		requireActivity().startActivity(intent);
 	}
 
 	/**

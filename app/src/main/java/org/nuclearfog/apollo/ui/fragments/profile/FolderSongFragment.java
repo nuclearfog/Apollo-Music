@@ -1,17 +1,5 @@
 package org.nuclearfog.apollo.ui.fragments.profile;
 
-import static org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter.DISPLAY_DEFAULT_SETTING;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_FAVORITES;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_PLAYLIST;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.ADD_TO_QUEUE;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.DELETE;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.MORE_BY_ARTIST;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.NEW_PLAYLIST;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.PLAYLIST_SELECTED;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.PLAY_NEXT;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.PLAY_SELECTION;
-import static org.nuclearfog.apollo.utils.ContextMenuItems.USE_AS_RINGTONE;
-
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -33,6 +21,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
@@ -66,7 +55,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * track selected from contextmenu
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -75,7 +64,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	@Override
 	protected void init() {
 		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+		mAdapter = new ProfileSongAdapter(requireContext(), ProfileSongAdapter.DISPLAY_DEFAULT_SETTING, false);
 		setAdapter(mAdapter);
 		setHasOptionsMenu(true);
 		Bundle param = getArguments();
@@ -102,20 +91,20 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 			// set selected track
 			mSong = mAdapter.getItem(adapterInfo.position);
 			// Play the song
-			menu.add(GROUP_ID, PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 			// play the song
-			menu.add(GROUP_ID, PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+			menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
 			// Add the song to the queue
-			menu.add(GROUP_ID, ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+			menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 			// get more tracks by artist
-			menu.add(GROUP_ID, MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+			menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
 			// set selected track as ringtone
-			menu.add(GROUP_ID, USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+			menu.add(GROUP_ID, ContextMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
 			// delete track
-			menu.add(GROUP_ID, DELETE, Menu.NONE, R.string.context_menu_delete);
+			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			// Add the song to a playlist
-			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-			MusicUtils.makePlaylistMenu(requireActivity(), GROUP_ID, subMenu, true);
+			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+			MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
 		} else {
 			// remove selection if an error occurs
 			mSong = null;
@@ -131,47 +120,45 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 			long[] ids = {mSong.getId()};
 
 			switch (item.getItemId()) {
-				default:
-					return super.onContextItemSelected(item);
-
-				case PLAY_SELECTION:
+				case ContextMenuItems.PLAY_SELECTION:
 					MusicUtils.playAll(requireContext(), ids, 0, false);
 					return true;
 
-				case PLAY_NEXT:
+				case ContextMenuItems.PLAY_NEXT:
 					MusicUtils.playNext(ids);
 					return true;
 
-				case ADD_TO_QUEUE:
+				case ContextMenuItems.ADD_TO_QUEUE:
 					MusicUtils.addToQueue(requireActivity(), ids);
 					return true;
 
-				case ADD_TO_FAVORITES:
+				case ContextMenuItems.ADD_TO_FAVORITES:
 					FavoritesStore.getInstance(requireContext()).addSongId(mSong);
 					return true;
 
-				case NEW_PLAYLIST:
+				case ContextMenuItems.NEW_PLAYLIST:
 					PlaylistCreateDialog.getInstance(ids).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
-				case PLAYLIST_SELECTED:
-					long playlistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), ids, playlistId);
+				case ContextMenuItems.PLAYLIST_SELECTED:
+					long playlistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (playlistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), ids, playlistId);
+					}
 					return true;
 
-				case MORE_BY_ARTIST:
+				case ContextMenuItems.MORE_BY_ARTIST:
 					NavUtils.openArtistProfile(requireActivity(), mSong.getArtist());
 					return true;
 
-				case USE_AS_RINGTONE:
+				case ContextMenuItems.USE_AS_RINGTONE:
 					MusicUtils.setRingtone(requireActivity(), mSong.getId());
 					return true;
 
-				case DELETE:
-					break;
+				case ContextMenuItems.DELETE:
+					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), ids);
+					return true;
 			}
-			MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), ids);
-			return true;
 		}
 		return false;
 	}

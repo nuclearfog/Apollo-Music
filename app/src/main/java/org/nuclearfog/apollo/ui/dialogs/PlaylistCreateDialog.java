@@ -64,7 +64,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	 */
 	@SuppressLint("StringFormatInvalid")
 	@Override
-	public void initObjects(Bundle savedInstanceState) {
+	protected void initObjects(Bundle savedInstanceState) {
 		if (getArguments() != null) {
 			long[] mPlaylistList = getArguments().getLongArray(KEY_LIST);
 			if (mPlaylistList != null) {
@@ -90,11 +90,11 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	 * @return
 	 */
 	@Override
-	public void onSaveClick() {
+	protected void onSaveClick() {
 		if (mPlaylist.length() > 0) {
 			String playlistName = mPlaylist.getText().toString();
 			long playlistId = MusicUtils.getIdForPlaylist(requireContext(), playlistName);
-			if (playlistId >= 0L) {
+			if (playlistId != -1L) {
 				// save to existing playlist
 				// fixme scoped storage does not allow modifying foreign playlists
 				MusicUtils.clearPlaylist(requireContext(), playlistId);
@@ -113,7 +113,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onTextChangedListener() {
+	protected void onTextChangedListener() {
 		String playlistName = mPlaylist.getText().toString();
 		mSaveButton = mPlaylistDialog.getButton(Dialog.BUTTON_POSITIVE);
 		if (mSaveButton == null) {

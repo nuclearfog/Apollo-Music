@@ -73,7 +73,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	private ProfileSongAdapter mAdapter;
 
 	/**
-	 * Represents a song
+	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
@@ -159,8 +159,10 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", 0L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (mPlaylistId != -1L) {
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					}
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:
@@ -173,7 +175,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 					return true;
 			}
 		}
-		return super.onContextItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -182,7 +184,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	@NonNull
 	@Override
 	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long songId = args != null ? args.getLong(Config.ID) : 0L;
+		long songId = args != null ? args.getLong(Config.ID) : -1L;
 		return new ArtistSongLoader(requireContext(), songId);
 	}
 

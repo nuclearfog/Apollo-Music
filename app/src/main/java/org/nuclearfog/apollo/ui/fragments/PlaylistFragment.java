@@ -75,12 +75,12 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	/**
 	 *
 	 */
-	public static final String RESTART_LOADER = TAG + ".restart_loader";
+	public static final String RESTART_LOADER = TAG + ".RESET";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = TAG + ".refresh";
+	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments

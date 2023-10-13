@@ -49,11 +49,6 @@ import java.util.List;
 public class AlbumSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
-	 *
-	 */
-	public static final String REFRESH = "AlbumSongFragment.Refresh";
-
-	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x169012DB;
@@ -84,10 +79,7 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
 		setAdapter(mAdapter);
 		//
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
-		}
+		LoaderManager.getInstance(this).initLoader(LOADER_ID, getArguments(), this);
 	}
 
 
@@ -210,14 +202,15 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			// Scroll to the stop of the list before restarting the loader.
-			// Otherwise, if the user has scrolled enough to move the header, it
-			// becomes misplaced and needs to be reset.
-			super.scrollToTop();
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
-		}
+	protected void moveToCurrent() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void refresh() {
+		LoaderManager.getInstance(this).initLoader(LOADER_ID, getArguments(), this);
 	}
 
 	/**

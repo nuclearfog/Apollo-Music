@@ -69,17 +69,22 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	/**
 	 *
 	 */
-	public static final String META_CHANGED = TAG + ".meta_changed";
+	public static final String RESTART_LOADER = TAG + ".RESET";
 
 	/**
 	 *
 	 */
-	public static final String RESTART_LOADER = TAG + ".restart_loader";
+	public static final String META_CHANGED = TAG + ".META_CHANGED";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = TAG + ".refresh";
+	public static final String SCROLL_TOP = TAG + ".SCROLL_TOP";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -382,6 +387,11 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					mList.smoothScrollToPosition(0);
 				}
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
+
+			case SCROLL_TOP:
+				if (mList.getCount() > 0)
+					mList.smoothScrollToPosition(0);
 				break;
 		}
 	}

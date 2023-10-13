@@ -37,11 +37,6 @@ import java.util.List;
 public class PopularSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
-	 *
-	 */
-	public static final String REFRESH = "PopularSongFragment.refresh";
-
-	/**
 	 * context menu ID
 	 */
 	private static final int GROUP_ID = 0xC46D92C;
@@ -173,13 +168,20 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 		return false;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			// restart loader
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
+	protected void moveToCurrent() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void refresh() {
+		mAdapter.clear();
+		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 	}
 
 	/**

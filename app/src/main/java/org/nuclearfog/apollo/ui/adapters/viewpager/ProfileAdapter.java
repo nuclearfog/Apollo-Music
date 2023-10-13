@@ -36,14 +36,23 @@ import org.nuclearfog.apollo.ui.fragments.profile.PopularSongFragment;
  */
 public class ProfileAdapter extends FragmentStatePagerAdapter {
 
+	/**
+	 * index of the album song fragment
+	 */
 	public static final int IDX_ALBUM_SONG = 0;
-	public static final int IDX_POPULAR = 0;
+
+	/**
+	 * index of the artist song fragment
+	 */
 	public static final int IDX_ARTIST_SONG = 0;
+
+	/**
+	 * index of the artist album fragment
+	 */
 	public static final int IDX_ARTIST_ALBUM = 1;
 
 	private ProfileActivity.Type type;
 	private Bundle args;
-
 
 	/**
 	 * Constructor of <code>PagerAdapter<code>

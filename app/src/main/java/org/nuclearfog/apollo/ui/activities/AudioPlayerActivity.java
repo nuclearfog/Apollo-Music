@@ -901,7 +901,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * set current track in the queue
 	 */
 	private void setQueueTrack() {
-		viewModel.notify(QueueFragment.SCROLL_CURRENT);
+		viewModel.notify(QueueFragment.META_CHANGED);
 	}
 
 	/**

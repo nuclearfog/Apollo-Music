@@ -70,12 +70,12 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	/**
 	 *
 	 */
-	public static final String SCROLL_CURRENT = TAG + ".scroll_current";
+	public static final String META_CHANGED = TAG + ".META_CHANGED";
 
 	/**
 	 *
 	 */
-	public static final String REFRESH = TAG + ".refresh";
+	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -369,7 +369,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 				refresh();
 				break;
 
-			case SCROLL_CURRENT:
+			case META_CHANGED:
 				setCurrentTrack();
 				break;
 		}

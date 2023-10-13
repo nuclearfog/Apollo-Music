@@ -214,14 +214,6 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onChanged(String s) {
-		// not used
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void drop(int from, int to) {
 		// not used
 	}
@@ -237,11 +229,16 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	/**
 	 * Restarts the loader.
 	 */
-	private void refresh() {
-		// Scroll to the stop of the list before restarting the loader.
-		// Otherwise, if the user has scrolled enough to move the header, it
-		// becomes misplaced and needs to be reset.
-		scrollToTop();
+	@Override
+	protected void refresh() {
+		mAdapter.clear();
 		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+	}
+
+	/**
+	 * Restarts the loader.
+	 */
+	@Override
+	protected void moveToCurrent() {
 	}
 }

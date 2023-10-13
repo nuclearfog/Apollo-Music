@@ -48,11 +48,6 @@ import java.util.List;
 public class FavoriteSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
 
 	/**
-	 *
-	 */
-	public static final String REFRESH = "FavoriteSongFragment.refresh";
-
-	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x6F307D4D;
@@ -218,10 +213,17 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-		}
+	protected void moveToCurrent() {
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void refresh() {
+		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		mAdapter.clear();
 	}
 
 	/**

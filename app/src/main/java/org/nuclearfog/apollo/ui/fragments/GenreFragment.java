@@ -65,7 +65,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	/**
 	 *
 	 */
-	public static final String REFRESH = TAG + ".refresh";
+	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments

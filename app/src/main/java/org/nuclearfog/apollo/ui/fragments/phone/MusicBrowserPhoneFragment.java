@@ -337,7 +337,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 				mPreferences.setArtistLayout("grid");
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
 				mPreferences.setAlbumLayout("grid");
-
 			}
 			refresh(mViewPager.getCurrentItem());
 		} else {
@@ -351,29 +350,36 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	@Override
 	public void onChanged(String action) {
-		// todo update all fragments
+		switch (action) {
+			case REFRESH:
+				break;
+
+			case META_CHANGED:
+				// todo update all fragments
+				break;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCenterItemClick(int index) {
-		switch (index) {
+	public void onCenterItemClick(int position) {
+		switch (position) {
 			case MusicBrowserAdapter.IDX_ALBUM:
-				viewModel.notify(AlbumFragment.META_CHANGED);
+				viewModel.notify(AlbumFragment.SCROLL_TOP);
 				break;
 
 			case MusicBrowserAdapter.IDX_ARTIST:
-				viewModel.notify(ArtistFragment.META_CHANGED);
+				viewModel.notify(ArtistFragment.SCROLL_TOP);
 				break;
 
 			case MusicBrowserAdapter.IDX_TRACKS:
-				viewModel.notify(SongFragment.META_CHANGED);
+				viewModel.notify(SongFragment.SCROLL_TOP);
 				break;
 
 			case MusicBrowserAdapter.IDX_RECENT:
-				viewModel.notify(RecentFragment.META_CHANGED);
+				viewModel.notify(RecentFragment.SCROLL_TOP);
 				break;
 		}
 	}
@@ -381,10 +387,10 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	/**
 	 * refresh fragment
 	 *
-	 * @param page page of the fragment to refresh
+	 * @param position page of the fragment to refresh
 	 */
-	private void refresh(int page) {
-		switch (page) {
+	private void refresh(int position) {
+		switch (position) {
 			case MusicBrowserAdapter.IDX_PLAYLIST:
 				viewModel.notify(PlaylistFragment.REFRESH);
 				break;

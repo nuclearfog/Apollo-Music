@@ -52,11 +52,6 @@ import java.util.List;
 public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>, DropListener, RemoveListener {
 
 	/**
-	 *
-	 */
-	public static final String REFRESH = "PlaylistSongFragment.refresh";
-
-	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x37B5704;
@@ -277,9 +272,14 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
-		}
+	protected void moveToCurrent() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void refresh() {
+		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
 	}
 }

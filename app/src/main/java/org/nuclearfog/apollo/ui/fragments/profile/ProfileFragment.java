@@ -37,6 +37,12 @@ import org.nuclearfog.apollo.utils.FragmentViewModel;
  */
 public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>, DropListener, RemoveListener, DragScrollProfile {
 
+	private static final String TAG = "ProfileFragment";
+
+	public static final String REFRESH = TAG + ".REFRESH";
+	public static final String SHOW_CURRENT = TAG + ".CURRENT_TRACK";
+	public static final String SCROLL_TOP = TAG + ".SCROLL_TOP";
+
 	/**
 	 * list view of this fragment
 	 */
@@ -145,15 +151,28 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * {@inheritDoc}
 	 */
 	@Override
-	public float getSpeed(float w) {
-		return Config.DRAG_DROP_MAX_SPEED * w;
+	public final void onChanged(String action) {
+		switch (action) {
+			case SHOW_CURRENT:
+				moveToCurrent();
+				break;
+
+			case REFRESH:
+				refresh();
+				break;
+
+			case SCROLL_TOP:
+				mList.setSelection(0);
+				break;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	protected void scrollToTop() {
-		mList.setSelection(0);
+	@Override
+	public float getSpeed(float w) {
+		return Config.DRAG_DROP_MAX_SPEED * w;
 	}
 
 	/**
@@ -185,4 +204,8 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 * @param id  ID of the item
 	 */
 	protected abstract void onItemClick(View v, int pos, long id);
+
+	protected abstract void moveToCurrent();
+
+	protected abstract void refresh();
 }

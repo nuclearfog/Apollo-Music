@@ -47,10 +47,11 @@ import java.util.List;
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
 
 	private static final String TAG = "FolderFragment";
+
 	/**
 	 *
 	 */
-	public static final String REFRESH = TAG + ".refresh";
+	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * context menu group ID

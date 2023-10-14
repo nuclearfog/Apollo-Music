@@ -39,8 +39,19 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 
 	private static final String TAG = "ProfileFragment";
 
+	/**
+	 * notification used to reload content of the fragment
+	 */
 	public static final String REFRESH = TAG + ".REFRESH";
+
+	/**
+	 * notification used to scroll to the current track
+	 */
 	public static final String SHOW_CURRENT = TAG + ".CURRENT_TRACK";
+
+	/**
+	 * notification used to scroll the list to top
+	 */
 	public static final String SCROLL_TOP = TAG + ".SCROLL_TOP";
 
 	/**
@@ -160,10 +171,6 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 			case REFRESH:
 				refresh();
 				break;
-
-			case SCROLL_TOP:
-				mList.setSelection(0);
-				break;
 		}
 	}
 
@@ -192,6 +199,17 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	}
 
 	/**
+	 * scroll to list position
+	 *
+	 * @param position position to scroll
+	 */
+	public void scrollTo(int position) {
+		if (position >= 0 && position < mList.getCount()) {
+			mList.smoothScrollToPosition(position);
+		}
+	}
+
+	/**
 	 * initializes the fragment
 	 */
 	protected abstract void init();
@@ -205,7 +223,13 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	protected abstract void onItemClick(View v, int pos, long id);
 
+	/**
+	 * scroll list to current track
+	 */
 	protected abstract void moveToCurrent();
 
+	/**
+	 * reload list content
+	 */
 	protected abstract void refresh();
 }

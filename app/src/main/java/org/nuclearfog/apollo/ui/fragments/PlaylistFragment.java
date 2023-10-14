@@ -54,6 +54,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.PlaylistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCopyDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistRenameDialog;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -66,21 +67,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<Playlist>>, OnItemClickListener, Observer<String> {
-
-	/**
-	 *
-	 */
-	private static final String TAG = "PlaylistFragment";
-
-	/**
-	 *
-	 */
-	public static final String RESTART_LOADER = TAG + ".RESET";
-
-	/**
-	 *
-	 */
-	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -337,10 +323,8 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Playlist>> loader) {
-		if (mAdapter != null) {
-			// Clear the data in the adapter
-			mAdapter.clear();
-		}
+		// Clear the data in the adapter
+		mAdapter.clear();
 	}
 
 	/**
@@ -348,12 +332,9 @@ public class PlaylistFragment extends Fragment implements LoaderCallbacks<List<P
 	 */
 	@Override
 	public void onChanged(String action) {
-		switch(action) {
-			case REFRESH:
-			case RESTART_LOADER:
-				// Refresh the list when a playlist is deleted or renamed
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				break;
+		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
+			// Refresh the list when a playlist is deleted or renamed
+			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		}
 	}
 }

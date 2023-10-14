@@ -238,7 +238,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					queueCursor.removeItem(mSelectedPosition);
 					queueCursor.close();
 					MusicUtils.playNext(trackId);
-					refresh();
+					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_QUEUE:
@@ -366,7 +366,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
-				refresh();
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
 			case META_CHANGED:
@@ -378,19 +378,11 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	/**
 	 *
 	 */
-	private void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
-
-	/**
-	 *
-	 */
 	private void setCurrentTrack() {
 		int pos = MusicUtils.getQueuePosition();
-		if (pos >= 0) {
+		if (pos >= 0 && pos < mList.getCount()) {
 			mList.smoothScrollToPosition(pos);
 			mAdapter.setCurrentTrackPos(pos);
-			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

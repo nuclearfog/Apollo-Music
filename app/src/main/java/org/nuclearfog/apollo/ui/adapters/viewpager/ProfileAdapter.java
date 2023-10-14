@@ -71,7 +71,6 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 	public Fragment getItem(int position) {
 		Fragment fragment;
 		switch (type) {
-			default:
 			case ALBUM:
 				fragment = new AlbumSongFragment();
 				break;
@@ -96,16 +95,21 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 				fragment = new LastAddedFragment();
 				break;
 
-			case MOST_PLAYED:
+			case POPULAR:
 				fragment = new PopularSongFragment();
 				break;
 
 			case ARTIST:
-				if (position == 0) {
+				if (position == IDX_ARTIST_SONG) {
 					fragment = new ArtistSongFragment();
-				} else {
+					break;
+				} else if (position == IDX_ARTIST_ALBUM) {
 					fragment = new ArtistAlbumFragment();
+					break;
 				}
+
+			default:
+				fragment = new Fragment();
 				break;
 		}
 		fragment.setArguments(args);
@@ -124,7 +128,7 @@ public class ProfileAdapter extends FragmentStatePagerAdapter {
 			case FAVORITE:
 			case PLAYLIST:
 			case LAST_ADDED:
-			case MOST_PLAYED:
+			case POPULAR:
 				return 1;
 
 			case ARTIST:

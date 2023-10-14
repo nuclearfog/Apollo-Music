@@ -189,5 +189,6 @@ public class SongAdapter extends ArrayAdapter<Song> {
 	 */
 	public void setCurrentTrackPos(int pos) {
 		nowplayingPos = pos;
+		notifyDataSetChanged();
 	}
 }

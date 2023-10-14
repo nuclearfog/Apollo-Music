@@ -209,6 +209,13 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	 */
 	@Override
 	protected void moveToCurrent() {
+		long trackId = MusicUtils.getCurrentAudioId();
+		for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+			if (mAdapter.getItemId(pos) == trackId) {
+				scrollTo(pos);
+				break;
+			}
+		}
 	}
 
 	/**

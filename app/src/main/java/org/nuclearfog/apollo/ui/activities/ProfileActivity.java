@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static org.nuclearfog.apollo.Config.FOLDER;
-import static org.nuclearfog.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
-
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -52,9 +49,7 @@ import org.nuclearfog.apollo.provider.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.ProfileType;
-import org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment;
-import org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment;
+import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -206,7 +201,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			// get album yeas
 			year = mArguments.getString(Config.ALBUM_YEAR, "");
 			// get folder name if defined
-			folderName = mArguments.getString(FOLDER, "");
+			folderName = mArguments.getString(Config.FOLDER, "");
 		}
 		type = Type.getEnum(mType);
 		// Initialize the pager adapter
@@ -254,7 +249,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			case FAVORITE:
 			case PLAYLIST:
 			case LAST_ADDED:
-			case MOST_PLAYED:
+			case POPULAR:
 				// Add the carousel images
 				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
 				// most played fragment
@@ -294,7 +289,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
 
 		if (type == Type.FAVORITE || type == Type.LAST_ADDED
-				|| type == Type.PLAYLIST || type == Type.MOST_PLAYED) {
+				|| type == Type.PLAYLIST || type == Type.POPULAR) {
 			shuffle.setTitle(R.string.menu_play_all);
 		} else {
 			shuffle.setTitle(R.string.menu_shuffle);
@@ -321,7 +316,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			}
 		} else if (type == Type.ALBUM) {
 			getMenuInflater().inflate(R.menu.album_song_sort_by, menu);
-		} else if (type == Type.MOST_PLAYED) {
+		} else if (type == Type.POPULAR) {
 			getMenuInflater().inflate(R.menu.popular_songs_clear, menu);
 		}
 		return true;
@@ -383,7 +378,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					MusicUtils.playLastAdded(this);
 					break;
 
-				case MOST_PLAYED:
+				case POPULAR:
 					MusicUtils.playPopular(this);
 					break;
 
@@ -409,7 +404,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
 				}
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort alphabetical reverse
 		else if (item.getItemId() == R.id.menu_sort_by_za) {
@@ -424,14 +419,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
 				}
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by album name
 		else if (item.getItemId() == R.id.menu_sort_by_album) {
 			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_ALBUM);
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by release date
 		else if (item.getItemId() == R.id.menu_sort_by_year) {
@@ -442,7 +437,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_YEAR);
 				}
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by track duration
 		else if (item.getItemId() == R.id.menu_sort_by_duration) {
@@ -455,19 +450,19 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
 				}
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by date added
 		else if (item.getItemId() == R.id.menu_sort_by_date_added) {
 			if (type == Type.ARTIST && mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_SONG) {
 				mPreferences.setArtistSongSortOrder(SortOrder.ArtistSongSortOrder.SONG_DATE);
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by default order
 		else if (item.getItemId() == R.id.menu_sort_by_track_list) {
 			mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by file name
 		else if (item.getItemId() == R.id.menu_sort_by_filename) {
@@ -480,12 +475,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
 				}
 			}
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// clear popular playlist
 		else if (item.getItemId() == R.id.menu_clear_popular) {
-			PopularStore.getInstance(this).removeAll();
-			viewModel.notify(AlbumSongFragment.REFRESH);
+			if (type == Type.POPULAR) {
+				PopularStore.getInstance(this).removeAll();
+				viewModel.notify(ProfileFragment.REFRESH);
+			}
 		}
 		// sort by track count
 		else if (item.getItemId() == R.id.menu_sort_by_number_of_songs) {
@@ -493,7 +490,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ARTIST_ALBUM) {
 					mPreferences.setArtistAlbumSortOrder(SortOrder.ArtistAlbumSortOrder.ALBUM_TRACK_COUNT);
 				}
-				viewModel.notify(AlbumSongFragment.REFRESH);
+				viewModel.notify(ProfileFragment.REFRESH);
 			}
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -528,11 +525,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	public void onPageSelected(int position) {
 		mTabCarousel.setCurrentTab(position);
 		if (type == Type.ARTIST) {
-			if (position == 0) {
-				viewModel.notify(ArtistSongFragment.REFRESH);
-			} else {
-				viewModel.notify(ArtistAlbumFragment.REFRESH);
-			}
+			viewModel.notify(ProfileFragment.SCROLL_TOP);
 		}
 	}
 
@@ -588,7 +581,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
+		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
 		}
 	}
@@ -657,7 +650,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	protected void onRefresh() {
-		viewModel.notify(AlbumSongFragment.REFRESH);
+		viewModel.notify(ProfileFragment.REFRESH);
 	}
 
 	/**
@@ -665,7 +658,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	protected void onMetaChanged() {
-		viewModel.notify(AlbumSongFragment.SHOW_CURRENT);
+		viewModel.notify(ProfileFragment.SHOW_CURRENT);
 	}
 
 	/**
@@ -765,7 +758,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		FOLDER,
 		FAVORITE,
 		LAST_ADDED,
-		MOST_PLAYED;
+		POPULAR;
 
 		public static Type getEnum(String mime) {
 			switch (mime) {
@@ -782,7 +775,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				case PAGE_FAVORIT:
 					return FAVORITE;
 				case PAGE_MOST_PLAYED:
-					return MOST_PLAYED;
+					return POPULAR;
 				default:
 				case PAGE_LAST_ADDED:
 					return LAST_ADDED;

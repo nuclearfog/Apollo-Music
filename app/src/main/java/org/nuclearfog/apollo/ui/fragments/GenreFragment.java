@@ -43,6 +43,7 @@ import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -56,16 +57,6 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>, OnItemClickListener, Observer<String> {
-
-	/**
-	 *
-	 */
-	private static final String TAG = "GenreFragment";
-
-	/**
-	 *
-	 */
-	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -250,7 +241,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	@Override
 	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
+		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
 			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		}
 	}

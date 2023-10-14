@@ -213,6 +213,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements LoaderCallba
 	 */
 	@Override
 	protected void moveToCurrent() {
+		// not used
 	}
 
 	/**

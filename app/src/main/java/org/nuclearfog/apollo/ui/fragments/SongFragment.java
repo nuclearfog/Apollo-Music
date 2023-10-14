@@ -42,6 +42,7 @@ import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -60,16 +61,6 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 *
 	 */
 	private static final String TAG = "SongFragment";
-
-	/**
-	 *
-	 */
-	public static final String RESTART_LOADER = TAG + ".RESET";
-
-	/**
-	 *
-	 */
-	public static final String META_CHANGED = TAG + ".META_CHANGED";
 
 	/**
 	 *
@@ -111,11 +102,6 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 */
 	@Nullable
 	private Song selectedSong = null;
-
-	/**
-	 * True if the list should execute {@code #restartLoader()}.
-	 */
-	private boolean mShouldRefresh = false;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -251,7 +237,6 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackIds);
-					mShouldRefresh = true;
 					return true;
 			}
 		}
@@ -297,10 +282,8 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		if (mAdapter != null) {
-			// Clear the data in the adapter
-			mAdapter.clear();
-		}
+		// Clear the data in the adapter
+		mAdapter.clear();
 	}
 
 	/**
@@ -310,10 +293,11 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
+			case MusicBrowserPhoneFragment.REFRESH:
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case META_CHANGED:
+			case MusicBrowserPhoneFragment.META_CHANGED:
 				// current unique track ID
 				long trackId = MusicUtils.getCurrentAudioId();
 				for (int pos = 0; pos < mAdapter.getCount(); pos++) {
@@ -321,14 +305,6 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 						mList.setSelection(pos);
 						break;
 					}
-				}
-				break;
-
-			case RESTART_LOADER:
-				// Update the list when the user deletes any items
-				if (mShouldRefresh) {
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-					mShouldRefresh = false;
 				}
 				break;
 

@@ -35,6 +35,7 @@ import org.nuclearfog.apollo.loaders.FolderLoader;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
@@ -45,13 +46,6 @@ import java.util.List;
  * decompiled from Apollo 1.6 APK
  */
 public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
-
-	private static final String TAG = "FolderFragment";
-
-	/**
-	 *
-	 */
-	public static final String REFRESH = TAG + ".REFRESH";
 
 	/**
 	 * context menu group ID
@@ -228,7 +222,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@Override
 	public void onChanged(String action) {
-		if (action.equals(REFRESH)) {
+		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
 			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		}
 	}

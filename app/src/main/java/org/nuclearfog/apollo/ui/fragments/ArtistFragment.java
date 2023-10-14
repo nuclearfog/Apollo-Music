@@ -45,6 +45,7 @@ import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -65,16 +66,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 *
 	 */
 	private static final String TAG = "ArtistFragment";
-
-	/**
-	 *
-	 */
-	public static final String RESTART_LOADER = TAG + ".RESET";
-
-	/**
-	 *
-	 */
-	public static final String META_CHANGED = TAG + ".META_CHANGED";
 
 	/**
 	 *
@@ -126,11 +117,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Nullable
 	private Artist selectedArtist = null;
-
-	/**
-	 * True if the list should execute {@code #restartLoader()}.
-	 */
-	private boolean mShouldRefresh = false;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -262,9 +248,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 					return true;
 
 				case ContextMenuItems.DELETE:
-					mShouldRefresh = true;
-					String artist = selectedArtist.getName();
-					MusicUtils.openDeleteDialog(requireActivity(), artist, mArtistList);
+					MusicUtils.openDeleteDialog(requireActivity(), selectedArtist.getName(), mArtistList);
 					return true;
 			}
 		}
@@ -332,10 +316,8 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void onLoaderReset(@NonNull Loader<List<Artist>> loader) {
-		if (mAdapter != null) {
-			// Clear the data in the adapter
-			mAdapter.clear();
-		}
+		// Clear the data in the adapter
+		mAdapter.clear();
 	}
 
 	/**
@@ -346,10 +328,12 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 		switch (action) {
 			case REFRESH:
 				initList();
+
+			case MusicBrowserPhoneFragment.REFRESH:
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case META_CHANGED:
+			case MusicBrowserPhoneFragment.META_CHANGED:
 				long artistId = MusicUtils.getCurrentArtistId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Artist artist = mAdapter.getItem(i);
@@ -358,14 +342,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 						break;
 					}
 				}
-				break;
-
-			case RESTART_LOADER:
-				// Update the list when the user deletes any items
-				if (mShouldRefresh) {
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				}
-				mShouldRefresh = false;
 				break;
 
 			case SCROLL_TOP:

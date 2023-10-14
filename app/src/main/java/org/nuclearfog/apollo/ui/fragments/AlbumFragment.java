@@ -45,6 +45,7 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -65,16 +66,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 *
 	 */
 	private static final String TAG = "AlbumFragment";
-
-	/**
-	 *
-	 */
-	public static final String RESTART_LOADER = TAG + ".RESET";
-
-	/**
-	 *
-	 */
-	public static final String META_CHANGED = TAG + ".META_CHANGED";
 
 	/**
 	 *
@@ -126,11 +117,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 */
 	@Nullable
 	private Album selectedAlbum = null;
-
-	/**
-	 * True if the list should execute {@code #restartLoader()}.
-	 */
-	private boolean mShouldRefresh = false;
 
 	/**
 	 * {@inheritDoc}
@@ -260,7 +246,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
-					mShouldRefresh = true;
 					return true;
 			}
 		}
@@ -338,10 +323,12 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 			case REFRESH:
 				// re init list
 				initList();
+
+			case MusicBrowserPhoneFragment.REFRESH:
 				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 				break;
 
-			case META_CHANGED:
+			case MusicBrowserPhoneFragment.META_CHANGED:
 				long albumId = MusicUtils.getCurrentAlbumId();
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					Album album = mAdapter.getItem(i);
@@ -350,14 +337,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 						break;
 					}
 				}
-				break;
-
-			case RESTART_LOADER:
-				// Update the list when the user deletes any items
-				if (mShouldRefresh) {
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				}
-				mShouldRefresh = false;
 				break;
 
 			case SCROLL_TOP:

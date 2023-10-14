@@ -11,6 +11,14 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
+import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
@@ -19,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
@@ -27,12 +36,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
+import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
@@ -56,6 +67,16 @@ import org.nuclearfog.apollo.utils.NavUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection, OnClickListener, OnQueryTextListener, PlayStatusListener {
+
+	/**
+	 * request code for permission result
+	 */
+	private static final int REQ_CHECK_PERM = 0x1139398F;
+
+	/**
+	 * permissions needed for this app
+	 */
+	private static final String[] PERMISSIONS;
 
 	/**
 	 * The service token
@@ -90,6 +111,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 */
 	private PlaybackStatus mPlaybackStatus;
 
+	static {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			PERMISSIONS = new String[]{ACCESS_MEDIA_LOCATION, READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
+		} else {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -102,8 +133,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		mToken = MusicUtils.bindToService(this, this);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
-		// Theme the action bar
-		// Initialize the bottom action bar
 	}
 
 	/**
@@ -112,7 +141,38 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		initBottomActionBar();
+		// Play and pause button
+		mPlayPauseButton = findViewById(R.id.action_button_play);
+		// Shuffle button
+		mShuffleButton = findViewById(R.id.action_button_shuffle);
+		// Repeat button
+		mRepeatButton = findViewById(R.id.action_button_repeat);
+		// Track name
+		mTrackName = findViewById(R.id.bottom_action_bar_line_one);
+		// Artist name
+		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
+		// Album art
+		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
+		// background of bottom action bar
+		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
+		// set bottom action bar color
+		bottomActionBar.setBackground(new HoloSelector(this));
+		// Display the now playing screen or shuffle if this isn't anything playing
+		bottomActionBar.setOnClickListener(this);
+		// Open to the currently playing album profile
+		mAlbumArt.setOnClickListener(this);
+
+		// check permissions before initialization
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			for (String permission : PERMISSIONS) {
+				if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+					// request first permission before initialization
+					requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
+					return;
+				}
+			}
+		}
+		init();
 	}
 
 	/**
@@ -139,6 +199,24 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * {@inheritDoc}
 	 */
 	@Override
+	public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		// check if permissions are granted
+		if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
+			for (int grantResult : grantResults) {
+				if (grantResult == PERMISSION_DENIED) {
+					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
+					return;
+				}
+			}
+			init();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 		// Search view
 		getMenuInflater().inflate(R.menu.search, menu);
@@ -151,7 +229,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		searchView.setSearchableInfo(searchableInfo);
 		// Perform the search
 		searchView.setOnQueryTextListener(this);
-		return super.onCreateOptionsMenu(menu);
+		return true;
 	}
 
 	/**
@@ -163,7 +241,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 			NavUtils.openSettings(this);
 			return true;
 		}
-		return super.onOptionsItemSelected(item);
+		return false;
 	}
 
 	/**
@@ -290,42 +368,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	}
 
 	/**
-	 * notify sub classes to reload information
-	 */
-	protected abstract void onRefresh();
-
-	/**
-	 * notify sub classes that meta information changed
-	 */
-	protected abstract void onMetaChanged();
-
-	/**
-	 * Initializes the items in the bottom action bar.
-	 */
-	private void initBottomActionBar() {
-		// Play and pause button
-		mPlayPauseButton = findViewById(R.id.action_button_play);
-		// Shuffle button
-		mShuffleButton = findViewById(R.id.action_button_shuffle);
-		// Repeat button
-		mRepeatButton = findViewById(R.id.action_button_repeat);
-		// Track name
-		mTrackName = findViewById(R.id.bottom_action_bar_line_one);
-		// Artist name
-		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
-		// Album art
-		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
-		// background of bottom action bar
-		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
-		// set bottom action bar color
-		bottomActionBar.setBackground(new HoloSelector(this));
-		// Display the now playing screen or shuffle if this isn't anything playing
-		bottomActionBar.setOnClickListener(this);
-		// Open to the currently playing album profile
-		mAlbumArt.setOnClickListener(this);
-	}
-
-	/**
 	 * Sets the track name, album name, and album art.
 	 */
 	private void updateBottomActionBarInfo() {
@@ -348,4 +390,19 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		// Set the repeat image
 		mRepeatButton.updateRepeatState();
 	}
+
+	/**
+	 * notify sub classes to reload information
+	 */
+	protected abstract void onRefresh();
+
+	/**
+	 * notify sub classes that meta information changed
+	 */
+	protected abstract void onMetaChanged();
+
+	/**
+	 *
+	 */
+	protected abstract void init();
 }

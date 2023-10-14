@@ -44,6 +44,7 @@ import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.SearchAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -276,11 +277,32 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 					}
 					return true;
 
+				case ContextMenuItems.NEW_PLAYLIST:
+					if (selection instanceof Album) {
+						long[] albumSongIds = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
+						PlaylistCreateDialog.getInstance(albumSongIds).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+					} else if (selection instanceof Artist) {
+						long[] artistSongIds = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
+						PlaylistCreateDialog.getInstance(artistSongIds).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+					} else if (selection instanceof Song) {
+						long[] ids = new long[]{selection.getId()};
+						PlaylistCreateDialog.getInstance(ids).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+					}
+					return true;
+
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
 					if (mPlaylistId != -1L) {
-						long[] ids = new long[]{selection.getId()};
-						MusicUtils.addToPlaylist(this, ids, mPlaylistId);
+						if (selection instanceof Album) {
+							long[] albumSongIds = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
+							MusicUtils.addToPlaylist(this, albumSongIds, mPlaylistId);
+						} else if (selection instanceof Artist) {
+							long[] artistSongIds = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
+							MusicUtils.addToPlaylist(this, artistSongIds, mPlaylistId);
+						} else if (selection instanceof Song) {
+							long[] ids = new long[]{selection.getId()};
+							MusicUtils.addToPlaylist(this, ids, mPlaylistId);
+						}
 					}
 					return true;
 
@@ -395,6 +417,14 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+		// Nothing to do
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void onMetaChanged() {
 		// not used
 	}
@@ -411,7 +441,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		// Nothing to do
+	protected void init() {
+		// not used
 	}
 }

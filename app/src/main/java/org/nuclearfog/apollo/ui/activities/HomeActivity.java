@@ -48,30 +48,9 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 public class HomeActivity extends ActivityBase {
 
 	/**
-	 * request code for permission result
-	 */
-	private static final int REQ_CHECK_PERM = 0x1139398F;
-
-	/**
-	 * permissions needed for this app
-	 */
-	private static final String[] PERMISSIONS;
-
-	/**
 	 *
 	 */
 	private FragmentViewModel viewModel;
-
-
-	static {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			PERMISSIONS = new String[]{ACCESS_MEDIA_LOCATION, READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
-		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE, ACCESS_MEDIA_LOCATION};
-		} else {
-			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
-		}
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -91,45 +70,31 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		// check permissions before initialization
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			for (String permission : PERMISSIONS) {
-				if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-					// request first permission before initialization
-					requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
-					return;
-				}
-			}
-		}
 		init();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onRefresh() {
 		viewModel.notify(MusicBrowserPhoneFragment.REFRESH);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onMetaChanged() {
 		viewModel.notify(MusicBrowserPhoneFragment.META_CHANGED);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		// check if permissions are granted
-		if (requestCode == REQ_CHECK_PERM && grantResults.length > 0) {
-			for (int grantResult : grantResults) {
-				if (grantResult == PERMISSION_DENIED) {
-					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
-					return;
-				}
-			}
-			init();
-		}
+	protected void init() {
+		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
 	}
 
 	/**
@@ -141,12 +106,5 @@ public class HomeActivity extends ActivityBase {
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
 			MusicUtils.onPostDelete(this);
 		}
-	}
-
-	/**
-	 * initialize fragment
-	 */
-	private void init() {
-		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
 	}
 }

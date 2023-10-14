@@ -62,15 +62,27 @@ public class ThemesActivity extends ActivityBase {
 		return super.onOptionsItemSelected(item);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onMetaChanged() {
 		// not used
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onRefresh() {
+		// not used
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void init() {
 		// not used
 	}
 }

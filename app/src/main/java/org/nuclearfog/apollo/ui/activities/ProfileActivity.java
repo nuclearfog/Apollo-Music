@@ -662,6 +662,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void init() {
+		// not used
+	}
+
+	/**
 	 * Starts an activity for result that returns an image from the Gallery.
 	 */
 	public void selectNewPhoto() {

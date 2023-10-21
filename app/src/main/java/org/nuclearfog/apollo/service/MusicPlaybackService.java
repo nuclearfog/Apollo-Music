@@ -26,6 +26,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -498,7 +499,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		filterStorage.addAction(Intent.ACTION_MEDIA_EJECT);
 		filterStorage.addAction(Intent.ACTION_MEDIA_MOUNTED);
 		filterStorage.addDataScheme("file");
-		registerReceiver(mUnmountReceiver, filterStorage);
 
 		// Initialize the intent filter and each action
 		IntentFilter filterAction = new IntentFilter();
@@ -510,8 +510,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		filterAction.addAction(ACTION_PREVIOUS);
 		filterAction.addAction(ACTION_REPEAT);
 		filterAction.addAction(ACTION_SHUFFLE);
-		registerReceiver(mIntentReceiver, filterAction);
-
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(mIntentReceiver, filterAction, RECEIVER_EXPORTED);
+			registerReceiver(mUnmountReceiver, filterStorage, RECEIVER_EXPORTED);
+		} else {
+			registerReceiver(mIntentReceiver, filterAction);
+			registerReceiver(mUnmountReceiver, filterStorage);
+		}
 		// Initialize the delayed shutdown intent
 		Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
 		shutdownIntent.setAction(ACTION_SHUTDOWN);

@@ -273,7 +273,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		registerReceiver(mPlaybackStatus, filter);
+		//
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
+		} else {
+			registerReceiver(mPlaybackStatus, filter);
+		}
 		// Refresh the current time
 		long next = refreshCurrentTime();
 		queueNextRefresh(next);

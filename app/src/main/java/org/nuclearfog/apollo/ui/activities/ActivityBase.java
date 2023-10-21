@@ -272,7 +272,12 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		registerReceiver(mPlaybackStatus, filter);
+		// register playstate callback
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
+		} else {
+			registerReceiver(mPlaybackStatus, filter);
+		}
 		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 

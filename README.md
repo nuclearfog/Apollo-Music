@@ -6,6 +6,7 @@ Apollo-Music is a fork from CyanogenMod's <a href="https://github.com/adneal/Apo
 
 - integrated equalizer
 - playlist with the most listened songs
+- new media playback notification
 
 
 ## Screenshots

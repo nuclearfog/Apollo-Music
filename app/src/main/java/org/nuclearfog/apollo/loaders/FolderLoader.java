@@ -35,7 +35,7 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<Folder>> {
 	@Override
 	public List<Folder> loadInBackground() {
 		// init tree set to sort folder by name
-		Map<String, Folder> folder_set = new TreeMap<>();
+		Map<String, Folder> folderMap = new TreeMap<>();
 		Set<Long> excludedIds = exclude_db.getIds(Type.SONG);
 
 		Cursor cursor = CursorFactory.makeFolderCursor(getContext());
@@ -47,16 +47,15 @@ public class FolderLoader extends WrappedAsyncTaskLoader<List<Folder>> {
 					boolean visible = !excludedIds.contains(songId);
 					Folder folder = new Folder(path, visible);
 
-					Folder entry = folder_set.get(folder.getName());
+					Folder entry = folderMap.get(folder.getName());
 					if (entry != null && entry.isVisible() && !folder.isVisible()) {
-						folder_set.replace(folder.getName(), folder);
-					} else if (entry == null) {
-						folder_set.put(folder.getName(), folder);
+						folderMap.remove(folder.getName());
 					}
+					folderMap.put(folder.getName(), folder);
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
 		}
-		return new ArrayList<>(folder_set.values());
+		return new ArrayList<>(folderMap.values());
 	}
 }

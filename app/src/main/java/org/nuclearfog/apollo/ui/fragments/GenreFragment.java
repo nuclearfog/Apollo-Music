@@ -48,6 +48,7 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -69,6 +70,16 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	private static final int LOADER_ID = 0x78BD76B9;
 
 	/**
+	 *
+	 */
+	private static final String TAG = "ArtistFragment";
+
+	/**
+	 *
+	 */
+	public static final String REFRESH = TAG + ".REFRESH";
+
+	/**
 	 * The adapter for the list
 	 */
 	private GenreAdapter mAdapter;
@@ -77,6 +88,11 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 * viewmodel used for communication with hosting activity
 	 */
 	private FragmentViewModel viewModel;
+
+	/**
+	 * app settings
+	 */
+	private PreferenceUtils preference;
 
 	/**
 	 * context menus selection
@@ -96,6 +112,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// init preferences
+		preference = PreferenceUtils.getInstance(requireContext());
 		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adapter
@@ -158,6 +176,12 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the genre to the queue
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				// hide genre from list
+				if (selection.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_GENRE, Menu.NONE, R.string.context_menu_hide_genre);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_GENRE, Menu.NONE, R.string.context_menu_unhide_genre);
+				}
 			}
 		} else {
 			selection = null;
@@ -170,15 +194,20 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && selection != null) {
-			long[] selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
-
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
+					long[] selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
 					MusicUtils.playAll(requireContext(), selectedGenreSongs, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
+					selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
 					MusicUtils.addToQueue(requireActivity(), selectedGenreSongs);
+					return true;
+
+				case ContextMenuItems.HIDE_GENRE:
+					MusicUtils.excludeGenre(requireContext(), selection);
+					MusicUtils.refresh();
 					return true;
 			}
 		}
@@ -222,7 +251,9 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		mAdapter.clear();
 		// Add the data to the adapter
 		for (Genre genre : data) {
-			mAdapter.add(genre);
+			if (preference.showExcludedTracks() || genre.isVisible()) {
+				mAdapter.add(genre);
+			}
 		}
 
 	}
@@ -241,8 +272,11 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	@Override
 	public void onChanged(String action) {
-		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
-			LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		switch (action) {
+			case REFRESH:
+			case MusicBrowserPhoneFragment.REFRESH:
+				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				break;
 		}
 	}
 }

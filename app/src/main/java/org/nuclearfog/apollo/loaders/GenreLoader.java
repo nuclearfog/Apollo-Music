@@ -15,6 +15,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.nuclearfog.apollo.model.Genre;
+import org.nuclearfog.apollo.provider.ExcludeStore;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,8 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 	 */
 	private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
 
+	private ExcludeStore exclude_db;
+
 	/**
 	 * Constructor of <code>GenreLoader</code>
 	 *
@@ -44,6 +48,7 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 	 */
 	public GenreLoader(Context context) {
 		super(context);
+		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
@@ -51,7 +56,8 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 	 */
 	@Override
 	public List<Genre> loadInBackground() {
-		TreeSet<Genre> result = new TreeSet<>();
+		Set<Genre> result = new TreeSet<>();
+		Set<Long> excluded_ids = exclude_db.getIds(ExcludeStore.Type.GENRE);
 		// Create the Cursor
 		Cursor mCursor = CursorFactory.makeGenreCursor(getContext());
 		// Gather the data
@@ -79,7 +85,16 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 
 				// add all elements to sorted list
 				for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
-					Genre genre = new Genre(entry.getValue(), entry.getKey());
+					boolean visibility = true;
+					Long[] ids = entry.getValue().toArray(new Long[0]);
+					String name = entry.getKey();
+					for (long id : ids) {
+						if (excluded_ids.contains(id)) {
+							visibility = false;
+							break;
+						}
+					}
+					Genre genre = new Genre(ids, name, visibility);
 					result.add(genre);
 				}
 			}

@@ -17,7 +17,7 @@ package org.nuclearfog.apollo.model;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class Song extends Music {
+public class Song extends Music implements Comparable<Song> {
 
 	/**
 	 * The song artist
@@ -40,6 +40,21 @@ public class Song extends Music {
 	private int playlistPos = -1;
 
 	/**
+	 * @param playlistPos playlist position of the track
+	 */
+	public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
+		this(songId, songName, artistName, albumName, length);
+		this.playlistPos = playlistPos;
+	}
+
+	/**
+	 *
+	 */
+	public Song(long songId, String songName, String artistName, String albumName, long length) {
+		this(songId, songName, artistName, albumName, length, true);
+	}
+
+	/**
 	 * Constructor of <code>Song</code>
 	 *
 	 * @param songId     The Id of the song
@@ -47,23 +62,27 @@ public class Song extends Music {
 	 * @param artistName The song artist
 	 * @param albumName  The song album
 	 * @param length     The duration of a song in milliseconds
+	 * @param visibility Visibility of the track
 	 */
-	public Song(long songId, String songName, String artistName, String albumName, long length) {
-		super(songId, songName);
-		if (artistName != null)
+	public Song(long songId, String songName, String artistName, String albumName, long length, boolean visibility) {
+		super(songId, songName, visibility);
+		if (artistName != null) {
 			mArtistName = artistName;
-		if (albumName != null)
+		}
+		if (albumName != null) {
 			mAlbumName = albumName;
-		if (length > 0)
+		}
+		if (length > 0) {
 			mDuration = (int) length / 1000;
+		}
 	}
 
-	/**
-	 * @param playlistPos playlist position of the track
+    /**
+	 * @inheritDoc
 	 */
-	public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
-		this(songId, songName, artistName, albumName, length);
-		this.playlistPos = playlistPos;
+	@Override
+	public int compareTo(Song song) {
+		return song.getName().compareToIgnoreCase(getName());
 	}
 
 	/**
@@ -114,9 +133,9 @@ public class Song extends Music {
 		result = prime * result + mAlbumName.hashCode();
 		result = prime * result + mArtistName.hashCode();
 		result = prime * result + mDuration;
-		result = prime * result + (int) id;
+		result = prime * result + Long.hashCode(getId());
 		result = prime * result + playlistPos;
-		result = prime * result + name.hashCode();
+		result = prime * result + getName().hashCode();
 		return result;
 	}
 
@@ -130,7 +149,7 @@ public class Song extends Music {
 		if (obj instanceof Song) {
 			Song other = (Song) obj;
 			return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
-					name.equals(other.name) && mDuration == other.mDuration && id == other.id && other.playlistPos == playlistPos;
+					getName().equals(other.getName()) && mDuration == other.mDuration && getId() == other.getId() && other.playlistPos == playlistPos;
 		}
 		return false;
 	}

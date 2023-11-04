@@ -103,4 +103,32 @@ public final class ContextMenuItems {
 	 * Used to remove track from the popular
 	 */
 	public static final int REMOVE_FROM_POPULAR = 0xB06947EE;
+
+	/**
+	 */
+	public static final int ADD_FOLDER_QUEUE = 0x67A7B3EB;
+
+	/**
+	 */
+	public static final int PLAY_FOLDER = 0x718EDAAE;
+
+	/**
+	 */
+	public static final int HIDE_ALBUM = 0x60765626;
+
+	/**
+	 */
+	public static final int HIDE_ARTIST = 0x29719350;
+
+	/**
+	 */
+	public static final int HIDE_GENRE = 0x20920041;
+
+	/**
+	 */
+	public static final int HIDE_SONG = 0x38337777;
+
+	/**
+	 */
+	public static final int HIDE_FOLDER = 0x32565113;
 }

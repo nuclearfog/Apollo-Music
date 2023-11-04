@@ -3,55 +3,60 @@ package org.nuclearfog.apollo.loaders;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.nuclearfog.apollo.model.Folder;
+import org.nuclearfog.apollo.provider.ExcludeStore;
+import org.nuclearfog.apollo.provider.ExcludeStore.Type;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * return all music folders from storage
  */
-public class FolderLoader extends WrappedAsyncTaskLoader<List<File>> {
+public class FolderLoader extends WrappedAsyncTaskLoader<List<Folder>> {
+
+	private ExcludeStore exclude_db;
 
 	/**
-	 * custom comparator to sort folders by name and not by path
+	 * @param context Activity context
 	 */
-	private static final Comparator<File> COMPARATOR = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {
-			return file1.getName().compareToIgnoreCase(file2.getName());
-		}
-	};
-
-	/**
-	 * @param paramContext Activity context
-	 */
-	public FolderLoader(Context paramContext) {
-		super(paramContext);
+	public FolderLoader(Context context) {
+		super(context);
+		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<File> loadInBackground() {
+	public List<Folder> loadInBackground() {
 		// init tree set to sort folder by name
-		TreeSet<File> tree = new TreeSet<>(COMPARATOR);
+		Map<String, Folder> folder_set = new TreeMap<>();
+		Set<Long> excludedIds = exclude_db.getIds(Type.SONG);
 
 		Cursor cursor = CursorFactory.makeFolderCursor(getContext());
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
-					String pathName = cursor.getString(0);
-					File folder = new File(pathName).getAbsoluteFile().getParentFile();
-					tree.add(folder);
+					String path = cursor.getString(0);
+					long songId = cursor.getLong(1);
+					boolean visible = !excludedIds.contains(songId);
+					Folder folder = new Folder(path, visible);
+
+					Folder entry = folder_set.get(folder.getName());
+					if (entry != null && entry.isVisible() && !folder.isVisible()) {
+						folder_set.replace(folder.getName(), folder);
+					} else if (entry == null) {
+						folder_set.put(folder.getName(), folder);
+					}
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
 		}
-		return new ArrayList<>(tree);
+		return new ArrayList<>(folder_set.values());
 	}
 }

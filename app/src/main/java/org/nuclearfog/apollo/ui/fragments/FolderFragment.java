@@ -32,35 +32,27 @@ import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.FolderLoader;
+import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
+import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
-import java.io.File;
 import java.util.List;
 
 /**
  * decompiled from Apollo 1.6 APK
  */
-public class FolderFragment extends Fragment implements LoaderCallbacks<List<File>>, OnItemClickListener, Observer<String> {
+public class FolderFragment extends Fragment implements LoaderCallbacks<List<Folder>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 * context menu group ID
 	 */
 	private static final int GROUP_ID = 0x1E42C9C7;
-
-	/**
-	 * context menu item
-	 */
-	private static final int ADD_QUEUE = 0x67A7B3EB;
-
-	/**
-	 * context menu item
-	 */
-	private static final int SELECTION = 0x718EDAAE;
 
 	/**
 	 * ID of the loader
@@ -78,10 +70,15 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	private FragmentViewModel viewModel;
 
 	/**
-	 * IDs of all tracks of the folder
+	 * app settings
+	 */
+	private PreferenceUtils preference;
+
+	/**
+	 * context menu selection
 	 */
 	@Nullable
-	private long[] selectedFolderSongs;
+	private Folder selectedFolder;
 
 	/**
 	 * {@inheritDoc}
@@ -89,6 +86,8 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	@Override
 	public void onCreate(@Nullable Bundle extras) {
 		super.onCreate(extras);
+		// init preferences
+		preference = PreferenceUtils.getInstance(requireContext());
 		mAdapter = new FolderAdapter(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 	}
@@ -139,13 +138,20 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 		super.onCreateContextMenu(menu, v, info);
 		if (info instanceof AdapterContextMenuInfo) {
 			AdapterContextMenuInfo adapterContextMenuInfo = (AdapterContextMenuInfo) info;
-			File mFolder = mAdapter.getItem(adapterContextMenuInfo.position);
-			selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), mFolder.toString());
-			menu.add(GROUP_ID, SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-			menu.add(GROUP_ID, ADD_QUEUE, Menu.NONE, R.string.add_to_queue);
+			selectedFolder = mAdapter.getItem(adapterContextMenuInfo.position);
+			if (selectedFolder != null) {
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_FOLDER, Menu.NONE, R.string.context_menu_play_selection);
+				menu.add(GROUP_ID, ContextMenuItems.ADD_FOLDER_QUEUE, Menu.NONE, R.string.add_to_queue);
+				// hide artist from list
+				if (selectedFolder.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_FOLDER, Menu.NONE, R.string.context_menu_hide_folder);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_FOLDER, Menu.NONE, R.string.context_menu_unhide_folder);
+				}
+			}
 		} else {
 			// remove selection
-			selectedFolderSongs = null;
+			selectedFolder = null;
 		}
 	}
 
@@ -154,14 +160,21 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && selectedFolderSongs != null) {
+		if (item.getGroupId() == GROUP_ID && selectedFolder != null) {
 			switch (item.getItemId()) {
-				case SELECTION:
+				case ContextMenuItems.PLAY_FOLDER:
+					long[] selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getName());
 					MusicUtils.playAll(requireContext(), selectedFolderSongs, 0, false);
 					return true;
 
-				case ADD_QUEUE:
+				case ContextMenuItems.ADD_FOLDER_QUEUE:
+					selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getName());
 					MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
+					return true;
+
+				case ContextMenuItems.HIDE_FOLDER:
+					MusicUtils.excludeFolder(requireContext(), selectedFolder);
+					MusicUtils.refresh();
 					return true;
 			}
 		}
@@ -173,12 +186,12 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-		File mFolder = mAdapter.getItem(position);
+		Folder mFolder = mAdapter.getItem(position);
 		Bundle bundle = new Bundle();
 		bundle.putLong(ID, -1L);
-		bundle.putString(NAME, mFolder.getPath());
+		bundle.putString(NAME, mFolder.getName());
 		bundle.putString(MIME_TYPE, PAGE_FOLDERS);
-		bundle.putString(FOLDER, mFolder.toString());
+		bundle.putString(FOLDER, mFolder.getPath());
 		Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 		intent.putExtras(bundle);
 		requireActivity().startActivity(intent);
@@ -189,7 +202,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 */
 	@NonNull
 	@Override
-	public Loader<List<File>> onCreateLoader(int id, Bundle args) {
+	public Loader<List<Folder>> onCreateLoader(int id, Bundle args) {
 		return new FolderLoader(requireContext());
 	}
 
@@ -197,14 +210,16 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLoadFinished(@NonNull Loader<List<File>> loader, @NonNull List<File> data) {
+	public void onLoadFinished(@NonNull Loader<List<Folder>> loader, @NonNull List<Folder> data) {
 		// stop loader
 		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
 		// Clear list
 		mAdapter.clear();
 		// add data to the adapter
-		for (File file : data) {
-			mAdapter.add(file);
+		for (Folder folder : data) {
+			if (preference.showExcludedTracks() || folder.isVisible()) {
+				mAdapter.add(folder);
+			}
 		}
 	}
 
@@ -212,7 +227,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fil
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLoaderReset(@NonNull Loader<List<File>> loader) {
+	public void onLoaderReset(@NonNull Loader<List<Folder>> loader) {
 		// Clear the data in the adapter
 		mAdapter.clear();
 	}

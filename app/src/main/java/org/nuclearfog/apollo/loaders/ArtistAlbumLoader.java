@@ -66,7 +66,7 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 					// Copy the release year
 					String year = mCursor.getString(4);
 					// Create a new album
-					Album album = new Album(id, albumName, artist, songCount, year);
+					Album album = new Album(id, albumName, artist, songCount, year, true);
 					// Add everything up
 					result.add(album);
 				} while (mCursor.moveToNext());

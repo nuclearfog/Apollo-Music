@@ -205,6 +205,12 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
 				// View more content by the album artist
 				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				// hide album from list
+				if (selectedAlbum.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ALBUM, Menu.NONE, R.string.context_menu_hide_album);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ALBUM, Menu.NONE, R.string.context_menu_unhide_album);
+				}
 				// Remove the album from the list
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
@@ -246,6 +252,11 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
+					return true;
+
+				case ContextMenuItems.HIDE_ALBUM:
+					MusicUtils.excludeAlbum(requireContext(), selectedAlbum);
+					MusicUtils.refresh();
 					return true;
 			}
 		}
@@ -303,7 +314,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 		mAdapter.clear();
 		// Add the data to the adapter
 		for (Album album : data) {
-			mAdapter.add(album);
+			if (preference.showExcludedTracks() || album.isVisible()) {
+				mAdapter.add(album);
+			}
 		}
 	}
 

@@ -85,12 +85,14 @@ public final class PreferenceUtils {
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
 	private static final String NOTIFICATION_LAYOUT = "prefer_old_notification_layout";
 	private static final String LASTFM_API_KEY = "api_key";
+	private static final String SHOW_HIDDEN = "view_hidden_items";
 
 	private static volatile PreferenceUtils sInstance;
 
 	private SharedPreferences mPreferences;
 	private int themeColor;
 	private int startPage;
+	private boolean showHidden;
 
 	/**
 	 * Constructor for <code>PreferenceUtils</code>
@@ -101,6 +103,7 @@ public final class PreferenceUtils {
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
 		startPage = mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
+		showHidden = mPreferences.getBoolean(SHOW_HIDDEN, false);
 	}
 
 	/**
@@ -632,6 +635,23 @@ public final class PreferenceUtils {
 	 */
 	public boolean oldNotificationLayoutEnabled() {
 		return mPreferences.getBoolean(NOTIFICATION_LAYOUT, false);
+	}
+
+	/**
+	 *
+	 */
+	public boolean showExcludedTracks() {
+		return showHidden;
+	}
+
+	/**
+	 *
+	 */
+	public void setExcludeTracks(boolean showHidden) {
+		this.showHidden = showHidden;
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putBoolean(SHOW_HIDDEN, showHidden);
+		editor.apply();
 	}
 
 	/**

@@ -21,6 +21,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
@@ -106,12 +107,19 @@ public class SongAdapter extends ArrayAdapter<Song> {
 		}
 		// Retrieve the data holder
 		Song song = getItem(position);
-		// Set each song name (line one)
-		holder.mLineOne.setText(song.getName());
-		// Set the song duration (line one, right)
-		holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
-		// Set the album name (line two)
-		holder.mLineTwo.setText(song.getArtist());
+		if (song != null) {
+			// Set each song name (line one)
+			holder.mLineOne.setText(song.getName());
+			// Set the song duration (line one, right)
+			holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
+			// Set the album name (line two)
+			holder.mLineTwo.setText(song.getArtist());
+			if (song.isVisible()) {
+				convertView.setAlpha(1.0f);
+			} else {
+				convertView.setAlpha(Config.OPACITY_HIDDEN);
+			}
+		}
 		return convertView;
 	}
 

@@ -43,6 +43,7 @@
 	<string name="menu_grid">Grid</string>
 	<string name="menu_view_as">View as</string>
 	<string name="menu_clear_popular">Clear songs</string>
+	<string name="menu_show_hidden">show hidden tracks</string>
 
 	<!-- Playlist items -->
 	<string name="add_to_playlist">Add to playlist</string>
@@ -99,6 +100,16 @@
 	<string name="context_menu_remove_from_recent">Remove from recent</string>
 	<string name="context_menu_use_as_ringtone">Use as ringtone</string>
 	<string name="context_menu_remove_from_playlist">Remove from playlist</string>
+	<string name="context_menu_hide_album">Hide album</string>
+	<string name="context_menu_hide_track">Hide song</string>
+	<string name="context_menu_hide_genre">Hide genre</string>
+	<string name="context_menu_hide_artist">Hide artist</string>
+	<string name="context_menu_hide_folder">Hide folder</string>
+	<string name="context_menu_unhide_album">Unhide album</string>
+	<string name="context_menu_unhide_track">Unhide song</string>
+	<string name="context_menu_unhide_genre">Unhide genre</string>
+	<string name="context_menu_unhide_artist">Unhide artist</string>
+	<string name="context_menu_unhide_folder">Unhide folder</string>
 
 	<!-- Content descriptions -->
 	<string name="accessibility_play">Play</string>

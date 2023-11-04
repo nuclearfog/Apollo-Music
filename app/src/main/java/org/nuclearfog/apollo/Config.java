@@ -51,6 +51,8 @@ public final class Config {
 	 */
 	public static final float DRAG_DROP_MAX_SPEED = 3.0f;
 
+	public static final float OPACITY_HIDDEN = 0.4f;
+
 	/* This class is never initiated. */
 	private Config() {
 	}

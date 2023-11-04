@@ -47,6 +47,7 @@ import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.List;
 
@@ -98,6 +99,11 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	private FragmentViewModel viewModel;
 
 	/**
+	 * app settings
+	 */
+	private PreferenceUtils preference;
+
+	/**
 	 * context menu selection
 	 */
 	@Nullable
@@ -115,6 +121,8 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// init preferences
+		preference = PreferenceUtils.getInstance(requireContext());
 		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Create the adapter
@@ -172,21 +180,29 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new song
 			selectedSong = mAdapter.getItem(info.position);
-			// Play the song
-			menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
-			// Play next
-			menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
-			// Add the song to the queue
-			menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
-			// Add the song to a playlist
-			SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
-			MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
-			// View more content by the song artist
-			menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
-			// Make the song a ringtone
-			menu.add(GROUP_ID, ContextMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
-			// Delete the song
-			menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+			if (selectedSong != null) {
+				// Play the song
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
+				// Play next
+				menu.add(GROUP_ID, ContextMenuItems.PLAY_NEXT, Menu.NONE, R.string.context_menu_play_next);
+				// Add the song to the queue
+				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
+				// Add the song to a playlist
+				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
+				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, true);
+				// View more content by the song artist
+				menu.add(GROUP_ID, ContextMenuItems.MORE_BY_ARTIST, Menu.NONE, R.string.context_menu_more_by_artist);
+				// Make the song a ringtone
+				menu.add(GROUP_ID, ContextMenuItems.USE_AS_RINGTONE, Menu.NONE, R.string.context_menu_use_as_ringtone);
+				// hide genre from list
+				if (selectedSong.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_SONG, Menu.NONE, R.string.context_menu_hide_track);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_SONG, Menu.NONE, R.string.context_menu_unhide_track);
+				}
+				// Delete the song
+				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
+			}
 		} else {
 			// remove selection if an error occurs
 			selectedSong = null;
@@ -235,6 +251,11 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 					MusicUtils.setRingtone(requireActivity(), selectedSong.getId());
 					return true;
 
+				case ContextMenuItems.HIDE_SONG:
+					MusicUtils.excludeSong(requireContext(), selectedSong);
+					MusicUtils.refresh();
+					return true;
+
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackIds);
 					return true;
@@ -272,7 +293,9 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 			mAdapter.clear();
 			// Add the data to the adapter
 			for (Song song : data) {
-				mAdapter.add(song);
+				if (preference.showExcludedTracks() || song.isVisible()) {
+					mAdapter.add(song);
+				}
 			}
 		}
 	}

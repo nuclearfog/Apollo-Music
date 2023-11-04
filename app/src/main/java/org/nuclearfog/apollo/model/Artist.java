@@ -35,9 +35,10 @@ public class Artist extends Music {
 	 * @param artistName  The artist name
 	 * @param songNumber  The number of songs for the artist
 	 * @param albumNumber The number of albums for the artist
+	 * @param visible     The visibility of the artist
 	 */
-	public Artist(long artistId, String artistName, int songNumber, int albumNumber) {
-		super(artistId, artistName);
+	public Artist(long artistId, String artistName, int songNumber, int albumNumber, boolean visible) {
+		super(artistId, artistName, visible);
 		mSongNumber = songNumber;
 		mAlbumNumber = albumNumber;
 	}
@@ -68,8 +69,8 @@ public class Artist extends Music {
 		int prime = 31;
 		int result = 1;
 		result = prime * result + mAlbumNumber;
-		result = prime * result + (int) id;
-		result = prime * result + name.hashCode();
+		result = prime * result + (int) getId();
+		result = prime * result + getName().hashCode();
 		result = prime * result + mSongNumber;
 		return result;
 	}
@@ -84,8 +85,8 @@ public class Artist extends Music {
 		}
 		if (obj instanceof Artist) {
 			Artist artist = (Artist) obj;
-			return id == artist.id && mAlbumNumber == artist.mAlbumNumber &&
-					mSongNumber == artist.mSongNumber && name.equals(artist.name);
+			return getId() == artist.getId() && mAlbumNumber == artist.mAlbumNumber &&
+					mSongNumber == artist.mSongNumber && getName().equals(artist.getName());
 		}
 		return false;
 	}

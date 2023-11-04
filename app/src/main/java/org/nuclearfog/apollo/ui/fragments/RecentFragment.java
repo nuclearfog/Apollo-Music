@@ -113,11 +113,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	private FragmentViewModel viewModel;
 
 	/**
-	 * Album song list
-	 */
-	private long[] mAlbumList = {};
-
-	/**
 	 * context menu selection
 	 */
 	@Nullable
@@ -205,8 +200,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 			// Create a new album
 			selectedAlbum = mAdapter.getItem(info.position);
 			if (selectedAlbum != null) {
-				// Create a list of the album's songs
-				mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 				// Play the album
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the album to the queue
@@ -236,14 +229,18 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
+					// Create a list of the album's songs
+					long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
+					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 					MusicUtils.addToQueue(requireActivity(), mAlbumList);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
+					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 					PlaylistCreateDialog.getInstance(mAlbumList).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
 					return true;
 
@@ -254,6 +251,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					long id = item.getIntent().getLongExtra("playlist", -1L);
 					if (id != -1L) {
+						mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 						MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
 					}
 					return true;
@@ -264,6 +262,7 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 					return true;
 
 				case ContextMenuItems.DELETE:
+					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
 					return true;
 			}

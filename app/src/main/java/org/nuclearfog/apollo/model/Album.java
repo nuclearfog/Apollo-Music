@@ -41,9 +41,10 @@ public class Album extends Music {
 	 * @param artistName The album artist
 	 * @param songNumber The number of songs in the album
 	 * @param albumYear  The year the album was released
+	 * @param visible    Visibility of this album
 	 */
-	public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear) {
-		super(albumId, albumName);
+	public Album(long albumId, String albumName, String artistName, int songNumber, String albumYear, boolean visible) {
+		super(albumId, albumName, visible);
 		if (albumYear != null)
 			mYear = albumYear;
 		if (artistName != null)
@@ -85,8 +86,8 @@ public class Album extends Music {
 	public int hashCode() {
 		int prime = 31;
 		int result = 1;
-		result = prime * result + (int) id;
-		result = prime * result + name.hashCode();
+		result = prime * result + (int) getId();
+		result = prime * result + getName().hashCode();
 		result = prime * result + mArtistName.hashCode();
 		result = prime * result + mSongNumber;
 		result = prime * result + mYear.hashCode();
@@ -103,8 +104,8 @@ public class Album extends Music {
 		}
 		if (obj instanceof Album) {
 			Album album = (Album) obj;
-			return id == album.id && mSongNumber == album.mSongNumber &&
-					name.equals(album.name) && mArtistName.equals(album.mArtistName) && mYear.equals(album.mYear);
+			return getId() == album.getId() && mSongNumber == album.mSongNumber &&
+					getName().equals(album.getName()) && mArtistName.equals(album.mArtistName) && mYear.equals(album.mYear);
 		}
 		return false;
 	}

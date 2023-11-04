@@ -48,8 +48,14 @@ import com.andrew.apollo.IApolloService;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.model.Folder;
+import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
+import org.nuclearfog.apollo.provider.ExcludeStore;
+import org.nuclearfog.apollo.provider.ExcludeStore.Type;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.provider.PopularStore;
 import org.nuclearfog.apollo.provider.RecentStore;
@@ -1648,6 +1654,68 @@ public final class MusicUtils {
 		}
 		// return path to the files
 		return result;
+	}
+
+	/**
+	 *
+	 */
+	public static void excludeAlbum(Context context, Album album) {
+		ExcludeStore exclude = ExcludeStore.getInstance(context);
+		if (album.isVisible()) {
+			exclude.addIds(Type.ALBUM, album.getId());
+		} else {
+			exclude.removeIds(Type.ALBUM, album.getId());
+		}
+	}
+
+	/**
+	 *
+	 */
+	public static void excludeSong(Context context, Song song) {
+		ExcludeStore exclude = ExcludeStore.getInstance(context);
+		if (song.isVisible()) {
+			exclude.addIds(Type.SONG, song.getId());
+		} else {
+			exclude.removeIds(Type.SONG, song.getId());
+		}
+	}
+
+
+	/**
+	 *
+	 */
+	public static void excludeArtist(Context context, Artist artist) {
+		ExcludeStore exclude = ExcludeStore.getInstance(context);
+		if (artist.isVisible()) {
+			exclude.addIds(Type.ARTIST, artist.getId());
+		} else {
+			exclude.removeIds(Type.ARTIST, artist.getId());
+		}
+	}
+
+	/**
+	 *
+	 */
+	public static void excludeGenre(Context context, Genre genre) {
+		ExcludeStore exclude = ExcludeStore.getInstance(context);
+		if (genre.isVisible()) {
+			exclude.addIds(Type.GENRE, genre.getGenreIds());
+		} else {
+			exclude.removeIds(Type.GENRE, genre.getGenreIds());
+		}
+	}
+
+	/**
+	 *
+	 */
+	public static void excludeFolder(Context context, Folder folder) {
+		ExcludeStore exclude = ExcludeStore.getInstance(context);
+		long[] songs = MusicUtils.getSongListForFolder(context, folder.getPath());
+		if (folder.isVisible()) {
+			exclude.addIds(Type.SONG, songs);
+		} else {
+			exclude.removeIds(Type.SONG, songs);
+		}
 	}
 
 	/**

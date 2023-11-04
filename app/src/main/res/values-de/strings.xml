@@ -147,4 +147,15 @@
 	<string name="context_menu_copy_playlist">Kopieren</string>
 	<string name="error_empty_playlistname">Playlistname leer!</string>
 	<string name="error_duplicate_playlistname">Playlistname existiert bereits!</string>
+	<string name="context_menu_hide_album">verstecke Album</string>
+	<string name="context_menu_hide_track">verstecke Track</string>
+	<string name="context_menu_hide_genre">verstecke Genre</string>
+	<string name="context_menu_hide_artist">verstecke Künstler</string>
+	<string name="context_menu_hide_folder">verstecke Ordner</string>
+	<string name="context_menu_unhide_album">zeige Album</string>
+	<string name="context_menu_unhide_track">zeige Track</string>
+	<string name="context_menu_unhide_genre">zeige Genre</string>
+	<string name="context_menu_unhide_artist">zeige Künstler</string>
+	<string name="context_menu_unhide_folder">zeige folder</string>
+	<string name="menu_show_hidden">zeige versteckte Tracks</string>
 </resources>

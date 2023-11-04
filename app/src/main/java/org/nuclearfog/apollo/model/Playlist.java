@@ -41,7 +41,7 @@ public class Playlist extends Music {
 	 * @param playlistName The playlist name
 	 */
 	public Playlist(long playlistId, String playlistName) {
-		super(playlistId, playlistName);
+		super(playlistId, playlistName, true);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class Playlist extends Music {
 	 * @return true if playlist is one of the default playlists
 	 */
 	public boolean isDefault() {
-		return id == FAVORITE_ID || id == LAST_ADDED_ID || id == POPULAR_ID;
+		return getId() == FAVORITE_ID || getId() == LAST_ADDED_ID || getId() == POPULAR_ID;
 	}
 
 	/**
@@ -60,8 +60,8 @@ public class Playlist extends Music {
 	public int hashCode() {
 		int prime = 31;
 		int result = 1;
-		result = prime * result + (int) id;
-		result = prime * result + name.hashCode();
+		result = prime * result + (int) getId();
+		result = prime * result + getName().hashCode();
 		return result;
 	}
 
@@ -75,7 +75,7 @@ public class Playlist extends Music {
 		}
 		if (obj instanceof Playlist) {
 			Playlist playlist = (Playlist) obj;
-			return id == playlist.id && name.equals(playlist.name);
+			return getId() == playlist.getId() && getName().equals(playlist.getName());
 		}
 		return false;
 	}

@@ -21,6 +21,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
@@ -97,6 +98,11 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
 					holder.mLineThree.setText(count);
 				// register album art click listener
 				ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
+			}
+			if (album.isVisible()) {
+				convertView.setAlpha(1.0f);
+			} else {
+				convertView.setAlpha(Config.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

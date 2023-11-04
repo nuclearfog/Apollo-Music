@@ -14,7 +14,6 @@ package org.nuclearfog.apollo.model;
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * A class that represents a genre.
@@ -31,14 +30,17 @@ public class Genre extends Music implements Comparable<Genre> {
 	/**
 	 * Constructor of <code>Genre</code>
 	 *
-	 * @param idList    The Id of the genre
-	 * @param genreName The genre name
+	 * @param ids        IDs referencing to this genre
+	 * @param genre_name The genre name
+	 * @param visibility visibility of this genre
 	 */
-	public Genre(List<Long> idList, String genreName) {
-		super(-1L, genreName);
-		this.ids = new long[idList.size()];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = idList.get(i);
+	public Genre(Long[] ids, String genre_name, boolean visibility) {
+		super(-1L, genre_name, visibility);
+		this.ids = new long[ids.length];
+		for (int i = 0; i < ids.length ; i++) {
+			if (ids[i] != null) {
+				this.ids[i] = ids[i];
+			}
 		}
 	}
 
@@ -57,7 +59,7 @@ public class Genre extends Music implements Comparable<Genre> {
 	@Override
 	public int compareTo(@NonNull Genre g) {
 		// sort genre by name
-		return name.compareToIgnoreCase(g.getName());
+		return getName().compareToIgnoreCase(g.getName());
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class Genre extends Music implements Comparable<Genre> {
 		int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(ids);
-		result = prime * result + name.hashCode();
+		result = prime * result + getName().hashCode();
 		return result;
 	}
 
@@ -88,7 +90,7 @@ public class Genre extends Music implements Comparable<Genre> {
 						return false;
 				}
 			}
-			return g.name.equals(name);
+			return g.getName().equals(getName());
 		}
 		return false;
 	}

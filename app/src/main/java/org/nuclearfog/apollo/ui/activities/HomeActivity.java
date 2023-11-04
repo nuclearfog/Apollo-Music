@@ -11,24 +11,13 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
-import static android.Manifest.permission.POST_NOTIFICATIONS;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_AUDIO;
-import static android.Manifest.permission.READ_MEDIA_IMAGES;
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static org.nuclearfog.apollo.utils.MusicUtils.REQUEST_DELETE_FILES;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;

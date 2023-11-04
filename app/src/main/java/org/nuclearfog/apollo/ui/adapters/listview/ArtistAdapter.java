@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Artist;
@@ -98,6 +99,11 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 					holder.mLineThree.setText(numTracks);
 				// register artist art click listener
 				ApolloUtils.registerItemViewListener(holder.mImage, parent, position, artist.getId());
+			}
+			if (artist.isVisible()) {
+				convertView.setAlpha(1.0f);
+			} else {
+				convertView.setAlpha(Config.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

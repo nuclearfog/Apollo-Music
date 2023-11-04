@@ -10,22 +10,28 @@ public abstract class Music {
 	/**
 	 * ID of the element
 	 */
-	protected final long id;
+	private long id;
 
 	/**
 	 * name of the element
 	 */
-	protected final String name;
+	private String name;
+
+	/**
+	 * visibility of the item
+	 */
+	private boolean visible;
 
 	/**
 	 *
 	 */
-	protected Music(long id, String name) {
+	protected Music(long id, String name, boolean visible) {
 		if (name != null)
 			this.name = name;
 		else
 			this.name = "";
 		this.id = id;
+		this.visible = visible;
 	}
 
 	/**
@@ -46,10 +52,19 @@ public abstract class Music {
 		return id;
 	}
 
+	/**
+	 * get visibility of the item
+	 *
+	 * @return true if item is visible
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
 
 	@NonNull
 	@Override
 	public String toString() {
-		return name;
+		return "name=\"" + name + "\" visible=" + isVisible();
 	}
 }

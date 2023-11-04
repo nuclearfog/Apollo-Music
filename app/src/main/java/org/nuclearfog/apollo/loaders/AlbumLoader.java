@@ -15,10 +15,13 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.provider.ExcludeStore;
+import org.nuclearfog.apollo.provider.ExcludeStore.Type;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Used to return the albums on a user's device.
@@ -27,6 +30,8 @@ import java.util.List;
  */
 public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 
+	private ExcludeStore exclude_db;
+
 	/**
 	 * Constructor of <code>AlbumLoader</code>
 	 *
@@ -34,6 +39,7 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 	 */
 	public AlbumLoader(Context context) {
 		super(context);
+		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
@@ -42,6 +48,7 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 	@Override
 	public List<Album> loadInBackground() {
 		List<Album> result = new LinkedList<>();
+		Set<Long> excludedIds = exclude_db.getIds(Type.ALBUM);
 		// Create the Cursor
 		Cursor mCursor = CursorFactory.makeAlbumCursor(getContext());
 		// Gather the data
@@ -58,8 +65,10 @@ public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 					int songCount = mCursor.getInt(3);
 					// Copy the release year
 					String year = mCursor.getString(4);
+					// check if album is excluded from viewing
+					boolean visible = !excludedIds.contains(id);
 					// Create a new album
-					Album album = new Album(id, albumName, artist, songCount, year);
+					Album album = new Album(id, albumName, artist, songCount, year, visible);
 					// Add everything up
 					result.add(album);
 				} while (mCursor.moveToNext());

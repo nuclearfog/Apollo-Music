@@ -212,6 +212,12 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 				// Add the artist to a playlist
 				SubMenu subMenu = menu.addSubMenu(GROUP_ID, ContextMenuItems.ADD_TO_PLAYLIST, Menu.NONE, R.string.add_to_playlist);
 				MusicUtils.makePlaylistMenu(requireContext(), GROUP_ID, subMenu, false);
+				// hide artist from list
+				if (selectedArtist.isVisible()) {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ARTIST, Menu.NONE, R.string.context_menu_hide_artist);
+				} else {
+					menu.add(GROUP_ID, ContextMenuItems.HIDE_ARTIST, Menu.NONE, R.string.context_menu_unhide_artist);
+				}
 				// Delete the artist
 				menu.add(GROUP_ID, ContextMenuItems.DELETE, Menu.NONE, R.string.context_menu_delete);
 			}
@@ -245,6 +251,11 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					long id = item.getIntent().getLongExtra("playlist", -1L);
 					MusicUtils.addToPlaylist(requireActivity(), mArtistList, id);
+					return true;
+
+				case ContextMenuItems.HIDE_ARTIST:
+					MusicUtils.excludeArtist(requireContext(), selectedArtist);
+					MusicUtils.refresh();
 					return true;
 
 				case ContextMenuItems.DELETE:
@@ -306,7 +317,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 			mAdapter.clear();
 			// Add the data to the adapter
 			for (Artist artist : data) {
-				mAdapter.add(artist);
+				if (preference.showExcludedTracks() || artist.isVisible()) {
+					mAdapter.add(artist);
+				}
 			}
 		}
 	}

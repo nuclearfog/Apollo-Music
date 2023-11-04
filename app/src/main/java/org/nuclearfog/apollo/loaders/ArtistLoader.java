@@ -15,10 +15,13 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.provider.ExcludeStore;
+import org.nuclearfog.apollo.provider.ExcludeStore.Type;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Used to return the artists on a user's device.
@@ -27,6 +30,8 @@ import java.util.List;
  */
 public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 
+	private ExcludeStore exclude_db;
+
 	/**
 	 * Constructor of <code>ArtistLoader</code>
 	 *
@@ -34,6 +39,7 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 	 */
 	public ArtistLoader(Context context) {
 		super(context);
+		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
@@ -42,6 +48,7 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 	@Override
 	public List<Artist> loadInBackground() {
 		List<Artist> result = new LinkedList<>();
+		Set<Long> excluded_ids = exclude_db.getIds(Type.ARTIST);
 		// Create the Cursor
 		Cursor mCursor = CursorFactory.makeArtistCursor(getContext());
 		// Gather the data
@@ -56,8 +63,10 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 					int albumCount = mCursor.getInt(2);
 					// Copy the number of songs
 					int songCount = mCursor.getInt(3);
+					// visibility of the artist
+					boolean visible = !excluded_ids.contains(id);
 					// Create a new artist
-					Artist artist = new Artist(id, artistName, songCount, albumCount);
+					Artist artist = new Artist(id, artistName, songCount, albumCount, visible);
 					// Add everything up
 					result.add(artist);
 				} while (mCursor.moveToNext());

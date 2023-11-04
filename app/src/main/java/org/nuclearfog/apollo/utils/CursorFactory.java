@@ -209,7 +209,8 @@ public class CursorFactory {
 	 * projection for music folder
 	 */
 	private static final String[] FOLDER_COLUMNS = {
-			Media.DATA
+			Media.DATA,
+			Media._ID
 	};
 
 	/**

@@ -47,7 +47,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
 					String artistName = cursor.getString(1);
 					int albumCount = cursor.getInt(2);
 					int songCount = cursor.getInt(3);
-					Artist artist = new Artist(id, artistName, songCount, albumCount);
+					Artist artist = new Artist(id, artistName, songCount, albumCount, true);
 					result.add(artist);
 				} while (cursor.moveToNext());
 			}
@@ -63,7 +63,7 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
 					String artist = cursor.getString(2);
 					int songCount = cursor.getInt(3);
 					String year = cursor.getString(4);
-					Album album = new Album(id, albumName, artist, songCount, year);
+					Album album = new Album(id, albumName, artist, songCount, year, true);
 					result.add(album);
 				} while (cursor.moveToNext());
 			}

@@ -166,6 +166,10 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public void onPrepareOptionsMenu(@NonNull Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
+		MenuItem visibility = menu.findItem(R.id.menu_show_hidden);
+		if (visibility != null) {
+			visibility.setChecked(mPreferences.showExcludedTracks());
+		}
 		mResources.setFavoriteIcon(favorite);
 	}
 
@@ -188,15 +192,23 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 			case MusicBrowserAdapter.IDX_ARTIST:
 				inflater.inflate(R.menu.artist_sort_by, menu);
 				inflater.inflate(R.menu.view_as, menu);
+				inflater.inflate(R.menu.item_visibility, menu);
 				break;
 
 			case MusicBrowserAdapter.IDX_TRACKS:
 				inflater.inflate(R.menu.song_sort_by, menu);
+				inflater.inflate(R.menu.item_visibility, menu);
 				break;
 
 			case MusicBrowserAdapter.IDX_ALBUM:
 				inflater.inflate(R.menu.album_sort_by, menu);
 				inflater.inflate(R.menu.view_as, menu);
+				inflater.inflate(R.menu.item_visibility, menu);
+				break;
+
+			case MusicBrowserAdapter.IDX_GENRE:
+			case MusicBrowserAdapter.IDX_FOLDER:
+				inflater.inflate(R.menu.item_visibility, menu);
 				break;
 		}
 	}
@@ -337,6 +349,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 				mPreferences.setAlbumLayout("grid");
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
+		}
+		// toggle hidden track visibility
+		else if (item.getItemId() == R.id.menu_show_hidden) {
+			boolean isChecked = !item.isChecked();
+			item.setChecked(isChecked);
+			mPreferences.setExcludeTracks(isChecked);
+			viewModel.notify(REFRESH);
 		} else {
 			return super.onOptionsItemSelected(item);
 		}

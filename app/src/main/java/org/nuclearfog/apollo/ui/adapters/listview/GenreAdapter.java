@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
@@ -78,6 +79,11 @@ public class GenreAdapter extends ArrayAdapter<Genre> {
 		if (genre != null) {
 			// Set each genre name (line one)
 			holder.mLineOne.setText(genre.getName());
+			if (genre.isVisible()) {
+				convertView.setAlpha(1.0f);
+			} else {
+				convertView.setAlpha(Config.OPACITY_HIDDEN);
+			}
 		}
 		return convertView;
 	}

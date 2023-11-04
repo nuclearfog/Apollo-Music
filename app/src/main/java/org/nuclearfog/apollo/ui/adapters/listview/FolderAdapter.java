@@ -12,17 +12,17 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
-
-import java.io.File;
 
 /**
  * decompiled from Apollo.APK version 1.6
  * <p>
  * this adapter creates views with music folder information
  */
-public class FolderAdapter extends ArrayAdapter<File> {
+public class FolderAdapter extends ArrayAdapter<Folder> {
 
 	/**
 	 * item layout reource
@@ -67,10 +67,15 @@ public class FolderAdapter extends ArrayAdapter<File> {
 		} else {
 			holder = (MusicHolder) convertView.getTag();
 		}
-		File folder = getItem(position);
+		Folder folder = getItem(position);
 		if (folder != null) {
 			String name = folder.getName();
 			holder.mLineOne.setText(name);
+			if (folder.isVisible()) {
+				convertView.setAlpha(1.0f);
+			} else {
+				convertView.setAlpha(Config.OPACITY_HIDDEN);
+			}
 		}
 		return convertView;
 	}

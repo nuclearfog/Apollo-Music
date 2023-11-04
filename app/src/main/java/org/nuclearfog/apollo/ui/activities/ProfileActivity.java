@@ -287,14 +287,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// Theme the add to home screen icon
 		MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
-
-		if (type == Type.FAVORITE || type == Type.LAST_ADDED
-				|| type == Type.PLAYLIST || type == Type.POPULAR) {
+		if (type == Type.FAVORITE || type == Type.LAST_ADDED || type == Type.PLAYLIST || type == Type.POPULAR) {
 			shuffle.setTitle(R.string.menu_play_all);
 		} else {
 			shuffle.setTitle(R.string.menu_shuffle);
 		}
-
 		return super.onPrepareOptionsMenu(menu);
 	}
 

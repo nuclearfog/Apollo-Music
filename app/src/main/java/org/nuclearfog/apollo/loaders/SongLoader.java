@@ -15,10 +15,12 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.provider.ExcludeStore;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -28,6 +30,8 @@ import java.util.List;
  */
 public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
+	private ExcludeStore exclude_db;
+
 
 	/**
 	 * Constructor of <code>SongLoader</code>
@@ -36,6 +40,7 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 	 */
 	public SongLoader(Context context) {
 		super(context);
+		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
@@ -44,6 +49,7 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 	@Override
 	public List<Song> loadInBackground() {
 		List<Song> result = new LinkedList<>();
+		Set<Long> excludedIds = exclude_db.getIds(ExcludeStore.Type.SONG);
 		// Create the Cursor
 		Cursor mCursor = CursorFactory.makeTrackCursor(getContext());
 		// Gather the data
@@ -60,8 +66,10 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 					String album = mCursor.getString(3);
 					// Copy the duration
 					long duration = mCursor.getLong(4);
+					// set visibility
+					boolean visible = !excludedIds.contains(id);
 					// Create a new song
-					Song song = new Song(id, songName, artist, album, duration);
+					Song song = new Song(id, songName, artist, album, duration, visible);
 					// Add everything up
 					result.add(song);
 				} while (mCursor.moveToNext());

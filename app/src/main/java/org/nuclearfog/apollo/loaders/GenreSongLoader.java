@@ -18,7 +18,6 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -79,12 +78,7 @@ public class GenreSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 			}
 		}
 		// sort tracks by song name
-		Collections.sort(result, new Comparator<Song>() {
-			@Override
-			public int compare(Song track1, Song track2) {
-				return track1.getName().compareTo(track2.getName());
-			}
-		});
+		Collections.sort(result);
 		return result;
 	}
 }

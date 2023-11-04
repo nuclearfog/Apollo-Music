@@ -58,7 +58,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
 	/**
 	 * database filename
 	 */
-	public static final String DB_NAME = "favorites.db";
+	private static final String DB_NAME = "favorites.db";
 
 	/**
 	 * database version

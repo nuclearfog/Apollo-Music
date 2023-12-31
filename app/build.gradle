@@ -4,8 +4,7 @@ plugins {
 }
 
 android {
-	compileSdkVersion 34
-	buildToolsVersion '34.0.0'
+	compileSdk 34
 	useLibrary 'org.apache.http.legacy'
 	namespace 'org.nuclearfog.apollo'
 
@@ -41,6 +40,7 @@ android {
 		exclude '/META-INF/services/**'
 		exclude '/META-INF/com/**'
 		exclude '/kotlin/**'
+		exclude '/kotlin-tooling-metadata.json'
 		exclude '/Debug*'
 	}
 
@@ -54,5 +54,5 @@ dependencies {
 	implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 	implementation 'androidx.preference:preference:1.2.1'
 	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-	implementation 'androidx.media:media:1.6.0'
+	implementation 'androidx.media:media:1.7.0'
 }

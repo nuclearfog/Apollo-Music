@@ -1,4 +1,4 @@
-package com.andrew.apollo;
+package org.nuclearfog.apollo;
 
 import android.graphics.Bitmap;
 import android.net.Uri;

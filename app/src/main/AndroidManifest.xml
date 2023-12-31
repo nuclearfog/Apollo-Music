@@ -38,7 +38,8 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
+	<!-- override androidx.media min sdk -->
+	<uses-sdk tools:overrideLibrary="androidx.media" />
 	<queries>
 		<intent>
 			<action android:name="com.andrew.apollo.THEMES" />
@@ -59,7 +60,7 @@
 		android:taskAffinity="${applicationId}.task"
 		android:supportsRtl="true"
 		android:theme="@style/Apollo.Theme.Dark"
-		tools:ignore="UnusedAttribute">
+		tools:ignore="RtlEnabled,UnusedAttribute">
 
 		<!-- provider to share music files -->
 		<provider

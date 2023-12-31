@@ -43,8 +43,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
-import com.andrew.apollo.IApolloService;
-
+import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;

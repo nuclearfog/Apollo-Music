@@ -3,7 +3,7 @@ package org.nuclearfog.apollo.service;
 
 import android.net.Uri;
 
-import com.andrew.apollo.IApolloService;
+import org.nuclearfog.apollo.IApolloService;
 
 import java.lang.ref.WeakReference;
 

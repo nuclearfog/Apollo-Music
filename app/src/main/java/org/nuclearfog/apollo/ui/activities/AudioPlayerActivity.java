@@ -12,6 +12,7 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ClipData;
@@ -260,6 +261,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	protected void onStart() {
 		super.onStart();

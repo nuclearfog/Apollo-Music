@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.service;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -448,6 +449,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate() {
 		super.onCreate();

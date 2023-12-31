@@ -19,6 +19,7 @@ import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
@@ -259,6 +260,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	protected void onStart() {
 		super.onStart();

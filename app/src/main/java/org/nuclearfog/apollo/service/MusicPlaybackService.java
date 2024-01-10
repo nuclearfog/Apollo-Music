@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.support.v4.media.MediaBrowserCompat;
@@ -1598,19 +1599,21 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			// search for file in the MediaStore
 			if (searchRes != null && searchRes.moveToFirst()) {
 				// find track by file path
-				int idxName = searchRes.getColumnIndex("document_id");
+				int idxName = searchRes.getColumnIndex(FileColumns.DOCUMENT_ID);
 				// if not found, find track by file name (less precise)
 				if (idxName < 0)
-					idxName = searchRes.getColumnIndex("_display_name");
+					idxName = searchRes.getColumnIndex(FileColumns.DISPLAY_NAME);
 				// if found, get track information
 				if (idxName >= 0) {
 					String name = searchRes.getString(idxName);
-					int cut = name.indexOf(":");
-					if (cut > 0 && cut < name.length() + 1) {
-						name = name.substring(cut + 1);
+					if (name != null) {
+						int cut = name.indexOf(":");
+						if (cut > 0 && cut < name.length() + 1) {
+							name = name.substring(cut + 1);
+						}
+						// set track information
+						mCursor = CursorFactory.makeTrackCursor(this, name);
 					}
-					// set track information
-					mCursor = CursorFactory.makeTrackCursor(this, name);
 				}
 			}
 		}

@@ -79,6 +79,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	/**
 	 * The service token
 	 */
+	@Nullable
 	private ServiceToken mToken;
 
 	/**

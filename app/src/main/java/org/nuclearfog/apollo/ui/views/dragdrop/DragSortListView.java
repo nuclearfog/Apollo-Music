@@ -1503,7 +1503,7 @@ public class DragSortListView extends ListView implements OnScrollListener {
 			int dy = Math.round(mScrollSpeed * dt);
 			mList.mScrollY += dy;
 			mList.requestLayout();
-			mList.mPrevTime += dt;
+			mList.mPrevTime += Math.round(dt);
 			mList.post(this);
 		}
 	}

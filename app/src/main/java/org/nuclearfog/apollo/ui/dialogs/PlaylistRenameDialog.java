@@ -120,7 +120,7 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 		if (mSaveButton == null) {
 			return;
 		}
-		if (playlistName.trim().length() == 0) {
+		if (playlistName.trim().isEmpty()) {
 			mSaveButton.setEnabled(false);
 		} else {
 			mSaveButton.setEnabled(true);

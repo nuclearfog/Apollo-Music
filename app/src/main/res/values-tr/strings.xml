@@ -26,7 +26,7 @@
 	<string name="menu_search">Arama</string>
 	<string name="menu_shuffle">Hepsini karıştır</string>
 	<string name="menu_play_all">Hepsini oynat</string>
-	<string name="menu_sort_by">Sırala...</string>
+	<string name="menu_sort_by">Sırala…</string>
 	<string name="menu_clear_queue">Kuyruğu temizle</string>
 	<string name="menu_save_queue">Kuyruğu kaydet</string>
 	<string name="menu_share">Paylaş</string>
@@ -35,7 +35,7 @@
 	<string name="menu_simple">Basit</string>
 	<string name="menu_detailed">Detaylı</string>
 	<string name="menu_grid">Izgara</string>
-	<string name="menu_view_as">Olarak görüntüle...</string>
+	<string name="menu_view_as">Olarak görüntüle…</string>
 	<string name="add_to_playlist">Çalma listesine ekle</string>
 	<string name="add_to_favorites">Favorilere ekle</string>
 	<string name="add_to_queue">Kuyruğa ekle</string>

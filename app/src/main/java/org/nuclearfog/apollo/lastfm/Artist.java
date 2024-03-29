@@ -63,7 +63,7 @@ public class Artist extends MusicEntry {
 	public static Artist getInfo(Context context, String artistOrMbid, Locale locale) {
 		Map<String, String> mParams = new WeakHashMap<>();
 		mParams.put("artist", artistOrMbid);
-		if (locale != null && locale.getLanguage().length() != 0) {
+		if (locale != null && !locale.getLanguage().trim().isEmpty()) {
 			mParams.put("lang", locale.getLanguage());
 		}
 		Result mResult = Caller.getInstance(context).call("artist.getInfo", mParams);

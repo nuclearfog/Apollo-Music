@@ -16,8 +16,9 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.widget.RemoteViews;
+
+import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -68,18 +69,7 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 	 */
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
-		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
-
-		CharSequence trackName = service.getTrackName();
-		CharSequence artistName = service.getArtistName();
-		CharSequence albumName = service.getAlbumName();
-		Bitmap bitmap = service.getAlbumArt();
-
-		// Set the titles and artwork
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, trackName);
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, artistName);
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, albumName);
-		appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, bitmap);
+		RemoteViews appWidgetView = getRemoteViews(service);
 
 		// Set correct drawable for pause state
 		boolean isPlaying = service.isPlaying();
@@ -118,6 +108,18 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 		linkButtons(service, appWidgetView, isPlaying);
 		// Update the app-widget
 		pushUpdate(service, getClass(), appWidgetIds, appWidgetView);
+	}
+
+
+	@NonNull
+	private static RemoteViews getRemoteViews(MusicPlaybackService service) {
+		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
+		// Set the titles and artwork
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, service.getTrackName());
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, service.getArtistName());
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, service.getAlbumName());
+		appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, service.getAlbumArt());
+		return appWidgetView;
 	}
 
 	/**

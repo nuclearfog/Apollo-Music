@@ -100,6 +100,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	/**
 	 * The service token
 	 */
+	@Nullable
 	private ServiceToken mToken;
 	/**
 	 * Play and pause button
@@ -651,7 +652,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			String mimeType = intent.getType();
 			boolean handled = false;
 			// open file
-			if (uri != null && uri.toString().length() > 0) {
+			if (uri != null && !uri.toString().trim().isEmpty()) {
 				MusicUtils.playFile(getApplicationContext(), uri);
 				handled = true;
 			}

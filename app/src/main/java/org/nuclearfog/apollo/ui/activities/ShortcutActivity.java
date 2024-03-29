@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
@@ -64,6 +65,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	/**
 	 * Service token
 	 */
+	@Nullable
 	private ServiceToken mToken;
 	/**
 	 * Gather the intent action and extras

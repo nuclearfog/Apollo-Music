@@ -82,6 +82,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	/**
 	 * The service token
 	 */
+	@Nullable
 	private ServiceToken mToken;
 	/**
 	 * Play and pause button (BAB)

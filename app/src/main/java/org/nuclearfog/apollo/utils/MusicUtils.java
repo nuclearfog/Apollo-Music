@@ -143,13 +143,19 @@ public final class MusicUtils {
 	 * @param callback The {@link ServiceConnection} to use
 	 * @return The new instance of {@link ServiceToken}
 	 */
+	@Nullable
 	public static ServiceToken bindToService(Activity activity, @Nullable ServiceConnection callback) {
 		if (activity.getParent() != null)
 			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
-		contextWrapper.startService(new Intent(activity.getApplicationContext(), MusicPlaybackService.class));
+		Intent serviceIntent = new Intent(activity.getApplicationContext(), MusicPlaybackService.class);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			contextWrapper.startForegroundService(serviceIntent);
+		} else {
+			contextWrapper.startService(serviceIntent);
+		}
 		ServiceBinder binder = new ServiceBinder(callback);
-		if (contextWrapper.bindService(new Intent().setClass(activity.getApplicationContext(), MusicPlaybackService.class), binder, 0)) {
+		if (contextWrapper.bindService(serviceIntent, binder, 0)) {
 			mConnectionMap.put(contextWrapper, binder);
 			return new ServiceToken(contextWrapper);
 		}
@@ -950,7 +956,7 @@ public final class MusicUtils {
 	 * @return A new playlist ID.
 	 */
 	public static long createPlaylist(Context context, String name) {
-		if (name != null && name.length() > 0) {
+		if (name != null && !name.trim().isEmpty()) {
 			Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
 			// check if playlist exists
 			if (cursor != null) {
@@ -1479,7 +1485,7 @@ public final class MusicUtils {
 			Intent intent = new Intent(context, MusicPlaybackService.class);
 			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
 			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
-			context.startService(intent);
+			context.startService(intent);                      //todo
 		}
 	}
 

@@ -29,6 +29,10 @@ android {
 		}
 	}
 
+	buildFeatures {
+		buildConfig true
+	}
+
 	packagingOptions {
 		exclude '/META-INF/CHANGES'
 		exclude '/META-INF/DEPENDENCIES'

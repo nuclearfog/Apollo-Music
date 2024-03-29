@@ -17,6 +17,7 @@ import android.database.Cursor;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 			}
 			mCursor.close();
 		}
+		Collections.sort(result);
 		return result;
 	}
 }

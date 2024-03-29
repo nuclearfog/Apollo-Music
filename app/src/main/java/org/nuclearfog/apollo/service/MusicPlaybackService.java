@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -49,6 +50,8 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MusicPlayerHandler;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -356,18 +359,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	private AlarmManager mAlarmManager;
 	private PendingIntent mShutdownIntent;
 	private boolean mShutdownScheduled;
-	/**
-	 * The cursor used to retrieve info on the current track and run the
-	 * necessary queries to play audio files
-	 */
-	@Nullable
-	private Cursor mCursor;
-	/**
-	 * The cursor used to retrieve info on the album the current track is
-	 * part of, if any.
-	 */
-	@Nullable
-	private Cursor mAlbumCursor;
+
 	/**
 	 * used to distinguish between different cards when saving/restoring playlists
 	 */
@@ -392,6 +384,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * used to chekc if application is running in the foreground
 	 */
 	private boolean isForeground = true;
+
+	/**
+	 * current song to play
+	 */
+	@Nullable
+	private Song currentSong;
+
+	/**
+	 * current album of the song to play
+	 */
+	@Nullable
+	private Album currentAlbum;
 
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
@@ -553,8 +557,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mSession.release();
 		// Remove any callbacks from the handler
 		mPlayerHandler.removeCallbacksAndMessages(null);
-		// Close the cursor
-		closeCursor();
 		// Unregister the mount listener
 		unregisterReceiver(mUnmountReceiver);
 		unregisterReceiver(mIntentReceiver);
@@ -745,11 +747,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song album Name
 	 */
 	public synchronized String getAlbumName() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.ALBUM);
-			if (idx >= 0) {
-				return mCursor.getString(idx);
-			}
+		if (currentAlbum != null) {
+			return currentAlbum.getName();
 		}
 		return "";
 	}
@@ -760,11 +759,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song name
 	 */
 	public synchronized String getTrackName() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.TITLE);
-			if (idx >= 0) {
-				return mCursor.getString(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getName();
 		}
 		return "";
 	}
@@ -775,11 +771,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song artist name
 	 */
 	public synchronized String getArtistName() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.ARTIST);
-			if (idx >= 0) {
-				return mCursor.getString(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getArtist();
 		}
 		return "";
 	}
@@ -790,11 +783,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song album ID
 	 */
 	public synchronized long getAlbumId() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(Media.ALBUM_ID);
-			if (idx >= 0) {
-				return mCursor.getLong(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getAlbumId();
 		}
 		return -1L;
 	}
@@ -805,11 +795,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song album ID
 	 */
 	public synchronized long getTrackId() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(Media._ID);
-			if (idx >= 0) {
-				return mCursor.getLong(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getId();
 		}
 		return -1L;
 	}
@@ -934,14 +921,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public synchronized void openFile(Uri uri) {
 		stop();
 		if (uri != null) {
-			// If mCursor is null, try to associate path with a database cursor
-			if (mCursor == null) {
-				updateCursor(uri);
-				long id = getTrackId();
-				if (id != -1L) {
-					mPlayList.addFirst(id);
-					mPlayPos = 0;
-				}
+			updateTrackInformation(uri);
+			long id = getTrackId();
+			if (id != -1L) {
+				mPlayList.addFirst(id);
+				mPlayPos = 0;
 			}
 			mPlayer.setDataSource(uri);
 			if (mPlayer.isInitialized()) {
@@ -949,6 +933,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			} else {
 				stop(true);
 			}
+			// update metadata
+			notifyChange(CHANGED_META);
 		}
 	}
 
@@ -973,10 +959,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public synchronized void onWentToNext() {
 		mPlayPos = mNextPlayPos;
-		if (mCursor != null) {
-			mCursor.close();
-		}
-		updateCursor(mPlayList.get(mPlayPos));
+		clearCurrentTrackInformation();
+		updateTrackInformation(mPlayList.get(mPlayPos));
 		notifyChange(CHANGED_META);
 		setNextTrack();
 		if (!isForeground) {
@@ -1029,47 +1013,50 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	synchronized void notifyChange(String what) {
 		if (!what.equals(CHANGED_POSITION)) {
-			long audioId = getAudioId();
-			long albumId = getAlbumId();
-			String albumName = getAlbumName();
-			String artistName = getArtistName();
-			String trackName = getTrackName();
+			long audio_id = getAudioId();
+			long album_id = getAlbumId();
+			String album_name = getAlbumName();
+			String artist_name = getArtistName();
+			String song_name = getTrackName();
 
 			Intent intent = new Intent(what);
-			intent.putExtra("id", audioId);
-			intent.putExtra("artist", artistName);
-			intent.putExtra("album", albumName);
-			intent.putExtra("track", trackName);
+			intent.putExtra("id", audio_id);
+			intent.putExtra("artist", artist_name);
+			intent.putExtra("album", album_name);
+			intent.putExtra("track", song_name);
 			intent.putExtra("playing", isPlaying());
 			intent.putExtra("isfavorite", isFavorite());
-			sendBroadcast(intent);
-
 			Intent musicIntent = new Intent(intent);
 			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
 			sendBroadcast(musicIntent);
+			sendBroadcast(intent);
 
-			if (what.equals(CHANGED_META)) {
-				// Increase the play count for favorite songs.
-				if (mFavoritesCache.exists(audioId)) {
-					mFavoritesCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-				}
-				mPopularCache.addSongId(audioId, trackName, albumName, artistName, getDurationMillis());
-				// Add the track to the recently played list.
-				String songCount = MusicUtils.getSongCountForAlbum(this, albumId);
-				String release = MusicUtils.getReleaseDateForAlbum(this, albumId);
-				mRecentsCache.addAlbumId(albumId, albumName, artistName, songCount, release);
+			switch (what) {
+				case CHANGED_META:
+					// Increase the play count for favorite songs.
+					if (mFavoritesCache.exists(audio_id))
+						mFavoritesCache.addSongId(audio_id, song_name, album_name, artist_name, getDurationMillis());
+					mPopularCache.addSongId(audio_id, song_name, album_name, artist_name, getDurationMillis());
+					// Add the track to the recently played list.
+					String songCount = MusicUtils.getSongCountForAlbum(this, album_id);
+					String release = MusicUtils.getReleaseDateForAlbum(this, album_id);
+					mRecentsCache.addAlbumId(album_id, album_name, artist_name, songCount, release);
+					// set session track information used for notification
+					mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, song_name)
+							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist_name)
+							.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDurationMillis()).build());
+					break;
 
-				mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
-						.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
-						.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDurationMillis()).build());
+				case CHANGED_QUEUE:
+					saveQueue(true);
+					if (isPlaying()) {
+						setNextTrack();
+					}
+					break;
 
-			} else if (what.equals(CHANGED_QUEUE)) {
-				saveQueue(true);
-				if (isPlaying()) {
-					setNextTrack();
-				}
-			} else {
-				saveQueue(false);
+				default:
+					saveQueue(false);
+					break;
 			}
 			mIntentReceiver.updateWidgets(this, what);
 		}
@@ -1177,11 +1164,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The path to the current song
 	 */
 	synchronized String getPath() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.DATA);
-			if (idx >= 0) {
-				return mCursor.getString(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getPath();
 		}
 		return "";
 	}
@@ -1192,11 +1176,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current song artist ID
 	 */
 	synchronized long getArtistId() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.ARTIST_ID);
-			if (idx >= 0) {
-				return mCursor.getLong(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.getArtistId();
 		}
 		return -1L;
 	}
@@ -1442,12 +1423,12 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void getCardId() {
 		try {
-			Cursor cursor = CursorFactory.makeCardCursor(this);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					mCardId = cursor.getInt(0);
+			Cursor mCursor = CursorFactory.makeCardCursor(this);
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					mCardId = mCursor.getInt(0);
 				}
-				cursor.close();
+				mCursor.close();
 			}
 		} catch (Exception e) {
 			if (BuildConfig.DEBUG) {
@@ -1483,7 +1464,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (mPlayer.isInitialized()) {
 			mPlayer.stop();
 		}
-		closeCursor();
+		clearCurrentTrackInformation();
 		if (goToIdle) {
 			scheduleDelayedShutdown();
 			mIsSupposedToBePlaying = false;
@@ -1522,7 +1503,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			if (mPlayList.isEmpty()) {
 				stop(true);
 				mPlayPos = -1;
-				closeCursor();
+				clearCurrentTrackInformation();
 			} else {
 				if (mShuffleMode != SHUFFLE_NONE) {
 					mPlayPos = getNextPosition(true);
@@ -1558,7 +1539,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			mPlayList.add(position++, trackId);
 		}
 		if (mPlayList.isEmpty()) {
-			closeCursor();
+			clearCurrentTrackInformation();
 			notifyChange(CHANGED_META);
 		}
 	}
@@ -1566,10 +1547,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * @param trackId The track ID
 	 */
-	private void updateCursor(long trackId) {
-		closeCursor();
-		mCursor = CursorFactory.makeTrackCursor(this, trackId);
-		updateAlbumCursor();
+	private void updateTrackInformation(long trackId) {
+		clearCurrentTrackInformation();
+		Cursor mCursor = CursorFactory.makeTrackCursor(this, trackId);
+		updateTrackInformation(mCursor);
+		updateAlbumInformation();
+		if (mCursor != null && !mCursor.isClosed()) {
+			mCursor.close();
+		}
 	}
 
 	/**
@@ -1577,8 +1562,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @param uri uri of the audio track
 	 */
-	private void updateCursor(Uri uri) {
-		closeCursor();
+	private void updateTrackInformation(Uri uri) {
+		clearCurrentTrackInformation();
+		Cursor mCursor = null;
 		// get information from MediaStore directly
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
 			mCursor = CursorFactory.makeTrackCursor(this, uri);
@@ -1617,45 +1603,66 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			}
 		}
-		updateAlbumCursor();
-	}
-
-	/**
-	 *
-	 */
-	private void updateAlbumCursor() {
-		long albumId = getAlbumId();
-		if (albumId >= 0) {
-			mAlbumCursor = CursorFactory.makeAlbumCursor(this, albumId);
-		} else {
-			mAlbumCursor = null;
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void closeCursor() {
-		if (mCursor != null) {
+		updateTrackInformation(mCursor);
+		updateAlbumInformation();
+		if (mCursor != null && !mCursor.isClosed()) {
 			mCursor.close();
-			mCursor = null;
 		}
-		if (mAlbumCursor != null) {
-			mAlbumCursor.close();
-			mAlbumCursor = null;
+	}
+
+	/**
+	 *
+	 */
+	private void updateTrackInformation(@Nullable Cursor mCursor) {
+		if (mCursor != null && mCursor.moveToFirst()) {
+			long songId = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
+			long artistId = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
+			long albumId = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
+			String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+			String artistName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+			String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+			String path = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
+			long length = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
+			currentSong = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
 		}
+	}
+
+	/**
+	 *
+	 */
+	private void updateAlbumInformation() {
+		long albumId = getAlbumId();
+		Cursor mAlbumCursor = CursorFactory.makeAlbumCursor(this, albumId);
+		if (mAlbumCursor != null && mAlbumCursor.moveToFirst()) {
+			long id = mAlbumCursor.getLong(mAlbumCursor.getColumnIndexOrThrow(Media._ID));
+			String name = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
+			String artist = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
+			int count = mAlbumCursor.getInt(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
+			String year = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
+			currentAlbum = new Album(id, name, artist, count, year, true);
+		} else {
+			currentAlbum = null;
+		}
+	}
+
+	/**
+	 *
+	 */
+	private void clearCurrentTrackInformation() {
+		currentAlbum = null;
+		currentSong = null;
 	}
 
 	/**
 	 * Called to open a new file as the current track and prepare the next for playback
 	 */
 	private void openCurrentTrack() {
-		closeCursor();
+		clearCurrentTrackInformation();
 		if (mPlayList.isEmpty()) {
 			return;
 		}
 		stop(false);
-		updateCursor(mPlayList.get(mPlayPos));
+		updateTrackInformation(mPlayList.get(mPlayPos));
 		boolean fileOpenFailed;
 		long id = getTrackId();
 		if (id != -1L) {
@@ -1663,10 +1670,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		} else {
 			fileOpenFailed = true;
 		}
-		if (fileOpenFailed || (mCursor != null && mCursor.isClosed())) {
-			// if we get here then opening the file failed. We can close the
-			// cursor now, because
-			// we're either going to create a new one next, or stop trying
+		if (fileOpenFailed || currentSong == null) {
 			if (mPlayList.size() > 1) {
 				for (int i = 0; i < 10; i++) { // retrying 10 times until failure
 					int pos = getNextPosition(false);
@@ -1681,7 +1685,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					mPlayPos = pos;
 					stop(false);
 					mPlayPos = pos;
-					updateCursor(mPlayList.get(mPlayPos));
+					updateTrackInformation(mPlayList.get(mPlayPos));
 				}
 			}
 			scheduleDelayedShutdown();
@@ -1774,6 +1778,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 						long id = cursor.getLong(0);
 						mAutoShuffleList.add(id);
 					} while (cursor.moveToNext());
+					cursor.close();
 					return true;
 				}
 				cursor.close();
@@ -1869,11 +1874,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	private long getDurationMillis() {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			int idx = mCursor.getColumnIndex(AudioColumns.DURATION);
-			if (idx >= 0) {
-				return mCursor.getLong(idx);
-			}
+		if (currentSong != null) {
+			return currentSong.durationMillis();
 		}
 		return -1L;
 	}
@@ -1908,7 +1910,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private boolean openTrack(long id) {
 		Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
-		updateCursor(id);
+		updateTrackInformation(id);
 		mPlayer.setDataSource(uri);
 		if (mPlayer.isInitialized()) {
 			return true;
@@ -1956,7 +1958,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 			mPlayPos = pos;
 			synchronized (this) {
-				closeCursor();
+				clearCurrentTrackInformation();
 				openCurrentAndNext();
 			}
 			if (!mPlayer.isInitialized()) {

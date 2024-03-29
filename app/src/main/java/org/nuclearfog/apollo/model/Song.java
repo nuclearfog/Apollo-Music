@@ -22,58 +22,83 @@ public class Song extends Music implements Comparable<Song> {
 	/**
 	 * The song artist
 	 */
-	private String mArtistName = "";
+	private String artist_name = "";
 
 	/**
 	 * The song album
 	 */
-	private String mAlbumName = "";
+	private String album_name = "";
 
 	/**
 	 * The song duration in seconds
 	 */
-	private int mDuration = -1;
+	private int duration = -1;
 
 	/**
 	 * playlist position of the track
 	 */
-	private int playlistPos = -1;
+	private int playlist_index = -1;
 
 	/**
-	 * @param playlistPos playlist position of the track
+	 * ID of the song's artist
 	 */
-	public Song(long songId, String songName, String artistName, String albumName, long length, int playlistPos) {
-		this(songId, songName, artistName, albumName, length);
-		this.playlistPos = playlistPos;
+	private long artist_id = -1;
+
+	/**
+	 * ID of the song's album
+	 */
+	private long album_id = -1;
+
+	/**
+	 * path to the song file
+	 */
+	private String path = "";
+
+	/**
+	 * @param artist_id Id of the song artist
+	 */
+	public Song(long song_id, long artist_id, long album_id, String song_name, String artist_name, String album_name, long length, String path) {
+		this(song_id, song_name, artist_name, album_name, length);
+		this.artist_id = artist_id;
+		this.album_id = album_id;
+		this.path = path;
+	}
+
+	/**
+	 * @param playlist_index playlist position of the track
+	 */
+	public Song(long songId, String song_name, String artist_name, String album_name, long length, int playlist_index) {
+		this(songId, song_name, artist_name, album_name, length);
+		this.playlist_index = playlist_index;
 	}
 
 	/**
 	 *
 	 */
-	public Song(long songId, String songName, String artistName, String albumName, long length) {
-		this(songId, songName, artistName, albumName, length, true);
+	public Song(long song_id, String song_name, String artist_name, String album_name, long length) {
+		this(song_id, song_name, artist_name, album_name, length, true);
 	}
 
 	/**
 	 * Constructor of <code>Song</code>
 	 *
-	 * @param songId     The Id of the song
-	 * @param songName   The name of the song
-	 * @param artistName The song artist
-	 * @param albumName  The song album
+	 * @param song_id     The Id of the song
+	 * @param song_name   The song_name of the song
+	 * @param artist_name The song artist
+	 * @param album_name  The song album
 	 * @param length     The duration of a song in milliseconds
 	 * @param visibility Visibility of the track
 	 */
-	public Song(long songId, String songName, String artistName, String albumName, long length, boolean visibility) {
-		super(songId, songName, visibility);
-		if (artistName != null) {
-			mArtistName = artistName;
+	public Song(long song_id, String song_name, String artist_name, String album_name, long length, boolean visibility) {
+		super(song_id, song_name, visibility);
+		if (artist_name != null) {
+			this.artist_name = artist_name;
 		}
-		if (albumName != null) {
-			mAlbumName = albumName;
+		if (album_name != null) {
+			this.album_name = album_name;
 		}
 		if (length > 0) {
-			mDuration = (int) length / 1000;
+			duration = (int) length / 1000;
 		}
 	}
 
@@ -82,6 +107,8 @@ public class Song extends Music implements Comparable<Song> {
 	 */
 	@Override
 	public int compareTo(Song song) {
+		if (playlist_index >= 0 && song.getPlaylistIndex() >= 0)
+			return Integer.compare(getPlaylistIndex(), song.getPlaylistIndex());
 		return song.getName().compareToIgnoreCase(getName());
 	}
 
@@ -91,7 +118,7 @@ public class Song extends Music implements Comparable<Song> {
 	 * @return artist name
 	 */
 	public String getArtist() {
-		return mArtistName;
+		return artist_name;
 	}
 
 	/**
@@ -100,7 +127,7 @@ public class Song extends Music implements Comparable<Song> {
 	 * @return album name
 	 */
 	public String getAlbum() {
-		return mAlbumName;
+		return album_name;
 	}
 
 	/**
@@ -109,7 +136,7 @@ public class Song extends Music implements Comparable<Song> {
 	 * @return duration in seconds
 	 */
 	public int duration() {
-		return mDuration;
+		return duration;
 	}
 
 	/**
@@ -118,9 +145,45 @@ public class Song extends Music implements Comparable<Song> {
 	 * @return duration in milliseconds
 	 */
 	public long durationMillis() {
-		if (mDuration > 0)
-			return (long) mDuration * 1000;
+		if (duration > 0)
+			return (long) duration * 1000;
 		return -1L;
+	}
+
+	/**
+	 * get song artist ID
+	 *
+	 * @return artist ID or '0' if not set
+	 */
+	public long getArtistId() {
+		return artist_id;
+	}
+
+	/**
+	 * get album ID
+	 *
+	 * @return album ID or '0' if not set
+	 */
+	public long getAlbumId() {
+		return album_id;
+	}
+
+	/**
+	 * get local song path
+	 *
+	 * @return path string or empty if not set
+	 */
+	public String getPath() {
+		return path;
+	}
+
+	/**
+	 * get the playlist index of the song
+	 *
+	 * @return playlist index or '-1' if not set
+	 */
+	public int getPlaylistIndex() {
+		return playlist_index;
 	}
 
 	/**
@@ -130,12 +193,15 @@ public class Song extends Music implements Comparable<Song> {
 	public int hashCode() {
 		int prime = 31;
 		int result = 1;
-		result = prime * result + mAlbumName.hashCode();
-		result = prime * result + mArtistName.hashCode();
-		result = prime * result + mDuration;
+		result = prime * result + getAlbum().hashCode();
+		result = prime * result + getArtist().hashCode();
+		result = prime * result + duration();
 		result = prime * result + Long.hashCode(getId());
-		result = prime * result + playlistPos;
+		result = prime * result + getPlaylistIndex();
 		result = prime * result + getName().hashCode();
+		result = prime * result + Long.hashCode(getArtistId());
+		result = prime * result + Long.hashCode(getAlbumId());
+		result = prime * result + getPath().hashCode();
 		return result;
 	}
 
@@ -148,8 +214,8 @@ public class Song extends Music implements Comparable<Song> {
 			return true;
 		if (obj instanceof Song) {
 			Song other = (Song) obj;
-			return mAlbumName.equals(other.mAlbumName) && mArtistName.equals(other.mArtistName) &&
-					getName().equals(other.getName()) && mDuration == other.mDuration && getId() == other.getId() && other.playlistPos == playlistPos;
+			return album_name.equals(other.album_name) && artist_name.equals(other.artist_name) &&
+					getName().equals(other.getName()) && duration == other.duration && getId() == other.getId() && other.playlist_index == playlist_index;
 		}
 		return false;
 	}

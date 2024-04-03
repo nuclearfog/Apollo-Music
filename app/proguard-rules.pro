@@ -28,3 +28,7 @@
 #-obfuscationdictionary dict/obfuscation-dictionary.txt
 #-classobfuscationdictionary dict/class-dictionary.txt
 #-packageobfuscationdictionary dict/package-dictionary.txt
+
+# disable non deterministic optimization on these classes
+-keep class kotlinx.coroutines.CoroutineExceptionHandler
+-keep class kotlinx.coroutines.internal.MainDispatcherFactory

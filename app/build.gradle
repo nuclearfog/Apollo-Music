@@ -13,6 +13,8 @@ android {
 		targetSdkVersion 34
 		versionCode 32
 		versionName '1.4.2'
+		// disable vector optimization
+		vectorDrawables.generatedDensities = []
 	}
 
 	buildTypes {
@@ -31,6 +33,11 @@ android {
 
 	buildFeatures {
 		buildConfig true
+	}
+
+	aaptOptions {
+		// disable png optimization
+		cruncherEnabled = false
 	}
 
 	packagingOptions {

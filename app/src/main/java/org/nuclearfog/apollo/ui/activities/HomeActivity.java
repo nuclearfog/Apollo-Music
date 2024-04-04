@@ -59,7 +59,6 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		init();
 	}
 
 	/**

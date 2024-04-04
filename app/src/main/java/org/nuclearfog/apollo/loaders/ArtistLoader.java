@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.provider.ExcludeStore;
@@ -29,6 +30,8 @@ import java.util.Set;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
+
+	private static final String TAG = "ArtistLoader";
 
 	private ExcludeStore exclude_db;
 
@@ -48,30 +51,34 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 	@Override
 	public List<Artist> loadInBackground() {
 		List<Artist> result = new LinkedList<>();
-		Set<Long> excluded_ids = exclude_db.getIds(Type.ARTIST);
-		// Create the Cursor
-		Cursor mCursor = CursorFactory.makeArtistCursor(getContext());
-		// Gather the data
-		if (mCursor != null) {
-			if (mCursor.moveToFirst()) {
-				do {
-					// Copy the artist id
-					long id = mCursor.getLong(0);
-					// Copy the artist name
-					String artistName = mCursor.getString(1);
-					// Copy the number of albums
-					int albumCount = mCursor.getInt(2);
-					// Copy the number of songs
-					int songCount = mCursor.getInt(3);
-					// visibility of the artist
-					boolean visible = !excluded_ids.contains(id);
-					// Create a new artist
-					Artist artist = new Artist(id, artistName, songCount, albumCount, visible);
-					// Add everything up
-					result.add(artist);
-				} while (mCursor.moveToNext());
+		try {
+			Set<Long> excluded_ids = exclude_db.getIds(Type.ARTIST);
+			// Create the Cursor
+			Cursor mCursor = CursorFactory.makeArtistCursor(getContext());
+			// Gather the data
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						// Copy the artist id
+						long id = mCursor.getLong(0);
+						// Copy the artist name
+						String artistName = mCursor.getString(1);
+						// Copy the number of albums
+						int albumCount = mCursor.getInt(2);
+						// Copy the number of songs
+						int songCount = mCursor.getInt(3);
+						// visibility of the artist
+						boolean visible = !excluded_ids.contains(id);
+						// Create a new artist
+						Artist artist = new Artist(id, artistName, songCount, albumCount, visible);
+						// Add everything up
+						result.add(artist);
+					} while (mCursor.moveToNext());
+				}
+				mCursor.close();
 			}
-			mCursor.close();
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading artists", exception);
 		}
 		return result;
 	}

@@ -2,6 +2,7 @@ package org.nuclearfog.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -21,6 +22,7 @@ import java.util.List;
  */
 public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
 
+	private static final String TAG = "MusicSearchLoader";
 
 	/**
 	 * search string as argument
@@ -38,56 +40,60 @@ public class MusicSearchLoader extends WrappedAsyncTaskLoader<List<Music>> {
 	@Override
 	public List<Music> loadInBackground() {
 		List<Music> result = new LinkedList<>();
-		// search for artists
-		Cursor cursor = CursorFactory.makeArtistSearchCursor(getContext(), search);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					long id = cursor.getLong(0);
-					String artistName = cursor.getString(1);
-					int albumCount = cursor.getInt(2);
-					int songCount = cursor.getInt(3);
-					Artist artist = new Artist(id, artistName, songCount, albumCount, true);
-					result.add(artist);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
-		}
-		// search for albums
-		cursor = CursorFactory.makeAlbumSearchCursor(getContext(), search);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					long id = cursor.getLong(0);
-					String albumName = cursor.getString(1);
-					String artist = cursor.getString(2);
-					int songCount = cursor.getInt(3);
-					String year = cursor.getString(4);
-					Album album = new Album(id, albumName, artist, songCount, year, true);
-					result.add(album);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
-		}
-		// Search for tracks
-		cursor = CursorFactory.makeTrackSearchCursor(getContext(), search);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					String mime = cursor.getString(6);
-					if (mime.startsWith("audio/") || mime.equals("application/ogg")
-							|| mime.equals("application/x-ogg")) {
+		try {
+			// search for artists
+			Cursor cursor = CursorFactory.makeArtistSearchCursor(getContext(), search);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
 						long id = cursor.getLong(0);
-						String songName = cursor.getString(1);
-						String artist = cursor.getString(2);
-						String album = cursor.getString(3);
-						long duration = cursor.getLong(4);
-						Song song = new Song(id, songName, artist, album, duration);
-						result.add(song);
-					}
-				} while (cursor.moveToNext());
+						String artistName = cursor.getString(1);
+						int albumCount = cursor.getInt(2);
+						int songCount = cursor.getInt(3);
+						Artist artist = new Artist(id, artistName, songCount, albumCount, true);
+						result.add(artist);
+					} while (cursor.moveToNext());
+				}
+				cursor.close();
 			}
-			cursor.close();
+			// search for albums
+			cursor = CursorFactory.makeAlbumSearchCursor(getContext(), search);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
+						long id = cursor.getLong(0);
+						String albumName = cursor.getString(1);
+						String artist = cursor.getString(2);
+						int songCount = cursor.getInt(3);
+						String year = cursor.getString(4);
+						Album album = new Album(id, albumName, artist, songCount, year, true);
+						result.add(album);
+					} while (cursor.moveToNext());
+				}
+				cursor.close();
+			}
+			// Search for tracks
+			cursor = CursorFactory.makeTrackSearchCursor(getContext(), search);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
+						String mime = cursor.getString(6);
+						if (mime.startsWith("audio/") || mime.equals("application/ogg")
+								|| mime.equals("application/x-ogg")) {
+							long id = cursor.getLong(0);
+							String songName = cursor.getString(1);
+							String artist = cursor.getString(2);
+							String album = cursor.getString(3);
+							long duration = cursor.getLong(4);
+							Song song = new Song(id, songName, artist, album, duration);
+							result.add(song);
+						}
+					} while (cursor.moveToNext());
+				}
+				cursor.close();
+			}
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading search results:", exception);
 		}
 		return result;
 	}

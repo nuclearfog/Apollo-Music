@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.CursorFactory;
@@ -28,6 +29,7 @@ import java.util.List;
  */
 public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 
+	private static final String TAG = "PlaylistSongLoader";
 
 	/**
 	 * The Id of the playlist the songs belong to.
@@ -50,33 +52,37 @@ public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 	@Override
 	public List<Song> loadInBackground() {
 		List<Song> result = new LinkedList<>();
-		// Create the Cursor
-		Cursor mCursor = CursorFactory.makePlaylistSongCursor(getContext(), mPlaylistID);
-		// Gather the data
-		if (mCursor != null) {
-			if (mCursor.moveToFirst()) {
-				do {
-					// Copy the song Id
-					long id = mCursor.getLong(0);
-					// Copy the song name
-					String songName = mCursor.getString(1);
-					// Copy the artist name
-					String artist = mCursor.getString(2);
-					// Copy the album name
-					String album = mCursor.getString(3);
-					// Copy the duration
-					long duration = mCursor.getLong(4);
-					// Copy playlist position
-					int pos = mCursor.getInt(5);
-					// Create a new song
-					Song song = new Song(id, songName, artist, album, duration, pos);
-					// Add everything up
-					result.add(song);
-				} while (mCursor.moveToNext());
+		try {
+			// Create the Cursor
+			Cursor mCursor = CursorFactory.makePlaylistSongCursor(getContext(), mPlaylistID);
+			// Gather the data
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						// Copy the song Id
+						long id = mCursor.getLong(0);
+						// Copy the song name
+						String songName = mCursor.getString(1);
+						// Copy the artist name
+						String artist = mCursor.getString(2);
+						// Copy the album name
+						String album = mCursor.getString(3);
+						// Copy the duration
+						long duration = mCursor.getLong(4);
+						// Copy playlist position
+						int pos = mCursor.getInt(5);
+						// Create a new song
+						Song song = new Song(id, songName, artist, album, duration, pos);
+						// Add everything up
+						result.add(song);
+					} while (mCursor.moveToNext());
+				}
+				mCursor.close();
 			}
-			mCursor.close();
+			Collections.sort(result);
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading songs from playlist:", exception);
 		}
-		Collections.sort(result);
 		return result;
 	}
 }

@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.utils.CursorFactory;
@@ -26,6 +27,8 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
+
+	private static final String TAG = "ArtistAlbumLoader";
 
 	/**
 	 * The Id of the artist the albums belong to.
@@ -49,29 +52,33 @@ public class ArtistAlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
 	@Override
 	public List<Album> loadInBackground() {
 		List<Album> result = new LinkedList<>();
-		// Create the Cursor
-		Cursor mCursor = CursorFactory.makeArtistAlbumCursor(getContext(), mArtistID);
-		// Gather the dataS
-		if (mCursor != null) {
-			if (mCursor.moveToFirst()) {
-				do {
-					// Copy the album id
-					long id = mCursor.getLong(0);
-					// Copy the album name
-					String albumName = mCursor.getString(1);
-					// Copy the artist name
-					String artist = mCursor.getString(2);
-					// Copy the number of songs
-					int songCount = mCursor.getInt(3);
-					// Copy the release year
-					String year = mCursor.getString(4);
-					// Create a new album
-					Album album = new Album(id, albumName, artist, songCount, year, true);
-					// Add everything up
-					result.add(album);
-				} while (mCursor.moveToNext());
+		try {
+			// Create the Cursor
+			Cursor mCursor = CursorFactory.makeArtistAlbumCursor(getContext(), mArtistID);
+			// Gather the dataS
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						// Copy the album id
+						long id = mCursor.getLong(0);
+						// Copy the album name
+						String albumName = mCursor.getString(1);
+						// Copy the artist name
+						String artist = mCursor.getString(2);
+						// Copy the number of songs
+						int songCount = mCursor.getInt(3);
+						// Copy the release year
+						String year = mCursor.getString(4);
+						// Create a new album
+						Album album = new Album(id, albumName, artist, songCount, year, true);
+						// Add everything up
+						result.add(album);
+					} while (mCursor.moveToNext());
+				}
+				mCursor.close();
 			}
-			mCursor.close();
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading albums from artist", exception);
 		}
 		return result;
 	}

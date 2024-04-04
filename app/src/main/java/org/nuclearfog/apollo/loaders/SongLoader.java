@@ -13,6 +13,7 @@ package org.nuclearfog.apollo.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.ExcludeStore;
@@ -22,13 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * Used to return the songs on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
+
+	private static final String TAG = "SongLoader";
 
 	private ExcludeStore exclude_db;
 
@@ -49,32 +51,36 @@ public class SongLoader extends WrappedAsyncTaskLoader<List<Song>> {
 	@Override
 	public List<Song> loadInBackground() {
 		List<Song> result = new LinkedList<>();
-		Set<Long> excludedIds = exclude_db.getIds(ExcludeStore.Type.SONG);
-		// Create the Cursor
-		Cursor mCursor = CursorFactory.makeTrackCursor(getContext());
-		// Gather the data
-		if (mCursor != null) {
-			if (mCursor.moveToFirst()) {
-				do {
-					// Copy the song Id
-					long id = mCursor.getLong(0);
-					// Copy the song name
-					String songName = mCursor.getString(1);
-					// Copy the artist name
-					String artist = mCursor.getString(2);
-					// Copy the album name
-					String album = mCursor.getString(3);
-					// Copy the duration
-					long duration = mCursor.getLong(4);
-					// set visibility
-					boolean visible = !excludedIds.contains(id);
-					// Create a new song
-					Song song = new Song(id, songName, artist, album, duration, visible);
-					// Add everything up
-					result.add(song);
-				} while (mCursor.moveToNext());
+		try {
+			Set<Long> excludedIds = exclude_db.getIds(ExcludeStore.Type.SONG);
+			// Create the Cursor
+			Cursor mCursor = CursorFactory.makeTrackCursor(getContext());
+			// Gather the data
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						// Copy the song Id
+						long id = mCursor.getLong(0);
+						// Copy the song name
+						String songName = mCursor.getString(1);
+						// Copy the artist name
+						String artist = mCursor.getString(2);
+						// Copy the album name
+						String album = mCursor.getString(3);
+						// Copy the duration
+						long duration = mCursor.getLong(4);
+						// set visibility
+						boolean visible = !excludedIds.contains(id);
+						// Create a new song
+						Song song = new Song(id, songName, artist, album, duration, visible);
+						// Add everything up
+						result.add(song);
+					} while (mCursor.moveToNext());
+				}
+				mCursor.close();
 			}
-			mCursor.close();
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading songs:", exception);
 		}
 		return result;
 	}

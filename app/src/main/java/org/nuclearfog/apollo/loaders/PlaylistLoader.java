@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.loaders;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.util.Log;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Playlist;
@@ -28,6 +29,8 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
+
+	private static final String TAG = "PlaylistLoader";
 
 	/**
 	 * Constructor of <code>PlaylistLoader</code>
@@ -44,25 +47,29 @@ public class PlaylistLoader extends WrappedAsyncTaskLoader<List<Playlist>> {
 	@Override
 	public List<Playlist> loadInBackground() {
 		List<Playlist> result = new LinkedList<>();
-		// Add the default playlists to the adapter
-		makeDefaultPlaylists(result);
-		// Create the Cursor
-		Cursor mCursor = CursorFactory.makePlaylistCursor(getContext());
-		// Gather the data
-		if (mCursor != null) {
-			if (mCursor.moveToFirst()) {
-				do {
-					// Copy the playlist id
-					long id = mCursor.getLong(0);
-					// Copy the playlist name
-					String name = mCursor.getString(1);
-					// Create a new playlist
-					Playlist playlist = new Playlist(id, name);
-					// Add everything up
-					result.add(playlist);
-				} while (mCursor.moveToNext());
+		try {
+			// Add the default playlists to the adapter
+			makeDefaultPlaylists(result);
+			// Create the Cursor
+			Cursor mCursor = CursorFactory.makePlaylistCursor(getContext());
+			// Gather the data
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						// Copy the playlist id
+						long id = mCursor.getLong(0);
+						// Copy the playlist name
+						String name = mCursor.getString(1);
+						// Create a new playlist
+						Playlist playlist = new Playlist(id, name);
+						// Add everything up
+						result.add(playlist);
+					} while (mCursor.moveToNext());
+				}
+				mCursor.close();
 			}
-			mCursor.close();
+		} catch (Exception exception) {
+			Log.e(TAG, "error loading playlist:", exception);
 		}
 		return result;
 	}

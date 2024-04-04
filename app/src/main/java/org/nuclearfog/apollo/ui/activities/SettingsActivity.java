@@ -20,10 +20,12 @@ import android.provider.Settings;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
@@ -114,11 +116,23 @@ public class SettingsActivity extends AppCompatActivity {
 
 		private static final String OLD_NOTIFICATION = "old_notification_layout";
 
+		private static final String DOWNLOAD_IMAGES = "download_missing_artist_images";
+
+		private static final String DOWNLOAD_ARTWORK = "download_missing_artwork";
+
+		private static final String DOWNLOAD_WIFI = "only_on_wifi";
+
 		/**
 		 * dialogs to ask the user for actions
 		 */
 		private AlertDialog licenseDialog, cacheClearDialog, colorPicker;
 
+		@Nullable
+		private CheckBoxPreference downloadImages;
+		@Nullable
+		private CheckBoxPreference downloadArtwork;
+		@Nullable
+		private CheckBoxPreference downloadWifi;
 
 		@Override
 		public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -129,6 +143,9 @@ public class SettingsActivity extends AppCompatActivity {
 			Preference colorScheme = findPreference(COLOR_SEL);
 			Preference batteryOpt = findPreference(BAT_OPT);
 			Preference oldNotification = findPreference(OLD_NOTIFICATION);
+			downloadImages = findPreference(DOWNLOAD_IMAGES);
+			downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
+			downloadWifi = findPreference(DOWNLOAD_WIFI);
 			Preference version = findPreference(VERSION);
 
 			if (version != null)
@@ -141,6 +158,13 @@ public class SettingsActivity extends AppCompatActivity {
 				themeChooser.setOnPreferenceClickListener(this);
 			if (colorScheme != null)
 				colorScheme.setOnPreferenceClickListener(this);
+			if (downloadImages != null && downloadArtwork != null) {
+				downloadImages.setOnPreferenceClickListener(this);
+				downloadArtwork.setOnPreferenceClickListener(this);
+				if (downloadWifi != null) {
+					downloadWifi.setEnabled(downloadImages.isChecked() || downloadArtwork.isChecked());
+				}
+			}
 			if (batteryOpt != null) {
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 					batteryOpt.setVisible(false);
@@ -180,6 +204,13 @@ public class SettingsActivity extends AppCompatActivity {
 					Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
 					startActivity(themeChooserIntent);
 					return true;
+
+				case DOWNLOAD_IMAGES:
+				case DOWNLOAD_ARTWORK:
+					if (downloadWifi != null && downloadArtwork != null && downloadImages != null) {
+						downloadWifi.setEnabled(downloadArtwork.isChecked() || downloadImages.isChecked());
+					}
+					break;
 
 				case BAT_OPT:
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

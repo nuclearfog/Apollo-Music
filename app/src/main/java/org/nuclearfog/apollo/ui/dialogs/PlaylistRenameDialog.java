@@ -33,14 +33,20 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "PlaylistRenameDialog";
 
-	private static final String KEY_ID = "rename-id";
+	private static final String KEY_ID = NAME + "_rename_id";
 
-	private static final String KEY_DEFAULT_NAME = "defaultname";
+	private static final String KEY_DEFAULT_NAME = NAME + "_default_name";
 
 	/**
 	 * ID of the playlist to rename
 	 */
 	private long mRenameId;
+
+	/**
+	 *
+	 */
+	public PlaylistRenameDialog() {
+	}
 
 	/**
 	 * @param id The Id of the playlist to rename
@@ -60,7 +66,6 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	@Override
 	public void onSaveInstanceState(Bundle outcicle) {
 		outcicle.putString(KEY_DEFAULT_NAME, mPlaylist.getText().toString());
-		outcicle.putLong(KEY_ID, mRenameId);
 	}
 
 	/**
@@ -69,14 +74,11 @@ public class PlaylistRenameDialog extends BasePlaylistDialog {
 	@Override
 	@SuppressLint("StringFormatInvalid")
 	protected void initObjects(Bundle savedInstanceState) {
-		// get ID of the playlist to rename
-		if (savedInstanceState != null) {
-			mRenameId = savedInstanceState.getLong(KEY_ID);
-		} else if (getArguments() != null) {
+		String mOriginalName = null;
+		if (getArguments() != null) {
 			mRenameId = getArguments().getLong(KEY_ID);
+			mOriginalName = getPlaylistNameFromId(mRenameId);
 		}
-		// get playlist name
-		String mOriginalName = getPlaylistNameFromId(mRenameId);
 		if (savedInstanceState != null) {
 			mDefaultname = savedInstanceState.getString(KEY_DEFAULT_NAME);
 		} else {

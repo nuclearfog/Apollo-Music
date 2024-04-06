@@ -32,12 +32,18 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "CreatePlaylist";
 
-	private static final String KEY_LIST = "playlist_list";
+	private static final String KEY_LIST = NAME +"_playlist_list";
 
-	private static final String KEY_DEFAULT_NAME = "defaultname";
+	private static final String KEY_DEFAULT_NAME = NAME + "_defaultname";
 
 	// The playlist list
 	private long[] mPlaylistList = {};
+
+	/**
+	 *
+	 */
+	public PlaylistCreateDialog() {
+	}
 
 	/**
 	 * @param list The list of tracks to add to the playlist

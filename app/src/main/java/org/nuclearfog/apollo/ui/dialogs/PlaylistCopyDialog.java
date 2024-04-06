@@ -17,14 +17,20 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "PlaylistCopyDialog";
 
-	private static final String KEY_ID = "copy-id";
+	private static final String KEY_ID = NAME + "_copy_id";
 
-	private static final String KEY_DEFAULT_NAME = "defaultname";
+	private static final String KEY_DEFAULT_NAME = NAME + "_default_name";
 
 	/**
 	 * ID of the playlist to copy
 	 */
 	private long copyId;
+
+	/**
+	 *
+	 */
+	public PlaylistCopyDialog() {
+	}
 
 
 	public static PlaylistCopyDialog getInstance(long id) {
@@ -51,15 +57,14 @@ public class PlaylistCopyDialog extends BasePlaylistDialog {
 	@SuppressLint("StringFormatInvalid")
 	protected void initObjects(Bundle savedInstanceState) {
 		// get ID of the playlist to copy
-		if (savedInstanceState != null) {
-			copyId = savedInstanceState.getLong(KEY_ID);
-		} else if (getArguments() != null) {
+		String mOriginalName = null;
+		if (getArguments() != null) {
 			copyId = getArguments().getLong(KEY_ID);
+			mOriginalName = getPlaylistNameFromId(copyId);
 		}
 		// get playlist name
-		String mOriginalName = getPlaylistNameFromId(copyId);
 		if (savedInstanceState != null) {
-			mDefaultname = savedInstanceState.getString(KEY_DEFAULT_NAME);
+			mDefaultname = savedInstanceState.getString(KEY_DEFAULT_NAME, "");
 		} else {
 			mDefaultname = mOriginalName;
 		}

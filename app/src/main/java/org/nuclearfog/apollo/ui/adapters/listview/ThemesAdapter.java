@@ -75,11 +75,6 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 		public final String mName;
 
 		/**
-		 * package of the theme
-		 */
-		public final String mPackage;
-
-		/**
 		 * preview drawable
 		 */
 		@Nullable
@@ -88,8 +83,7 @@ public class ThemesAdapter extends ArrayAdapter<ThemesAdapter.ThemeHolder> {
 		/**
 		 * Constructor of <code>ThemeHolder</code>
 		 */
-		public ThemeHolder(String pack, String name, @Nullable Drawable prev) {
-			mPackage = pack;
+		public ThemeHolder(String name, @Nullable Drawable prev) {
 			mName = name;
 			mPreview = prev;
 		}

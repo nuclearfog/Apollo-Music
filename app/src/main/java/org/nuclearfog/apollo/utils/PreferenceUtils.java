@@ -11,12 +11,9 @@
 
 package org.nuclearfog.apollo.utils;
 
-import static org.nuclearfog.apollo.service.MusicPlaybackService.REPEAT_NONE;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.SHUFFLE_NONE;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -77,6 +74,7 @@ public final class PreferenceUtils {
 	private static final String HISTORY = "history";
 	private static final String QUEUE = "queue";
 	private static final String ID_CARD = "cardid";
+	public static final String PACKAGE_INDEX = "theme_index";
 	// equalizer settings
 	private static final String FX_ENABLE = "fx_enable";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
@@ -100,7 +98,7 @@ public final class PreferenceUtils {
 	 * @param context The {@link Context} to use.
 	 */
 	private PreferenceUtils(Context context) {
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
 		startPage = mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
 		showHidden = mPreferences.getBoolean(SHOW_HIDDEN, false);
@@ -373,7 +371,7 @@ public final class PreferenceUtils {
 	 * @return integer mode {@link MusicPlaybackService#REPEAT_NONE#REPEAT_CURRENT#REPEAT_ALL}
 	 */
 	public int getRepeatMode() {
-		return mPreferences.getInt(MODE_REPEAT, REPEAT_NONE);
+		return mPreferences.getInt(MODE_REPEAT, MusicPlaybackService.REPEAT_NONE);
 	}
 
 	/**
@@ -382,7 +380,7 @@ public final class PreferenceUtils {
 	 * @return integer mode {@link MusicPlaybackService#SHUFFLE_NONE#SHUFFLE_NORMAL#SHUFFLE_AUTO}
 	 */
 	public int getShuffleMode() {
-		return mPreferences.getInt(MODE_SHUFFLE, SHUFFLE_NONE);
+		return mPreferences.getInt(MODE_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
 	}
 
 	/**
@@ -661,5 +659,26 @@ public final class PreferenceUtils {
 	 */
 	public String getApiKey() {
 		return mPreferences.getString(LASTFM_API_KEY, "");
+	}
+
+	/**
+	 * Return the index of the selected theme
+	 *
+	 * @return selection index
+	 * @noinspection unused
+	 */
+	public int getThemeSelectionIndex() {
+		return mPreferences.getInt(PACKAGE_INDEX, 0);
+	}
+
+	/**
+	 * Set the index of the theme selection
+	 *
+	 * @param position selection index
+	 */
+	public void setThemeSelectionIndex(int position) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(PACKAGE_INDEX, position);
+		editor.apply();
 	}
 }

@@ -40,7 +40,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 
 	public static final String NAME = "PhotoSelectionDialog";
 
-	private static final String KEY_TITLE = "title";
+	private static final String KEY_TITLE = NAME + "_title";
 
 	private static final int IDX_NEW = 0;
 	private static final int IDX_OLD = 1;
@@ -51,7 +51,10 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 
 	private List<String> mChoices = new ArrayList<>(5);
 
-	private PhotoSelectionDialog() {
+	/**
+	 *
+	 */
+	public PhotoSelectionDialog() {
 	}
 
 	/**
@@ -59,12 +62,12 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 	 * @return A new instance of the dialog.
 	 */
 	public static PhotoSelectionDialog newInstance(String title, ProfileType type) {
-		PhotoSelectionDialog frag = new PhotoSelectionDialog();
+		PhotoSelectionDialog dialog = new PhotoSelectionDialog();
 		Bundle args = new Bundle();
 		args.putString(KEY_TITLE, title);
-		frag.setArguments(args);
+		dialog.setArguments(args);
 		mProfileType = type;
-		return frag;
+		return dialog;
 	}
 
 	/**
@@ -106,7 +109,10 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				break;
 		}
 		// Dialog item Adapter
-		String title = getArguments() != null ? getArguments().getString(KEY_TITLE, "") : "";
+		String title = "";
+		if (getArguments() != null) {
+			title = getArguments().getString(KEY_TITLE, "");
+		}
 		ListAdapter adapter = new ArrayAdapter<>(requireContext(), android.R.layout.select_dialog_item, mChoices);
 		return new AlertDialog.Builder(requireContext()).setTitle(title).setAdapter(adapter, this).create();
 	}

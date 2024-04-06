@@ -36,10 +36,16 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 
 	public static final String NAME = "DeleteDialog";
 
+	private static final String KEY_TITLE = NAME + "_title";
+
+	private static final String KEY_IMAGEKEY = NAME + "_key";
+
+	private static final String KEY_ITEMS = NAME + "_items";
+
 	/**
 	 * The item(s) to delete
 	 */
-	private long[] mItemList;
+	private long[] mItemList = {};
 	/**
 	 * The image cache
 	 */
@@ -49,14 +55,9 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	private String title = "";
 
 	/**
-	 * Empty constructor as per the {@link androidx.fragment.app.Fragment} documentation
+	 *
 	 */
-	public DeleteDialog(String title, String key, long[] ids) {
-		if (key != null)
-			this.key = key;
-		if (title != null)
-			this.title = title;
-		mItemList = ids;
+	public DeleteDialog() {
 	}
 
 	/**
@@ -66,7 +67,13 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	 * @return A new instance of the dialog
 	 */
 	public static DeleteDialog newInstance(String title, long[] items, String key) {
-		return new DeleteDialog(title, key, items);
+		DeleteDialog dialog = new DeleteDialog();
+		Bundle args = new Bundle();
+		args.putString(KEY_TITLE, title);
+		args.putString(KEY_IMAGEKEY, key);
+		args.putLongArray(KEY_ITEMS, items);
+		dialog.setArguments(args);
+		return dialog;
 	}
 
 	/**
@@ -75,6 +82,14 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		if (getArguments() != null) {
+			title = getArguments().getString(KEY_TITLE, "");
+			key = getArguments().getString(KEY_IMAGEKEY, "");
+			long[] mItemList = getArguments().getLongArray(KEY_ITEMS);
+			if (mItemList != null) {
+				this.mItemList = mItemList;
+			}
+		}
 		String delete = getString(R.string.context_menu_delete);
 		// Get the image cache key
 		String dialogTitle = getString(R.string.delete_dialog_title, title);

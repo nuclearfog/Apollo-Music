@@ -12,12 +12,10 @@
 package org.nuclearfog.apollo.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,15 +40,6 @@ import org.nuclearfog.apollo.R;
 public class ThemeUtils {
 
 	/**
-	 * Current theme package name.
-	 */
-	public static final String PACKAGE_INDEX = "theme_index";
-	/**
-	 * Used to get and set the theme package name.
-	 */
-	private final SharedPreferences mPreferences;
-
-	/**
 	 * Custom action bar layout
 	 */
 	private final View mActionBarLayout;
@@ -66,32 +55,10 @@ public class ThemeUtils {
 	 * @param context The {@link Context} to use.
 	 */
 	public ThemeUtils(Context context) {
-		// Get the preferences
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		resources = context.getResources();
 		// todo implement theme setup here
 		// Inflate the custom layout
 		mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
-	}
-
-	/**
-	 * Return the index of the selected theme
-	 *
-	 * @return selection index
-	 */
-	public final int getThemeSelectionIndex() {
-		return mPreferences.getInt(PACKAGE_INDEX, 0);
-	}
-
-	/**
-	 * Set the index of the theme selection
-	 *
-	 * @param position selection index
-	 */
-	public void setThemeSelectionIndex(int position) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt(PACKAGE_INDEX, position);
-		editor.apply();
 	}
 
 	/**

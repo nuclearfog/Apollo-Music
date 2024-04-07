@@ -26,8 +26,11 @@ import android.graphics.drawable.Icon;
 import android.media.audiofx.AudioEffect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -48,7 +51,9 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
+import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
+import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 
 import java.io.File;
@@ -394,5 +399,36 @@ public final class ApolloUtils {
 				}
 			}
 		});
+	}
+
+	/**
+	 * open battery optimization dialog
+	 */
+	public static void openBatteryOptimizationDialog(FragmentActivity activity) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			PreferenceUtils pref = PreferenceUtils.getInstance(activity);
+			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
+			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
+				BatteryOptDialog dialog = BatteryOptDialog.newInstance();
+				dialog.show(activity.getSupportFragmentManager(), DeleteDialog.NAME);
+			}
+		}
+	}
+
+	/**
+	 * open battery optimization page of the Android system
+	 */
+	public static void redirectToBatteryOptimization(Activity activity) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+			intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+			try {
+				activity.startActivity(intent);
+			} catch (Exception exception) {
+				if (BuildConfig.DEBUG) {
+					exception.printStackTrace();
+				}
+			}
+		}
 	}
 }

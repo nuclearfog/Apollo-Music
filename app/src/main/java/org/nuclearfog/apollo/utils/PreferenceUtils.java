@@ -74,7 +74,8 @@ public final class PreferenceUtils {
 	private static final String HISTORY = "history";
 	private static final String QUEUE = "queue";
 	private static final String ID_CARD = "cardid";
-	public static final String PACKAGE_INDEX = "theme_index";
+	private static final String PACKAGE_INDEX = "theme_index";
+	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
 	// equalizer settings
 	private static final String FX_ENABLE = "fx_enable";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
@@ -679,6 +680,22 @@ public final class PreferenceUtils {
 	public void setThemeSelectionIndex(int position) {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putInt(PACKAGE_INDEX, position);
+		editor.apply();
+	}
+
+	/**
+	 * check if battery optimization warning is disabled
+	 */
+	public boolean isBatteryOptimizationIgnored() {
+		return mPreferences.getBoolean(BAT_OPTIMIZATION, false);
+	}
+
+	/**
+	 * ignore battery optimization warning
+	 */
+	public void setIgnoreBatteryOptimization() {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putBoolean(BAT_OPTIMIZATION, true);
 		editor.apply();
 	}
 }

@@ -82,6 +82,10 @@
 	<string name="create_playlist_prompt">Playlist name</string>
 	<string name="delete_dialog_title">Delete <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">This cannot be undone</string>
+	<string name="dialog_disable_bat_opt_title">Disable battery optimization</string>
+	<string name="dialog_disable_bat_opt_message">It\'s recommended to disable battery optimization to prevent Android system interrupting the playback.</string>
+	<string name="dialog_disable_bat_opt_confirm">apply</string>
+	<string name="dialog_disable_bat_opt_ignore">ignore</string>
 	<string name="delete_warning">This will permanently delete the cached image entries</string>
 	<string name="new_photo">Choose photo from Gallery</string>
 	<string name="google_search">Google search</string>

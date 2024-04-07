@@ -11,12 +11,9 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -182,7 +179,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 		@Override
-		@SuppressLint("BatteryLife")
 		public boolean onPreferenceClick(@NonNull Preference preference) {
 			switch (preference.getKey()) {
 				case LICENSE:
@@ -213,17 +209,7 @@ public class SettingsActivity extends AppCompatActivity {
 					break;
 
 				case BAT_OPT:
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-						intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-						try {
-							startActivity(intent);
-						} catch (Exception exception) {
-							if (BuildConfig.DEBUG) {
-								exception.printStackTrace();
-							}
-						}
-					}
+					ApolloUtils.redirectToBatteryOptimization(requireActivity());
 					return true;
 			}
 			return false;

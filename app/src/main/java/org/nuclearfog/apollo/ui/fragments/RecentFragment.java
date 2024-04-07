@@ -375,28 +375,30 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * initialize adapter & list
 	 */
 	private void initList() {
-		if (preference.isSimpleLayout(PreferenceUtils.RECENT_LAYOUT)) {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
-		} else if (preference.isDetailedLayout(PreferenceUtils.RECENT_LAYOUT)) {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
-		} else {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
-		}
-		if (preference.isSimpleLayout(PreferenceUtils.RECENT_LAYOUT)) {
-			mList.setNumColumns(ONE);
-		} else if (preference.isDetailedLayout(PreferenceUtils.RECENT_LAYOUT)) {
-			mAdapter.setLoadExtraData();
-			if (ApolloUtils.isLandscape(requireContext())) {
-				mList.setNumColumns(TWO);
-			} else {
+		switch (preference.getRecentLayout()) {
+			case PreferenceUtils.LAYOUT_SIMPLE:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
 				mList.setNumColumns(ONE);
-			}
-		} else {
-			if (ApolloUtils.isLandscape(requireContext())) {
-				mList.setNumColumns(FOUR);
-			} else {
-				mList.setNumColumns(TWO);
-			}
+				break;
+
+			case PreferenceUtils.LAYOUT_DETAILED:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
+				mAdapter.setLoadExtraData();
+				if (ApolloUtils.isLandscape(requireContext())) {
+					mList.setNumColumns(TWO);
+				} else {
+					mList.setNumColumns(ONE);
+				}
+				break;
+
+			default:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
+				if (ApolloUtils.isLandscape(requireContext())) {
+					mList.setNumColumns(FOUR);
+				} else {
+					mList.setNumColumns(TWO);
+				}
+				break;
 		}
 		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);

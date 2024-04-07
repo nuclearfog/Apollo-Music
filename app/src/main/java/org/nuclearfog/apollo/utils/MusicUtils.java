@@ -238,9 +238,9 @@ public final class MusicUtils {
 	public static void play(Context context) {
 		IApolloService service = mService;
 		if (service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.play();
+				AudioEffects.getInstance(context, getAudioSessionId());
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -481,7 +481,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @return The audio session Id.
+	 * @return The audio session ID or 0 if not initialized or if an error occured
 	 */
 	public static int getAudioSessionId() {
 		IApolloService service = mService;
@@ -494,7 +494,7 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return -1;
+		return 0;
 	}
 
 	/**

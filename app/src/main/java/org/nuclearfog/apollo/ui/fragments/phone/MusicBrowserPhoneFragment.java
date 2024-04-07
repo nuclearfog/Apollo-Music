@@ -168,7 +168,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
 		MenuItem visibility = menu.findItem(R.id.menu_show_hidden);
 		if (visibility != null) {
-			visibility.setChecked(mPreferences.showExcludedTracks());
+			visibility.setChecked(mPreferences.getExcludeTracks());
 		}
 		mResources.setFavoriteIcon(favorite);
 	}
@@ -314,39 +314,39 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		// set simple item view
 		else if (item.getItemId() == R.id.menu_view_as_simple) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout("simple");
+				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_SIMPLE);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout("simple");
+				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_SIMPLE);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout("simple");
+				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_SIMPLE);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}
 		// set detailed item view
 		else if (item.getItemId() == R.id.menu_view_as_detailed) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout("detailed");
+				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_DETAILED);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout("detailed");
+				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_DETAILED);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout("detailed");
+				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_DETAILED);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}
 		// set grid item view
 		else if (item.getItemId() == R.id.menu_view_as_grid) {
 			if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_RECENT) {
-				mPreferences.setRecentLayout("grid");
+				mPreferences.setRecentLayout(PreferenceUtils.LAYOUT_GRID);
 				viewModel.notify(RecentFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ARTIST) {
-				mPreferences.setArtistLayout("grid");
+				mPreferences.setArtistLayout(PreferenceUtils.LAYOUT_GRID);
 				viewModel.notify(ArtistFragment.REFRESH);
 			} else if (mViewPager.getCurrentItem() == MusicBrowserAdapter.IDX_ALBUM) {
-				mPreferences.setAlbumLayout("grid");
+				mPreferences.setAlbumLayout(PreferenceUtils.LAYOUT_GRID);
 				viewModel.notify(AlbumFragment.REFRESH);
 			}
 		}

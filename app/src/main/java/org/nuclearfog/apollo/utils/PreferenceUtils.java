@@ -11,6 +11,7 @@
 
 package org.nuclearfog.apollo.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
@@ -29,6 +30,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
+@SuppressLint("ApplySharedPref")
 public final class PreferenceUtils {
 
 	private static final String TAG = "PreferenceUtils";
@@ -66,7 +68,13 @@ public final class PreferenceUtils {
 	public static final String LAYOUT_SIMPLE = "simple";
 	public static final String LAYOUT_DETAILED = "detailed";
 	public static final String LAYOUT_GRID = "grid";
-	//
+	// equalizer settings
+	private static final String FX_ENABLE = "fx_enable_effects";
+	private static final String FX_BASSBOOST = "fx_bassboost_enable";
+	private static final String FX_REVERB = "fx_reverb_enable";
+	private static final String FX_PREFER_EXT = "fx_prefer_external";
+	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
+	// other settings
 	private static final String MODE_SHUFFLE = "shufflemode";
 	private static final String MODE_REPEAT = "repeatmode";
 	private static final String POS_SEEK = "seekpos";
@@ -76,22 +84,15 @@ public final class PreferenceUtils {
 	private static final String ID_CARD = "cardid";
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
-	// equalizer settings
-	private static final String FX_ENABLE = "fx_enable";
-	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
-	private static final String FX_BASSBOOST = "fx_bassbost";
-	private static final String FX_REVERB = "fx_reverb";
-	private static final String FX_PREFER_EXT = "fx_prefer_external";
 	private static final String NOTIFICATION_LAYOUT = "prefer_old_notification_layout";
 	private static final String LASTFM_API_KEY = "api_key";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
 
-	private static volatile PreferenceUtils sInstance;
+	private static PreferenceUtils sInstance;
 
 	private SharedPreferences mPreferences;
 	private int themeColor;
 	private int startPage;
-	private boolean showHidden;
 
 	/**
 	 * Constructor for <code>PreferenceUtils</code>
@@ -102,7 +103,6 @@ public final class PreferenceUtils {
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
 		themeColor = mPreferences.getInt(DEFAULT_THEME_COLOR, context.getResources().getColor(R.color.holo_green));
 		startPage = mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
-		showHidden = mPreferences.getBoolean(SHOW_HIDDEN, false);
 	}
 
 	/**
@@ -139,6 +139,15 @@ public final class PreferenceUtils {
 	}
 
 	/**
+	 * Returns the current theme color.
+	 *
+	 * @return The default theme color.
+	 */
+	public int getDefaultThemeColor() {
+		return themeColor;
+	}
+
+	/**
 	 * Sets the new theme color.
 	 *
 	 * @param value The new theme color to use.
@@ -148,15 +157,6 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putInt(DEFAULT_THEME_COLOR, value);
 		editor.apply();
-	}
-
-	/**
-	 * Returns the current theme color.
-	 *
-	 * @return The default theme color.
-	 */
-	public int getDefaultThemeColor() {
-		return themeColor;
 	}
 
 	/**
@@ -276,6 +276,171 @@ public final class PreferenceUtils {
 	}
 
 	/**
+	 * Sets the sort order for the album song list.
+	 *
+	 * @param value The new sort order
+	 */
+	public void setAlbumSongSortOrder(String value) {
+		setSortOrder(ALBUM_SONG_SORT_ORDER, value);
+	}
+
+	/**
+	 * get current card ID
+	 *
+	 * @return card ID
+	 */
+	public int getCardId() {
+		return mPreferences.getInt(ID_CARD, -1);
+	}
+
+	/**
+	 * get current cursor position
+	 *
+	 * @return cursor position
+	 */
+	public int getCursorPosition() {
+		return mPreferences.getInt(POS_CURSOR, 0);
+	}
+
+	/**
+	 * set current ursor position
+	 *
+	 * @param position cursor position
+	 */
+	public void setCursorPosition(int position) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(POS_CURSOR, position);
+		editor.apply();
+	}
+
+	/**
+	 * @return The sort order used for the song list in {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
+	 */
+	public String getSongSortOrder() {
+		return mPreferences.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);
+	}
+
+	/**
+	 * Sets the sort order for the song list.
+	 *
+	 * @param value The new sort order
+	 */
+	public void setSongSortOrder(String value) {
+		setSortOrder(SONG_SORT_ORDER, value);
+	}
+
+	/**
+	 * get last seek position
+	 *
+	 * @return position of the seekbar
+	 */
+	public long getSeekPosition() {
+		return mPreferences.getLong(POS_SEEK, 0L);
+	}
+
+	/**
+	 * set last seekbar position
+	 *
+	 * @param seekPos seekbar position
+	 */
+	public void setSeekPosition(long seekPos) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putLong(POS_SEEK, seekPos);
+		editor.apply();
+	}
+
+	/**
+	 * get status of the repeat mode
+	 *
+	 * @return integer mode {@link MusicPlaybackService#REPEAT_NONE#REPEAT_CURRENT#REPEAT_ALL}
+	 */
+	public int getRepeatMode() {
+		return mPreferences.getInt(MODE_REPEAT, MusicPlaybackService.REPEAT_NONE);
+	}
+
+	/**
+	 * get status of the shuffle mode
+	 *
+	 * @return integer mode {@link MusicPlaybackService#SHUFFLE_NONE#SHUFFLE_NORMAL#SHUFFLE_AUTO}
+	 */
+	public int getShuffleMode() {
+		return mPreferences.getInt(MODE_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
+	}
+
+	/**
+	 * set repeat and shuffle mode
+	 *
+	 * @param repeatMode  repeat mode flags
+	 * @param shuffleMode shuffle mode flags
+	 */
+	public void setRepeatAndShuffleMode(int repeatMode, int shuffleMode) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(MODE_REPEAT, repeatMode);
+		editor.putInt(MODE_SHUFFLE, shuffleMode);
+		editor.commit();
+	}
+
+	/**
+	 * get layout for the artist list
+	 *
+	 * @return layout type {@link #LAYOUT_SIMPLE,#LAYOUT_DETAILED,#LAYOUT_GRID}
+	 */
+	public String getArtistLayout() {
+		return mPreferences.getString(ARTIST_LAYOUT, LAYOUT_GRID);
+	}
+
+	/**
+	 * Sets the layout type for the artist list
+	 *
+	 * @param value The new layout type
+	 */
+	public void setArtistLayout(String value) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putString(ARTIST_LAYOUT, value);
+		editor.apply();
+	}
+
+	/**
+	 * get layout type for the album list
+	 *
+	 * @return layout type {@link #LAYOUT_SIMPLE,#LAYOUT_DETAILED,#LAYOUT_GRID}
+	 */
+	public String getAlbumLayout() {
+		return mPreferences.getString(ALBUM_LAYOUT, LAYOUT_GRID);
+	}
+
+	/**
+	 * Sets the layout type for the album list
+	 *
+	 * @param value The new layout type
+	 */
+	public void setAlbumLayout(String value) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putString(ALBUM_LAYOUT, value);
+		editor.apply();
+	}
+
+	/**
+	 * get layout type for the recent album list
+	 *
+	 * @return layout type {@link #LAYOUT_SIMPLE,#LAYOUT_DETAILED,#LAYOUT_GRID}
+	 */
+	public String getRecentLayout() {
+		return mPreferences.getString(RECENT_LAYOUT, LAYOUT_GRID);
+	}
+
+	/**
+	 * Sets the layout type for the recent list
+	 *
+	 * @param value The new layout type
+	 */
+	public void setRecentLayout(String value) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putString(RECENT_LAYOUT, value);
+		editor.apply();
+	}
+
+	/**
 	 * get last playlist
 	 *
 	 * @return playlist
@@ -297,6 +462,24 @@ public final class PreferenceUtils {
 			}
 		}
 		return playList;
+	}
+
+	/**
+	 * save current playlist
+	 *
+	 * @param playlist list of tracks
+	 * @param cardId   list id
+	 */
+	public void setPlayList(List<Long> playlist, int cardId) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		StringBuilder buffer = new StringBuilder();
+		for (long n : playlist) {
+			buffer.append(Long.toHexString(n));
+			buffer.append(";");
+		}
+		editor.putString(QUEUE, buffer.toString());
+		editor.putInt(ID_CARD, cardId);
+		editor.apply();
 	}
 
 	/**
@@ -324,138 +507,11 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * get current card ID
-	 *
-	 * @return card ID
-	 */
-	public int getCardId() {
-		return mPreferences.getInt(ID_CARD, -1);
-	}
-
-	/**
-	 * get current cursor position
-	 *
-	 * @return cursor position
-	 */
-	public int getCursorPosition() {
-		return mPreferences.getInt(POS_CURSOR, 0);
-	}
-
-	/**
-	 * Sets the sort order for the album song list.
-	 *
-	 * @param value The new sort order
-	 */
-	public void setAlbumSongSortOrder(String value) {
-		setSortOrder(ALBUM_SONG_SORT_ORDER, value);
-	}
-
-	/**
-	 * @return The sort order used for the song list in {@link org.nuclearfog.apollo.ui.fragments.SongFragment}
-	 */
-	public String getSongSortOrder() {
-		return mPreferences.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);
-	}
-
-	/**
-	 * get last seek position
-	 *
-	 * @return position of the seekbar
-	 */
-	public long getSeekPosition() {
-		return mPreferences.getLong(POS_SEEK, 0L);
-	}
-
-	/**
-	 * get status of the repeat mode
-	 *
-	 * @return integer mode {@link MusicPlaybackService#REPEAT_NONE#REPEAT_CURRENT#REPEAT_ALL}
-	 */
-	public int getRepeatMode() {
-		return mPreferences.getInt(MODE_REPEAT, MusicPlaybackService.REPEAT_NONE);
-	}
-
-	/**
-	 * get status of the shuffle mode
-	 *
-	 * @return integer mode {@link MusicPlaybackService#SHUFFLE_NONE#SHUFFLE_NORMAL#SHUFFLE_AUTO}
-	 */
-	public int getShuffleMode() {
-		return mPreferences.getInt(MODE_SHUFFLE, MusicPlaybackService.SHUFFLE_NONE);
-	}
-
-	/**
-	 * Sets the sort order for the song list.
-	 *
-	 * @param value The new sort order
-	 */
-	public void setSongSortOrder(String value) {
-		setSortOrder(SONG_SORT_ORDER, value);
-	}
-
-	/**
-	 * Saves the layout type for a list
-	 *
-	 * @param key   Which layout to change
-	 * @param value The new layout type
-	 */
-	private void setLayoutType(String key, String value) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putString(key, value);
-		editor.apply();
-	}
-
-	/**
-	 * Sets the layout type for the artist list
-	 *
-	 * @param value The new layout type
-	 */
-	public void setArtistLayout(String value) {
-		setLayoutType(ARTIST_LAYOUT, value);
-	}
-
-	/**
-	 * Sets the layout type for the album list
-	 *
-	 * @param value The new layout type
-	 */
-	public void setAlbumLayout(String value) {
-		setLayoutType(ALBUM_LAYOUT, value);
-	}
-
-	/**
-	 * Sets the layout type for the recent list
-	 *
-	 * @param value The new layout type
-	 */
-	public void setRecentLayout(String value) {
-		setLayoutType(RECENT_LAYOUT, value);
-	}
-
-	/**
-	 * save current playlist
-	 *
-	 * @param playlist list of tracks
-	 * @param cardId   list id
-	 */
-	public void setPlayList(List<Long> playlist, int cardId) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		StringBuilder buffer = new StringBuilder();
-		for (long n : playlist) {
-			buffer.append(Long.toHexString(n));
-			buffer.append(";");
-		}
-		editor.putString(QUEUE, buffer.toString());
-		editor.putInt(ID_CARD, cardId);
-		editor.apply();
-	}
-
-	/**
 	 * set track history
 	 *
 	 * @param history list of track history
 	 */
-	public void setHistory(List<Integer> history) {
+	public void setTrackHistory(List<Integer> history) {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		StringBuilder buffer = new StringBuilder();
 		for (long n : history) {
@@ -464,63 +520,6 @@ public final class PreferenceUtils {
 		}
 		editor.putString(HISTORY, buffer.toString());
 		editor.apply();
-	}
-
-	/**
-	 * set current ursor position
-	 *
-	 * @param position cursor position
-	 */
-	public void setCursorPosition(int position) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt(POS_CURSOR, position);
-		editor.apply();
-	}
-
-	/**
-	 * set last seekbar position
-	 *
-	 * @param seekPos seekbar position
-	 */
-	public void setSeekPosition(long seekPos) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putLong(POS_SEEK, seekPos);
-		editor.apply();
-	}
-
-	/**
-	 * set repeat and shuffle mode
-	 *
-	 * @param repeatMode  repeat mode flags
-	 * @param shuffleMode shuffle mode flags
-	 */
-	public void setRepeatAndShuffleMode(int repeatMode, int shuffleMode) {
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt(MODE_REPEAT, repeatMode);
-		editor.putInt(MODE_SHUFFLE, shuffleMode);
-		editor.apply();
-	}
-
-	/**
-	 * check if page is configured to show a simple layout
-	 *
-	 * @param which Which page to check: {@link #ARTIST_LAYOUT}, {@link #ALBUM_LAYOUT} or {@link #RECENT_LAYOUT}
-	 * @return True if the layout type is the simple layout, false otherwise.
-	 */
-	public boolean isSimpleLayout(String which) {
-		String result = mPreferences.getString(which, LAYOUT_GRID);
-		return LAYOUT_SIMPLE.equals(result);
-	}
-
-	/**
-	 * check if page is configured to show a detailled layout
-	 *
-	 * @param which Which page to check: {@link #ARTIST_LAYOUT}, {@link #ALBUM_LAYOUT} or {@link #RECENT_LAYOUT}
-	 * @return True if the layout type is the detailled layout, false otherwise.
-	 */
-	public boolean isDetailedLayout(String which) {
-		String result = mPreferences.getString(which, LAYOUT_GRID);
-		return LAYOUT_DETAILED.equals(result);
 	}
 
 	/**
@@ -540,24 +539,7 @@ public final class PreferenceUtils {
 	public void setAudioFxEnabled(boolean enable) {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putBoolean(FX_ENABLE, enable);
-		editor.apply();
-	}
-
-	/**
-	 * save new equalizer band setup
-	 *
-	 * @param bands array of band levels starting with the lowest frequency
-	 */
-	public void setEqualizerBands(int[] bands) {
-		StringBuilder result = new StringBuilder();
-		for (int band : bands)
-			result.append(band).append(';');
-		if (result.length() > 0)
-			result.deleteCharAt(result.length() - 1);
-
-		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putString(FX_EQUALIZER_BANDS, result.toString());
-		editor.apply();
+		editor.commit();
 	}
 
 	/**
@@ -579,14 +561,20 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * set bass boost level
+	 * save new equalizer band setup
 	 *
-	 * @param level bass level from 0 to 1000
+	 * @param bands array of band levels starting with the lowest frequency
 	 */
-	public void setBassLevel(int level) {
+	public void setEqualizerBands(int[] bands) {
+		StringBuilder result = new StringBuilder();
+		for (int band : bands)
+			result.append(band).append(';');
+		if (result.length() > 0)
+			result.deleteCharAt(result.length() - 1);
+
 		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt(FX_BASSBOOST, level);
-		editor.apply();
+		editor.putString(FX_EQUALIZER_BANDS, result.toString());
+		editor.commit();
 	}
 
 	/**
@@ -599,14 +587,14 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * set reverb level
+	 * set bass boost level
 	 *
-	 * @param level reverb level (room size)
+	 * @param level bass level from 0 to 1000
 	 */
-	public void setReverbLevel(int level) {
+	public void setBassLevel(int level) {
 		SharedPreferences.Editor editor = mPreferences.edit();
-		editor.putInt(FX_REVERB, level);
-		editor.apply();
+		editor.putInt(FX_BASSBOOST, level);
+		editor.commit();
 	}
 
 	/**
@@ -619,47 +607,30 @@ public final class PreferenceUtils {
 	}
 
 	/**
-	 * check if external audio effect app is prefered
+	 * set reverb level
 	 *
-	 * @return true if external audio effect app is prefered
+	 * @param level reverb level (room size)
 	 */
-	public boolean isExternalAudioFxPrefered() {
-		return mPreferences.getBoolean(FX_PREFER_EXT, false);
+	public void setReverbLevel(int level) {
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.putInt(FX_REVERB, level);
+		editor.commit();
 	}
 
 	/**
-	 * check if old notification layout is enabled
-	 *
-	 * @return true if old notification layout should be used
+	 * @return true to show tracks hidden by the user
 	 */
-	public boolean oldNotificationLayoutEnabled() {
-		return mPreferences.getBoolean(NOTIFICATION_LAYOUT, false);
+	public boolean getExcludeTracks() {
+		return mPreferences.getBoolean(SHOW_HIDDEN, false);
 	}
 
 	/**
-	 *
-	 */
-	public boolean showExcludedTracks() {
-		return showHidden;
-	}
-
-	/**
-	 *
+	 * @param showHidden true to show hidden tracks
 	 */
 	public void setExcludeTracks(boolean showHidden) {
-		this.showHidden = showHidden;
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putBoolean(SHOW_HIDDEN, showHidden);
-		editor.apply();
-	}
-
-	/**
-	 * get LastFM API key
-	 *
-	 * @return API key string
-	 */
-	public String getApiKey() {
-		return mPreferences.getString(LASTFM_API_KEY, "");
+		editor.commit();
 	}
 
 	/**
@@ -697,5 +668,32 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = mPreferences.edit();
 		editor.putBoolean(BAT_OPTIMIZATION, true);
 		editor.apply();
+	}
+
+	/**
+	 * check if external audio effect app is prefered
+	 *
+	 * @return true if external audio effect app is prefered
+	 */
+	public boolean isExternalAudioFxPrefered() {
+		return mPreferences.getBoolean(FX_PREFER_EXT, false);
+	}
+
+	/**
+	 * check if old notification layout is enabled
+	 *
+	 * @return true if old notification layout should be used
+	 */
+	public boolean oldNotificationLayoutEnabled() {
+		return mPreferences.getBoolean(NOTIFICATION_LAYOUT, false);
+	}
+
+	/**
+	 * get LastFM API key
+	 *
+	 * @return API key string
+	 */
+	public String getApiKey() {
+		return mPreferences.getString(LASTFM_API_KEY, "");
 	}
 }

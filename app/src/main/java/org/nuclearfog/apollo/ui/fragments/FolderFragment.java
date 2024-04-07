@@ -217,7 +217,7 @@ public class FolderFragment extends Fragment implements LoaderCallbacks<List<Fol
 		mAdapter.clear();
 		// add data to the adapter
 		for (Folder folder : data) {
-			if (preference.showExcludedTracks() || folder.isVisible()) {
+			if (preference.getExcludeTracks() || folder.isVisible()) {
 				mAdapter.add(folder);
 			}
 		}

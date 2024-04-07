@@ -251,7 +251,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		mAdapter.clear();
 		// Add the data to the adapter
 		for (Genre genre : data) {
-			if (preference.showExcludedTracks() || genre.isVisible()) {
+			if (preference.getExcludeTracks() || genre.isVisible()) {
 				mAdapter.add(genre);
 			}
 		}

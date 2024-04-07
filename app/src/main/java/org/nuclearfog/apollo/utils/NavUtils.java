@@ -81,14 +81,17 @@ public final class NavUtils {
 	 * @param activity The {@link Activity} to use.
 	 */
 	public static void openEffectsPanel(Activity activity) {
-		try {
+		int sessionId = MusicUtils.getAudioSessionId();
+		if (sessionId != 0) {
 			Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-			effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, MusicUtils.getAudioSessionId());
-			activity.startActivity(effects);
-		} catch (ActivityNotFoundException notFound) {
-			AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
-			if (BuildConfig.DEBUG) {
-				notFound.printStackTrace();
+			effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
+			try {
+				activity.startActivity(effects);
+			} catch (ActivityNotFoundException exception) {
+				AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
+				if (BuildConfig.DEBUG) {
+					exception.printStackTrace();
+				}
 			}
 		}
 	}

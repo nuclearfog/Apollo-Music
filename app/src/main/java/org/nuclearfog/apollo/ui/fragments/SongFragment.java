@@ -293,7 +293,7 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 			mAdapter.clear();
 			// Add the data to the adapter
 			for (Song song : data) {
-				if (preference.showExcludedTracks() || song.isVisible()) {
+				if (preference.getExcludeTracks() || song.isVisible()) {
 					mAdapter.add(song);
 				}
 			}

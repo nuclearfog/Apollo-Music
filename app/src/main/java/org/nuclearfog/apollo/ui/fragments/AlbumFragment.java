@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import static org.nuclearfog.apollo.utils.PreferenceUtils.ALBUM_LAYOUT;
-
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -314,7 +312,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 		mAdapter.clear();
 		// Add the data to the adapter
 		for (Album album : data) {
-			if (preference.showExcludedTracks() || album.isVisible()) {
+			if (preference.getExcludeTracks() || album.isVisible()) {
 				mAdapter.add(album);
 			}
 		}
@@ -371,28 +369,30 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 * initialize adapter & list
 	 */
 	private void initList() {
-		if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
-		} else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
-		} else {
-			mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
-		}
-		if (preference.isSimpleLayout(ALBUM_LAYOUT)) {
-			mList.setNumColumns(ONE);
-		} else if (preference.isDetailedLayout(ALBUM_LAYOUT)) {
-			mAdapter.setLoadExtraData();
-			if (ApolloUtils.isLandscape(requireContext())) {
-				mList.setNumColumns(TWO);
-			} else {
+		switch (preference.getAlbumLayout()) {
+			case PreferenceUtils.LAYOUT_SIMPLE:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
 				mList.setNumColumns(ONE);
-			}
-		} else {
-			if (ApolloUtils.isLandscape(requireContext())) {
-				mList.setNumColumns(FOUR);
-			} else {
-				mList.setNumColumns(TWO);
-			}
+				break;
+
+			case PreferenceUtils.LAYOUT_DETAILED:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
+				mAdapter.setLoadExtraData();
+				if (ApolloUtils.isLandscape(requireContext())) {
+					mList.setNumColumns(TWO);
+				} else {
+					mList.setNumColumns(ONE);
+				}
+				break;
+
+			default:
+				mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
+				if (ApolloUtils.isLandscape(requireContext())) {
+					mList.setNumColumns(FOUR);
+				} else {
+					mList.setNumColumns(TWO);
+				}
+				break;
 		}
 		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);

@@ -58,11 +58,15 @@ public final class AudioEffects {
 	@Nullable
 	public static AudioEffects getInstance(Context context, int sessionId) {
 		try {
-			if (instance == null || instance.sessionId != sessionId) {
-				instance = new AudioEffects(context, sessionId);
-				if (BuildConfig.DEBUG) {
-					Log.d(TAG, "audio_session_id=" + sessionId);
+			if (sessionId != 0) {
+				if (instance == null || instance.sessionId != sessionId) {
+					instance = new AudioEffects(context, sessionId);
+					if (BuildConfig.DEBUG) {
+						Log.d(TAG, "audio_session_id=" + sessionId);
+					}
 				}
+			} else {
+				Log.e(TAG, "init audio effects failed, audio session id is '0'!");
 			}
 		} catch (Exception e) {
 			// thrown if there is no support for audio effects

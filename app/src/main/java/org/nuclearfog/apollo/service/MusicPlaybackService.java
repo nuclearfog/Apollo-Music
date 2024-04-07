@@ -1930,7 +1930,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			if (full) {
 				settings.setPlayList(mPlayList, mCardId);
 				if (mShuffleMode != SHUFFLE_NONE) {
-					settings.setHistory(mHistory);
+					settings.setTrackHistory(mHistory);
 				}
 			}
 			settings.setCursorPosition(mPlayPos);

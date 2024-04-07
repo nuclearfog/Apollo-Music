@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -33,6 +34,8 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	@Nullable
 	private MediaPlayer mNextMediaPlayer;
 
+	private PreferenceUtils mPreferences;
+
 	private boolean mIsInitialized = false;
 
 	/**
@@ -40,6 +43,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 */
 	public MultiPlayer(MusicPlaybackService service) {
 		mService = new WeakReference<>(service);
+		mPreferences = PreferenceUtils.getInstance(service);
 		mCurrentMediaPlayer = createPlayer();
 	}
 
@@ -257,10 +261,12 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			}
 			player.setOnCompletionListener(this);
 			player.setOnErrorListener(this);
-			Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-			intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
-			intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, MusicPlaybackService.APOLLO_PACKAGE_NAME);
-			musicService.sendBroadcast(intent);
+			if (mPreferences.isExternalAudioFxPrefered() && !mPreferences.isAudioFxEnabled()) {
+				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+				intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, MusicPlaybackService.APOLLO_PACKAGE_NAME);
+				musicService.sendBroadcast(intent);
+			}
 			return true;
 		}
 		return false;

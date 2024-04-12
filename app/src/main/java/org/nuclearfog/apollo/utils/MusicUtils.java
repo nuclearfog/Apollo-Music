@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.IApolloService;
@@ -149,11 +150,7 @@ public final class MusicUtils {
 			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
 		Intent serviceIntent = new Intent(activity.getApplicationContext(), MusicPlaybackService.class);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			contextWrapper.startForegroundService(serviceIntent);
-		} else {
-			contextWrapper.startService(serviceIntent);
-		}
+		ContextCompat.startForegroundService(activity.getApplicationContext(), serviceIntent);
 		ServiceBinder binder = new ServiceBinder(callback);
 		if (contextWrapper.bindService(serviceIntent, binder, 0)) {
 			mConnectionMap.put(contextWrapper, binder);

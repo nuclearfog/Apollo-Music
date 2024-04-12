@@ -17,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
@@ -35,6 +36,8 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class NotificationHelper {
+
+	private static final String TAG = "NotificationHelper";
 
 	/**
 	 * Notification ID
@@ -214,8 +217,8 @@ public class NotificationHelper {
 				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
 			}
 		} catch (SecurityException exception) {
-			// caught on missing permission. Normally app requires permission to post notification
-			// so this scenario can't happen
+			Log.e(TAG, "error updating notification", exception);
+			// caught on missing permission
 		}
 	}
 }

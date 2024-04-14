@@ -593,22 +593,24 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		if (intent != null) {
-			String action = intent.getAction();
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
 					mNotificationHelper.cancelNotification();
 				} else if (isPlaying()) {
-					mNotificationHelper.createNotification();
+					mNotificationHelper.createNotification(true);
 				}
 			}
-			if (ACTION_SHUTDOWN.equals(action)) {
+			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
 				mShutdownScheduled = false;
 				releaseServiceUiAndStop();
 				return START_NOT_STICKY;
 			}
 			handleCommandIntent(intent);
+		}
+		if (startId == 1) {
+			mNotificationHelper.createNotification(false);
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
@@ -655,9 +657,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			seek(0);
 			releaseServiceUiAndStop();
 			mNotificationHelper.cancelNotification();
-			if (!isForeground) {
-				mNotificationHelper.cancelNotification();
-			}
 		}
 		// repeat set
 		else if (ACTION_REPEAT.equals(action)) {

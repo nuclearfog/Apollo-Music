@@ -142,10 +142,13 @@ public class NotificationHelper {
 
 	/**
 	 * Call this to build the {@link Notification}.
+	 *
+	 * @param postNotification true to show notification to user
 	 */
-	public void createNotification() {
+	public void createNotification(boolean postNotification) {
 		Notification notification = buildNotification();
-		postNotification(notification);
+		if (postNotification)
+			postNotification(notification);
 		mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
 	}
 

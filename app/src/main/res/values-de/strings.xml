@@ -159,7 +159,7 @@
 	<string name="context_menu_unhide_folder">zeige folder</string>
 	<string name="menu_show_hidden">zeige versteckte Tracks</string>
 	<string name="dialog_disable_bat_opt_title">Deaktiviere Akku-Optimierungen</string>
-	<string name="dialog_disable_bat_opt_message">Um eine reibungslose Wiedergabe zu gewährleisten, sollte Akku-Optimierungen deaktiviert werden.</string>
+	<string name="dialog_disable_bat_opt_message">Um eine reibungslose Wiedergabe zu gewährleisten, sollte die Akku-Optimierung deaktiviert werden</string>
 	<string name="dialog_disable_bat_opt_confirm">anwenden</string>
 	<string name="dialog_disable_bat_opt_ignore">ignorieren</string>
 </resources>

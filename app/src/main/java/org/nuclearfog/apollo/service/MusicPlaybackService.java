@@ -496,6 +496,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
+		mNotificationHelper.createNotification(false);
 
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
@@ -608,9 +609,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				return START_NOT_STICKY;
 			}
 			handleCommandIntent(intent);
-		}
-		if (startId == 1) {
-			mNotificationHelper.createNotification(false);
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing

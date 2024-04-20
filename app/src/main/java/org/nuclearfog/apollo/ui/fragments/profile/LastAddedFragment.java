@@ -24,11 +24,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.LastAddedLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -45,8 +43,9 @@ import java.util.List;
  * within the last four weeks.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class LastAddedFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class LastAddedFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -54,14 +53,11 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 	private static final int GROUP_ID = 0x461834C5;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x4D492A47;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+
+	private LastAddedLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -71,14 +67,23 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 
 
 	@Override
-	protected void init() {
-		// Enable the options menu
-		setHasOptionsMenu(true);
+	protected void init(Bundle bundle) {
+		// init loader
+		mLoader = new LastAddedLoader(requireContext());
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
 		setAdapter(mAdapter);
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -163,7 +168,7 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mLoader.execute(null, this);
 					return true;
 			}
 		}
@@ -173,34 +178,16 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		return new LastAddedLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -223,7 +210,7 @@ public class LastAddedFragment extends ProfileFragment implements LoaderCallback
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
 	}
 
 	/**

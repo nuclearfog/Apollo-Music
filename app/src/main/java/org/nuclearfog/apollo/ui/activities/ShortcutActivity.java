@@ -22,12 +22,10 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -44,13 +42,10 @@ import java.util.List;
  * album, song, playlist, or genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ShortcutActivity extends AppCompatActivity implements ServiceConnection, LoaderCallbacks<List<Song>> {
+public class ShortcutActivity extends AppCompatActivity implements ServiceConnection, AsyncCallback<List<Song>> {
 
-	/**
-	 * ID of the loader
-	 */
-	private static final int LOADER_ID = 0x32942390;
 	/**
 	 * Play from search intent
 	 */
@@ -71,6 +66,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	 * Gather the intent action and extras
 	 */
 	private Intent mIntent;
+
+	private SearchLoader mLoader;
 	/**
 	 * The list of songs to play
 	 */
@@ -94,6 +91,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		mToken = MusicUtils.bindToService(this, this);
 		// Initialize the intent
 		mIntent = getIntent();
+		mLoader = new SearchLoader(this);
+		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
 	}
 
 	/**
@@ -103,7 +102,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		// Check for a voice query
 		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
-			LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+			mLoader.execute(mVoiceQuery, this);
 		} else if (MusicUtils.isConnected()) {
 			//sHandler.post(new AsyncHandler(this));
 			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
@@ -199,24 +198,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		// Get the voice search query
-		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
-		return new SearchLoader(ShortcutActivity.this, mVoiceQuery);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+	public void onResult(@NonNull List<Song> songs) {
 		// If the user searched for a playlist or genre, this list will
 		// return empty
-		if (data.isEmpty()) {
+		if (songs.isEmpty()) {
 			// Before running the playlist loader, try to play the
 			// "Favorites" playlist
 			if (isFavorite()) {
@@ -234,12 +220,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		// The fancy search query used in {@link SearchLoader} is the key to
 		// this. It allows the user to perform very specific queries. i.e.
 		// "Listen to Ethio
-
-		String song = data.get(0).getName();
-		String album = data.get(0).getAlbum();
-		String artist = data.get(0).getArtist();
+		String song = songs.get(0).getName();
+		String album = songs.get(0).getAlbum();
+		String artist = songs.get(0).getArtist();
 		// This tripes as the song, album, and artist Id
-		long id = data.get(0).getId();
+		long id = songs.get(0).getId();
 		// First, try to play a song
 		if (song != null) {
 			mList = new long[]{id};
@@ -254,13 +239,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		}
 		// Finish up
 		allDone();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
 	}
 
 	/**

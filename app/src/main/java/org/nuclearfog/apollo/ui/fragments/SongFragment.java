@@ -31,11 +31,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -55,8 +53,9 @@ import java.util.List;
  * This class is used to display all of the songs on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>>, OnItemClickListener, Observer<String> {
+public class SongFragment extends Fragment implements AsyncCallback<List<Song>>, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
@@ -79,11 +78,6 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	private static final int GROUP_ID = 0x26153793;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x70B1F21F;
-
-	/**
 	 * The adapter for the list
 	 */
 	private SongAdapter mAdapter;
@@ -103,6 +97,8 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 */
 	private PreferenceUtils preference;
 
+	private SongLoader mLoader;
+
 	/**
 	 * context menu selection
 	 */
@@ -119,31 +115,27 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init preferences
-		preference = PreferenceUtils.getInstance(requireContext());
-		//
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// Create the adapter
-		mAdapter = new SongAdapter(requireContext(), false);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// init views
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		TextView emptyText = mRootView.findViewById(R.id.list_base_empty_info);
-		// setup the list view
 		mList = mRootView.findViewById(R.id.list_base);
+		//
+		preference = PreferenceUtils.getInstance(requireContext());
+		mAdapter = new SongAdapter(requireContext(), false);
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
+		mLoader = new SongLoader(requireContext());
+		// Enable the options menu
+		setHasOptionsMenu(true);
+		// setup the list view
 		mList.setAdapter(mAdapter);
 		mList.setEmptyView(emptyText);
 		mList.setRecyclerListener(new RecycleHolder());
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
+		// start loader
+		mLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -151,22 +143,10 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -275,24 +255,13 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		return new SongLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		if (!isRemoving() && !isDetached()) {
-			// disable loader
-			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
-			for (Song song : data) {
+			for (Song song : songs) {
 				if (preference.getExcludeTracks() || song.isVisible()) {
 					mAdapter.add(song);
 				}
@@ -304,20 +273,11 @@ public class SongFragment extends Fragment implements LoaderCallbacks<List<Song>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
 			case MusicBrowserPhoneFragment.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:

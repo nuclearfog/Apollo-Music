@@ -25,13 +25,11 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.AlbumSongLoader;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
@@ -45,8 +43,9 @@ import java.util.List;
  * This class is used to display all of the songs from a particular album.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class AlbumSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class AlbumSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -54,14 +53,11 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	private static final int GROUP_ID = 0x169012DB;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x77D144AE;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+
+	private AlbumSongLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -69,17 +65,33 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	@Nullable
 	private Song mSong;
 
+	/**
+	 * Album ID of the songs
+	 */
+	private long albumId;
+
 
 	@Override
-	protected void init() {
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Start the loader
+	protected void init(Bundle args) {
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_ALBUM_SETTING, false);
+		// init loader
+		mLoader = new AlbumSongLoader(requireContext());
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		setAdapter(mAdapter);
-		//
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, getArguments(), this);
+		// Start the loader
+		if (args != null) {
+			albumId = args.getLong(Config.ID);
+			mLoader.execute(albumId, this);
+		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -164,38 +176,17 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@NonNull
-	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long albumId = args != null ? args.getLong(Config.ID) : -1L;
-		return new AlbumSongLoader(requireContext(), albumId);
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> data) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : data) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -217,7 +208,7 @@ public class AlbumSongFragment extends ProfileFragment implements LoaderCallback
 	 */
 	@Override
 	protected void refresh() {
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, getArguments(), this);
+		mLoader.execute(albumId, this);
 	}
 
 	/**

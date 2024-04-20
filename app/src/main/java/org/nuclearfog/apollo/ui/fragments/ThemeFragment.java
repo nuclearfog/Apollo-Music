@@ -42,6 +42,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  * Used to show all of the available themes on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class ThemeFragment extends Fragment implements OnItemClickListener {
 

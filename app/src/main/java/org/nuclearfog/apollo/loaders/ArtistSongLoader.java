@@ -25,60 +25,53 @@ import java.util.List;
  * Used to return the songs for a particular artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
+public class ArtistSongLoader extends AsyncExecutor<Long, List<Song>> {
 
 	private static final String TAG = "ArtistSongLoader";
 
-	/**
-	 * The Id of the artist the songs belong to.
-	 */
-	private Long mArtistID;
 
-	/**
-	 * Constructor of <code>ArtistSongLoader</code>
-	 *
-	 * @param context  The {@link Context} to use.
-	 * @param artistId The Id of the artist the songs belong to.
-	 */
-	public ArtistSongLoader(Context context, Long artistId) {
+	public ArtistSongLoader(Context context) {
 		super(context);
-		mArtistID = artistId;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Song> loadInBackground() {
+	protected List<Song> doInBackground(Long param) {
 		List<Song> result = new LinkedList<>();
-		try {
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makeArtistSongCursor(getContext(), mArtistID);
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the song Id
-						long id = mCursor.getLong(0);
-						// Copy the song name
-						String songName = mCursor.getString(1);
-						// Copy the artist name
-						String artist = mCursor.getString(2);
-						// Copy the album name
-						String album = mCursor.getString(3);
-						// Copy the duration
-						long duration = mCursor.getLong(4);
-						// Create a new song
-						Song song = new Song(id, songName, artist, album, duration);
-						// Add everything up
-						result.add(song);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null && param != null) {
+			try {
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makeArtistSongCursor(context, param);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the song Id
+							long id = mCursor.getLong(0);
+							// Copy the song name
+							String songName = mCursor.getString(1);
+							// Copy the artist name
+							String artist = mCursor.getString(2);
+							// Copy the album name
+							String album = mCursor.getString(3);
+							// Copy the duration
+							long duration = mCursor.getLong(4);
+							// Create a new song
+							Song song = new Song(id, songName, artist, album, duration);
+							// Add everything up
+							result.add(song);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading songs from artist", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading songs from artist", exception);
 		}
 		return result;
 	}

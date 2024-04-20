@@ -26,62 +26,56 @@ import java.util.List;
  * Used to return the songs for a particular playlist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class PlaylistSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
+public class PlaylistSongLoader extends AsyncExecutor<Long, List<Song>> {
 
 	private static final String TAG = "PlaylistSongLoader";
 
-	/**
-	 * The Id of the playlist the songs belong to.
-	 */
-	private Long mPlaylistID;
 
-	/**
-	 * Constructor of <code>SongLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
-	public PlaylistSongLoader(Context context, Long playlistId) {
+	public PlaylistSongLoader(Context context) {
 		super(context);
-		mPlaylistID = playlistId;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Song> loadInBackground() {
+	protected List<Song> doInBackground(Long param) {
 		List<Song> result = new LinkedList<>();
-		try {
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makePlaylistSongCursor(getContext(), mPlaylistID);
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the song Id
-						long id = mCursor.getLong(0);
-						// Copy the song name
-						String songName = mCursor.getString(1);
-						// Copy the artist name
-						String artist = mCursor.getString(2);
-						// Copy the album name
-						String album = mCursor.getString(3);
-						// Copy the duration
-						long duration = mCursor.getLong(4);
-						// Copy playlist position
-						int pos = mCursor.getInt(5);
-						// Create a new song
-						Song song = new Song(id, songName, artist, album, duration, pos);
-						// Add everything up
-						result.add(song);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null && param != null) {
+			try {
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makePlaylistSongCursor(context, param);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the song Id
+							long id = mCursor.getLong(0);
+							// Copy the song name
+							String songName = mCursor.getString(1);
+							// Copy the artist name
+							String artist = mCursor.getString(2);
+							// Copy the album name
+							String album = mCursor.getString(3);
+							// Copy the duration
+							long duration = mCursor.getLong(4);
+							// Copy playlist position
+							int pos = mCursor.getInt(5);
+							// Create a new song
+							Song song = new Song(id, songName, artist, album, duration, pos);
+							// Add everything up
+							result.add(song);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+				Collections.sort(result);
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading songs from playlist:", exception);
 			}
-			Collections.sort(result);
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading songs from playlist:", exception);
 		}
 		return result;
 	}

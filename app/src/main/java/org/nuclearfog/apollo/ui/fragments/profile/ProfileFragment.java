@@ -129,7 +129,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		init();
+		init(getArguments());
 	}
 
 	/**
@@ -163,14 +163,16 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	@Override
 	public final void onChanged(String action) {
-		switch (action) {
-			case SHOW_CURRENT:
-				moveToCurrent();
-				break;
+		if (isAdded()) {
+			switch (action) {
+				case SHOW_CURRENT:
+					moveToCurrent();
+					break;
 
-			case REFRESH:
-				refresh();
-				break;
+				case REFRESH:
+					refresh();
+					break;
+			}
 		}
 	}
 
@@ -212,7 +214,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	/**
 	 * initializes the fragment
 	 */
-	protected abstract void init();
+	protected abstract void init(@Nullable Bundle args);
 
 	/**
 	 * called when an item was clicked

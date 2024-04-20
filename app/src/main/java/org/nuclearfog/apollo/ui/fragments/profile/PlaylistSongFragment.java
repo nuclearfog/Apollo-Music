@@ -25,12 +25,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.PlaylistSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -48,8 +46,9 @@ import java.util.List;
  * This class is used to display all of the songs from a particular playlist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class PlaylistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>>, DropListener, RemoveListener {
+public class PlaylistSongFragment extends ProfileFragment implements AsyncCallback<List<Song>>, DropListener, RemoveListener {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -57,14 +56,11 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 	private static final int GROUP_ID = 0x37B5704;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x61AF9DC4;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+
+	private PlaylistSongLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -84,7 +80,8 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 
 
 	@Override
-	protected void init() {
+	protected void init(Bundle bundle) {
+		mLoader = new PlaylistSongLoader(requireContext());
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, true);
 		setAdapter(mAdapter);
 		// Enable the options menu
@@ -92,11 +89,17 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 		// sets empty list text
 		setEmptyText(R.string.empty_playlist);
 		// Start the loader
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			mPlaylistId = arguments.getLong(Config.ID);
-			LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
+		if (bundle != null) {
+			mPlaylistId = bundle.getLong(Config.ID);
+			mLoader.execute(mPlaylistId, this);
 		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -174,7 +177,7 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 						MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
 						// reload if track was added to this playlist
 						if (mPlaylistId == playlistId)
-							LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+							mLoader.execute(mPlaylistId, this);
 					}
 					return true;
 
@@ -203,34 +206,16 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		return new PlaylistSongLoader(requireContext(), mPlaylistId);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -287,6 +272,6 @@ public class PlaylistSongFragment extends ProfileFragment implements LoaderCallb
 	 */
 	@Override
 	protected void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		mLoader.execute(mPlaylistId, this);
 	}
 }

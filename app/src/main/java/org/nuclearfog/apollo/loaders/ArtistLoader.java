@@ -28,12 +28,11 @@ import java.util.Set;
  * Used to return the artists on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
+public class ArtistLoader extends AsyncExecutor<Void, List<Artist>> {
 
 	private static final String TAG = "ArtistLoader";
-
-	private ExcludeStore exclude_db;
 
 	/**
 	 * Constructor of <code>ArtistLoader</code>
@@ -42,43 +41,47 @@ public class ArtistLoader extends WrappedAsyncTaskLoader<List<Artist>> {
 	 */
 	public ArtistLoader(Context context) {
 		super(context);
-		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Artist> loadInBackground() {
+	protected List<Artist> doInBackground(Void v) {
 		List<Artist> result = new LinkedList<>();
-		try {
-			Set<Long> excluded_ids = exclude_db.getIds(Type.ARTIST);
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makeArtistCursor(getContext());
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the artist id
-						long id = mCursor.getLong(0);
-						// Copy the artist name
-						String artistName = mCursor.getString(1);
-						// Copy the number of albums
-						int albumCount = mCursor.getInt(2);
-						// Copy the number of songs
-						int songCount = mCursor.getInt(3);
-						// visibility of the artist
-						boolean visible = !excluded_ids.contains(id);
-						// Create a new artist
-						Artist artist = new Artist(id, artistName, songCount, albumCount, visible);
-						// Add everything up
-						result.add(artist);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null) {
+			ExcludeStore exclude_db = ExcludeStore.getInstance(context);
+			try {
+				// init filter list
+				Set<Long> excluded_ids = exclude_db.getIds(Type.ARTIST);
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makeArtistCursor(context);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the artist id
+							long id = mCursor.getLong(0);
+							// Copy the artist name
+							String artistName = mCursor.getString(1);
+							// Copy the number of albums
+							int albumCount = mCursor.getInt(2);
+							// Copy the number of songs
+							int songCount = mCursor.getInt(3);
+							// visibility of the artist
+							boolean visible = !excluded_ids.contains(id);
+							// Create a new artist
+							Artist artist = new Artist(id, artistName, songCount, albumCount, visible);
+							// Add everything up
+							result.add(artist);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading artists", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading artists", exception);
 		}
 		return result;
 	}

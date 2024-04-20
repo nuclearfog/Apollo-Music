@@ -15,13 +15,11 @@ import java.util.List;
  *
  * @author nuclearfog
  */
-public class PopularSongsLoader extends WrappedAsyncTaskLoader<List<Song>> {
+public class PopularSongsLoader extends AsyncExecutor<Void, List<Song>> {
 
 	private static final String TAG = "PopularSongsLoader";
 
-	/**
-	 *
-	 */
+
 	public PopularSongsLoader(Context context) {
 		super(context);
 	}
@@ -30,35 +28,38 @@ public class PopularSongsLoader extends WrappedAsyncTaskLoader<List<Song>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Song> loadInBackground() {
+	protected List<Song> doInBackground(Void v) {
 		List<Song> result = new LinkedList<>();
-		try {
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makePopularCursor(getContext());
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the song Id
-						long id = mCursor.getLong(0);
-						// Copy the song name
-						String songName = mCursor.getString(1);
-						// Copy the artist name
-						String artist = mCursor.getString(3);
-						// Copy the album name
-						String album = mCursor.getString(2);
-						// Copy the duration value in milliseconds
-						long duration = mCursor.getLong(5);
-						// Create a new song
-						Song song = new Song(id, songName, artist, album, duration);
-						// Add everything up
-						result.add(song);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null) {
+			try {
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makePopularCursor(context);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the song Id
+							long id = mCursor.getLong(0);
+							// Copy the song name
+							String songName = mCursor.getString(1);
+							// Copy the artist name
+							String artist = mCursor.getString(3);
+							// Copy the album name
+							String album = mCursor.getString(2);
+							// Copy the duration value in milliseconds
+							long duration = mCursor.getLong(5);
+							// Create a new song
+							Song song = new Song(id, songName, artist, album, duration);
+							// Add everything up
+							result.add(song);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading songs", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading songs", exception);
 		}
 		return result;
 	}

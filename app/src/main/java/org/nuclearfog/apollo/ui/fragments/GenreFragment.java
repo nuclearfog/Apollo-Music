@@ -32,12 +32,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.GenreLoader;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -56,18 +54,14 @@ import java.util.List;
  * This class is used to display all of the genres on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genre>>, OnItemClickListener, Observer<String> {
+public class GenreFragment extends Fragment implements OnItemClickListener, AsyncCallback<List<Genre>>, Observer<String> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x2D9C34D;
-
-	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x78BD76B9;
 
 	/**
 	 *
@@ -94,6 +88,8 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 */
 	private PreferenceUtils preference;
 
+	private GenreLoader mLoader;
+
 	/**
 	 * context menus selection
 	 */
@@ -110,31 +106,26 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init preferences
-		preference = PreferenceUtils.getInstance(requireContext());
-		//
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// Create the adapter
-		mAdapter = new GenreAdapter(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Init views
 		View mRootView = inflater.inflate(R.layout.list_base, container, false);
 		ListView mList = mRootView.findViewById(R.id.list_base);
 		TextView emptyHolder = mRootView.findViewById(R.id.list_base_empty_info);
-		//set listview
+		//
+		preference = PreferenceUtils.getInstance(requireContext());
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		mAdapter = new GenreAdapter(requireContext());
+		mLoader = new GenreLoader(requireContext());
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		mList.setEmptyView(emptyHolder);
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
+		// start loader
+		mLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -142,22 +133,10 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -234,37 +213,18 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Genre>> onCreateLoader(int id, Bundle args) {
-		return new GenreLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Genre>> loader, @NonNull List<Genre> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Genre genre : data) {
-			if (preference.getExcludeTracks() || genre.isVisible()) {
-				mAdapter.add(genre);
+	public void onResult(@NonNull List<Genre> genres) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Genre genre : genres) {
+				if (preference.getExcludeTracks() || genre.isVisible()) {
+					mAdapter.add(genre);
+				}
 			}
 		}
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Genre>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -275,7 +235,7 @@ public class GenreFragment extends Fragment implements LoaderCallbacks<List<Genr
 		switch (action) {
 			case REFRESH:
 			case MusicBrowserPhoneFragment.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mLoader.execute(null, this);
 				break;
 		}
 	}

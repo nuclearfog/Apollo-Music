@@ -17,50 +17,52 @@ import java.util.TreeMap;
 
 /**
  * return all music folders from storage
+ *
+ * @author nuclearfog
  */
-public class FolderLoader extends WrappedAsyncTaskLoader<List<Folder>> {
+public class FolderLoader extends AsyncExecutor<Void, List<Folder>> {
 
 	private static final String TAG = "FolderLoader";
 
-	private ExcludeStore exclude_db;
 
-	/**
-	 * @param context Activity context
-	 */
 	public FolderLoader(Context context) {
 		super(context);
-		exclude_db = ExcludeStore.getInstance(context);
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Folder> loadInBackground() {
+	protected List<Folder> doInBackground(Void v) {
 		// init tree set to sort folder by name
 		Map<String, Folder> folderMap = new TreeMap<>();
-		try {
-			Set<Long> excludedIds = exclude_db.getIds(Type.SONG);
-			Cursor cursor = CursorFactory.makeFolderCursor(getContext());
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					do {
-						String path = cursor.getString(0);
-						long songId = cursor.getLong(1);
-						boolean visible = !excludedIds.contains(songId);
-						Folder folder = new Folder(path, visible);
+		Context context = getContext();
+		if (context != null) {
+			ExcludeStore exclude_db = ExcludeStore.getInstance(context);
+			try {
+				Set<Long> excludedIds = exclude_db.getIds(Type.SONG);
+				Cursor cursor = CursorFactory.makeFolderCursor(context);
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
+						do {
+							String path = cursor.getString(0);
+							long songId = cursor.getLong(1);
+							boolean visible = !excludedIds.contains(songId);
+							Folder folder = new Folder(path, visible);
 
-						Folder entry = folderMap.get(folder.getName());
-						if (entry != null && entry.isVisible() && !folder.isVisible()) {
-							folderMap.remove(folder.getName());
-						}
-						folderMap.put(folder.getName(), folder);
-					} while (cursor.moveToNext());
+							Folder entry = folderMap.get(folder.getName());
+							if (entry != null && entry.isVisible() && !folder.isVisible()) {
+								folderMap.remove(folder.getName());
+							}
+							folderMap.put(folder.getName(), folder);
+						} while (cursor.moveToNext());
+					}
+					cursor.close();
 				}
-				cursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading music folder", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading music folder", exception);
 		}
 		return new ArrayList<>(folderMap.values());
 	}

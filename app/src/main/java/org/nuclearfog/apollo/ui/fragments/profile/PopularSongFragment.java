@@ -12,11 +12,9 @@ import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.PopularSongsLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -34,7 +32,7 @@ import java.util.List;
  *
  * @author nuclearfog
  */
-public class PopularSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class PopularSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * context menu ID
@@ -42,14 +40,11 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 	private static final int GROUP_ID = 0xC46D92C;
 
 	/**
-	 * Loader ID
-	 */
-	private static final int LOADER_ID = 0xB1174551;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+
+	private PopularSongsLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -61,14 +56,23 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init() {
+	protected void init(Bundle param) {
+		mLoader = new PopularSongsLoader(requireContext());
 		// sets empty list text
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
 		setAdapter(mAdapter);
 		setEmptyText(R.string.empty_recents);
 		// start loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
 	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -161,7 +165,7 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mLoader.execute(null, this);
 					return true;
 			}
 		}
@@ -188,41 +192,22 @@ public class PopularSongFragment extends ProfileFragment implements LoaderCallba
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@NonNull
-	@Override
-	public Loader<List<Song>> onCreateLoader(int id, @Nullable Bundle args) {
-		// initialize loader
-		return new PopularSongsLoader(requireContext());
+		mLoader.execute(null, this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**

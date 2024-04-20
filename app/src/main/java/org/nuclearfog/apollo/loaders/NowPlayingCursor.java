@@ -2,7 +2,6 @@ package org.nuclearfog.apollo.loaders;
 
 import static org.nuclearfog.apollo.utils.CursorFactory.NP_COLUMNS;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.AbstractCursor;
 import android.database.Cursor;
@@ -18,8 +17,9 @@ import java.util.List;
 /**
  * A custom {@link Cursor} used to return the queue and allow for easy dragging
  * and dropping of the items in it.
+ *
+ * @author nuclearfog
  */
-@SuppressLint("NewApi")
 public class NowPlayingCursor extends AbstractCursor {
 
 	private Context mContext;

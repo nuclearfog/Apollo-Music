@@ -52,6 +52,7 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
  * Apollo for a couple of weeks or so before merging it with CM.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemClickListener {
 

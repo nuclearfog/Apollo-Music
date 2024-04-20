@@ -24,11 +24,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.FavoritesLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -44,8 +42,9 @@ import java.util.List;
  * This class is used to display all of the songs in {@link FavoritesStore}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class FavoriteSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class FavoriteSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -53,14 +52,10 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	private static final int GROUP_ID = 0x6F307D4D;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x52140696;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+	private FavoritesLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -70,16 +65,26 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 
 
 	@Override
-	protected void init() {
+	protected void init(Bundle param) {
+		// init loader
+		mLoader = new FavoritesLoader(requireContext());
+		// init adapter
+		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
+		// set adapter
+		setAdapter(mAdapter);
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// sets empty list text
 		setEmptyText(R.string.empty_favorits);
-		// init adapter
-		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
-		setAdapter(mAdapter);
 		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -164,12 +169,12 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 
 				case ContextMenuItems.REMOVE_FROM_FAVORITES:
 					FavoritesStore.getInstance(requireContext()).removeItem(mSong.getId());
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mLoader.execute(null, this);
 					return true;
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mLoader.execute(null, this);
 					return true;
 			}
 		}
@@ -179,34 +184,16 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		return new FavoritesLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -228,8 +215,8 @@ public class FavoriteSongFragment extends ProfileFragment implements LoaderCallb
 	 */
 	@Override
 	protected void refresh() {
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
 		mAdapter.clear();
+		mLoader.execute(null, this);
 	}
 
 	/**

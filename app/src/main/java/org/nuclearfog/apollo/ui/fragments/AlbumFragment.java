@@ -33,12 +33,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.AlbumLoader;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -57,8 +55,9 @@ import java.util.List;
  * This class is used to display all of the albums on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
+public class AlbumFragment extends Fragment implements OnScrollListener, OnItemClickListener, AsyncCallback<List<Album>>, Observer<String> {
 
 	/**
 	 *
@@ -79,11 +78,6 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x515A2A6B;
-
-	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x4DCB855B;
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -116,17 +110,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	@Nullable
 	private Album selectedAlbum = null;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init preferences
-		preference = PreferenceUtils.getInstance(requireContext());
-		// init fragment callback
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-	}
+	private AlbumLoader mLoader;
 
 	/**
 	 * {@inheritDoc}
@@ -137,31 +121,23 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
+		//
+		preference = PreferenceUtils.getInstance(requireContext());
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		mLoader = new AlbumLoader(requireContext());
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// init list
 		initList();
 		mList.setEmptyView(emptyInfo);
-		// Release any references to the recycled Views
 		mList.setRecyclerListener(new RecycleHolder());
-		// Listen for ContextMenus to be created
 		mList.setOnCreateContextMenuListener(this);
-		// Show the albums and songs from the selected artist
 		mList.setOnItemClickListener(this);
-		// To help make scrolling smooth
 		mList.setOnScrollListener(this);
-		return mRootView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
+		return mRootView;
 	}
 
 	/**
@@ -178,8 +154,9 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 	 */
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -292,39 +269,19 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@NonNull
-	public Loader<List<Album>> onCreateLoader(int id, @Nullable Bundle args) {
-		return new AlbumLoader(requireContext());
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Album album : data) {
-			if (preference.getExcludeTracks() || album.isVisible()) {
-				mAdapter.add(album);
+	public void onResult(@NonNull List<Album> albums) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Album album : albums) {
+				if (preference.getExcludeTracks() || album.isVisible()) {
+					mAdapter.add(album);
+				}
 			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 
@@ -336,7 +293,7 @@ public class AlbumFragment extends Fragment implements LoaderCallbacks<List<Albu
 				initList();
 
 			case MusicBrowserPhoneFragment.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:

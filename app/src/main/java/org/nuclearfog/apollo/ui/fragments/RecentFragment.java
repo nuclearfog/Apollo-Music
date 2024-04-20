@@ -33,11 +33,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.RecentLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.provider.RecentStore;
@@ -59,8 +57,9 @@ import java.util.List;
  * user.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class RecentFragment extends Fragment implements LoaderCallbacks<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
+public class RecentFragment extends Fragment implements AsyncCallback<List<Album>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
@@ -83,11 +82,6 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	private static final int GROUP_ID = 0x4FFF2B51;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x178EB63F;
-
-	/**
 	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
 	 */
 	private static final int ONE = 1, TWO = 2, FOUR = 4;
@@ -107,6 +101,8 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	private PreferenceUtils preference;
 
+	private RecentLoader mLoader;
+
 	/**
 	 * viewmodel used for communication with hosting activity
 	 */
@@ -122,25 +118,19 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init preferences
-		preference = PreferenceUtils.getInstance(requireContext());
-		// init fragment callback
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// init views
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyInfo = mRootView.findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
+		//
+		preference = PreferenceUtils.getInstance(requireContext());
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		mLoader = new RecentLoader(requireContext());
 		// initialize list and adapter
 		initList();
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// sets the empty view
 		emptyInfo.setText(R.string.empty_recents);
 		mList.setEmptyView(emptyInfo);
@@ -154,20 +144,10 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 		mList.setOnItemClickListener(this);
 		// To help make scrolling smooth
 		mList.setOnScrollListener(this);
-		return mRootView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		// start loader
+		mLoader.execute(null, this);
+		return mRootView;
 	}
 
 	/**
@@ -184,8 +164,9 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	 */
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -303,36 +284,16 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Album>> onCreateLoader(int id, Bundle args) {
-		return new RecentLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Album>> loader, @NonNull List<Album> data) {
-		if (mAdapter != null) {
-			// disable loader
-			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+	public void onResult(@NonNull List<Album> albums) {
+		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
-			for (Album album : data) {
+			for (Album album : albums) {
 				mAdapter.add(album);
 			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Album>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -353,15 +314,13 @@ public class RecentFragment extends Fragment implements LoaderCallbacks<List<Alb
 				// re init list
 				initList();
 
-			case MusicBrowserPhoneFragment.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
-				break;
-
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				if (mList.getCount() > 0) {
 					mList.smoothScrollToPosition(0);
 				}
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				// fall through
+			case MusicBrowserPhoneFragment.REFRESH:
+				mLoader.execute(null, this);
 				break;
 
 			case SCROLL_TOP:

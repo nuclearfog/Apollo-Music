@@ -999,7 +999,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (!isPlaying() && mPausedByTransientLossOfFocus) {
 			mPausedByTransientLossOfFocus = false;
 			mPlayer.setVolume(0f);
-			play();
+			//play();
 			return true;
 		}
 		return false;

@@ -15,6 +15,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.provider.ExcludeStore;
 import org.nuclearfog.apollo.utils.CursorFactory;
@@ -32,8 +34,9 @@ import java.util.regex.Pattern;
  * Used to return the genres on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
+public class GenreLoader extends AsyncExecutor<Void, List<Genre>> {
 
 	private static final String TAG = "GenreLoader";
 
@@ -42,70 +45,71 @@ public class GenreLoader extends WrappedAsyncTaskLoader<List<Genre>> {
 	 */
 	private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
 
-	private ExcludeStore exclude_db;
-
 	/**
 	 * Constructor of <code>GenreLoader</code>
 	 *
 	 * @param context The {@link Context} to use
 	 */
-	public GenreLoader(Context context) {
+	public GenreLoader(@NonNull Context context) {
 		super(context);
-		exclude_db = ExcludeStore.getInstance(context);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Genre> loadInBackground() {
+	protected List<Genre> doInBackground(Void v) {
 		Set<Genre> result = new TreeSet<>();
-		try {
-			Set<Long> excluded_ids = exclude_db.getIds(ExcludeStore.Type.GENRE);
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makeGenreCursor(getContext());
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					HashMap<String, List<Long>> group = new HashMap<>();
-					do {
-						// get Column information
-						long id = mCursor.getLong(0);
-						String name = mCursor.getString(1);
+		Context context = getContext();
+		if (context != null) {
+			ExcludeStore exclude_db = ExcludeStore.getInstance(context);
+			try {
+				// init filter list
+				Set<Long> excluded_ids = exclude_db.getIds(ExcludeStore.Type.GENRE);
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makeGenreCursor(context);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						HashMap<String, List<Long>> group = new HashMap<>();
+						do {
+							// get Column information
+							long id = mCursor.getLong(0);
+							String name = mCursor.getString(1);
 
-						// Split genre groups into single genre names
-						String[] genres = SEPARATOR.split(name);
+							// Split genre groups into single genre names
+							String[] genres = SEPARATOR.split(name);
 
-						// solve conflicts. add multiple genre IDs for the same genre name.
-						for (String genre : genres) {
-							List<Long> ids = group.get(genre);
-							if (ids == null) {
-								ids = new LinkedList<>();
-								group.put(genre, ids);
+							// solve conflicts. add multiple genre IDs for the same genre name.
+							for (String genre : genres) {
+								List<Long> ids = group.get(genre);
+								if (ids == null) {
+									ids = new LinkedList<>();
+									group.put(genre, ids);
+								}
+								ids.add(id);
 							}
-							ids.add(id);
-						}
-					} while (mCursor.moveToNext());
-
-					// add all elements to sorted list
-					for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
-						boolean visibility = true;
-						Long[] ids = entry.getValue().toArray(new Long[0]);
-						String name = entry.getKey();
-						for (long id : ids) {
-							if (excluded_ids.contains(id)) {
-								visibility = false;
-								break;
+						} while (mCursor.moveToNext());
+						// add all elements to sorted list
+						for (Map.Entry<String, List<Long>> entry : group.entrySet()) {
+							boolean visibility = true;
+							Long[] ids = entry.getValue().toArray(new Long[0]);
+							String name = entry.getKey();
+							for (long id : ids) {
+								if (excluded_ids.contains(id)) {
+									visibility = false;
+									break;
+								}
 							}
+							Genre genre = new Genre(ids, name, visibility);
+							result.add(genre);
 						}
-						Genre genre = new Genre(ids, name, visibility);
-						result.add(genre);
 					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading genres:", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading genres:", exception);
 		}
 		return new ArrayList<>(result);
 	}

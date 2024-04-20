@@ -24,18 +24,15 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.GenreSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -46,8 +43,9 @@ import java.util.List;
  * This class is used to display all of the songs from a particular genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class GenreSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class GenreSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -55,34 +53,42 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	private static final int GROUP_ID = 0x55B60E85;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x4D99556D;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+
+	private GenreSongLoader mLoader;
 
 	/**
 	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
+	private String genreIds = "";
 
 
 	@Override
-	protected void init() {
-		// Enable the options menu
-		setHasOptionsMenu(true);
+	protected void init(Bundle param) {
+		// init loader
+		mLoader = new GenreSongLoader(requireContext());
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
+		// set adapter
 		setAdapter(mAdapter);
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// Start the loader
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			LoaderManager.getInstance(this).initLoader(LOADER_ID, arguments, this);
+		if (param != null) {
+			genreIds = param.getString(Config.IDS, "");
+			mLoader.execute(genreIds, this);
 		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -177,37 +183,16 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long[] genreId = {};
-		if (args != null)
-			genreId = ApolloUtils.readSerializedIDs(args.getString(Config.IDS, ""));
-		return new GenreSongLoader(requireContext(), genreId);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -232,7 +217,7 @@ public class GenreSongFragment extends ProfileFragment implements LoaderCallback
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		mLoader.execute(genreIds, this);
 	}
 
 	/**

@@ -25,16 +25,13 @@ import java.util.List;
  * Used to return the last listened to albums.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
+public class RecentLoader extends AsyncExecutor<Void, List<Album>> {
 
 	private static final String TAG = "RecentLoader";
 
-	/**
-	 * Constructor of <code>RecentLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	public RecentLoader(Context context) {
 		super(context);
 	}
@@ -43,35 +40,38 @@ public class RecentLoader extends WrappedAsyncTaskLoader<List<Album>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Album> loadInBackground() {
+	protected List<Album> doInBackground(Void v) {
 		List<Album> result = new LinkedList<>();
-		try {
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makeRecentCursor(getContext());
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the album id
-						long id = mCursor.getLong(0);
-						// Copy the album name
-						String albumName = mCursor.getString(1);
-						// Copy the artist name
-						String artist = mCursor.getString(2);
-						// Copy the number of songs
-						int songCount = mCursor.getInt(3);
-						// Copy the release year
-						String year = mCursor.getString(4);
-						// Create a new album
-						Album album = new Album(id, albumName, artist, songCount, year, true);
-						// Add everything up
-						result.add(album);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null) {
+			try {
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makeRecentCursor(context);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the album id
+							long id = mCursor.getLong(0);
+							// Copy the album name
+							String albumName = mCursor.getString(1);
+							// Copy the artist name
+							String artist = mCursor.getString(2);
+							// Copy the number of songs
+							int songCount = mCursor.getInt(3);
+							// Copy the release year
+							String year = mCursor.getString(4);
+							// Create a new album
+							Album album = new Album(id, albumName, artist, songCount, year, true);
+							// Add everything up
+							result.add(album);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading albums:", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading albums:", exception);
 		}
 		return result;
 	}

@@ -24,13 +24,11 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.ArtistSongLoader;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
@@ -44,8 +42,9 @@ import java.util.List;
  * This class is used to display all of the songs from a particular artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class ArtistSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -53,33 +52,42 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	private static final int GROUP_ID = 0x23CB1BD2;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x67F9045C;
-
-	/**
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
+	private ArtistSongLoader mLoader;
 
 	/**
 	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
+	private long artistId;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void init() {
-		// Enable the options menu
-		setHasOptionsMenu(true);
+	protected void init(Bundle param) {
+		// init adapter
+		mLoader = new ArtistSongLoader(requireContext());
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_DEFAULT_SETTING, false);
 		setAdapter(mAdapter);
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, getArguments(), this);
+		if (param != null) {
+			artistId = param.getLong(Config.ID);
+			mLoader.execute(artistId, this);
+		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -158,7 +166,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 
 				case ContextMenuItems.DELETE:
 					MusicUtils.openDeleteDialog(requireActivity(), mSong.getName(), trackId);
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+					mLoader.execute(artistId, this);
 					return true;
 			}
 		}
@@ -168,35 +176,16 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		long songId = args != null ? args.getLong(Config.ID) : -1L;
-		return new ArtistSongLoader(requireContext(), songId);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adpater
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adpater
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -219,7 +208,7 @@ public class ArtistSongFragment extends ProfileFragment implements LoaderCallbac
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		mLoader.execute(artistId, this);
 	}
 
 	/**

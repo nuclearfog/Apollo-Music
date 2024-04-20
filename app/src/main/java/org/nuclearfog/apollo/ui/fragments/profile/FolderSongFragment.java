@@ -11,11 +11,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.FolderSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -31,8 +29,10 @@ import java.util.List;
  * decompiled from Apollo 1.6 APK
  * <p>
  * This fragment class shows tracks from a music folder
+ *
+ * @author nuclearfog
  */
-public class FolderSongFragment extends ProfileFragment implements LoaderCallbacks<List<Song>> {
+public class FolderSongFragment extends ProfileFragment implements AsyncCallback<List<Song>> {
 
 	/**
 	 * context menu ID
@@ -40,32 +40,40 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	private static final int GROUP_ID = 0x1CABF982;
 
 	/**
-	 * ID for the loader
-	 */
-	private static final int LOADER_ID = 0x16A4BF2B;
-
-	/**
 	 * list view adapter with song views
 	 */
 	private ProfileSongAdapter mAdapter;
+	private FolderSongLoader mLoader;
 
 	/**
 	 * context menu selection
 	 */
 	@Nullable
 	private Song mSong;
+	private String foldername = "";
 
 
 	@Override
-	protected void init() {
+	protected void init(Bundle param) {
+		// init loader
+		mLoader = new FolderSongLoader(requireContext());
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), ProfileSongAdapter.DISPLAY_DEFAULT_SETTING, false);
+		// set adapter
 		setAdapter(mAdapter);
 		setHasOptionsMenu(true);
-		Bundle param = getArguments();
+		// init loader
 		if (param != null) {
-			LoaderManager.getInstance(this).initLoader(LOADER_ID, param, this);
+			foldername = param.getString("folder_path", "");
+			mLoader.execute(foldername, this);
 		}
+	}
+
+
+	@Override
+	public void onDestroy() {
+		mLoader.cancel();
+		super.onDestroy();
 	}
 
 
@@ -161,38 +169,16 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, @Nullable Bundle extras) {
-		String foldername;
-		if (extras != null)
-			foldername = extras.getString("folder_path", "");
-		else
-			foldername = "";
-		return new FolderSongLoader(requireContext(), foldername);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// start fresh
-		mAdapter.clear();
-		// add items to adapter
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// start fresh
+			mAdapter.clear();
+			// add items to adapter
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		mAdapter.clear();
 	}
 
 	/**
@@ -201,7 +187,7 @@ public class FolderSongFragment extends ProfileFragment implements LoaderCallbac
 	@Override
 	protected void refresh() {
 		mAdapter.clear();
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, getArguments(), this);
+		mLoader.execute(foldername, this);
 	}
 
 	/**

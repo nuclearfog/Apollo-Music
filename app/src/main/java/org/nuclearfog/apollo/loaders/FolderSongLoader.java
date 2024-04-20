@@ -11,55 +11,50 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to get all songs of a music folder
- * decompiled from Apollo.APK version 1.6
+ * Return all songs in a folder
+ *
+ * @author nuclearfog
  */
-public class FolderSongLoader extends WrappedAsyncTaskLoader<List<Song>> {
+public class FolderSongLoader extends AsyncExecutor<String, List<Song>> {
 
 	private static final String TAG = " FolderSongLoader";
 
-	/**
-	 * folder to search tracks
-	 */
-	private String folderName;
 
-	/**
-	 * @param paramContext Application context
-	 * @param folderName   name of the music folder
-	 */
-	public FolderSongLoader(Context paramContext, String folderName) {
-		super(paramContext);
-		this.folderName = folderName;
+	public FolderSongLoader(Context context) {
+		super(context);
 	}
 
 
 	@Override
-	public List<Song> loadInBackground() {
+	protected List<Song> doInBackground(String param) {
 		List<Song> result = new LinkedList<>();
-		try {
-			Cursor cursor = CursorFactory.makeFolderSongCursor(getContext(), folderName);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					int idxName = folderName.length() + 1;
-					do {
-						String filename = cursor.getString(5);
-						// fetch only music files from the current folder
-						// sub folders will be skipped
-						if (filename.indexOf('/', idxName) < 0) {
-							long id = cursor.getLong(0);
-							String songTitle = cursor.getString(1);
-							String artistName = cursor.getString(2);
-							String albumTitle = cursor.getString(3);
-							long duration = cursor.getLong(4);
-							Song song = new Song(id, songTitle, artistName, albumTitle, duration);
-							result.add(song);
-						}
-					} while (cursor.moveToNext());
+		Context context = getContext();
+		if (context != null && param != null) {
+			try {
+				Cursor cursor = CursorFactory.makeFolderSongCursor(context, param);
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
+						int idxName = param.length() + 1;
+						do {
+							String filename = cursor.getString(5);
+							// fetch only music files from the current folder
+							// sub folders will be skipped
+							if (filename.indexOf('/', idxName) < 0) {
+								long id = cursor.getLong(0);
+								String songTitle = cursor.getString(1);
+								String artistName = cursor.getString(2);
+								String albumTitle = cursor.getString(3);
+								long duration = cursor.getLong(4);
+								Song song = new Song(id, songTitle, artistName, albumTitle, duration);
+								result.add(song);
+							}
+						} while (cursor.moveToNext());
+					}
+					cursor.close();
 				}
-				cursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading songs from folder:", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading songs from folder:", exception);
 		}
 		return result;
 	}

@@ -27,16 +27,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
 import org.nuclearfog.apollo.loaders.QueueLoader;
 import org.nuclearfog.apollo.model.Song;
@@ -59,8 +56,10 @@ import java.util.List;
  * This class is used to display all of the songs in the queue.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>, Observer<String>, OnItemClickListener, DropListener, RemoveListener, DragScrollProfile {
+public class QueueFragment extends Fragment implements OnItemClickListener, DropListener, RemoveListener, DragScrollProfile,
+		AsyncCallback<List<Song>>, Observer<String> {
 
 	/**
 	 *
@@ -83,11 +82,6 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	private static final int GROUP_ID = 0x4B079F4E;
 
 	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x3C6F54AB;
-
-	/**
 	 * The adapter for the list
 	 */
 	private SongAdapter mAdapter;
@@ -101,6 +95,8 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	 * viewmodel used for communication with hosting activity
 	 */
 	private FragmentViewModel viewModel;
+
+	private QueueLoader mLoader;
 
 	/**
 	 * Position of a context menu item
@@ -117,56 +113,42 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init fragment callback
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// Create the adpater
-		mAdapter = new SongAdapter(requireContext(), true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// init views
 		View rootView = inflater.inflate(R.layout.list_base, container, false);
-		// empty info
 		TextView emptyInfo = rootView.findViewById(R.id.list_base_empty_info);
 		mList = rootView.findViewById(R.id.list_base);
+		//
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		mAdapter = new SongAdapter(requireContext(), true);
+		mLoader = new QueueLoader(requireContext());
 		// setup listview
 		mList.setAdapter(mAdapter);
 		mList.setRecyclerListener(new RecycleHolder());
+		// Enable the options menu
+		setHasOptionsMenu(true);
+		emptyInfo.setVisibility(View.INVISIBLE);
+		//
+		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
 		mList.setDropListener(this);
 		mList.setRemoveListener(this);
 		mList.setDragScrollProfile(this);
-		emptyInfo.setVisibility(View.INVISIBLE);
+		// start loader
+		mLoader.execute(null, this);
 		return rootView;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Enable the options menu
-		setHasOptionsMenu(true);
-		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
-	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -238,7 +220,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 					queueCursor.removeItem(mSelectedPosition);
 					queueCursor.close();
 					MusicUtils.playNext(trackId);
-					LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+					mLoader.execute(null, this);
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_QUEUE:
@@ -290,36 +272,18 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
-		return new QueueLoader(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Song>> loader, @NonNull List<Song> data) {
-		// disable loader
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
-		// Start fresh
-		mAdapter.clear();
-		// Add the data to the adapter
-		for (Song song : data) {
-			mAdapter.add(song);
+	public void onResult(@NonNull List<Song> songs) {
+		if (isAdded()) {
+			// Start fresh
+			mAdapter.clear();
+			// Add the data to the adapter
+			for (Song song : songs) {
+				mAdapter.add(song);
+			}
+			// set current track selection
+			setCurrentTrack();
 		}
-		// set current track selection
-		setCurrentTrack();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Song>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -366,7 +330,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mLoader.execute(null, this);
 				break;
 
 			case META_CHANGED:

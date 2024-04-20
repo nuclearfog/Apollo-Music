@@ -33,12 +33,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.ArtistLoader;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -57,8 +55,9 @@ import java.util.List;
  * This class is used to display all of the artists on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Artist>>, OnScrollListener, OnItemClickListener, Observer<String> {
+public class ArtistFragment extends Fragment implements AsyncCallback<List<Artist>>, OnScrollListener, OnItemClickListener, Observer<String> {
 
 	/**
 	 *
@@ -79,11 +78,6 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
 	private static final int GROUP_ID = 0x793F54E4;
-
-	/**
-	 * LoaderCallbacks identifier
-	 */
-	private static final int LOADER_ID = 0x1137083;
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid, FOUR - landscape
@@ -110,6 +104,8 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	private FragmentViewModel viewModel;
 
+	private ArtistLoader mLoader;
+
 	/**
 	 * Represents an artist
 	 */
@@ -126,51 +122,28 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// init fragment callback
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		// init app settings
-		preference = PreferenceUtils.getInstance(requireContext());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// initialize views
 		View mRootView = inflater.inflate(R.layout.grid_base, container, false);
 		TextView emptyHolder = mRootView.getRootView().findViewById(R.id.grid_base_empty_info);
 		mList = mRootView.findViewById(R.id.grid_base);
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		preference = PreferenceUtils.getInstance(requireContext());
+		mLoader = new ArtistLoader(requireContext());
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// init list
 		initList();
 		// setup list view
 		mList.setAdapter(mAdapter);
-		// setup empty view
 		mList.setEmptyView(emptyHolder);
-		// Release any references to the recycled Views
 		mList.setRecyclerListener(new RecycleHolder());
-		// Listen for ContextMenus to be created
 		mList.setOnCreateContextMenuListener(this);
-		// Show the albums and songs from the selected artist
 		mList.setOnItemClickListener(this);
-		// To help make scrolling smooth
 		mList.setOnScrollListener(this);
-		return mRootView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		// Enable the options menu
-		setHasOptionsMenu(true);
 		// Start the loader
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader.execute(null, this);
+		return mRootView;
 	}
 
 	/**
@@ -187,8 +160,9 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	 */
 	@Override
 	public void onDestroyView() {
-		super.onDestroyView();
 		viewModel.getSelectedItem().removeObserver(this);
+		mLoader.cancel();
+		super.onDestroyView();
 	}
 
 	/**
@@ -297,38 +271,18 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 	/**
 	 * {@inheritDoc}
 	 */
-	@NonNull
 	@Override
-	public Loader<List<Artist>> onCreateLoader(int id, Bundle args) {
-		return new ArtistLoader(requireActivity());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoadFinished(@NonNull Loader<List<Artist>> loader, @NonNull List<Artist> data) {
-		if (!isRemoving() && !isDetached()) {
-			// disable loader
-			LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+	public void onResult(@NonNull List<Artist> artists) {
+		if (isAdded()) {
 			// Start fresh
 			mAdapter.clear();
 			// Add the data to the adapter
-			for (Artist artist : data) {
+			for (Artist artist : artists) {
 				if (preference.getExcludeTracks() || artist.isVisible()) {
 					mAdapter.add(artist);
 				}
 			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onLoaderReset(@NonNull Loader<List<Artist>> loader) {
-		// Clear the data in the adapter
-		mAdapter.clear();
 	}
 
 	/**
@@ -341,7 +295,7 @@ public class ArtistFragment extends Fragment implements LoaderCallbacks<List<Art
 				initList();
 
 			case MusicBrowserPhoneFragment.REFRESH:
-				LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+				mLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:

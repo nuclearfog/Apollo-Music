@@ -32,11 +32,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.loaders.MusicSearchLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
@@ -59,12 +57,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends ActivityBase implements LoaderCallbacks<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
-
-	/**
-	 * ID of the loader
-	 */
-	private static final int LOADER_ID = 0xF97E2FD6;
+public class SearchActivity extends ActivityBase implements AsyncCallback<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid
@@ -91,6 +84,8 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	 * List view adapter
 	 */
 	private SearchAdapter mAdapter;
+
+	private MusicSearchLoader mLoader;
 
 	@Nullable
 	private Music selection;
@@ -120,7 +115,7 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		mToken = MusicUtils.bindToService(this, this);
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
-		mFilterString = !TextUtils.isEmpty(query) ? query : null;
+		mFilterString = !TextUtils.isEmpty(query) ? query : "";
 		// Action bar subtitle
 		mResources.setSubtitle("\"" + mFilterString + "\"");
 		// Initialize the adapter
@@ -144,7 +139,8 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		}
 		// Prepare the loader. Either re-connect with an existing one,
 		// or start a new one.
-		LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+		mLoader = new MusicSearchLoader(this);
+		mLoader.execute(mFilterString, this);
 	}
 
 	/**
@@ -154,10 +150,10 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		String query = intent.getStringExtra(SearchManager.QUERY);
-		mFilterString = !TextUtils.isEmpty(query) ? query : null;
+		mFilterString = !TextUtils.isEmpty(query) ? query : "";
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		mLoader.execute(mFilterString, this);
 	}
 
 	/**
@@ -328,32 +324,15 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@NonNull
-	@Override
-	public Loader<List<Music>> onCreateLoader(int id, Bundle args) {
-		return new MusicSearchLoader(this, mFilterString);
-	}
-
 
 	@Override
-	public void onLoadFinished(@NonNull Loader<List<Music>> loader, List<Music> data) {
-		// disable loader until user interaction
-		LoaderManager.getInstance(this).destroyLoader(LOADER_ID);
+	public void onResult(@NonNull List<Music> result) {
 		// set data
 		mAdapter.clear();
-		for (Music music : data) {
+		for (Music music : result) {
 			mAdapter.add(music);
 		}
 	}
-
-
-	@Override
-	public void onLoaderReset(@NonNull androidx.loader.content.Loader<List<Music>> loader) {
-	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -381,10 +360,10 @@ public class SearchActivity extends ActivityBase implements LoaderCallbacks<List
 		// Called when the action bar search text has changed. Update
 		// the search filter, and restart the loader to do a new query
 		// with this filter.
-		mFilterString = !TextUtils.isEmpty(newText) ? newText : null;
+		mFilterString = newText;
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
-		LoaderManager.getInstance(this).restartLoader(LOADER_ID, null, this);
+		mLoader.execute(mFilterString, this);
 		return true;
 	}
 

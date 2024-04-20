@@ -28,59 +28,56 @@ import java.util.Set;
  * Used to return the albums on a user's device.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class AlbumLoader extends WrappedAsyncTaskLoader<List<Album>> {
+public class AlbumLoader extends AsyncExecutor<Void, List<Album>> {
 
 	private static final String TAG = "AlbumLoader";
 
-	private ExcludeStore exclude_db;
 
-	/**
-	 * Constructor of <code>AlbumLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
 	public AlbumLoader(Context context) {
 		super(context);
-		exclude_db = ExcludeStore.getInstance(context);
+
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public List<Album> loadInBackground() {
+	protected List<Album> doInBackground(Void v) {
 		List<Album> result = new LinkedList<>();
-		Set<Long> excludedIds = exclude_db.getIds(Type.ALBUM);
-		try {
-			// Create the Cursor
-			Cursor mCursor = CursorFactory.makeAlbumCursor(getContext());
-			// Gather the data
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						// Copy the album id
-						long id = mCursor.getLong(0);
-						// Copy the album name
-						String albumName = mCursor.getString(1);
-						// Copy the artist name
-						String artist = mCursor.getString(2);
-						// Copy the number of songs
-						int songCount = mCursor.getInt(3);
-						// Copy the release year
-						String year = mCursor.getString(4);
-						// check if album is excluded from viewing
-						boolean visible = !excludedIds.contains(id);
-						// Create a new album
-						Album album = new Album(id, albumName, artist, songCount, year, visible);
-						// Add everything up
-						result.add(album);
-					} while (mCursor.moveToNext());
+		Context context = getContext();
+		if (context != null) {
+			ExcludeStore exclude_db = ExcludeStore.getInstance(context);
+			try {
+				// init filter list
+				Set<Long> excludedIds = exclude_db.getIds(Type.ALBUM);
+				// Create the Cursor
+				Cursor mCursor = CursorFactory.makeAlbumCursor(context);
+				// Gather the data
+				if (mCursor != null) {
+					if (mCursor.moveToFirst()) {
+						do {
+							// Copy the album id
+							long id = mCursor.getLong(0);
+							// Copy the album name
+							String albumName = mCursor.getString(1);
+							// Copy the artist name
+							String artist = mCursor.getString(2);
+							// Copy the number of songs
+							int songCount = mCursor.getInt(3);
+							// Copy the release year
+							String year = mCursor.getString(4);
+							// check if album is excluded from viewing
+							boolean visible = !excludedIds.contains(id);
+							// Create a new album
+							Album album = new Album(id, albumName, artist, songCount, year, visible);
+							// Add everything up
+							result.add(album);
+						} while (mCursor.moveToNext());
+					}
+					mCursor.close();
 				}
-				mCursor.close();
+			} catch (Exception exception) {
+				Log.e(TAG, "error loading albums", exception);
 			}
-		} catch (Exception exception) {
-			Log.e(TAG, "error loading albums", exception);
 		}
 		return result;
 	}

@@ -633,7 +633,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// pause/play track
 		else if (CMDTOGGLEPAUSE.equals(command) || ACTION_TOGGLEPAUSE.equals(action)) {
 			if (isPlaying()) {
-				pause();
+				pause(false);
 				mPausedByTransientLossOfFocus = false;
 			} else {
 				play();
@@ -641,7 +641,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		}
 		// pause track
 		else if (CMDPAUSE.equals(command) || ACTION_PAUSE.equals(action)) {
-			pause();
+			pause(false);
 			mPausedByTransientLossOfFocus = false;
 		}
 		// play track
@@ -650,7 +650,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		}
 		// stop track/dismiss notification
 		else if (CMDSTOP.equals(command) || ACTION_STOP.equals(action)) {
-			pause();
+			pause(true);
 			mPausedByTransientLossOfFocus = false;
 			seek(0);
 			releaseServiceUiAndStop();
@@ -818,8 +818,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 						gotoNext(true);
 					}
 					mPlayer.start();
+					// fade in
 					mPlayerHandler.removeMessages(MESSAGE_FADEDOWN);
 					mPlayerHandler.sendEmptyMessage(MESSAGE_FADEUP);
+					//
 					if (!mIsSupposedToBePlaying) {
 						mIsSupposedToBePlaying = true;
 						notifyChange(CHANGED_PLAYSTATE);
@@ -839,10 +841,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Temporarily pauses playback.
 	 */
-	public void pause() {
-		mPlayerHandler.removeMessages(MESSAGE_FADEUP);
-		if (mIsSupposedToBePlaying) {
+	public void pause(boolean force) {
+		if (force) {
 			mPlayer.pause();
+		} else {
+			// use fade out and let MusicPlayerHandler turn off player
+			mPlayerHandler.removeMessages(MESSAGE_FADEUP);
+			mPlayerHandler.sendEmptyMessage(MESSAGE_FADEDOWN);
+		}
+		if (mIsSupposedToBePlaying) {
 			scheduleDelayedShutdown();
 			mIsSupposedToBePlaying = false;
 			notifyChange(CHANGED_PLAYSTATE);
@@ -986,7 +993,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public void onAudioFocusLoss(int msg) {
 		if (isPlaying()) {
 			mPausedByTransientLossOfFocus = msg == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-			pause();
+			pause(true);
 		}
 	}
 

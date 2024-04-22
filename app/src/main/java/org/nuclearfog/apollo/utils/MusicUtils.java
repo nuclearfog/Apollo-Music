@@ -253,7 +253,7 @@ public final class MusicUtils {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				service.pause();
+				service.pause(false);
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();

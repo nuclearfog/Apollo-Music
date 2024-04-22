@@ -19,9 +19,26 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
 import java.lang.ref.WeakReference;
 
 /**
+ * Player handler for {@link MusicPlaybackService}
  *
+ * @author nuclearfog
  */
 public class MusicPlayerHandler extends Handler {
+
+	/**
+	 * volume steps used to fade up
+	 */
+	private static final float FADE_UP_STEPS = .02f;
+
+	/**
+	 * volume steps used to fade down
+	 */
+	private static final float FADE_DOWN_STEPS = .05f;
+
+	/**
+	 * volume step resolution in ms
+	 */
+	private static final int FADE_RESOLUTION = 10;
 
 	private WeakReference<MusicPlaybackService> mService;
 	private float mCurrentVolume = 1.0f;
@@ -46,24 +63,24 @@ public class MusicPlayerHandler extends Handler {
 		if (service == null) {
 			return;
 		}
-
 		switch (msg.what) {
 			case MESSAGE_FADEDOWN:
-				mCurrentVolume -= .05f;
-				if (mCurrentVolume > .2f) {
-					sendEmptyMessageDelayed(MESSAGE_FADEDOWN, 10);
+				mCurrentVolume -= FADE_DOWN_STEPS;
+				if (mCurrentVolume > 0f) {
+					sendEmptyMessageDelayed(MESSAGE_FADEDOWN, FADE_RESOLUTION);
 				} else {
-					mCurrentVolume = .2f;
+					mCurrentVolume = 0f;
+					service.pause(true);
 				}
 				service.setVolume(mCurrentVolume);
 				break;
 
 			case MESSAGE_FADEUP:
-				mCurrentVolume += .01f;
-				if (mCurrentVolume < 1.0f) {
-					sendEmptyMessageDelayed(MESSAGE_FADEUP, 10);
+				mCurrentVolume += FADE_UP_STEPS;
+				if (mCurrentVolume < 1f) {
+					sendEmptyMessageDelayed(MESSAGE_FADEUP, FADE_RESOLUTION);
 				} else {
-					mCurrentVolume = 1.0f;
+					mCurrentVolume = 1f;
 				}
 				service.setVolume(mCurrentVolume);
 				break;

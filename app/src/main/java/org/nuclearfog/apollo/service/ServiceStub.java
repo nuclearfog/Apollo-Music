@@ -58,10 +58,10 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void pause() {
+	public void pause(boolean force) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.pause();
+			service.pause(force);
 		}
 	}
 

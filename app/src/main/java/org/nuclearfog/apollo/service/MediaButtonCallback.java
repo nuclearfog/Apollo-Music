@@ -25,7 +25,7 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 
 	@Override
 	public void onPause() {
-		service.pause();
+		service.pause(false);
 	}
 
 	@Override

@@ -8,7 +8,7 @@ interface IApolloService
     void openFile(in Uri uri);
     void open(in long [] list, int position);
     void stop();
-    void pause();
+    void pause(boolean force);
     void play();
     void prev();
     void goToNext();

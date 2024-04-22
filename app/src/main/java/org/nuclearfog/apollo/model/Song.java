@@ -86,8 +86,8 @@ public class Song extends Music implements Comparable<Song> {
 	 * @param song_name   The song_name of the song
 	 * @param artist_name The song artist
 	 * @param album_name  The song album
-	 * @param length     The duration of a song in milliseconds
-	 * @param visibility Visibility of the track
+	 * @param length      The duration of a song in milliseconds
+	 * @param visibility  Visibility of the track
 	 */
 	public Song(long song_id, String song_name, String artist_name, String album_name, long length, boolean visibility) {
 		super(song_id, song_name, visibility);
@@ -102,7 +102,7 @@ public class Song extends Music implements Comparable<Song> {
 		}
 	}
 
-    /**
+	/**
 	 * @inheritDoc
 	 */
 	@Override

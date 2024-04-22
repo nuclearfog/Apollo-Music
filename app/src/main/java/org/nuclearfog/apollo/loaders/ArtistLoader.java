@@ -34,11 +34,7 @@ public class ArtistLoader extends AsyncExecutor<Void, List<Artist>> {
 
 	private static final String TAG = "ArtistLoader";
 
-	/**
-	 * Constructor of <code>ArtistLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	public ArtistLoader(Context context) {
 		super(context);
 	}

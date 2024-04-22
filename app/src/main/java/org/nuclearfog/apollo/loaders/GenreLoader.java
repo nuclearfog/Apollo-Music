@@ -45,11 +45,7 @@ public class GenreLoader extends AsyncExecutor<Void, List<Genre>> {
 	 */
 	private static final Pattern SEPARATOR = Pattern.compile("\\s*[,;|]\\s*");
 
-	/**
-	 * Constructor of <code>GenreLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	public GenreLoader(@NonNull Context context) {
 		super(context);
 	}

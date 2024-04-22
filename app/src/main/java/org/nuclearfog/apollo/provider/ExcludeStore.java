@@ -59,7 +59,6 @@ public class ExcludeStore extends SQLiteOpenHelper {
 	}
 
 
-
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(TABLE_EXCLUDE_TRACKS);
@@ -77,7 +76,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 		synchronized (LOCK) {
 			SQLiteDatabase database = getWritableDatabase();
 			database.beginTransaction();
-			for (long id: ids) {
+			for (long id : ids) {
 				ContentValues column = new ContentValues(2);
 				column.put(ExcludeTable.ID, id);
 				column.put(ExcludeTable.TYPE, type.id);
@@ -95,7 +94,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 		synchronized (LOCK) {
 			SQLiteDatabase database = getWritableDatabase();
 			database.beginTransaction();
-			for (long id: ids) {
+			for (long id : ids) {
 				database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
 			}
 			database.setTransactionSuccessful();
@@ -114,7 +113,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 			if (cursor.moveToFirst()) {
 				do {
 					result.add(cursor.getLong(0));
-				} while(cursor.moveToNext());
+				} while (cursor.moveToNext());
 			}
 			cursor.close();
 		}

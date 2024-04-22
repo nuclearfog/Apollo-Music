@@ -32,11 +32,7 @@ public class FavoritesLoader extends AsyncExecutor<Void, List<Song>> {
 
 	private static final String TAG = "FavoritesLoader";
 
-	/**
-	 * Constructor of <code>FavoritesHandler</code>
-	 *
-	 * @param context The {@link Context} to use.
-	 */
+
 	public FavoritesLoader(Context context) {
 		super(context);
 	}

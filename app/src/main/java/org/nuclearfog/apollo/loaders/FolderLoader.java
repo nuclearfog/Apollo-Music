@@ -27,7 +27,6 @@ public class FolderLoader extends AsyncExecutor<Void, List<Folder>> {
 
 	public FolderLoader(Context context) {
 		super(context);
-
 	}
 
 	/**

@@ -31,11 +31,7 @@ public class LastAddedLoader extends AsyncExecutor<Void, List<Song>> {
 
 	private static final String TAG = "LastAddedLoader";
 
-	/**
-	 * Constructor of <code>LastAddedHandler</code>
-	 *
-	 * @param context The {@link Context} to use.
-	 */
+
 	public LastAddedLoader(Context context) {
 		super(context);
 	}

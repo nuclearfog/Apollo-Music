@@ -32,7 +32,7 @@ public class PlaylistCreateDialog extends BasePlaylistDialog {
 
 	public static final String NAME = "CreatePlaylist";
 
-	private static final String KEY_LIST = NAME +"_playlist_list";
+	private static final String KEY_LIST = NAME + "_playlist_list";
 
 	private static final String KEY_DEFAULT_NAME = NAME + "_defaultname";
 

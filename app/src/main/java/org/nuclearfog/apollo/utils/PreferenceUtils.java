@@ -14,8 +14,9 @@ package org.nuclearfog.apollo.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.preference.PreferenceManager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -37,7 +38,9 @@ public final class PreferenceUtils {
 
 	/* Default start page (Artist page) */
 	public static final int DEFFAULT_PAGE = 3;
-	/** Saves the last page the pager was on in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment} */
+	/**
+	 * Saves the last page the pager was on in {@link org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment}
+	 */
 	public static final String START_PAGE = "start_page";
 	// Sort order for the artist list
 	public static final String ARTIST_SORT_ORDER = "artist_sort_order";

@@ -80,7 +80,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
 	/**
 	 * @param uri The path of the file, or the http/rtsp URL of the stream
-	 *             you want to play
+	 *            you want to play
 	 */
 	public void setDataSource(Uri uri) {
 		mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, uri);
@@ -93,7 +93,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 * Set the MediaPlayer to start when this MediaPlayer finishes playback.
 	 *
 	 * @param uri The path of the file, or the http/rtsp URL of the stream
-	 *             you want to play
+	 *            you want to play
 	 */
 	public void setNextDataSource(@NonNull Uri uri) {
 		try {
@@ -239,7 +239,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 
 	/**
 	 * @param player The {@link MediaPlayer} to use
-	 * @param uri   The path of the file, or the http/rtsp URL of the stream
+	 * @param uri    The path of the file, or the http/rtsp URL of the stream
 	 *               you want to play
 	 * @return True if the <code>player</code> has been prepared and is
 	 * ready to play, false otherwise

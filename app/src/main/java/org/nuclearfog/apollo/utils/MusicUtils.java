@@ -44,8 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.loaders.NowPlayingCursor;
 import org.nuclearfog.apollo.model.Album;

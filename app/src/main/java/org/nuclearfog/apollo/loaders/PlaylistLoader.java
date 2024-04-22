@@ -33,11 +33,7 @@ public class PlaylistLoader extends AsyncExecutor<Void, List<Playlist>> {
 
 	private static final String TAG = "PlaylistLoader";
 
-	/**
-	 * Constructor of <code>PlaylistLoader</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	public PlaylistLoader(Context context) {
 		super(context);
 	}

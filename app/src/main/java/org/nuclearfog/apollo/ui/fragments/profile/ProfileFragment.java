@@ -24,9 +24,9 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 

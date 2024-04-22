@@ -37,7 +37,7 @@ public class Genre extends Music implements Comparable<Genre> {
 	public Genre(Long[] ids, String genre_name, boolean visibility) {
 		super(-1L, genre_name, visibility);
 		this.ids = new long[ids.length];
-		for (int i = 0; i < ids.length ; i++) {
+		for (int i = 0; i < ids.length; i++) {
 			if (ids[i] != null) {
 				this.ids[i] = ids[i];
 			}

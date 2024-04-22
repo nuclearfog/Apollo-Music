@@ -22,38 +22,38 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  */
 public class BatteryOptDialog extends DialogFragment implements OnClickListener {
 
-    /**
-     *
-     */
-    public BatteryOptDialog() {
-    }
+	/**
+	 *
+	 */
+	public BatteryOptDialog() {
+	}
 
-    /**
-     *
-     */
-    public static BatteryOptDialog newInstance() {
-        return new BatteryOptDialog();
-    }
-
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.dialog_disable_bat_opt_title)
-                .setMessage(R.string.dialog_disable_bat_opt_message)
-                .setPositiveButton(R.string.dialog_disable_bat_opt_confirm, this)
-                .setNegativeButton(R.string.dialog_disable_bat_opt_ignore, this)
-                .create();
-    }
+	/**
+	 *
+	 */
+	public static BatteryOptDialog newInstance() {
+		return new BatteryOptDialog();
+	}
 
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            ApolloUtils.redirectToBatteryOptimization(requireActivity());
-        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-            PreferenceUtils.getInstance(requireContext()).setIgnoreBatteryOptimization();
-        }
-    }
+	@NonNull
+	@Override
+	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+		return new AlertDialog.Builder(requireContext())
+				.setTitle(R.string.dialog_disable_bat_opt_title)
+				.setMessage(R.string.dialog_disable_bat_opt_message)
+				.setPositiveButton(R.string.dialog_disable_bat_opt_confirm, this)
+				.setNegativeButton(R.string.dialog_disable_bat_opt_ignore, this)
+				.create();
+	}
+
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		if (which == DialogInterface.BUTTON_POSITIVE) {
+			ApolloUtils.redirectToBatteryOptimization(requireActivity());
+		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
+			PreferenceUtils.getInstance(requireContext()).setIgnoreBatteryOptimization();
+		}
+	}
 }

@@ -88,7 +88,7 @@
 			android:defaultValue="false"
 			android:key="old_notification_layout"
 			android:title="@string/settings_use_old_notification"
-			android:summary="@string/settings_use_old_notification_summary"/>
+			android:summary="@string/settings_use_old_notification_summary" />
 	</PreferenceCategory>
 
 	<!-- About -->

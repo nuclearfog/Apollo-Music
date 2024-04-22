@@ -32,11 +32,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
 	private Cursor cursor;
 
-	/**
-	 * Constructor of <code>NowPlayingCursor</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	public NowPlayingCursor(Context context) {
 		mContext = context;
 		makeNowPlayingCursor();

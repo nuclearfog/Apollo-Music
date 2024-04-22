@@ -37,8 +37,8 @@ public class AlbumLoader extends AsyncExecutor<Void, List<Album>> {
 
 	public AlbumLoader(Context context) {
 		super(context);
-
 	}
+
 
 	@Override
 	protected List<Album> doInBackground(Void v) {

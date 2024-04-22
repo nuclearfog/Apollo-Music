@@ -25,115 +25,115 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AsyncExecutor<Parameter, Result> {
 
-    /**
-     * maximum task count to run in the background
-     */
-    private static final int N_THREAD = 4;
+	/**
+	 * maximum task count to run in the background
+	 */
+	private static final int N_THREAD = 4;
 
-    /**
-     * timeout for queued processes
-     */
-    private static final long P_TIMEOUT = 4L;
+	/**
+	 * timeout for queued processes
+	 */
+	private static final long P_TIMEOUT = 4L;
 
-    /**
-     * thread pool executor
-     */
-    private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+	/**
+	 * thread pool executor
+	 */
+	private static final ExecutorService THREAD_POOL = new ThreadPoolExecutor(N_THREAD, N_THREAD, P_TIMEOUT, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
-    /**
-     * handler used to send result back to activity/fragment
-     */
-    private Handler uiHandler = new Handler(Looper.getMainLooper());
+	/**
+	 * handler used to send result back to activity/fragment
+	 */
+	private Handler uiHandler = new Handler(Looper.getMainLooper());
 
-    /**
-     * contains all tasks used by an instance
-     */
-    private Queue<Future<?>> futureTasks = new LinkedBlockingQueue<>();
+	/**
+	 * contains all tasks used by an instance
+	 */
+	private Queue<Future<?>> futureTasks = new LinkedBlockingQueue<>();
 
-    private WeakReference<Context> mContext;
+	private WeakReference<Context> mContext;
 
-    /**
-     *
-     */
-    protected AsyncExecutor(Context context) {
-        mContext = new WeakReference<>(context);
-    }
+	/**
+	 *
+	 */
+	protected AsyncExecutor(Context context) {
+		mContext = new WeakReference<>(context);
+	}
 
-    /**
-     * start packground task
-     *
-     * @param parameter parameter to send to the background task
-     * @param callback  result from the background task
-     */
-    public final void execute(final Parameter parameter, @Nullable AsyncCallback<Result> callback) {
-        final WeakReference<AsyncCallback<Result>> callbackReference = new WeakReference<>(callback);
-        Future<?> future = THREAD_POOL.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Result result = doInBackground(parameter);
-                    onPostExecute(result, callbackReference);
-                } catch (RuntimeException exception) {
-                    if (BuildConfig.DEBUG) {
-                        exception.printStackTrace();
-                    }
-                }
-            }
-        });
-        futureTasks.add(future);
-    }
+	/**
+	 * start packground task
+	 *
+	 * @param parameter parameter to send to the background task
+	 * @param callback  result from the background task
+	 */
+	public final void execute(final Parameter parameter, @Nullable AsyncCallback<Result> callback) {
+		final WeakReference<AsyncCallback<Result>> callbackReference = new WeakReference<>(callback);
+		Future<?> future = THREAD_POOL.submit(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Result result = doInBackground(parameter);
+					onPostExecute(result, callbackReference);
+				} catch (RuntimeException exception) {
+					if (BuildConfig.DEBUG) {
+						exception.printStackTrace();
+					}
+				}
+			}
+		});
+		futureTasks.add(future);
+	}
 
-    /**
-     * send signal to the tasks executed by this instance
-     */
-    public final void cancel() {
-        while (!futureTasks.isEmpty()) {
-            Future<?> future = futureTasks.remove();
-            future.cancel(true);
-        }
-    }
+	/**
+	 * send signal to the tasks executed by this instance
+	 */
+	public final void cancel() {
+		while (!futureTasks.isEmpty()) {
+			Future<?> future = futureTasks.remove();
+			future.cancel(true);
+		}
+	}
 
-    @Nullable
-    protected Context getContext() {
-        return mContext.get();
-    }
+	@Nullable
+	protected Context getContext() {
+		return mContext.get();
+	}
 
-    /**
-     * send result to main thread
-     *
-     * @param result result of the background task
-     */
-    private synchronized void onPostExecute(@Nullable final Result result, WeakReference<AsyncCallback<Result>> callbackReference) {
-        uiHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!futureTasks.isEmpty())
-                    futureTasks.remove();
-                AsyncCallback<Result> reference = callbackReference.get();
-                if (reference != null && result != null) {
-                    reference.onResult(result);
-                }
-            }
-        });
-    }
+	/**
+	 * send result to main thread
+	 *
+	 * @param result result of the background task
+	 */
+	private synchronized void onPostExecute(@Nullable final Result result, WeakReference<AsyncCallback<Result>> callbackReference) {
+		uiHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (!futureTasks.isEmpty())
+					futureTasks.remove();
+				AsyncCallback<Result> reference = callbackReference.get();
+				if (reference != null && result != null) {
+					reference.onResult(result);
+				}
+			}
+		});
+	}
 
-    /**
-     * This method is called in a background thread
-     *
-     * @param param parameter containing information for the background task
-     * @return result of the background task
-     */
-    @WorkerThread
-    protected abstract Result doInBackground(Parameter param);
+	/**
+	 * This method is called in a background thread
+	 *
+	 * @param param parameter containing information for the background task
+	 * @return result of the background task
+	 */
+	@WorkerThread
+	protected abstract Result doInBackground(Parameter param);
 
-    /**
-     * Callback used to send task result to main thread
-     */
-    public interface AsyncCallback<Result> {
+	/**
+	 * Callback used to send task result to main thread
+	 */
+	public interface AsyncCallback<Result> {
 
-        /**
-         * @param result result of the task
-         */
-        void onResult(@NonNull Result result);
-    }
+		/**
+		 * @param result result of the task
+		 */
+		void onResult(@NonNull Result result);
+	}
 }

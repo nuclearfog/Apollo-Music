@@ -108,8 +108,8 @@
 	<string name="settings_download_missing_artwork_title">Fehlende Albencover laden</string>
 	<string name="settings_download_artist_images_title">Fehlende Interpretenbilder laden</string>
 	<string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
-	<string name="settings_disable_bat_opt_title">Batterie-Optimierungen deaktivieren</string>
-	<string name="settings_disable_bat_opt_summary">Batterie-Optimierungen deaktivieren falls es Unterbrechungen beim Abspielen kommt</string>
+	<string name="settings_disable_bat_opt_title">Akku-Optimierungen deaktivieren</string>
+	<string name="settings_disable_bat_opt_summary">Akku-Optimierungen deaktivieren falls es zu Unterbrechungen beim Abspielen kommt</string>
 	<string name="settings_use_old_notification">Altes Benachrichtigungs-Layout verwenden</string>
 	<string name="settings_use_old_notification_summary">Aktivieren, falls es zu Darstellungsproblemen kommt</string>
 	<string name="settings_version_title">Version</string>

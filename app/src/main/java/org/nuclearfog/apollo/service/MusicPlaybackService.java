@@ -52,6 +52,7 @@ import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MusicPlayerHandler;
 import org.nuclearfog.apollo.provider.FavoritesStore;
@@ -74,6 +75,8 @@ import java.util.TreeSet;
 /**
  * A background {@link Service} used to keep music playing between activities
  * and when the user moves Apollo into the background.
+ *
+ * @author nuclearfog
  */
 public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener {
 	/**
@@ -550,6 +553,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, APOLLO_PACKAGE_NAME);
 		sendBroadcast(audioEffectsIntent);
+		AudioEffects.release();
 		// remove any pending alarms
 		mAlarmManager.cancel(mShutdownIntent);
 		// Release the player
@@ -562,7 +566,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		unregisterReceiver(mUnmountReceiver);
 		unregisterReceiver(mIntentReceiver);
 		// remove notification
-		mNotificationHelper.cancelNotification();
+		mNotificationHelper.dismissNotification();
 		super.onDestroy();
 	}
 
@@ -593,12 +597,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
+		// set empty notification to keep service alive
+		mNotificationHelper.createNotification(false);
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
-					mNotificationHelper.cancelNotification();
+					mNotificationHelper.dismissNotification();
 				} else if (isPlaying()) {
 					mNotificationHelper.createNotification(true);
 				}
@@ -654,7 +660,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			mPausedByTransientLossOfFocus = false;
 			seek(0);
 			releaseServiceUiAndStop();
-			mNotificationHelper.cancelNotification();
+			mNotificationHelper.dismissNotification();
 		}
 		// repeat set
 		else if (ACTION_REPEAT.equals(action)) {

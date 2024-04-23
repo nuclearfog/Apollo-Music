@@ -34,6 +34,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  * expanded notification by default.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class NotificationHelper {
 
@@ -160,9 +161,9 @@ public class NotificationHelper {
 	}
 
 	/**
-	 * cancel notification when app is in foreground
+	 * dismiss notification when app is in foreground
 	 */
-	public void cancelNotification() {
+	public void dismissNotification() {
 		postNotification(null);
 	}
 

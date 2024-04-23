@@ -1482,7 +1482,7 @@ public final class MusicUtils {
 			Intent intent = new Intent(context, MusicPlaybackService.class);
 			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
 			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
-			context.startService(intent);                      //todo
+			context.startService(intent);
 		}
 	}
 

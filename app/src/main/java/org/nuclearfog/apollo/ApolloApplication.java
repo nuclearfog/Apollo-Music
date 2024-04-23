@@ -16,7 +16,6 @@ import android.app.Application;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.nuclearfog.apollo.cache.ImageCache;
-import org.nuclearfog.apollo.player.AudioEffects;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +26,7 @@ import java.util.logging.Logger;
  * released within {@link ImageCache}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class ApolloApplication extends Application {
 
@@ -59,8 +59,6 @@ public class ApolloApplication extends Application {
 			// remove notification
 			NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 			notificationManager.cancelAll();
-			// release audioeffects
-			AudioEffects.release();
 		} catch (SecurityException exception) {
 			// ignore
 		}

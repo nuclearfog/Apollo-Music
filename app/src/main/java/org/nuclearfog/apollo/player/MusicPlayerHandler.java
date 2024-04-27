@@ -1,7 +1,6 @@
 package org.nuclearfog.apollo.player;
 
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FADEDOWN;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FADEUP;
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FOCUS_CHANGE;
 import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_SERVER_DIED;
 import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_ENDED;
@@ -9,6 +8,7 @@ import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_W
 
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
@@ -26,30 +26,15 @@ import java.lang.ref.WeakReference;
 public class MusicPlayerHandler extends Handler {
 
 	/**
-	 * volume steps used to fade up
+	 *
 	 */
-	private static final float FADE_UP_STEPS = .02f;
+	private static final String HANDLER_NAME = "MusicPlayerHandler";
 
-	/**
-	 * volume steps used to fade down
-	 */
-	private static final float FADE_DOWN_STEPS = .05f;
-
-	/**
-	 * volume step resolution in ms
-	 */
-	private static final int FADE_RESOLUTION = 10;
 
 	private WeakReference<MusicPlaybackService> mService;
-	private float mCurrentVolume = 1.0f;
 
-	/**
-	 * Constructor of <code>MusicPlayerHandler</code>
-	 *
-	 * @param service The service to use.
-	 * @param looper  The thread to run on.
-	 */
-	public MusicPlayerHandler(MusicPlaybackService service, Looper looper) {
+
+	private MusicPlayerHandler(MusicPlaybackService service, Looper looper) {
 		super(looper);
 		mService = new WeakReference<>(service);
 	}
@@ -64,27 +49,6 @@ public class MusicPlayerHandler extends Handler {
 			return;
 		}
 		switch (msg.what) {
-			case MESSAGE_FADEDOWN:
-				mCurrentVolume -= FADE_DOWN_STEPS;
-				if (mCurrentVolume > 0f) {
-					sendEmptyMessageDelayed(MESSAGE_FADEDOWN, FADE_RESOLUTION);
-				} else {
-					mCurrentVolume = 0f;
-					service.pause(true);
-				}
-				service.setVolume(mCurrentVolume);
-				break;
-
-			case MESSAGE_FADEUP:
-				mCurrentVolume += FADE_UP_STEPS;
-				if (mCurrentVolume < 1f) {
-					sendEmptyMessageDelayed(MESSAGE_FADEUP, FADE_RESOLUTION);
-				} else {
-					mCurrentVolume = 1f;
-				}
-				service.setVolume(mCurrentVolume);
-				break;
-
 			case MESSAGE_SERVER_DIED:
 				if (service.isPlaying()) {
 					service.gotoNext(true);
@@ -109,20 +73,23 @@ public class MusicPlayerHandler extends Handler {
 						break;
 
 					case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-						removeMessages(MESSAGE_FADEUP);
-						sendEmptyMessage(MESSAGE_FADEDOWN);
+						service.pause(false);
 						break;
 
 					case AudioManager.AUDIOFOCUS_GAIN:
-						if (service.onAudioFocusGain()) {
-							mCurrentVolume = 0f;
-						} else {
-							removeMessages(MESSAGE_FADEDOWN);
-							sendEmptyMessage(MESSAGE_FADEUP);
-						}
+						service.onAudioFocusGain();
 						break;
 				}
 				break;
 		}
+	}
+
+	/**
+	 * initialize MusicPlayerHandler class
+	 */
+	public static MusicPlayerHandler init(MusicPlaybackService service) {
+		HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
+		thread.start();
+		return new MusicPlayerHandler(service, thread.getLooper());
 	}
 }

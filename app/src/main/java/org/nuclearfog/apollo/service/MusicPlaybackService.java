@@ -11,8 +11,6 @@
 
 package org.nuclearfog.apollo.service;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -29,7 +27,6 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AlbumColumns;
@@ -92,10 +89,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	public static final String MUSIC_PACKAGE_NAME = "com.android.music";
-	/**
-	 *
-	 */
-	private static final String HANDLER_NAME = "MusicPlayerHandler";
 	/**
 	 * Notification channel ID
 	 */
@@ -252,14 +245,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Indicates some sort of focus change, maybe a phone call
 	 */
 	public static final int MESSAGE_FOCUS_CHANGE = 0xDB9F6A3B;
-	/**
-	 * Indicates to fade the volume down
-	 */
-	public static final int MESSAGE_FADEDOWN = 0x9745AB2B;
-	/**
-	 * Indicates to fade the volume back up
-	 */
-	public static final int MESSAGE_FADEUP = 0x2A72CF59;
 	/**
 	 * Idle time before stopping the foreground notfication (1 minute)
 	 */
@@ -476,15 +461,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-		// Start up the thread running the service. Note that we create a
-		// separate thread because the service normally runs in the process's
-		// main thread, which we don't want to block. We also make it
-		// background priority so CPU-intensive work will not disrupt the UI.
-		HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
-		thread.start();
-
 		// Initialize the handler
-		mPlayerHandler = new MusicPlayerHandler(this, thread.getLooper());
+		mPlayerHandler = MusicPlayerHandler.init(this);
 
 		// Initialize the media player
 		mPlayer = new MultiPlayer(this);
@@ -819,15 +797,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			int returnCode = mAudio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
 				if (mPlayer.isInitialized()) {
-					long duration = mPlayer.duration();
-					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.position() >= duration - 2000L) {
+					long duration = mPlayer.getDuration();
+					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
 						gotoNext(true);
 					}
-					mPlayer.start();
-					// fade in
-					mPlayerHandler.removeMessages(MESSAGE_FADEDOWN);
-					mPlayerHandler.sendEmptyMessage(MESSAGE_FADEUP);
-					//
+					mPlayer.play();
 					if (!mIsSupposedToBePlaying) {
 						mIsSupposedToBePlaying = true;
 						notifyChange(CHANGED_PLAYSTATE);
@@ -848,13 +822,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Temporarily pauses playback.
 	 */
 	public void pause(boolean force) {
-		if (force) {
-			mPlayer.pause();
-		} else {
-			// use fade out and let MusicPlayerHandler turn off player
-			mPlayerHandler.removeMessages(MESSAGE_FADEUP);
-			mPlayerHandler.sendEmptyMessage(MESSAGE_FADEDOWN);
-		}
+		mPlayer.pause(force);
 		if (mIsSupposedToBePlaying) {
 			scheduleDelayedShutdown();
 			mIsSupposedToBePlaying = false;
@@ -881,7 +849,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				stop(false);
+				pause(false);
 				mPlayPos = pos;
 				openCurrentAndNext();
 				play();
@@ -912,8 +880,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (mPlayer.isInitialized()) {
 			if (position < 0) {
 				position = 0;
-			} else if (position > mPlayer.duration()) {
-				position = mPlayer.duration();
+			} else if (position > mPlayer.getDuration()) {
+				position = mPlayer.getDuration();
 			}
 			mPlayer.seek(position);
 			notifyChange(CHANGED_POSITION);
@@ -958,13 +926,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * set current playback volume
-	 */
-	public void setVolume(float volume) {
-		mPlayer.setVolume(volume);
-	}
-
-	/**
 	 * notify if track chages
 	 */
 	public synchronized void onWentToNext() {
@@ -1005,17 +966,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
 	/**
 	 * notify on audio focus gain
-	 *
-	 * @return true if player started
 	 */
-	public boolean onAudioFocusGain() {
+	public void onAudioFocusGain() {
 		if (!isPlaying() && mPausedByTransientLossOfFocus) {
 			mPausedByTransientLossOfFocus = false;
-			mPlayer.setVolume(0f);
-			//play();
-			return true;
 		}
-		return false;
 	}
 
 	/**
@@ -1230,7 +1185,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	long position() {
 		if (mPlayer.isInitialized()) {
-			return mPlayer.position();
+			return mPlayer.getPosition();
 		}
 		return -1L;
 	}
@@ -1242,7 +1197,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	long duration() {
 		if (mPlayer.isInitialized()) {
-			return mPlayer.duration();
+			return mPlayer.getDuration();
 		}
 		return -1L;
 	}
@@ -1769,8 +1724,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			long id = mPlayList.get(mNextPlayPos);
 			Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 			mPlayer.setNextDataSource(uri);
-		} else {
-			mPlayer.resetNextPlayer();
 		}
 	}
 
@@ -1945,7 +1898,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 			settings.setCursorPosition(mPlayPos);
 			if (mPlayer.isInitialized()) {
-				settings.setSeekPosition(mPlayer.position());
+				settings.setSeekPosition(mPlayer.getPosition());
 			}
 			settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
 		}

@@ -1514,12 +1514,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void updateTrackInformation(long trackId) {
 		clearCurrentTrackInformation();
-		Cursor mCursor = CursorFactory.makeTrackCursor(this, trackId);
-		updateTrackInformation(mCursor);
+		Cursor cursor = CursorFactory.makeTrackCursor(this, trackId);
+		updateTrackInformation(cursor);
 		updateAlbumInformation();
-		if (mCursor != null && !mCursor.isClosed()) {
-			mCursor.close();
-		}
 	}
 
 	/**
@@ -1529,19 +1526,19 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void updateTrackInformation(Uri uri) {
 		clearCurrentTrackInformation();
-		Cursor mCursor = null;
+		Cursor cursor = null;
 		// get information from MediaStore directly
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
-			mCursor = CursorFactory.makeTrackCursor(this, uri);
+			cursor = CursorFactory.makeTrackCursor(this, uri);
 		}
 		// use audio ID to get information
 		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("audio:\\d{1,18}")) {
 			long id = Long.parseLong(uri.getLastPathSegment().substring(6));
-			mCursor = CursorFactory.makeTrackCursor(this, id);
+			cursor = CursorFactory.makeTrackCursor(this, id);
 		}
 		// use file path to get information
 		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
-			mCursor = CursorFactory.makeTrackCursor(this, uri.getPath());
+			cursor = CursorFactory.makeTrackCursor(this, uri.getPath());
 		}
 		// use file name/relative path to get information
 		else {
@@ -1563,50 +1560,54 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 							name = name.substring(cut + 1);
 						}
 						// set track information
-						mCursor = CursorFactory.makeTrackCursor(this, name);
+						cursor = CursorFactory.makeTrackCursor(this, name);
 					}
 				}
 			}
 		}
-		updateTrackInformation(mCursor);
+		updateTrackInformation(cursor);
 		updateAlbumInformation();
-		if (mCursor != null && !mCursor.isClosed()) {
-			mCursor.close();
-		}
 	}
 
 	/**
+	 * read track information from cursor then close
 	 *
+	 * @param cursor cursor with track information
 	 */
-	private void updateTrackInformation(@Nullable Cursor mCursor) {
-		if (mCursor != null && mCursor.moveToFirst()) {
-			long songId = mCursor.getLong(mCursor.getColumnIndexOrThrow(Media._ID));
-			long artistId = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
-			long albumId = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
-			String songName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.TITLE));
-			String artistName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
-			String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
-			String path = mCursor.getString(mCursor.getColumnIndexOrThrow(AudioColumns.DATA));
-			long length = mCursor.getLong(mCursor.getColumnIndexOrThrow(AudioColumns.DURATION));
-			currentSong = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
+	private void updateTrackInformation(@Nullable Cursor cursor) {
+		currentSong = null;
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				long songId = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
+				long artistId = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
+				long albumId = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
+				String songName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+				String artistName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
+				String albumName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
+				String path = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.DATA));
+				long length = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.DURATION));
+				currentSong = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
+			}
+			cursor.close();
 		}
 	}
 
 	/**
-	 *
+	 * search album information using album ID from the current song
 	 */
 	private void updateAlbumInformation() {
-		long albumId = getAlbumId();
-		Cursor mAlbumCursor = CursorFactory.makeAlbumCursor(this, albumId);
-		if (mAlbumCursor != null && mAlbumCursor.moveToFirst()) {
-			long id = mAlbumCursor.getLong(mAlbumCursor.getColumnIndexOrThrow(Media._ID));
-			String name = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
-			String artist = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
-			int count = mAlbumCursor.getInt(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
-			String year = mAlbumCursor.getString(mAlbumCursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
-			currentAlbum = new Album(id, name, artist, count, year, true);
-		} else {
-			currentAlbum = null;
+		currentAlbum = null;
+		Cursor cursor = CursorFactory.makeAlbumCursor(this, getAlbumId());
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
+				String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
+				String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
+				int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
+				String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
+				currentAlbum = new Album(id, name, artist, count, year, true);
+			}
+			cursor.close();
 		}
 	}
 

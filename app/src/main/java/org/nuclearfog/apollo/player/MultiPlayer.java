@@ -6,16 +6,15 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -30,7 +29,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author nuclearfog
  */
-public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompletionListener {
+public class MultiPlayer implements OnErrorListener, OnCompletionListener {
+
+	private static final String TAG = "MultiPlayer";
 
 	/**
 	 * sampling rate of the fade effect
@@ -47,7 +48,7 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 */
 	private static final long XFADE_DELAY = 1000;
 
-	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(1);
+	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(2);
 
 	private WeakReference<MusicPlaybackService> mService;
 	private Handler playerHandler, xfadeHandler;
@@ -86,18 +87,11 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 		xfadeHandler = new Handler(service.getMainLooper());
 		for (int i = 0 ; i < mPlayers.length ; i++) {
 			mPlayers[i] = createPlayer();
-			mPlayers[i].setOnPreparedListener(this);
 			mPlayers[i].setOnCompletionListener(this);
 			mPlayers[i].setOnErrorListener(this);
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
 			mPlayers[i].setVolume(currentVolume, currentVolume);
 		}
-	}
-
-
-	@Override
-	public void onPrepared(MediaPlayer mp) {
-		initialized = true;
 	}
 
 	/**
@@ -145,14 +139,8 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 *            you want to play
 	 */
 	public void setNextDataSource(@NonNull Uri uri) {
-		try {
-			int nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
-			setDataSourceImpl(mPlayers[nextPlayerIndex], uri);
-		} catch (Exception err) {
-			if (BuildConfig.DEBUG) {
-				err.printStackTrace();
-			}
-		}
+		int nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
+		setDataSourceImpl(mPlayers[nextPlayerIndex], uri);
 	}
 
 	/**
@@ -175,12 +163,14 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 * Starts or resumes playback.
 	 */
 	public void play() {
-		if (!mPlayers[currentPlayer].isPlaying()) {
-			mPlayers[currentPlayer].start();
+		MediaPlayer mp = mPlayers[currentPlayer];
+		if (!mp.isPlaying()) {
+			currentVolume = 0.0f;
+			isPaused = false;
+			setCrossfadeTask(true);
+			mp.setVolume(currentVolume, currentVolume);
+			mp.start();
 		}
-		setCrossfadeTask(true);
-		currentVolume = 0.0f;
-		isPaused = false;
 	}
 
 	/**
@@ -208,10 +198,10 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 */
 	public void release() {
 		stop();
+		THREAD_POOL.shutdown();
 		for (MediaPlayer mp : mPlayers) {
 			mp.release();
 		}
-		THREAD_POOL.shutdown();
 	}
 
 	/**
@@ -278,10 +268,10 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 				player.setDataSource(musicService.getApplicationContext(), uri);
 				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				player.prepare();
+				initialized = true;
 			} catch (Exception err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
+				initialized = false;
+				Log.e(TAG, "failed to set data source!");
 			}
 			if (mPreferences.isExternalAudioFxPrefered() && !mPreferences.isAudioFxEnabled()) {
 				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
@@ -296,17 +286,17 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 * check for track status/position and change volume or playback status
 	 */
 	private void crossfadeTrack() {
-		long diff = ((getDuration() - getPosition()) / FADE_RESOLUTION) * FADE_RESOLUTION;
+		long diff = getDuration() - getPosition();
 		// crossfade
 		if (getPosition() > XFADE_DELAY && diff < XFADE_DELAY) {
 			float volume = (float) diff / XFADE_DELAY;
 			float invert = 1.0f - volume;
 			mPlayers[currentPlayer].setVolume(volume, volume);
 			MediaPlayer nextPlayer = mPlayers[(currentPlayer + 1) % mPlayers.length];
+			nextPlayer.setVolume(invert, invert);
 			if (!nextPlayer.isPlaying()) {
 				nextPlayer.start();
 			}
-			nextPlayer.setVolume(invert, invert);
 		}
 		// fade out
 		else if (isPaused) {
@@ -335,6 +325,11 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 	 * @param enable true to enable crossfading
 	 */
 	private void setCrossfadeTask(boolean enable) {
+		// remove old task if running
+		if (xfadeTask != null) {
+			xfadeTask.cancel(true);
+			xfadeTask = null;
+		}
 		if (enable) {
 			xfadeTask = THREAD_POOL.scheduleAtFixedRate(new Runnable() {
 				@Override
@@ -347,10 +342,6 @@ public class MultiPlayer implements OnPreparedListener, OnErrorListener, OnCompl
 					});
 				}
 			}, FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
-		} else {
-			if (xfadeTask != null) {
-				xfadeTask.cancel(true);
-			}
 		}
 	}
 }

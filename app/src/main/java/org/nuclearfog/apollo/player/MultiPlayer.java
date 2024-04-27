@@ -1,5 +1,7 @@
 package org.nuclearfog.apollo.player;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -48,9 +50,12 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 */
 	private static final long XFADE_DELAY = 1000;
 
-	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(2);
+	/**
+	 * thread pool used to periodically poll the current play position for crossfading
+	 */
+	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(3);
 
-	private WeakReference<MusicPlaybackService> mService;
+	private WeakReference<Context> mContext;
 	private Handler playerHandler, xfadeHandler;
 	private PreferenceUtils mPreferences;
 
@@ -80,11 +85,11 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	/**
 	 * Constructor of <code>MultiPlayer</code>
 	 */
-	public MultiPlayer(MusicPlaybackService service) {
-		mService = new WeakReference<>(service);
+	public MultiPlayer(Service service) {
+		mContext = new WeakReference<>(service.getApplicationContext());
 		playerHandler = new Handler(service.getMainLooper());
-		mPreferences = PreferenceUtils.getInstance(service);
 		xfadeHandler = new Handler(service.getMainLooper());
+		mPreferences = PreferenceUtils.getInstance(service);
 		for (int i = 0 ; i < mPlayers.length ; i++) {
 			mPlayers[i] = createPlayer();
 			mPlayers[i].setOnCompletionListener(this);
@@ -100,9 +105,10 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	@Override
 	public boolean onError(MediaPlayer mp, int what, int extra) {
 		if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-			initialized = false;
 			mp.reset();
+			initialized = false;
 			playerHandler.sendMessageDelayed(playerHandler.obtainMessage(MusicPlaybackService.MESSAGE_SERVER_DIED), 2000);
+			Log.d(TAG, "onError:" + what + "," + extra);
 			return true;
 		}
 		return false;
@@ -129,7 +135,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 *            you want to play
 	 */
 	public void setDataSource(@NonNull Uri uri) {
-		setDataSourceImpl(mPlayers[currentPlayer], uri);
+		initialized = setDataSourceImpl(mPlayers[currentPlayer], uri);
 	}
 
 	/**
@@ -177,9 +183,11 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 * Pauses playback. Call start() to resume.
 	 */
 	public void pause(boolean force) {
+		MediaPlayer mp = mPlayers[currentPlayer];
 		isPaused = true;
 		if (force) {
-			mPlayers[currentPlayer].pause();
+			if (mp.isPlaying())
+				mp.pause();
 			setCrossfadeTask(false);
 		}
 	}
@@ -259,46 +267,55 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	/**
 	 * @param player The {@link MediaPlayer} to use
 	 * @param uri    The path of the file, or the http/rtsp URL of the stream you want to play
+	 *
+	 * @return true if initialized
 	 */
-	private void setDataSourceImpl(MediaPlayer player, @NonNull Uri uri) {
-		MusicPlaybackService musicService = mService.get();
-		if (musicService != null) {
+	private boolean setDataSourceImpl(MediaPlayer player, @NonNull Uri uri) {
+		Context context = mContext.get();
+		if (context != null) {
 			try {
 				player.reset();
-				player.setDataSource(musicService.getApplicationContext(), uri);
+				player.setDataSource(context, uri);
 				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				player.prepare();
-				initialized = true;
 			} catch (Exception err) {
-				initialized = false;
 				Log.e(TAG, "failed to set data source!");
+				player.reset();
+				return false;
 			}
+			// send session ID to external equalizer if set
 			if (mPreferences.isExternalAudioFxPrefered() && !mPreferences.isAudioFxEnabled()) {
 				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, getAudioSessionId());
+				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.getAudioSessionId());
 				intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, MusicPlaybackService.APOLLO_PACKAGE_NAME);
-				musicService.sendBroadcast(intent);
+				context.sendBroadcast(intent);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/**
-	 * check for track status/position and change volume or playback status
+	 * called periodically while playback to detect playback changes for crossfading
 	 */
-	private void crossfadeTrack() {
+	private void onCrossfadeTrack() {
 		long diff = getDuration() - getPosition();
-		// crossfade
+		// crossfade current and next playback
 		if (getPosition() > XFADE_DELAY && diff < XFADE_DELAY) {
+			MediaPlayer nextPlayer = mPlayers[(currentPlayer + 1) % mPlayers.length];
+			// calc volume for current and next player
 			float volume = (float) diff / XFADE_DELAY;
 			float invert = 1.0f - volume;
+			// fade down current player
 			mPlayers[currentPlayer].setVolume(volume, volume);
-			MediaPlayer nextPlayer = mPlayers[(currentPlayer + 1) % mPlayers.length];
+			// fade up next player
 			nextPlayer.setVolume(invert, invert);
+			// start next player
 			if (!nextPlayer.isPlaying()) {
 				nextPlayer.start();
 			}
 		}
-		// fade out
+		// fade out current playback
 		else if (isPaused) {
 			if (currentVolume > 0.0f) {
 				currentVolume -= FADE_STEPS;
@@ -308,7 +325,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			}
 			mPlayers[currentPlayer].setVolume(currentVolume, currentVolume);
 		}
-		// fade in
+		// fade in curent playback
 		else {
 			if (currentVolume < 1.0f) {
 				currentVolume += FADE_STEPS;
@@ -330,6 +347,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			xfadeTask.cancel(true);
 			xfadeTask = null;
 		}
+		// set new cross fade task
 		if (enable) {
 			xfadeTask = THREAD_POOL.scheduleAtFixedRate(new Runnable() {
 				@Override
@@ -337,7 +355,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 					xfadeHandler.post(new Runnable() {
 						@Override
 						public void run() {
-							crossfadeTrack();
+							onCrossfadeTrack();
 						}
 					});
 				}

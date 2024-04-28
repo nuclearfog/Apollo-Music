@@ -773,10 +773,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Resumes or starts playback.
 	 */
 	public void play() {
-		if (mAudio != null) {
+		if (mAudio != null && !mPlayer.busy()) {
 			int returnCode = mAudio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
-				if (mPlayer.isInitialized()) {
+				if (mPlayer.initialized()) {
 					long duration = mPlayer.getDuration();
 					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
 						gotoNext(true);
@@ -820,7 +820,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public void gotoNext(boolean force) {
 		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
-		} else {
+		} else if (!mPlayer.busy()) {
 			int pos = getNextPosition(force);
 			if (pos < 0) {
 				scheduleDelayedShutdown();
@@ -841,11 +841,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * restart current track or go to preview track
 	 */
 	public void goToPrev() {
-		if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-			prev();
-		} else {
-			seek(0);
-			play();
+		if (!mPlayer.busy()) {
+			if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+				prev();
+			} else {
+				seek(0);
+				play();
+			}
 		}
 	}
 
@@ -856,7 +858,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The time to play the track at
 	 */
 	public long seek(long position) {
-		if (mPlayer.isInitialized()) {
+		if (mPlayer.initialized()) {
 			if (position < 0) {
 				position = 0;
 			} else if (position > mPlayer.getDuration()) {
@@ -885,7 +887,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				mPlayPos = 0;
 			}
 			mPlayer.setDataSource(uri);
-			if (mPlayer.isInitialized()) {
+			if (mPlayer.initialized()) {
 				play();
 			} else {
 				stop(true);
@@ -1131,7 +1133,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current track ID
 	 */
 	synchronized long getAudioId() {
-		if (mPlayPos >= 0 && mPlayer.isInitialized()) {
+		if (mPlayPos >= 0 && mPlayer.initialized()) {
 			return mPlayList.get(mPlayPos);
 		}
 		return -1L;
@@ -1162,7 +1164,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current playback position in miliseconds
 	 */
 	long position() {
-		if (mPlayer.isInitialized()) {
+		if (mPlayer.initialized()) {
 			return mPlayer.getPosition();
 		}
 		return -1L;
@@ -1174,7 +1176,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The duration of the current track in miliseconds
 	 */
 	long duration() {
-		if (mPlayer.isInitialized()) {
+		if (mPlayer.initialized()) {
 			return mPlayer.getDuration();
 		}
 		return -1L;
@@ -1398,7 +1400,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param goToIdle True to go to the idle state, false otherwise
 	 */
 	private void stop(boolean goToIdle) {
-		if (mPlayer.isInitialized()) {
+		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
 		clearCurrentTrackInformation();
@@ -1847,7 +1849,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 		updateTrackInformation(id);
 		mPlayer.setDataSource(uri);
-		if (mPlayer.isInitialized()) {
+		if (mPlayer.initialized()) {
 			return true;
 		} else {
 			stop(true);
@@ -1869,7 +1871,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			}
 			settings.setCursorPosition(mPlayPos);
-			if (mPlayer.isInitialized()) {
+			if (mPlayer.initialized()) {
 				settings.setSeekPosition(mPlayer.getPosition());
 			}
 			settings.setRepeatAndShuffleMode(mRepeatMode, mShuffleMode);
@@ -1896,7 +1898,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				clearCurrentTrackInformation();
 				openCurrentAndNext();
 			}
-			if (!mPlayer.isInitialized()) {
+			if (!mPlayer.initialized()) {
 				return;
 			}
 			long seekpos = settings.getSeekPosition();

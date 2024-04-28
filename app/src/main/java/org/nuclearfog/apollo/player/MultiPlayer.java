@@ -66,11 +66,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	private static final long XFADE_DELAY = 1000;
 
 	/**
-	 * volume threshold to disable playback
-	 */
-	private static final float FADE_THRESHOLD = 0.01f;
-
-	/**
 	 * thread pool used to periodically poll the current play position for crossfading
 	 */
 	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(3);
@@ -115,7 +110,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			mPlayers[i].setOnCompletionListener(this);
 			mPlayers[i].setOnErrorListener(this);
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
-			mPlayers[i].setVolume(currentVolume, currentVolume);
+			mPlayers[i].setVolume(0f, 0f);
 		}
 	}
 
@@ -187,8 +182,17 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	/**
 	 * @return True if the player is ready to go, false otherwise
 	 */
-	public boolean isInitialized() {
+	public boolean initialized() {
 		return initialized;
+	}
+
+	/**
+	 * check if there is a fade transition in progress
+	 *
+	 * @return true if fade in/out is in progress
+	 */
+	public boolean busy() {
+		return xfadeMode != NONE;
 	}
 
 	/**
@@ -198,9 +202,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		MediaPlayer mp = mPlayers[currentPlayer];
 		if (!mp.isPlaying()) {
 			xfadeMode = FADE_IN;
-			currentVolume = 0f;
-			mp.setVolume(0f, 0f);
-			mp.start();
 			setCrossfadeTask(true);
 		}
 	}
@@ -236,14 +237,8 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 * go to next player
 	 */
 	public void next() {
-		MediaPlayer mp = mPlayers[(currentPlayer + 1) % mPlayers.length];
-		if (!mp.isPlaying()) {
-			currentVolume = 1f;
-			mp.setVolume(0f, 0f);
-			mp.start();
-			setCrossfadeTask(true);
-		}
 		xfadeMode = XFADE;
+		setCrossfadeTask(true);
 	}
 
 	/**
@@ -349,8 +344,13 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		// force crossfade to next track
 		if (xfadeMode == XFADE) {
 			currentVolume = Math.max(currentVolume - FADE_STEPS, 0f);
+			// start next player
+			if (!next.isPlaying()) {
+				next.setVolume(0f, 0f);
+				next.start();
+			}
 			// crossfade both player
-			if (currentVolume >= FADE_THRESHOLD) {
+			else if (currentVolume > 0f) {
 				float invert = 1f - currentVolume;
 				current.setVolume(currentVolume, currentVolume);
 				next.setVolume(invert, invert);
@@ -368,16 +368,22 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		else if (xfadeMode == FADE_OUT) {
 			currentVolume = Math.max(currentVolume - FADE_STEPS, 0f);
 			current.setVolume(currentVolume, currentVolume);
-			if (currentVolume < FADE_THRESHOLD)  {
+			if (currentVolume == 0f)  {
 				pause(true);
 			}
 		}
 		// fade in curent playback
 		else if (xfadeMode == FADE_IN) {
-			currentVolume = Math.min(currentVolume + FADE_STEPS, 1f);
-			current.setVolume(currentVolume, currentVolume);
-			if (currentVolume == 1f)  {
-				xfadeMode = NONE;
+			if (!current.isPlaying()) {
+				currentVolume = 0;
+				current.setVolume(0f, 0f);
+				current.start();
+			} else {
+				currentVolume = Math.min(currentVolume + FADE_STEPS, 1f);
+				current.setVolume(currentVolume, currentVolume);
+				if (currentVolume == 1f)  {
+					xfadeMode = NONE;
+				}
 			}
 		}
 		// crossfade current and next playback
@@ -398,7 +404,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 					current.setVolume(volume, volume);
 					// fade up next player
 					next.setVolume(invert, invert);
-					// start next player
 				}
 			}
 		}

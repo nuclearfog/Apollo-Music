@@ -910,15 +910,17 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * notify if track chages
 	 */
 	public synchronized void onWentToNext() {
-		mPlayPos = mNextPlayPos;
-		clearCurrentTrackInformation();
-		updateTrackInformation(mPlayList.get(mPlayPos));
-		notifyChange(CHANGED_META);
-		setNextTrack();
+		if (mNextPlayPos >= 0) {
+			mPlayPos = mNextPlayPos;
+			clearCurrentTrackInformation();
+			updateTrackInformation(mPlayList.get(mPlayPos));
+			notifyChange(CHANGED_META);
+			setNextTrack();
+			setPlaybackState(true);
+		}
 		if (!isForeground) {
 			mNotificationHelper.updateNotification();
 		}
-		setPlaybackState(true);
 	}
 
 	/**
@@ -1133,7 +1135,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current track ID
 	 */
 	synchronized long getAudioId() {
-		if (mPlayPos >= 0 && mPlayer.initialized()) {
+		if (mPlayPos >= 0 && mPlayPos < mPlayList.size() && mPlayer.initialized()) {
 			return mPlayList.get(mPlayPos);
 		}
 		return -1L;
@@ -1598,7 +1600,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void openCurrentTrack() {
 		clearCurrentTrackInformation();
-		if (mPlayList.isEmpty()) {
+		if (mPlayList.isEmpty() || mPlayPos < 0) {
 			return;
 		}
 		stop(false);
@@ -1699,6 +1701,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			long id = mPlayList.get(mNextPlayPos);
 			Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 			mPlayer.setNextDataSource(uri);
+		} else {
+			mPlayer.setNextDataSource(null);
 		}
 	}
 

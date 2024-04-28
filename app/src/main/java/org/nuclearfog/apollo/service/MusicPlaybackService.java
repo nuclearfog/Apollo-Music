@@ -194,10 +194,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public static final String CMDNEXT = "next";
 	/**
-	 * Moves a list to the front of the queue
-	 */
-	public static final int MOVE_NOW = 0x34C4DD47;
-	/**
 	 * Moves a list to the next position in the queue
 	 */
 	public static final int MOVE_NEXT = 0xAE960453;
@@ -849,10 +845,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				pause(false);
-				mPlayPos = pos;
-				openCurrentAndNext();
-				play();
+				mPlayer.next();
+				setNextTrack();
 				notifyChange(CHANGED_META);
 			}
 		}
@@ -1245,15 +1239,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param position The position to start playback at
 	 */
 	synchronized void open(long[] list, int position) {
+		long oldId = getAudioId();
+		boolean newlist = false;
 		if (mShuffleMode == SHUFFLE_AUTO) {
 			mShuffleMode = SHUFFLE_NORMAL;
 		}
-		long oldId = getAudioId();
 		mPlayPos = position >= 0 ? position : nextInt(mPlayList.size() - 1);
-
-		boolean newlist = true;
-		if (mPlayList.size() == list.length) {
-			newlist = false;
+		if (mPlayList.size() != list.length) {
+			newlist = true;
+		} else {
 			for (int i = 0; i < list.length; i++) {
 				if (list[i] != mPlayList.get(i)) {
 					newlist = true;
@@ -1348,25 +1342,19 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param action The action to take
 	 */
 	synchronized void enqueue(long[] list, int action) {
-		if (action == MOVE_NEXT && mPlayPos + 1 < mPlayList.size()) {
+		if (action == MOVE_NEXT) {
 			addToPlayList(list, mPlayPos + 1);
 			notifyChange(CHANGED_QUEUE);
-		} else {
-			addToPlayList(list, Integer.MAX_VALUE);
-			notifyChange(CHANGED_QUEUE);
-			if (action == MOVE_NOW) {
-				mPlayPos = mPlayList.size() - list.length;
+			if (mPlayPos < 0) {
+				mPlayPos = 0;
+				stop(false);
 				openCurrentAndNext();
 				play();
 				notifyChange(CHANGED_META);
-				return;
 			}
-		}
-		if (mPlayPos < 0) {
-			mPlayPos = 0;
-			openCurrentAndNext();
-			play();
-			notifyChange(CHANGED_META);
+		} else if (action == MOVE_LAST) {
+			addToPlayList(list, Integer.MAX_VALUE);
+			notifyChange(CHANGED_QUEUE);
 		}
 	}
 

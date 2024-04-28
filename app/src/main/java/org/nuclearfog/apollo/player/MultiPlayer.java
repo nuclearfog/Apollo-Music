@@ -141,8 +141,10 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		if (mp == mPlayers[currentPlayer]) {
-			// switch to next player
-			mPlayers[currentPlayer].reset();
+			// reset old player to default
+			mp.reset();
+			mp.setVolume(currentVolume, currentVolume);
+			// select next media player
 			currentPlayer = (currentPlayer + 1) % mPlayers.length;
 			// notify playback service that track went to next
 			playerHandler.sendEmptyMessage(MusicPlayerHandler.MESSAGE_TRACK_WENT_TO_NEXT);
@@ -342,22 +344,24 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	 * called periodically while playback to detect playback changes for crossfading
 	 */
 	private void onCrossfadeTrack() {
-		long diff = getDuration() - getPosition();
 		MediaPlayer current = mPlayers[currentPlayer];
 		MediaPlayer next = mPlayers[(currentPlayer + 1) % mPlayers.length];
 		// force crossfade to next track
 		if (xfadeMode == XFADE) {
 			currentVolume = Math.max(currentVolume - FADE_STEPS, 0f);
 			float invert = 1f - currentVolume;
-			if (currentVolume < FADE_THRESHOLD) {
+			// crossfade both player
+			if (currentVolume >= FADE_THRESHOLD) {
+				current.setVolume(currentVolume, currentVolume);
+				next.setVolume(invert, invert);
+			}
+			// if crossfade finished, switch to new player
+			else {
+				currentVolume = 1f;
+				xfadeMode = NONE;
 				current.setVolume(0f, 0f);
 				next.setVolume(1f, 1f);
 				onCompletion(current);
-				currentVolume = 1f;
-				xfadeMode = NONE;
-			} else {
-				current.setVolume(currentVolume, currentVolume);
-				next.setVolume(invert, invert);
 			}
 		}
 		// fade out current playback
@@ -365,8 +369,8 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			currentVolume = Math.max(currentVolume - FADE_STEPS, 0f);
 			current.setVolume(currentVolume, currentVolume);
 			if (currentVolume < FADE_THRESHOLD)  {
-				xfadeMode = NONE;
 				pause(true);
+				currentVolume = 1f;
 			}
 		}
 		// fade in curent playback
@@ -378,17 +382,22 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			}
 		}
 		// crossfade current and next playback
-		else if ((getPosition() > XFADE_DELAY && diff < XFADE_DELAY)) {
-			// calc volume for current and next player
-			float volume = Math.max((float) diff / XFADE_DELAY, 0f);
-			float invert = 1f - volume;
-			// fade down current player
-			current.setVolume(volume, volume);
-			// fade up next player
-			next.setVolume(invert, invert);
-			// start next player
-			if (!next.isPlaying()) {
-				next.start();
+		else {
+			long diff = getDuration() - getPosition();
+			// crossfade if the end of the track is near
+			if ((getPosition() > XFADE_DELAY && diff < XFADE_DELAY)) {
+				// calc volume for current and next player
+				float volume = Math.max((float) diff / XFADE_DELAY, 0f);
+				float invert = 1f - volume;
+				// fade down current player
+				current.setVolume(volume, volume);
+				// fade up next player
+				next.setVolume(invert, invert);
+				// start next player
+				if (!next.isPlaying()) {
+					next.setVolume(0f, 0f);
+					next.start();
+				}
 			}
 		}
 	}

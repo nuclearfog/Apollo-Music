@@ -1,16 +1,11 @@
 package org.nuclearfog.apollo.player;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_FOCUS_CHANGE;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_SERVER_DIED;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_ENDED;
-import static org.nuclearfog.apollo.service.MusicPlaybackService.MESSAGE_TRACK_WENT_TO_NEXT;
-
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
 
 import androidx.annotation.NonNull;
 
@@ -24,12 +19,26 @@ import java.lang.ref.WeakReference;
  * @author nuclearfog
  */
 public class MusicPlayerHandler extends Handler {
-
 	/**
 	 *
 	 */
 	private static final String HANDLER_NAME = "MusicPlayerHandler";
-
+	/**
+	 * Indicates the player died
+	 */
+	public static final int MESSAGE_SERVER_DIED = 0xA2F4FFEE;
+	/**
+	 * Indicates that the current track was changed the next track
+	 */
+	public static final int MESSAGE_TRACK_WENT_TO_NEXT = 0xB4C13964;
+	/**
+	 * Indicates when the track ends
+	 */
+	public static final int MESSAGE_TRACK_ENDED = 0xF7E68B1A;
+	/**
+	 * Indicates some sort of focus change, maybe a phone call
+	 */
+	public static final int MESSAGE_FOCUS_CHANGE = 0xDB9F6A3B;
 
 	private WeakReference<MusicPlaybackService> mService;
 
@@ -88,7 +97,7 @@ public class MusicPlayerHandler extends Handler {
 	 * initialize MusicPlayerHandler class
 	 */
 	public static MusicPlayerHandler init(MusicPlaybackService service) {
-		HandlerThread thread = new HandlerThread(HANDLER_NAME, THREAD_PRIORITY_BACKGROUND);
+		HandlerThread thread = new HandlerThread(HANDLER_NAME, Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
 		return new MusicPlayerHandler(service, thread.getLooper());
 	}

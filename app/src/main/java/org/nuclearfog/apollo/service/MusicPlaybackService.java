@@ -226,22 +226,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	public static final int REPEAT_ALL = 0xEE3F9E0B;
 	/**
-	 * Indicates when the track ends
-	 */
-	public static final int MESSAGE_TRACK_ENDED = 0xF7E68B1A;
-	/**
-	 * Indicates that the current track was changed the next track
-	 */
-	public static final int MESSAGE_TRACK_WENT_TO_NEXT = 0xB4C13964;
-	/**
-	 * Indicates the player died
-	 */
-	public static final int MESSAGE_SERVER_DIED = 0xA2F4FFEE;
-	/**
-	 * Indicates some sort of focus change, maybe a phone call
-	 */
-	public static final int MESSAGE_FOCUS_CHANGE = 0xDB9F6A3B;
-	/**
 	 * Idle time before stopping the foreground notfication (1 minute)
 	 */
 	private static final int IDLE_DELAY = 60000;
@@ -418,7 +402,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			// before stopping the service, so that pause/resume isn't slow.
 			// Also delay stopping the service if we're transitioning between
 			// tracks.
-		} else if (!mPlayList.isEmpty() || mPlayerHandler.hasMessages(MESSAGE_TRACK_ENDED)) {
+		} else if (!mPlayList.isEmpty() || mPlayerHandler.hasMessages(MusicPlayerHandler.MESSAGE_TRACK_ENDED)) {
 			scheduleDelayedShutdown();
 			return true;
 		}
@@ -562,7 +546,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	@Override
 	public void onAudioFocusChange(int focusChange) {
-		mPlayerHandler.obtainMessage(MESSAGE_FOCUS_CHANGE, focusChange, 0).sendToTarget();
+		mPlayerHandler.obtainMessage(MusicPlayerHandler.MESSAGE_FOCUS_CHANGE, focusChange, 0).sendToTarget();
 	}
 
 	/**
@@ -846,7 +830,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			} else {
 				mPlayer.next();
-				setNextTrack();
 				notifyChange(CHANGED_META);
 			}
 		}
@@ -877,7 +860,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			} else if (position > mPlayer.getDuration()) {
 				position = mPlayer.getDuration();
 			}
-			mPlayer.seek(position);
+			mPlayer.setPosition(position);
 			notifyChange(CHANGED_POSITION);
 			setPlaybackState(isPlaying());
 			return position;
@@ -1098,7 +1081,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param index The position to place the track
 	 */
 	synchronized void setQueuePosition(int index) {
-		stop(false);
 		mPlayPos = index;
 		openCurrentAndNext();
 		play();
@@ -1287,7 +1269,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 		}
 		stop(false);
-		openCurrentTrack();
+		openCurrentAndNext();
 		play();
 		notifyChange(CHANGED_META);
 	}
@@ -1812,13 +1794,12 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	private void releaseServiceUiAndStop() {
-		if (isPlaying() || mPausedByTransientLossOfFocus || mPlayerHandler.hasMessages(MESSAGE_TRACK_ENDED)) {
-			return;
-		}
-		stopForeground(true);
-		if (!mServiceInUse) {
-			saveQueue(true);
-			stopSelf(mServiceStartId);
+		if (!isPlaying() && !mPausedByTransientLossOfFocus && !mPlayerHandler.hasMessages(MusicPlayerHandler.MESSAGE_TRACK_ENDED)) {
+			stopForeground(true);
+			if (!mServiceInUse) {
+				saveQueue(true);
+				stopSelf(mServiceStartId);
+			}
 		}
 	}
 

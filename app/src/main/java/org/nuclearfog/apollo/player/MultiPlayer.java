@@ -143,7 +143,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		if (mp == mPlayers[currentPlayer]) {
 			// reset old player to default
 			mp.reset();
-			mp.setVolume(currentVolume, currentVolume);
 			// select next media player
 			currentPlayer = (currentPlayer + 1) % mPlayers.length;
 			// notify playback service that track went to next
@@ -239,6 +238,7 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 	public void next() {
 		MediaPlayer mp = mPlayers[(currentPlayer + 1) % mPlayers.length];
 		if (!mp.isPlaying()) {
+			currentVolume = 1f;
 			mp.setVolume(0f, 0f);
 			mp.start();
 			setCrossfadeTask(true);
@@ -349,16 +349,16 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 		// force crossfade to next track
 		if (xfadeMode == XFADE) {
 			currentVolume = Math.max(currentVolume - FADE_STEPS, 0f);
-			float invert = 1f - currentVolume;
 			// crossfade both player
 			if (currentVolume >= FADE_THRESHOLD) {
+				float invert = 1f - currentVolume;
 				current.setVolume(currentVolume, currentVolume);
 				next.setVolume(invert, invert);
 			}
 			// if crossfade finished, switch to new player
 			else {
-				currentVolume = 1f;
 				xfadeMode = NONE;
+				currentVolume = 1f;
 				current.setVolume(0f, 0f);
 				next.setVolume(1f, 1f);
 				onCompletion(current);
@@ -370,7 +370,6 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 			current.setVolume(currentVolume, currentVolume);
 			if (currentVolume < FADE_THRESHOLD)  {
 				pause(true);
-				currentVolume = 1f;
 			}
 		}
 		// fade in curent playback
@@ -389,14 +388,17 @@ public class MultiPlayer implements OnErrorListener, OnCompletionListener {
 				// calc volume for current and next player
 				float volume = Math.max((float) diff / XFADE_DELAY, 0f);
 				float invert = 1f - volume;
-				// fade down current player
-				current.setVolume(volume, volume);
-				// fade up next player
-				next.setVolume(invert, invert);
-				// start next player
 				if (!next.isPlaying()) {
+					currentVolume = 1f;
+					current.setVolume(1f, 1f);
 					next.setVolume(0f, 0f);
 					next.start();
+				} else {
+					// fade down current player
+					current.setVolume(volume, volume);
+					// fade up next player
+					next.setVolume(invert, invert);
+					// start next player
 				}
 			}
 		}

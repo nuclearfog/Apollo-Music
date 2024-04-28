@@ -830,7 +830,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			} else {
 				mPlayer.next();
+				mIsSupposedToBePlaying = true;
 				notifyChange(CHANGED_META);
+				notifyChange(CHANGED_PLAYSTATE);
 			}
 		}
 	}

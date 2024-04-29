@@ -829,7 +829,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				mPlayer.next();
+				if (mPlayer.initialized()) {
+					mPlayer.next();
+				} else {
+					openCurrentAndNext();
+				}
 				mIsSupposedToBePlaying = true;
 				notifyChange(CHANGED_META);
 				notifyChange(CHANGED_PLAYSTATE);
@@ -1624,10 +1628,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 						}
 						return;
 					}
-					mPlayPos = pos;
-					stop(false);
-					mPlayPos = pos;
+					// skip faulty track and try open next track
 					updateTrackInformation(mPlayList.get(mPlayPos));
+					id = getTrackId();
+					if (id != -1L && openTrack(id)) {
+						mPlayPos = pos;
+						return;
+					}
 				}
 			}
 			scheduleDelayedShutdown();

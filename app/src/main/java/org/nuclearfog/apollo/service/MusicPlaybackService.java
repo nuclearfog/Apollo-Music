@@ -51,7 +51,6 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.player.MultiPlayer;
-import org.nuclearfog.apollo.player.MusicPlayerHandler;
 import org.nuclearfog.apollo.provider.FavoritesStore;
 import org.nuclearfog.apollo.provider.PopularStore;
 import org.nuclearfog.apollo.provider.RecentStore;
@@ -297,10 +296,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private MediaSessionCompat mSession;
 	/**
-	 *
-	 */
-	private MusicPlayerHandler mPlayerHandler;
-	/**
 	 * Image cache
 	 */
 	private ImageFetcher mImageFetcher;
@@ -402,7 +397,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			// before stopping the service, so that pause/resume isn't slow.
 			// Also delay stopping the service if we're transitioning between
 			// tracks.
-		} else if (!mPlayList.isEmpty() || mPlayerHandler.hasMessages(MusicPlayerHandler.MESSAGE_TRACK_ENDED)) {
+		} else if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
 			scheduleDelayedShutdown();
 			return true;
 		}
@@ -437,28 +432,21 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
-
+		//
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-		// Initialize the handler
-		mPlayerHandler = MusicPlayerHandler.init(this);
-
 		// Initialize the media player
 		mPlayer = new MultiPlayer(this);
-		mPlayer.setHandler(mPlayerHandler);
-
 		// init media session
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
-		mSession.setCallback(new MediaButtonCallback(this), mPlayerHandler);
+		mSession.setCallback(new MediaButtonCallback(this), null);
 		mSession.setActive(true);
 		setSessionToken(mSession.getSessionToken());
 		setPlaybackState(false);
-
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
 		mNotificationHelper.createNotification(false);
-
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
 		getCardId();
@@ -518,8 +506,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mPlayer.release();
 		// release player callbacks
 		mSession.release();
-		// Remove any callbacks from the handler
-		mPlayerHandler.removeCallbacksAndMessages(null);
 		// Unregister the mount listener
 		unregisterReceiver(mUnmountReceiver);
 		unregisterReceiver(mIntentReceiver);
@@ -546,7 +532,26 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	@Override
 	public void onAudioFocusChange(int focusChange) {
-		mPlayerHandler.obtainMessage(MusicPlayerHandler.MESSAGE_FOCUS_CHANGE, focusChange, 0).sendToTarget();
+		switch (focusChange) {
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+				if (isPlaying())
+					mPausedByTransientLossOfFocus = true;
+				// fall through
+
+			case AudioManager.AUDIOFOCUS_LOSS:
+				if (isPlaying()) {
+					pause(true);
+				}
+				break;
+
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+				pause(false);
+				break;
+
+			case AudioManager.AUDIOFOCUS_GAIN:
+				onAudioFocusGain();
+				break;
+		}
 	}
 
 	/**
@@ -781,12 +786,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
 						gotoNext(true);
 					}
-					mPlayer.play();
-					if (!mIsSupposedToBePlaying) {
-						mIsSupposedToBePlaying = true;
-						notifyChange(CHANGED_PLAYSTATE);
+					if (mPlayer.play()) {
+						if (!mIsSupposedToBePlaying) {
+							mIsSupposedToBePlaying = true;
+							notifyChange(CHANGED_PLAYSTATE);
+						}
+						cancelShutdown();
+					} else {
+						return;
 					}
-					cancelShutdown();
 				} else if (mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
 				}
@@ -802,16 +810,17 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Temporarily pauses playback.
 	 */
 	public void pause(boolean force) {
-		mPlayer.pause(force);
-		if (mIsSupposedToBePlaying) {
-			scheduleDelayedShutdown();
-			mIsSupposedToBePlaying = false;
-			notifyChange(CHANGED_PLAYSTATE);
+		if (mPlayer.pause(force)) {
+			if (mIsSupposedToBePlaying) {
+				scheduleDelayedShutdown();
+				mIsSupposedToBePlaying = false;
+				notifyChange(CHANGED_PLAYSTATE);
+			}
+			if (!isForeground) {
+				mNotificationHelper.updateNotification();
+			}
+			setPlaybackState(false);
 		}
-		if (!isForeground) {
-			mNotificationHelper.updateNotification();
-		}
-		setPlaybackState(false);
 	}
 
 	/**
@@ -829,9 +838,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				if (mPlayer.initialized()) {
-					mPlayer.next();
-				} else {
+				if (mPlayer.initialized() && !mPlayer.next()) {
 					openCurrentAndNext();
 				}
 				mIsSupposedToBePlaying = true;
@@ -936,18 +943,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			play();
 		} else {
 			gotoNext(false);
-		}
-	}
-
-	/**
-	 * notify on audio focus loss
-	 *
-	 * @param msg type of focus loss
-	 */
-	public void onAudioFocusLoss(int msg) {
-		if (isPlaying()) {
-			mPausedByTransientLossOfFocus = msg == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT;
-			pause(true);
 		}
 	}
 
@@ -1809,7 +1804,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 */
 	private void releaseServiceUiAndStop() {
-		if (!isPlaying() && !mPausedByTransientLossOfFocus && !mPlayerHandler.hasMessages(MusicPlayerHandler.MESSAGE_TRACK_ENDED)) {
+		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			stopForeground(true);
 			if (!mServiceInUse) {
 				saveQueue(true);

@@ -147,16 +147,11 @@ public class Caller {
 		}
 		try {
 			lastResult = createResultFromInputStream(inputStream);
-		} catch (IOException ioEx) {
+		} catch (IOException | SAXException exception) {
 			if (BuildConfig.DEBUG) {
-				ioEx.printStackTrace();
+				exception.printStackTrace();
 			}
-			lastResult = new Result(ioEx.getLocalizedMessage());
-		} catch (SAXException saxEx) {
-			if (BuildConfig.DEBUG) {
-				saxEx.printStackTrace();
-			}
-			lastResult = new Result(saxEx.getLocalizedMessage());
+			lastResult = new Result(exception.getLocalizedMessage());
 		}
 		return lastResult;
 	}

@@ -76,7 +76,10 @@ public class MultiPlayer implements Player.Listener {
 	 * crossfade overlay of two tracks in milliseconds
 	 */
 	private static final long XFADE_DELAY = 1000;
-
+	/**
+	 * number of player instances used for playback
+	 * @see #mPlayers
+	 */
 	private static final int PLAYER_INST = 3;
 
 	/**
@@ -97,7 +100,7 @@ public class MultiPlayer implements Player.Listener {
 	/**
 	 * current mediaplayer's index of {@link #mPlayers}
 	 */
-	@IntRange(from=0, to=PLAYER_INST - 1)
+	@IntRange(from = 0, to = PLAYER_INST - 1)
 	private int currentPlayer = 0;
 	/**
 	 * set to true if player was initialized successfully
@@ -120,7 +123,7 @@ public class MultiPlayer implements Player.Listener {
 		playerHandler = new Handler(service.getMainLooper());
 		xfadeHandler = new Handler(service.getMainLooper());
 		mPreferences = PreferenceUtils.getInstance(service);
-		for (int i = 0 ; i < mPlayers.length ; i++) {
+		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = createPlayer(service.getApplicationContext());
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
 			mPlayers[i].setVolume(0f);
@@ -202,6 +205,8 @@ public class MultiPlayer implements Player.Listener {
 
 	/**
 	 * Starts or resumes playback.
+	 *
+	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean play() {
 		if (xfadeMode == NONE) {
@@ -216,6 +221,7 @@ public class MultiPlayer implements Player.Listener {
 	 * Pauses playback. Call start() to resume.
 	 *
 	 * @param force true to stop playback immediately
+	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean pause(boolean force) {
 		ExoPlayer player = mPlayers[currentPlayer];
@@ -244,6 +250,8 @@ public class MultiPlayer implements Player.Listener {
 
 	/**
 	 * go to next player
+	 *
+	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean next() {
 		if (xfadeMode == NONE) {
@@ -330,7 +338,6 @@ public class MultiPlayer implements Player.Listener {
 	/**
 	 * @param player The {@link ExoPlayer} to use
 	 * @param uri    The path of the file, or the http/rtsp URL of the stream you want to play
-	 *
 	 * @return true if initialized
 	 */
 	private boolean setDataSourceImpl(ExoPlayer player, @NonNull Uri uri) {

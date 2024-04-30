@@ -297,12 +297,13 @@
 			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
 		<!-- Music service -->
+
 		<service
 			android:name="org.nuclearfog.apollo.service.MusicPlaybackService"
 			android:label="@string/app_name"
 			android:exported="false"
-			android:process=":music"
 			android:foregroundServiceType="mediaPlayback">
+			<!--android:process=":music"-->
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON" />
 			</intent-filter>

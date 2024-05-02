@@ -102,12 +102,14 @@ public class MultiPlayer {
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
 	 */
 	private volatile int xfadeMode = NONE;
-
+	/**
+	 * volume of the current selected media player
+	 */
 	@FloatRange(from=0.0f, to=1.0f)
 	private float volume = 0f;
 
 	/**
-	 * Constructor of <code>MultiPlayer</code>
+	 * @param service reference used to communicate to playbackservice
 	 */
 	public MultiPlayer(MusicPlaybackService service) {
 		mService = new WeakReference<>(service);
@@ -335,6 +337,7 @@ public class MultiPlayer {
 	private void onCrossfadeTrack() {
 		MediaPlayer current = mPlayers[currentPlayer];
 		switch (xfadeMode) {
+			// force crossfade between two tracks
 			case XFADE:
 				if (!current.isPlaying()) {
 					xfadeMode = NONE;
@@ -342,6 +345,7 @@ public class MultiPlayer {
 					break;
 				}
 
+			// fade out current track, then pause
 			case FADE_OUT:
 				volume = Math.max(volume - FADE_STEPS, 0f);
 				current.setVolume(volume, volume);
@@ -353,6 +357,7 @@ public class MultiPlayer {
 				}
 				break;
 
+			// play and fade in current track
 			case FADE_IN:
 				volume = Math.min(volume + FADE_STEPS, 1f);
 				current.setVolume(volume, volume);
@@ -364,6 +369,7 @@ public class MultiPlayer {
 				}
 				break;
 
+			// detect end of the track then cross fade to new track if any
 			default:
 				long diff = Math.abs(getDuration() - getPosition());
 				if (diff <= XFADE_DELAY) {
@@ -378,7 +384,7 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * enable/disable periodic crossfading
+	 * enable/disable periodic crossfade polling
 	 *
 	 * @param enable true to enable crossfading
 	 */

@@ -364,10 +364,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	private int mShuffleMode = SHUFFLE_NONE;
 	private int mRepeatMode = REPEAT_ALL;
 	private int mShuffleIndex = -1;
+	private int mPrevious = 0;
 	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
 	private int mMediaMountedCount = 0;
-	private int mPrevious = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -712,7 +712,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song album Name
 	 */
-	public synchronized String getAlbumName() {
+	public String getAlbumName() {
 		if (currentAlbum != null) {
 			return currentAlbum.getName();
 		}
@@ -724,7 +724,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song name
 	 */
-	public synchronized String getTrackName() {
+	public String getTrackName() {
 		if (currentSong != null) {
 			return currentSong.getName();
 		}
@@ -736,7 +736,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song artist name
 	 */
-	public synchronized String getArtistName() {
+	public String getArtistName() {
 		if (currentSong != null) {
 			return currentSong.getArtist();
 		}
@@ -748,7 +748,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song album ID
 	 */
-	public synchronized long getAlbumId() {
+	public long getAlbumId() {
 		if (currentSong != null) {
 			return currentSong.getAlbumId();
 		}
@@ -760,7 +760,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song album ID
 	 */
-	public synchronized long getTrackId() {
+	public long getTrackId() {
 		if (currentSong != null) {
 			return currentSong.getId();
 		}
@@ -770,14 +770,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Stops playback.
 	 */
-	public void stop() {
+	public synchronized void stop() {
 		stop(true);
 	}
 
 	/**
 	 * Resumes or starts playback.
 	 */
-	public void play() {
+	public synchronized void play() {
 		if (mAudio != null && !mPlayer.busy()) {
 			int returnCode = mAudio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
@@ -809,7 +809,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Temporarily pauses playback.
 	 */
-	public void pause(boolean force) {
+	public synchronized void pause(boolean force) {
 		if (mPlayer.pause(force)) {
 			if (mIsSupposedToBePlaying) {
 				scheduleDelayedShutdown();
@@ -826,7 +826,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Changes from the current track to the next track
 	 */
-	public void gotoNext(boolean force) {
+	public synchronized void gotoNext(boolean force) {
 		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
 		} else if (!mPlayer.busy()) {
@@ -851,7 +851,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * restart current track or go to preview track
 	 */
-	public void goToPrev() {
+	public synchronized void goToPrev() {
 		if (!mPlayer.busy()) {
 			if (position() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
 				prev();
@@ -868,7 +868,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param position The time to seek to
 	 * @return The time to play the track at
 	 */
-	public long seek(long position) {
+	public synchronized long seek(long position) {
 		if (mPlayer.initialized()) {
 			if (position < 0) {
 				position = 0;
@@ -912,7 +912,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Called to open a new file as the current track and prepare the next for
 	 * playback
 	 */
-	public synchronized void openCurrentAndNext() {
+	public void openCurrentAndNext() {
 		openCurrentTrack();
 		setNextTrack();
 	}
@@ -920,7 +920,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * notify if track chages
 	 */
-	public synchronized void onWentToNext() {
+	public void onWentToNext() {
 		if (mNextPlayPos >= 0) {
 			mPlayPos = mNextPlayPos;
 			clearCurrentTrackInformation();
@@ -1014,7 +1014,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current media player audio session ID
 	 */
-	int getAudioSessionId() {
+	synchronized int getAudioSessionId() {
 		return mPlayer.getAudioSessionId();
 	}
 
@@ -1164,7 +1164,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current playback position in miliseconds
 	 */
-	long position() {
+	synchronized long position() {
 		if (mPlayer.initialized()) {
 			return mPlayer.getPosition();
 		}
@@ -1176,7 +1176,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The duration of the current track in miliseconds
 	 */
-	long duration() {
+	synchronized long duration() {
 		if (mPlayer.initialized()) {
 			return mPlayer.getDuration();
 		}

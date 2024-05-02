@@ -1,33 +1,21 @@
 package org.nuclearfog.apollo.player;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Service;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.PlaybackException;
-import androidx.media3.common.Player;
-import androidx.media3.datasource.ContentDataSource;
-import androidx.media3.datasource.DataSource;
-import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.Renderer;
-import androidx.media3.exoplayer.RenderersFactory;
-import androidx.media3.exoplayer.audio.AudioRendererEventListener;
-import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer;
-import androidx.media3.exoplayer.mediacodec.MediaCodecSelector;
-import androidx.media3.exoplayer.metadata.MetadataOutput;
-import androidx.media3.exoplayer.source.MediaSource;
-import androidx.media3.exoplayer.source.ProgressiveMediaSource;
-import androidx.media3.exoplayer.text.TextOutput;
-import androidx.media3.exoplayer.video.VideoRendererEventListener;
-import androidx.media3.extractor.DefaultExtractorsFactory;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
@@ -45,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @author nuclearfog
  */
 @SuppressLint("UnsafeOptInUsageError")
-public class MultiPlayer implements Player.Listener {
+public class MultiPlayer {
 
 	private static final String TAG = "MultiPlayer";
 	/**
@@ -96,7 +84,7 @@ public class MultiPlayer implements Player.Listener {
 	/**
 	 * mediaplayer used to switch between tracks
 	 */
-	private ExoPlayer[] mPlayers = new ExoPlayer[PLAYER_INST];
+	private MediaPlayer[] mPlayers = new MediaPlayer[PLAYER_INST];
 	/**
 	 * current mediaplayer's index of {@link #mPlayers}
 	 */
@@ -105,15 +93,18 @@ public class MultiPlayer implements Player.Listener {
 	/**
 	 * set to true if player was initialized successfully
 	 */
-	private boolean initialized = false;
+	private volatile boolean initialized = false;
 	/**
 	 * true if player continues to next track automatically
 	 */
-	private boolean continious = true;
+	private volatile boolean continious = true;
 	/**
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
 	 */
-	private int xfadeMode = NONE;
+	private volatile int xfadeMode = NONE;
+
+	@FloatRange(from=0.0f, to=1.0f)
+	private float volume = 0f;
 
 	/**
 	 * Constructor of <code>MultiPlayer</code>
@@ -124,34 +115,10 @@ public class MultiPlayer implements Player.Listener {
 		xfadeHandler = new Handler(service.getMainLooper());
 		mPreferences = PreferenceUtils.getInstance(service);
 		for (int i = 0; i < mPlayers.length; i++) {
-			mPlayers[i] = createPlayer(service.getApplicationContext());
+			mPlayers[i] = createPlayer();
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
-			mPlayers[i].setVolume(0f);
-			mPlayers[i].addListener(this);
-		}
-	}
-
-
-	@Override
-	public void onPlayerError(@NonNull PlaybackException error) {
-		Log.e(TAG, "onError:" + error.getErrorCodeName());
-		if (initialized) {
-			mPlayers[currentPlayer].stop();
-			initialized = false;
-			xfadeMode = NONE;
-			final MusicPlaybackService service = mService.get();
-			if (service != null) {
-				playerHandler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						if (service.isPlaying()) {
-							service.gotoNext(true);
-						} else {
-							service.openCurrentAndNext();
-						}
-					}
-				}, 2000);
-			}
+			mPlayers[i].setVolume(0f, 0f);
+			mPlayers[i].setOnErrorListener(this::onError);
 		}
 	}
 
@@ -198,8 +165,6 @@ public class MultiPlayer implements Player.Listener {
 	public boolean busy() {
 		if (!initialized)
 			return false;
-		if ((Math.abs(getDuration() - getPosition())) <= XFADE_DELAY)
-			return true;
 		return xfadeMode != NONE;
 	}
 
@@ -224,7 +189,7 @@ public class MultiPlayer implements Player.Listener {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean pause(boolean force) {
-		ExoPlayer player = mPlayers[currentPlayer];
+		MediaPlayer player = mPlayers[currentPlayer];
 		if (force) {
 			xfadeMode = NONE;
 			setCrossfadeTask(false);
@@ -268,7 +233,7 @@ public class MultiPlayer implements Player.Listener {
 	public void release() {
 		stop();
 		THREAD_POOL.shutdown();
-		for (ExoPlayer player : mPlayers) {
+		for (MediaPlayer player : mPlayers) {
 			player.release();
 		}
 	}
@@ -323,39 +288,33 @@ public class MultiPlayer implements Player.Listener {
 	 *
 	 * @return player
 	 */
-	private ExoPlayer createPlayer(Context context) {
-		return new ExoPlayer.Builder(context, new RenderersFactory() {
-			@NonNull
-			@Override
-			public Renderer[] createRenderers(@NonNull Handler eventHandler, @NonNull VideoRendererEventListener videoRendererEventListener,
-											  @NonNull AudioRendererEventListener audioRendererEventListener, @NonNull TextOutput textRendererOutput,
-											  @NonNull MetadataOutput metadataRendererOutput) {
-				return new Renderer[]{new MediaCodecAudioRenderer(context, MediaCodecSelector.DEFAULT, eventHandler, audioRendererEventListener)};
-			}
-		}).build();
+	private MediaPlayer createPlayer() {
+		MediaPlayer player = new MediaPlayer();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			AudioAttributes attr = new AudioAttributes.Builder()
+					.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+					.setUsage(AudioAttributes.USAGE_MEDIA).build();
+			player.setAudioAttributes(attr);
+		}
+		return player;
 	}
 
 	/**
-	 * @param player The {@link ExoPlayer} to use
+	 * @param player The {@link MediaPlayer} to use
 	 * @param uri    The path of the file, or the http/rtsp URL of the stream you want to play
 	 * @return true if initialized
 	 */
-	private boolean setDataSourceImpl(ExoPlayer player, @NonNull Uri uri) {
-		Context context = mService.get();
-		if (context != null) {
+	private boolean setDataSourceImpl(MediaPlayer player, @NonNull Uri uri) {
+		Service service = mService.get();
+		if (service != null) {
 			try {
-				DataSource.Factory dataSourceFactory = new DataSource.Factory() {
-					@NonNull
-					@Override
-					public DataSource createDataSource() {
-						return new ContentDataSource(context);
-					}
-				};
-				MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory, new DefaultExtractorsFactory()).createMediaSource(MediaItem.fromUri(uri));
-				player.setMediaSource(mediaSource);
+				player.reset();
+				player.setDataSource(service, uri);
+				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 				player.prepare();
 			} catch (Exception err) {
 				Log.e(TAG, "failed to set data source!");
+				player.reset();
 				return false;
 			}
 			// send session ID to external equalizer if set
@@ -363,7 +322,7 @@ public class MultiPlayer implements Player.Listener {
 				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
 				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.getAudioSessionId());
 				intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-				context.sendBroadcast(intent);
+				service.sendBroadcast(intent);
 			}
 			return true;
 		}
@@ -374,7 +333,7 @@ public class MultiPlayer implements Player.Listener {
 	 * called periodically while playback to detect playback changes for crossfading
 	 */
 	private void onCrossfadeTrack() {
-		ExoPlayer current = mPlayers[currentPlayer];
+		MediaPlayer current = mPlayers[currentPlayer];
 		switch (xfadeMode) {
 			case XFADE:
 				if (!current.isPlaying()) {
@@ -384,9 +343,9 @@ public class MultiPlayer implements Player.Listener {
 				}
 
 			case FADE_OUT:
-				float currentVolume = Math.max(current.getVolume() - FADE_STEPS, 0f);
-				current.setVolume(currentVolume);
-				if (currentVolume == 0f) {
+				volume = Math.max(volume - FADE_STEPS, 0f);
+				current.setVolume(volume, volume);
+				if (volume == 0f) {
 					current.pause();
 					if (xfadeMode == FADE_OUT) {
 						xfadeMode = NONE;
@@ -395,12 +354,12 @@ public class MultiPlayer implements Player.Listener {
 				break;
 
 			case FADE_IN:
-				currentVolume = Math.min(current.getVolume() + FADE_STEPS, 1f);
-				current.setVolume(currentVolume);
+				volume = Math.min(volume + FADE_STEPS, 1f);
+				current.setVolume(volume, volume);
 				if (!current.isPlaying()) {
-					current.play();
+					current.start();
 				}
-				if (currentVolume == 1f) {
+				if (volume == 1f) {
 					xfadeMode = NONE;
 				}
 				break;
@@ -449,7 +408,7 @@ public class MultiPlayer implements Player.Listener {
 	 * close current media player and select next one. Inform playback service that track changed
 	 */
 	private void onCompletion() {
-		ExoPlayer current = mPlayers[currentPlayer];
+		MediaPlayer current = mPlayers[currentPlayer];
 		MusicPlaybackService service = mService.get();
 		if (continious) {
 			current.stop();
@@ -467,5 +426,34 @@ public class MultiPlayer implements Player.Listener {
 			}
 			stop();
 		}
+	}
+
+	/**
+	 * called if the mediaplayer reports an error
+	 *
+	 * @see android.media.MediaPlayer.OnErrorListener
+	 */
+	private boolean onError(MediaPlayer mp, int what, int extra) {
+		Log.e(TAG, "onError:" + what + " ," + extra);
+		if (initialized) {
+			mp.stop();
+			initialized = false;
+			xfadeMode = NONE;
+			final MusicPlaybackService service = mService.get();
+			if (service != null) {
+				playerHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (service.isPlaying()) {
+							service.gotoNext(true);
+						} else {
+							service.openCurrentAndNext();
+						}
+					}
+				}, 2000);
+			}
+			return true;
+		}
+		return false;
 	}
 }

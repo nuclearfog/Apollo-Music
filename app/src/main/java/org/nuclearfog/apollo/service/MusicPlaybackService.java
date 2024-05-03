@@ -827,21 +827,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Changes from the current track to the next track
 	 */
 	public synchronized void gotoNext(boolean force) {
-		if (mPlayList.isEmpty()) {
+		if (mPlayList.isEmpty() || !mPlayer.initialized()) {
 			scheduleDelayedShutdown();
-		} else if (!mPlayer.busy()) {
-			int pos = getNextPosition(force);
-			if (pos < 0) {
+		} else if (!mPlayer.busy() && mPlayer.next()) {
+			int nextPos = getNextPosition(force);
+			if (nextPos < 0) {
 				scheduleDelayedShutdown();
 				if (mIsSupposedToBePlaying) {
 					mIsSupposedToBePlaying = false;
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				if (mPlayer.initialized() && !mPlayer.next()) {
-					openCurrentAndNext();
-				}
-				mIsSupposedToBePlaying = true;
+				setNextTrack();
 				notifyChange(CHANGED_META);
 				notifyChange(CHANGED_PLAYSTATE);
 			}
@@ -1611,11 +1608,14 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		} else {
 			fileOpenFailed = true;
 		}
+		// check if file was opened successfully
 		if (fileOpenFailed || currentSong == null) {
 			if (mPlayList.size() > 1) {
-				for (int i = 0; i < 10; i++) { // retrying 10 times until failure
-					int pos = getNextPosition(false);
-					if (pos < 0) {
+				// trying to play one of the next 10 tracks, give up if no success
+				for (int i = 0; i < 10; i++) {
+					mPlayPos = getNextPosition(false);
+					mNextPlayPos = getNextPosition(false);
+					if (mPlayPos < 0) {
 						scheduleDelayedShutdown();
 						if (mIsSupposedToBePlaying) {
 							mIsSupposedToBePlaying = false;
@@ -1627,7 +1627,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					updateTrackInformation(mPlayList.get(mPlayPos));
 					id = getTrackId();
 					if (id != -1L && openTrack(id)) {
-						mPlayPos = pos;
 						return;
 					}
 				}
@@ -1637,9 +1636,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				mIsSupposedToBePlaying = false;
 				notifyChange(CHANGED_PLAYSTATE);
 			}
-			if (BuildConfig.DEBUG) {
-				Log.w(TAG, "Failed to open file for playback");
-			}
+			Log.w(TAG, "Failed to open file for playback");
 		}
 	}
 
@@ -1853,7 +1850,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private boolean openTrack(long id) {
 		Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
-		updateTrackInformation(id);
 		mPlayer.setDataSource(uri);
 		if (mPlayer.initialized()) {
 			return true;

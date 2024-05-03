@@ -128,6 +128,9 @@ public class MultiPlayer {
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
 	 */
 	public void setDataSource(@NonNull Uri uri) {
+		// stop current playback
+		stop();
+		// set source of the current selected player
 		initialized = setDataSourceImpl(mPlayers[currentPlayer], uri);
 	}
 
@@ -192,16 +195,20 @@ public class MultiPlayer {
 	 */
 	public boolean pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
-		if (force) {
-			xfadeMode = NONE;
-			setCrossfadeTask(false);
-			if (player.isPlaying()) {
-				player.pause();
+		try {
+			if (force) {
+				xfadeMode = NONE;
+				setCrossfadeTask(false);
+				if (player.isPlaying()) {
+					player.pause();
+				}
+				return true;
+			} else if (xfadeMode == NONE) {
+				xfadeMode = FADE_OUT;
+				return true;
 			}
-			return true;
-		} else if (xfadeMode == NONE) {
-			xfadeMode = FADE_OUT;
-			return true;
+		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to pause track");
 		}
 		return false;
 	}
@@ -212,7 +219,11 @@ public class MultiPlayer {
 	public void stop() {
 		xfadeMode = NONE;
 		setCrossfadeTask(false);
-		mPlayers[currentPlayer].stop();
+		try {
+			mPlayers[currentPlayer].stop();
+		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to stop track");
+		}
 	}
 
 	/**
@@ -221,7 +232,7 @@ public class MultiPlayer {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean next() {
-		if (xfadeMode == NONE) {
+		if (initialized && xfadeMode == NONE) {
 			xfadeMode = XFADE;
 			setCrossfadeTask(true);
 			return true;
@@ -235,8 +246,12 @@ public class MultiPlayer {
 	public void release() {
 		stop();
 		THREAD_POOL.shutdown();
-		for (MediaPlayer player : mPlayers) {
-			player.release();
+		try {
+			for (MediaPlayer player : mPlayers) {
+				player.release();
+			}
+		} catch (IllegalStateException exception) {
+			// ignore
 		}
 	}
 
@@ -246,7 +261,12 @@ public class MultiPlayer {
 	 * @return The duration in milliseconds
 	 */
 	public long getDuration() {
-		return mPlayers[currentPlayer].getDuration();
+		try {
+			return mPlayers[currentPlayer].getDuration();
+		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to get track duration");
+			return -1L;
+		}
 	}
 
 	/**
@@ -255,7 +275,11 @@ public class MultiPlayer {
 	 * @return The current position in milliseconds
 	 */
 	public long getPosition() {
-		return mPlayers[currentPlayer].getCurrentPosition();
+		try {
+			return mPlayers[currentPlayer].getCurrentPosition();
+		} catch (IllegalStateException exception) {
+			return -1L;
+		}
 	}
 
 	/**
@@ -264,7 +288,11 @@ public class MultiPlayer {
 	 * @param position The offset in milliseconds from the start to seek to
 	 */
 	public void setPosition(long position) {
-		mPlayers[currentPlayer].seekTo((int) position);
+		try {
+			mPlayers[currentPlayer].seekTo((int) position);
+		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to set track position");
+		}
 	}
 
 	/**
@@ -282,7 +310,11 @@ public class MultiPlayer {
 	 * @return true if a playback is in progress
 	 */
 	public boolean isPlaying() {
-		return mPlayers[currentPlayer].isPlaying();
+		try {
+			return mPlayers[currentPlayer].isPlaying();
+		} catch (IllegalStateException exception) {
+			return false;
+		}
 	}
 
 	/**
@@ -298,6 +330,7 @@ public class MultiPlayer {
 					.setUsage(AudioAttributes.USAGE_MEDIA).build();
 			player.setAudioAttributes(attr);
 		}
+		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		return player;
 	}
 
@@ -311,12 +344,10 @@ public class MultiPlayer {
 		if (service != null) {
 			try {
 				player.reset();
-				player.setDataSource(service, uri);
-				player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				player.setDataSource(service.getApplicationContext(), uri);
 				player.prepare();
 			} catch (Exception err) {
 				Log.e(TAG, "failed to set data source!");
-				player.reset();
 				return false;
 			}
 			// send session ID to external equalizer if set
@@ -336,50 +367,56 @@ public class MultiPlayer {
 	 */
 	private void onCrossfadeTrack() {
 		MediaPlayer current = mPlayers[currentPlayer];
-		switch (xfadeMode) {
-			// force crossfade between two tracks
-			case XFADE:
-				if (!current.isPlaying()) {
-					xfadeMode = NONE;
-					onCompletion();
-					break;
-				}
-
-			// fade out current track, then pause
-			case FADE_OUT:
-				volume = Math.max(volume - FADE_STEPS, 0f);
-				current.setVolume(volume, volume);
-				if (volume == 0f) {
-					current.pause();
-					if (xfadeMode == FADE_OUT) {
+		try {
+			switch (xfadeMode) {
+				// force crossfade between two tracks
+				case XFADE:
+					if (!current.isPlaying()) {
 						xfadeMode = NONE;
+						onCompletion();
+						break;
 					}
-				}
-				break;
 
-			// play and fade in current track
-			case FADE_IN:
-				volume = Math.min(volume + FADE_STEPS, 1f);
-				current.setVolume(volume, volume);
-				if (!current.isPlaying()) {
-					current.start();
-				}
-				if (volume == 1f) {
-					xfadeMode = NONE;
-				}
-				break;
+					// fade out current track, then pause
+				case FADE_OUT:
+					volume = Math.max(volume - FADE_STEPS, 0f);
+					current.setVolume(volume, volume);
+					if (volume == 0f) {
+						current.pause();
+						if (xfadeMode == FADE_OUT) {
+							xfadeMode = NONE;
+						}
+					}
+					break;
 
-			// detect end of the track then cross fade to new track if any
-			default:
-				long diff = Math.abs(getDuration() - getPosition());
-				if (diff <= XFADE_DELAY) {
-					if (continious) {
-						xfadeMode = XFADE;
+				// play and fade in current track
+				case FADE_IN:
+					if (!current.isPlaying()) {
+						current.setVolume(0f, 0f);
+						current.start();
 					} else {
-						xfadeMode = FADE_OUT;
+						volume = Math.min(volume + FADE_STEPS, 1f);
+						current.setVolume(volume, volume);
+						if (volume == 1f) {
+							xfadeMode = NONE;
+						}
 					}
-				}
-				break;
+					break;
+
+				// detect end of the track then cross fade to new track if any
+				default:
+					long diff = Math.abs(getDuration() - getPosition());
+					if (diff <= XFADE_DELAY) {
+						if (continious) {
+							xfadeMode = XFADE;
+						} else {
+							xfadeMode = FADE_OUT;
+						}
+					}
+					break;
+			}
+		} catch (IllegalStateException exception) {
+			onError(current, -1, -1);
 		}
 	}
 
@@ -442,9 +479,10 @@ public class MultiPlayer {
 	private boolean onError(MediaPlayer mp, int what, int extra) {
 		Log.e(TAG, "onError:" + what + " ," + extra);
 		if (initialized) {
-			mp.stop();
+			setCrossfadeTask(false);
 			initialized = false;
 			xfadeMode = NONE;
+			mp.reset();
 			final MusicPlaybackService service = mService.get();
 			if (service != null) {
 				playerHandler.postDelayed(new Runnable() {

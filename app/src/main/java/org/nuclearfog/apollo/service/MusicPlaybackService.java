@@ -827,20 +827,27 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Changes from the current track to the next track
 	 */
 	public synchronized void gotoNext(boolean force) {
-		if (mPlayList.isEmpty() || !mPlayer.initialized()) {
+		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
-		} else if (!mPlayer.busy() && mPlayer.next()) {
-			int nextPos = getNextPosition(force);
-			if (nextPos < 0) {
-				scheduleDelayedShutdown();
-				if (mIsSupposedToBePlaying) {
-					mIsSupposedToBePlaying = false;
+		} else if (!mPlayer.busy()) {
+			if (mPlayer.next()) {
+				int nextPos = getNextPosition(force);
+				if (nextPos < 0) {
+					scheduleDelayedShutdown();
+					if (mIsSupposedToBePlaying) {
+						mIsSupposedToBePlaying = false;
+						notifyChange(CHANGED_PLAYSTATE);
+					}
+				} else {
+					setNextTrack();
+					notifyChange(CHANGED_META);
 					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
-				setNextTrack();
+				// reload next tracks if an error occured
+				mPlayPos = getNextPosition(true);
+				openCurrentAndNext();
 				notifyChange(CHANGED_META);
-				notifyChange(CHANGED_PLAYSTATE);
 			}
 		}
 	}

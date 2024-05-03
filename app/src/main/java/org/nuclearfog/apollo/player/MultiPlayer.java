@@ -69,6 +69,10 @@ public class MultiPlayer {
 	 * @see #mPlayers
 	 */
 	private static final int PLAYER_INST = 3;
+	/**
+	 * milliseconds to wait until to retry loading track
+	 */
+	private static final int ERROR_RETRY = 500;
 
 	/**
 	 * thread pool used to periodically poll the current play position for crossfading
@@ -494,7 +498,7 @@ public class MultiPlayer {
 							service.openCurrentAndNext();
 						}
 					}
-				}, 2000);
+				}, ERROR_RETRY);
 			}
 			return true;
 		}

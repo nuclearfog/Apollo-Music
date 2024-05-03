@@ -70,9 +70,7 @@ public final class AudioEffects {
 			}
 		} catch (Exception e) {
 			// thrown if there is no support for audio effects
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.d(TAG, "audio effects not supported!");
 		}
 		return instance;
 	}

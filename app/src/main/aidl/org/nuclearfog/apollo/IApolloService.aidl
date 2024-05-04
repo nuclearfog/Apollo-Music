@@ -25,7 +25,7 @@ interface IApolloService
     long [] getQueue();
     long duration();
     long position();
-    long seek(long pos);
+    void seek(long pos);
     long getAudioId();
     long getArtistId();
     long getAlbumId();

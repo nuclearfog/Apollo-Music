@@ -1,27 +1,19 @@
 package org.nuclearfog.apollo.player;
 
-import android.annotation.SuppressLint;
-import android.app.Service;
-import android.content.Intent;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.FloatRange;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
-import org.nuclearfog.apollo.utils.PreferenceUtils;
-
-import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,7 +24,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author nuclearfog
  */
-@SuppressLint("UnsafeOptInUsageError")
 public class MultiPlayer {
 
 	private static final String TAG = "MultiPlayer";
@@ -79,9 +70,8 @@ public class MultiPlayer {
 	 */
 	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(3);
 
-	private WeakReference<MusicPlaybackService> mService;
 	private Handler playerHandler, xfadeHandler;
-	private PreferenceUtils mPreferences;
+
 
 	@Nullable
 	private Future<?> xfadeTask;
@@ -92,7 +82,6 @@ public class MultiPlayer {
 	/**
 	 * current mediaplayer's index of {@link #mPlayers}
 	 */
-	@IntRange(from = 0, to = PLAYER_INST - 1)
 	private int currentPlayer = 0;
 	/**
 	 * set to true if player was initialized successfully
@@ -106,6 +95,8 @@ public class MultiPlayer {
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
 	 */
 	private volatile int xfadeMode = NONE;
+
+	private OnPlaybackStatusCallback callback;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -113,13 +104,12 @@ public class MultiPlayer {
 	private float volume = 0f;
 
 	/**
-	 * @param service reference used to communicate to playbackservice
+	 * @param callback a callback used to inform about playback changes
 	 */
-	public MultiPlayer(MusicPlaybackService service) {
-		mService = new WeakReference<>(service);
-		playerHandler = new Handler(service.getMainLooper());
-		xfadeHandler = new Handler(service.getMainLooper());
-		mPreferences = PreferenceUtils.getInstance(service);
+	public MultiPlayer(Looper looper, OnPlaybackStatusCallback callback) {
+		playerHandler = new Handler(looper);
+		xfadeHandler = new Handler(looper);
+		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = createPlayer();
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
@@ -131,11 +121,12 @@ public class MultiPlayer {
 	/**
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
 	 */
-	public void setDataSource(@NonNull Uri uri) {
+	public void setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
-		stop();
+		if (initialized && isPlaying())
+			stop();
 		// set source of the current selected player
-		initialized = setDataSourceImpl(mPlayers[currentPlayer], uri);
+		initialized = setDataSourceImpl(mPlayers[currentPlayer], context, uri);
 	}
 
 	/**
@@ -143,7 +134,7 @@ public class MultiPlayer {
 	 *
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
 	 */
-	public void setNextDataSource(@Nullable Uri uri) {
+	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
 		if (uri != null) {
 			int nextPlayerIndex;
 			// if there is a crossfade pending, use the mediaplayer after next
@@ -152,10 +143,11 @@ public class MultiPlayer {
 			} else {
 				nextPlayerIndex = (currentPlayer + 2) % mPlayers.length;
 			}
-			setDataSourceImpl(mPlayers[nextPlayerIndex], uri);
 			continious = true;
+			return setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
 		} else {
 			continious = false;
+			return true;
 		}
 	}
 
@@ -236,7 +228,7 @@ public class MultiPlayer {
 	 * @return true if successful, false if another operation is already pending
 	 */
 	public boolean next() {
-		if (initialized && xfadeMode == NONE) {
+		if (continious && initialized && xfadeMode == NONE) {
 			xfadeMode = XFADE;
 			setCrossfadeTask(true);
 			return true;
@@ -293,6 +285,9 @@ public class MultiPlayer {
 	 */
 	public void setPosition(long position) {
 		try {
+			// limit max position to prevent conflict with fade out
+			long max = getDuration() - (XFADE_DELAY * 2);
+			position = Math.min(position, max);
 			mPlayers[currentPlayer].seekTo((int) position);
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to set track position");
@@ -343,27 +338,24 @@ public class MultiPlayer {
 	 * @param uri    The path of the file, or the http/rtsp URL of the stream you want to play
 	 * @return true if initialized
 	 */
-	private boolean setDataSourceImpl(MediaPlayer player, @NonNull Uri uri) {
-		Service service = mService.get();
-		if (service != null) {
-			try {
-				player.reset();
-				player.setDataSource(service.getApplicationContext(), uri);
-				player.prepare();
-			} catch (Exception err) {
-				Log.e(TAG, "failed to set data source!");
+	private boolean setDataSourceImpl(MediaPlayer player, Context context, @NonNull Uri uri) {
+		try {
+			// cech file if valid
+			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+			retriever.setDataSource(context, uri);
+			String hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
+			if (!"yes".equals(hasAudio))
 				return false;
-			}
-			// send session ID to external equalizer if set
-			if (mPreferences.isExternalAudioFxPrefered() && !mPreferences.isAudioFxEnabled()) {
-				Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-				intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, player.getAudioSessionId());
-				intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-				service.sendBroadcast(intent);
-			}
+			// init player
+			player.reset();
+			player.setDataSource(context, uri);
+			player.prepare();
 			return true;
+		} catch (Exception err) {
+			player.reset();
+			Log.e(TAG, "failed to set data source!");
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -377,7 +369,7 @@ public class MultiPlayer {
 				case XFADE:
 					if (!current.isPlaying()) {
 						xfadeMode = NONE;
-						onCompletion();
+						gotoNext();
 						break;
 					}
 
@@ -388,6 +380,7 @@ public class MultiPlayer {
 					if (volume == 0f) {
 						current.pause();
 						if (xfadeMode == FADE_OUT) {
+							callback.onPlaybackEnd(false);
 							xfadeMode = NONE;
 						}
 					}
@@ -454,24 +447,11 @@ public class MultiPlayer {
 	/**
 	 * close current media player and select next one. Inform playback service that track changed
 	 */
-	private void onCompletion() {
-		MediaPlayer current = mPlayers[currentPlayer];
-		MusicPlaybackService service = mService.get();
-		if (continious) {
-			current.stop();
-			// select next media player
-			currentPlayer = (currentPlayer + 1) % mPlayers.length;
-			// notify playback service that track went to next
-			if (service != null) {
-				service.onWentToNext();
-			}
+	private void gotoNext() {
+		stop();
+		currentPlayer = (currentPlayer + 1) % mPlayers.length;
+		if (callback.onPlaybackEnd(true) && continious) {
 			play();
-		} else {
-			// notify playback service that the track ended
-			if (service != null) {
-				service.onTrackEnded();
-			}
-			stop();
 		}
 	}
 
@@ -487,21 +467,33 @@ public class MultiPlayer {
 			initialized = false;
 			xfadeMode = NONE;
 			mp.reset();
-			final MusicPlaybackService service = mService.get();
-			if (service != null) {
-				playerHandler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						if (service.isPlaying()) {
-							service.gotoNext(true);
-						} else {
-							service.openCurrentAndNext();
-						}
-					}
-				}, ERROR_RETRY);
-			}
+			playerHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					callback.onPlaybackError();
+				}
+			}, ERROR_RETRY);
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * callback used for playbackservice
+	 */
+	public interface OnPlaybackStatusCallback {
+
+		/**
+		 * called if the current playback ends
+		 *
+		 * @param gotoNext true if player is prepared to play next track
+		 * @return true to start next track
+		 */
+		boolean onPlaybackEnd(boolean gotoNext);
+
+		/**
+		 * called if a playback error occurs
+		 */
+		void onPlaybackError();
 	}
 }

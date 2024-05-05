@@ -228,8 +228,7 @@ public class NotificationHelper {
 				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
 			}
 		} catch (SecurityException exception) {
-			Log.e(TAG, "error updating notification", exception);
-			// caught on missing permission
+			Log.e(TAG, "missing permission to post notification");
 		}
 	}
 }

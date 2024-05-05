@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,6 +58,7 @@ public class MultiPlayer {
 	private static final long XFADE_DELAY = 1000;
 	/**
 	 * number of player instances used for playback
+	 *
 	 * @see #mPlayers
 	 */
 	private static final int PLAYER_INST = 3;
@@ -100,7 +102,7 @@ public class MultiPlayer {
 	/**
 	 * volume of the current selected media player
 	 */
-	@FloatRange(from=0.0f, to=1.0f)
+	@FloatRange(from = 0.0f, to = 1.0f)
 	private float volume = 0f;
 
 	/**
@@ -379,7 +381,7 @@ public class MultiPlayer {
 					}
 					break;
 
-					// fade out current track, then pause
+				// fade out current track, then pause
 				case FADE_OUT:
 					volume = Math.max(volume - FADE_STEPS, 0f);
 					current.setVolume(volume, volume);

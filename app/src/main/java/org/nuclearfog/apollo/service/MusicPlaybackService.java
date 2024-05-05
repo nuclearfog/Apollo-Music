@@ -557,8 +557,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		// set empty notification to keep service alive
-		if (startId == 1)
-			mNotificationHelper.createNotification(false);
+		mNotificationHelper.createNotification(false);
+
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);

@@ -26,6 +26,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
+import org.nuclearfog.apollo.utils.BitmapUtils;
 
 /**
  * 4x1 App-Widget
@@ -69,9 +70,11 @@ public class AppWidgetSmall extends AppWidgetBase {
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
-		CharSequence trackName = service.getTrackName();
-		CharSequence artistName = service.getArtistName();
-		Bitmap bitmap = service.getAlbumArt();
+		long albumId = service.getAlbumId();
+		String AlbumName = service.getAlbumName();
+		String trackName = service.getTrackName();
+		String artistName = service.getArtistName();
+		Bitmap bitmap = BitmapUtils.getAlbumArt(service, albumId, AlbumName, artistName);
 		// Set the titles and artwork
 		if (TextUtils.isEmpty(trackName) && TextUtils.isEmpty(artistName)) {
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);

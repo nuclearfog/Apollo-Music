@@ -35,17 +35,17 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 
 	@Override
 	public void onSkipToNext() {
-		service.gotoNext(true);
+		service.gotoNext();
 	}
 
 	@Override
 	public void onSkipToPrevious() {
-		service.goToPrev();
+		service.gotoPrev();
 	}
 
 	@Override
 	public void onSeekTo(long pos) {
-		service.seek(pos);
+		service.seekTo(pos);
 	}
 
 	@Override

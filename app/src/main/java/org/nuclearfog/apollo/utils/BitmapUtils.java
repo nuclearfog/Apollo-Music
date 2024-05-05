@@ -11,9 +11,12 @@
 
 package org.nuclearfog.apollo.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
+import org.nuclearfog.apollo.cache.ImageFetcher;
 
 /**
  * {@link Bitmap} specific helpers.
@@ -291,5 +294,15 @@ public final class BitmapUtils {
 		Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
 		mCanvas.drawBitmap(bitmap, 0, 0, paint);
 		return mTarget;
+	}
+
+	/**
+	 * get album art from storage
+	 *
+	 * @return album art image
+	 */
+	public static Bitmap getAlbumArt(Context context, long AlbumId, String albumName, String ArtistName) {
+		ImageFetcher mImageFetcher = ImageFetcher.getInstance(context);
+		return mImageFetcher.getArtwork(albumName, AlbumId, ArtistName);
 	}
 }

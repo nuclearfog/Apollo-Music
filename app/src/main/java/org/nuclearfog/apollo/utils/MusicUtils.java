@@ -203,7 +203,7 @@ public final class MusicUtils {
 		if (service != null) {
 			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
-				service.goToNext();
+				service.gotoNext();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -220,7 +220,7 @@ public final class MusicUtils {
 		if (service != null) {
 			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
-				service.goToPrev();
+				service.gotoPrev();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -751,7 +751,6 @@ public final class MusicUtils {
 					position = 0;
 				}
 				service.open(list, forceShuffle ? 0 : position);
-				service.play();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();

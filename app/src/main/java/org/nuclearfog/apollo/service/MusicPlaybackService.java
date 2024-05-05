@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
@@ -45,8 +44,6 @@ import androidx.media.MediaBrowserServiceCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
-import org.nuclearfog.apollo.cache.ImageCache;
-import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
@@ -297,10 +294,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private MediaSessionCompat mSession;
 	/**
-	 * Image cache
-	 */
-	private ImageFetcher mImageFetcher;
-	/**
 	 * Used to build the notification
 	 */
 	private NotificationHelper mNotificationHelper;
@@ -426,10 +419,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mRecentsCache = RecentStore.getInstance(this);
 		mFavoritesCache = FavoritesStore.getInstance(this);
 		mPopularCache = PopularStore.getInstance(this);
-		// Initialize the image fetcher
-		mImageFetcher = ImageFetcher.getInstance(this);
-		// Initialize the image cache
-		mImageFetcher.setImageCache(ImageCache.getInstance(this));
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
@@ -446,7 +435,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		setPlaybackState(false);
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
-		mNotificationHelper.createNotification(false);
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
 		getCardId();
@@ -569,7 +557,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		// set empty notification to keep service alive
-		mNotificationHelper.createNotification(false);
+		if (startId == 1)
+			mNotificationHelper.createNotification(false);
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
@@ -599,22 +588,31 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		if (gotoNext) {
 			// repeat current track by seeking to 0
 			if (mRepeatMode == REPEAT_CURRENT) {
-				seek(0);
+				seekTo(0);
 				return true;
 			}
 			// no repeat mode set, check if reached end of the queue, then stop playback
-			else if (mRepeatMode == REPEAT_NONE && (mPlayPos < 0 || mPlayPos == mPlayList.size() - 1)) {
+			else if (mRepeatMode == REPEAT_NONE && mPlayPos < 0) {
+				setPlaybackState(false);
+				mIsSupposedToBePlaying = false;
 				notifyChange(CHANGED_PLAYSTATE);
 			}
 			// go to next track if any
 			else if (mNextPlayPos >= 0) {
+				// go to next track
 				mPlayPos = mNextPlayPos;
-				setNextTrack(true);
+				setNextTrack(mRepeatMode != REPEAT_NONE);
 				updateTrackInformation();
+				// notify that track changed
 				notifyChange(CHANGED_META);
+				notifyChange(CHANGED_POSITION);
+				setPlaybackState(true);
+				if (!isForeground) {
+					mNotificationHelper.updateNotification();
+				}
 				return true;
 			}
-		} else {
+		} else if (mPlayer.isPlaying()) {
 			pause(true);
 		}
 		return false;
@@ -624,7 +622,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	@Override
 	public void onPlaybackError() {
 		if (mIsSupposedToBePlaying) {
-			gotoNext(true);
+			gotoNext();
 		} else {
 			openCurrentAndNext();
 		}
@@ -638,11 +636,11 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
 		// next track
 		if (CMDNEXT.equals(command) || ACTION_NEXT.equals(action)) {
-			gotoNext(true);
+			gotoNext();
 		}
 		// previous track
 		else if (CMDPREVIOUS.equals(command) || ACTION_PREVIOUS.equals(action)) {
-			goToPrev();
+			gotoPrev();
 		}
 		// pause/play track
 		else if (CMDTOGGLEPAUSE.equals(command) || ACTION_TOGGLEPAUSE.equals(action)) {
@@ -666,7 +664,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		else if (CMDSTOP.equals(command) || ACTION_STOP.equals(action)) {
 			pause(true);
 			mPausedByTransientLossOfFocus = false;
-			seek(0);
+			seekTo(0);
 			releaseServiceUiAndStop();
 			mNotificationHelper.dismissNotification();
 		}
@@ -694,14 +692,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				setShuffleMode(SHUFFLE_NONE);
 			}
 		}
-	}
-
-	/**
-	 * @return The album art for the current album.
-	 */
-	public Bitmap getAlbumArt() {
-		// Return the cached artwork
-		return mImageFetcher.getArtwork(getAlbumName(), getAlbumId(), getArtistName());
 	}
 
 	/**
@@ -737,7 +727,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Returns the shuffle mode
 	 *
-	 * @return The current shuffle mode (all, party, none)
+	 * @return The current shuffle mode ({@link #SHUFFLE_AUTO,#SHUFFLE_NORMAL,#SHUFFLE_NONE}
 	 */
 	public int getShuffleMode() {
 		return mShuffleMode;
@@ -746,7 +736,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Returns the repeat mode
 	 *
-	 * @return The current repeat mode (all, one, none)
+	 * @return The current repeat mode {@link #REPEAT_ALL,#REPEAT_CURRENT,#REPEAT_NONE}
 	 */
 	public int getRepeatMode() {
 		return mRepeatMode;
@@ -829,7 +819,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				if (mPlayer.initialized()) {
 					long duration = mPlayer.getDuration();
 					if (mRepeatMode != REPEAT_CURRENT && duration > 2000L && mPlayer.getPosition() >= duration - 2000L) {
-						gotoNext(true);
+						gotoNext();
 					}
 					if (mPlayer.play()) {
 						if (!mIsSupposedToBePlaying) {
@@ -871,11 +861,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * Changes from the current track to the next track
 	 */
-	public synchronized void gotoNext(boolean force) {
+	public synchronized void gotoNext() {
 		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
 		} else if (mPlayer.isPlaying() && mPlayer.next()) {
-			//setNextTrack(force);
 			if (mNextPlayPos < 0) {
 				scheduleDelayedShutdown();
 				if (mIsSupposedToBePlaying) {
@@ -884,30 +873,30 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				}
 			} else {
 				mIsSupposedToBePlaying = true;
-				notifyChange(CHANGED_META);
 				notifyChange(CHANGED_PLAYSTATE);
 			}
 		} else {
 			// reload next tracks if an error occured
-			mPlayPos = incrementPosition(mPlayPos, true);
-			setNextTrack(force);
-			openCurrentAndNext();
 			mIsSupposedToBePlaying = true;
+			mPlayPos = incrementPosition(mPlayPos, true);
+			openCurrentAndNext();
 			mPlayer.play();
-			notifyChange(CHANGED_PLAYSTATE);
-			notifyChange(CHANGED_META);
 		}
 	}
 
 	/**
 	 * restart current track or go to preview track
 	 */
-	public synchronized void goToPrev() {
+	public synchronized void gotoPrev() {
 		if (!mPlayer.busy()) {
 			if (getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-				prev();
+				mPlayPos = decrementPosition();
+				stop(false);
+				openCurrentAndNext();
+				play();
+				notifyChange(CHANGED_META);
 			} else {
-				seek(0);
+				seekTo(0);
 				play();
 			}
 		}
@@ -918,8 +907,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @param position The time to seek to
 	 */
-	public synchronized void seek(long position) {
-		if (mPlayer.initialized()) {
+	public synchronized void seekTo(long position) {
+		if (mPlayer.initialized() && !mPlayer.busy()) {
 			if (position < 0) {
 				position = 0;
 			} else if (position > mPlayer.getDuration()) {
@@ -936,24 +925,21 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @param uri URI of the local file
 	 */
-	public synchronized void openFile(Uri uri) {
+	public synchronized void openFile(@NonNull Uri uri) {
 		stop();
-		if (uri != null) {
-			updateTrackInformation(uri);
-			long id = getTrackId();
-			if (id != -1L) {
-				mPlayList.addFirst(id);
-				mPlayPos = 0;
-			}
-			mPlayer.setDataSource(getApplicationContext(), uri);
-			if (mPlayer.initialized()) {
-				play();
-			} else {
-				stop(true);
-			}
-			// update metadata
-			notifyChange(CHANGED_META);
+		updateTrackInformation(uri);
+		long id = getTrackId();
+		if (id != -1L) {
+			mPlayList.addFirst(id);
+			mPlayPos = 0;
 		}
+		if (mPlayer.setDataSource(getApplicationContext(), uri)) {
+			play();
+		} else {
+			stop(true);
+		}
+		// update metadata
+		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -961,8 +947,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * playback
 	 */
 	public void openCurrentAndNext() {
-		openCurrentTrack();
-		setNextTrack(false);
+		if (openCurrentTrack()) {
+			setNextTrack(false);
+		}
 	}
 
 	/**
@@ -1269,33 +1256,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		}
 		mHistory.clear();
 		openCurrentAndNext();
+		play();
 		if (oldId != getAudioId()) {
 			notifyChange(CHANGED_META);
 		}
-	}
-
-	/**
-	 * Changes from the current track to the previous played track
-	 */
-	synchronized void prev() {
-		if (mShuffleMode == SHUFFLE_NORMAL) {
-			// Go to previously-played track and remove it from the history
-			int histsize = mHistory.size();
-			if (histsize == 0) {
-				return;
-			}
-			mPlayPos = mHistory.removeLast();
-		} else {
-			if (mPlayPos > 0) {
-				mPlayPos--;
-			} else {
-				mPlayPos = mPlayList.size() - 1;
-			}
-		}
-		stop(false);
-		openCurrentAndNext();
-		play();
-		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -1617,51 +1581,56 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * Called to open a new file as the current track and prepare the next for playback
+	 * prepare current track of the queue for playback and update track information
+	 * if an error occurs try the next tracks
 	 */
-	private void openCurrentTrack() {
-		clearCurrentTrackInformation();
+	private boolean openCurrentTrack() {
 		if (mPlayList.isEmpty() || mPlayPos < 0) {
-			return;
+			clearCurrentTrackInformation();
+			return false;
 		}
 		stop(false);
 		updateTrackInformation();
-		boolean fileOpenFailed;
+		boolean fileOpened = false;
 		long id = getTrackId();
 		if (id != -1L) {
-			fileOpenFailed = !openTrack(id);
-		} else {
-			fileOpenFailed = true;
+			fileOpened = openTrack(id);
 		}
 		// check if file was opened successfully
-		if (fileOpenFailed || currentSong == null) {
+		if (!fileOpened) {
 			if (mPlayList.size() > 1) {
 				// trying to play one of the next 10 tracks, give up if no success
-				for (int i = 0; i < 10; i++) {
+				for (int i = 0; i < 10 && !fileOpened && mPlayPos >= 0; i++) {
 					mPlayPos = incrementPosition(mPlayPos, false);
+					// check if the end of the queue is reached
 					if (mPlayPos < 0) {
 						scheduleDelayedShutdown();
 						if (mIsSupposedToBePlaying) {
 							mIsSupposedToBePlaying = false;
 							notifyChange(CHANGED_PLAYSTATE);
 						}
-						return;
 					}
 					// skip faulty track and try open next track
-					updateTrackInformation();
-					id = getTrackId();
-					if (id != -1L && openTrack(id)) {
-						return;
+					else {
+						updateTrackInformation();
+						id = getTrackId();
+						if (id != -1L && openTrack(id)) {
+							fileOpened = true;
+						}
 					}
 				}
 			}
-			scheduleDelayedShutdown();
-			if (mIsSupposedToBePlaying) {
-				mIsSupposedToBePlaying = false;
-				notifyChange(CHANGED_PLAYSTATE);
+			if (!fileOpened) {
+				Log.w(TAG, "Failed to open file for playback");
+				// give up and prepare shutdown
+				scheduleDelayedShutdown();
+				if (mIsSupposedToBePlaying) {
+					mIsSupposedToBePlaying = false;
+					notifyChange(CHANGED_PLAYSTATE);
+				}
 			}
-			Log.w(TAG, "Failed to open file for playback");
 		}
+		return fileOpened;
 	}
 
 	/**
@@ -1675,17 +1644,20 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				long id = mPlayList.get(nextPos);
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
-					this.mNextPlayPos = nextPos;
+					mNextPlayPos = nextPos;
 					break;
 				}
 			} else {
 				mPlayer.setNextDataSource(getApplicationContext(), null);
+				mNextPlayPos = -1;
 				break;
 			}
 		}
 	}
 
 	/**
+	 * increment current play position of the queue
+	 *
 	 * @param force True to force the player onto the track next, false otherwise.
 	 * @return The next position to play.
 	 */
@@ -1734,6 +1706,30 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					return pos + 1;
 				}
 		}
+	}
+
+	/**
+	 * decrement current play position in the queue
+	 *
+	 * @return play position
+	 */
+	private int decrementPosition() {
+		int position = mPlayPos;
+		if (mShuffleMode == SHUFFLE_NORMAL) {
+			// Go to previously-played track and remove it from the history
+			if (mHistory.isEmpty()) {
+				position = -1;
+			} else {
+				position = mHistory.removeLast();
+			}
+		} else {
+			if (position > 0) {
+				position--;
+			} else {
+				position = mPlayList.size() - 1;
+			}
+		}
+		return position;
 	}
 
 	/**
@@ -1881,8 +1877,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private boolean openTrack(long id) {
 		Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
-		mPlayer.setDataSource(getApplicationContext(), uri);
-		if (mPlayer.initialized()) {
+		if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 			return true;
 		} else {
 			stop(true);
@@ -1932,7 +1927,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			}
 			if (mPlayer.initialized()) {
 				long seekpos = settings.getSeekPosition();
-				seek(seekpos >= 0 && seekpos < getDuration() ? seekpos : 0);
+				seekTo(seekpos >= 0 && seekpos < getDuration() ? seekpos : 0);
 			}
 			//
 			mRepeatMode = settings.getRepeatMode();

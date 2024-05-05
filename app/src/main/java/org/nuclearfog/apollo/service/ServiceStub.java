@@ -80,10 +80,10 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void prev() {
+	public void gotoNext() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.prev();
+			service.gotoNext();
 		}
 	}
 
@@ -91,21 +91,10 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void goToNext() {
+	public void gotoPrev() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.gotoNext(true);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void goToPrev() {
-		MusicPlaybackService service = mService.get();
-		if (service != null) {
-			service.goToPrev();
+			service.gotoPrev();
 		}
 	}
 
@@ -215,7 +204,7 @@ public class ServiceStub extends IApolloService.Stub {
 	public void seek(long position) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
-			service.seek(position);
+			service.seekTo(position);
 		}
 	}
 

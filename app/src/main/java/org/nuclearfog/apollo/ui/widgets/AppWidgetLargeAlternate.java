@@ -16,6 +16,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
+import org.nuclearfog.apollo.utils.BitmapUtils;
 
 /**
  * 4x2 App-Widget
@@ -114,11 +116,16 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
 	@NonNull
 	private static RemoteViews getRemoteViews(MusicPlaybackService service) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large_alternate);
+		long albumId = service.getAlbumId();
+		String AlbumName = service.getAlbumName();
+		String trackName = service.getTrackName();
+		String artistName = service.getArtistName();
+		Bitmap albumArt = BitmapUtils.getAlbumArt(service, albumId, AlbumName, artistName);
 		// Set the titles and artwork
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, service.getTrackName());
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, service.getArtistName());
-		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, service.getAlbumName());
-		appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, service.getAlbumArt());
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_one, trackName);
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, artistName);
+		appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, AlbumName);
+		appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, albumArt);
 		return appWidgetView;
 	}
 

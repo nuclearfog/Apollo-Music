@@ -120,19 +120,22 @@ public class MultiPlayer {
 
 	/**
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
+	 * @return true if player is ready to play
 	 */
-	public void setDataSource(Context context, @NonNull Uri uri) {
+	public boolean setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
 		if (initialized && isPlaying())
 			stop();
 		// set source of the current selected player
 		initialized = setDataSourceImpl(mPlayers[currentPlayer], context, uri);
+		return initialized;
 	}
 
 	/**
 	 * Set the MediaPlayer to start when this MediaPlayer finishes playback.
 	 *
 	 * @param uri The path of the file, or the http/rtsp URL of the stream you want to play
+	 * @return true if next data source is initialized successfully
 	 */
 	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
 		if (uri != null) {
@@ -143,8 +146,8 @@ public class MultiPlayer {
 			} else {
 				nextPlayerIndex = (currentPlayer + 2) % mPlayers.length;
 			}
-			continious = true;
-			return setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
+			continious = setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
+			return continious;
 		} else {
 			continious = false;
 			return true;
@@ -340,12 +343,14 @@ public class MultiPlayer {
 	 */
 	private boolean setDataSourceImpl(MediaPlayer player, Context context, @NonNull Uri uri) {
 		try {
-			// cech file if valid
+			// check file if valid
 			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 			retriever.setDataSource(context, uri);
 			String hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
-			if (!"yes".equals(hasAudio))
+			if (hasAudio == null || !hasAudio.equals("yes")) {
+				Log.w(TAG, "invalid media file!");
 				return false;
+			}
 			// init player
 			player.reset();
 			player.setDataSource(context, uri);
@@ -353,7 +358,7 @@ public class MultiPlayer {
 			return true;
 		} catch (Exception err) {
 			player.reset();
-			Log.e(TAG, "failed to set data source!");
+			Log.e(TAG, "could not open media file!");
 			return false;
 		}
 	}
@@ -367,22 +372,20 @@ public class MultiPlayer {
 			switch (xfadeMode) {
 				// force crossfade between two tracks
 				case XFADE:
-					if (!current.isPlaying()) {
-						xfadeMode = NONE;
+					volume = Math.max(volume - FADE_STEPS, 0f);
+					current.setVolume(volume, volume);
+					if (volume == 0f) {
 						gotoNext();
-						break;
 					}
+					break;
 
 					// fade out current track, then pause
 				case FADE_OUT:
 					volume = Math.max(volume - FADE_STEPS, 0f);
 					current.setVolume(volume, volume);
 					if (volume == 0f) {
-						current.pause();
-						if (xfadeMode == FADE_OUT) {
-							callback.onPlaybackEnd(false);
-							xfadeMode = NONE;
-						}
+						pause(true);
+						callback.onPlaybackEnd(false);
 					}
 					break;
 
@@ -423,25 +426,26 @@ public class MultiPlayer {
 	 * @param enable true to enable crossfading
 	 */
 	private void setCrossfadeTask(boolean enable) {
-		// remove old task if running
-		if (xfadeTask != null) {
+		// set new cross fade task
+		if (enable) {
+			if (xfadeTask == null) {
+				xfadeTask = THREAD_POOL.scheduleAtFixedRate(new Runnable() {
+					@Override
+					public void run() {
+						xfadeHandler.post(new Runnable() {
+							@Override
+							public void run() {
+								onCrossfadeTrack();
+							}
+						});
+					}
+				}, FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
+			}
+		} else if (xfadeTask != null) {
 			xfadeTask.cancel(true);
 			xfadeTask = null;
 		}
-		// set new cross fade task
-		if (enable) {
-			xfadeTask = THREAD_POOL.scheduleAtFixedRate(new Runnable() {
-				@Override
-				public void run() {
-					xfadeHandler.post(new Runnable() {
-						@Override
-						public void run() {
-							onCrossfadeTrack();
-						}
-					});
-				}
-			}, FADE_RESOLUTION, FADE_RESOLUTION, TimeUnit.MILLISECONDS);
-		}
+
 	}
 
 	/**

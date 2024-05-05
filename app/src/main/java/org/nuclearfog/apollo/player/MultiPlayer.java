@@ -61,7 +61,7 @@ public class MultiPlayer {
 	 *
 	 * @see #mPlayers
 	 */
-	private static final int PLAYER_INST = 3;
+	private static final int PLAYER_INST = 2;
 	/**
 	 * milliseconds to wait until to retry loading track
 	 */
@@ -141,13 +141,7 @@ public class MultiPlayer {
 	 */
 	public boolean setNextDataSource(Context context, @Nullable Uri uri) {
 		if (uri != null) {
-			int nextPlayerIndex;
-			// if there is a crossfade pending, use the mediaplayer after next
-			if (xfadeMode == NONE) {
-				nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
-			} else {
-				nextPlayerIndex = (currentPlayer + 2) % mPlayers.length;
-			}
+			int nextPlayerIndex = (currentPlayer + 1) % mPlayers.length;
 			continious = setDataSourceImpl(mPlayers[nextPlayerIndex], context, uri);
 			return continious;
 		} else {

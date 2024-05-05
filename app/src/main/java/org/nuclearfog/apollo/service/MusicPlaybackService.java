@@ -929,17 +929,25 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		stop();
 		updateTrackInformation(uri);
 		long id = getTrackId();
+		// check if track is valid
 		if (id != -1L) {
+			// add at the beginning of the playlist
 			mPlayList.addFirst(id);
 			mPlayPos = 0;
+			// update metadata
+			notifyChange(CHANGED_META);
+			notifyChange(CHANGED_QUEUE);
+			if (mPlayer.setDataSource(getApplicationContext(), uri)) {
+				play();
+				setNextTrack(false);
+			} else {
+				stop(true);
+			}
 		}
-		if (mPlayer.setDataSource(getApplicationContext(), uri)) {
-			play();
-		} else {
-			stop(true);
+		// restore track information after error
+		else {
+			updateTrackInformation();
 		}
-		// update metadata
-		notifyChange(CHANGED_META);
 	}
 
 	/**

@@ -6,9 +6,11 @@ import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.model.AudioPreset;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
@@ -223,6 +225,24 @@ public final class AudioEffects {
 	}
 
 	/**
+	 * set all band levels
+	 *
+	 * @param bands equalizer bands
+	 */
+	public void setBandLevel(int[] bands) {
+		try {
+			for (short i = 0; i < bands.length; i++) {
+				equalizer.setBandLevel((short) i, (short) bands[i]);
+			}
+			prefs.setEqualizerBands(bands);
+		} catch (RuntimeException exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * return bass boost strength
 	 *
 	 * @return bassbost strength value from 0 to 1000
@@ -284,6 +304,27 @@ public final class AudioEffects {
 				exception.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * get current preset
+	 *
+	 * @return current preset
+	 */
+	public AudioPreset getPreset() {
+		return new AudioPreset(prefs.getPresetName(), getBandLevel(), getBassLevel(), getReverbLevel());
+	}
+
+	/**
+	 * set new preset
+	 *
+	 * @param preset preset to set
+	 */
+	public void setPreset(AudioPreset preset) {
+		setBassLevel(preset.getBassLevel());
+		setReverbLevel(preset.getReverbLevel());
+		setBandLevel(preset.getBands());
+		prefs.setPresetName(preset.getName());
 	}
 
 	/**

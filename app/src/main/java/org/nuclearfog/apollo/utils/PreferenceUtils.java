@@ -78,6 +78,7 @@ public final class PreferenceUtils {
 	private static final String FX_REVERB = "fx_reverb_enable";
 	private static final String FX_PREFER_EXT = "fx_prefer_external";
 	private static final String FX_EQUALIZER_BANDS = "fx_equalizer_bands";
+	private static final String FX_PRESET = "fx_preset_name";
 	// other settings
 	private static final String MODE_SHUFFLE = "shufflemode";
 	private static final String MODE_REPEAT = "repeatmode";
@@ -620,6 +621,26 @@ public final class PreferenceUtils {
 	public void setReverbLevel(int level) {
 		SharedPreferences.Editor editor = audioEffectsPref.edit();
 		editor.putInt(FX_REVERB, level);
+		editor.commit();
+	}
+
+	/**
+	 * get name of the current selected preset
+	 *
+	 * @return preset name
+	 */
+	public String getPresetName() {
+		return audioEffectsPref.getString(FX_PRESET, "default");
+	}
+
+	/**
+	 * set name of the current selected preset
+	 *
+	 * @param name preset name
+	 */
+	public void setPresetName(String name) {
+		SharedPreferences.Editor editor = audioEffectsPref.edit();
+		editor.putString(FX_PRESET, name);
 		editor.commit();
 	}
 

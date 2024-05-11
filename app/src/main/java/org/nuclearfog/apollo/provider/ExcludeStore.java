@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -12,17 +11,12 @@ import java.util.TreeSet;
 /**
  * @author nuclearfog
  */
-public class ExcludeStore extends SQLiteOpenHelper {
+public class ExcludeStore extends AppStore {
 
 	/**
 	 * database filename
 	 */
 	private static final String DB_NAME = "exclude.db";
-
-	/**
-	 * database version
-	 */
-	private static final int VERSION = 1;
 
 	/**
 	 *
@@ -43,7 +37,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 	 *
 	 */
 	private ExcludeStore(Context context) {
-		super(context, DB_NAME, null, VERSION);
+		super(context, DB_NAME);
 	}
 
 	/**
@@ -64,11 +58,6 @@ public class ExcludeStore extends SQLiteOpenHelper {
 		db.execSQL(TABLE_EXCLUDE_TRACKS);
 	}
 
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	}
-
 	/**
 	 * add song IDs to exclude lsit
 	 */
@@ -82,8 +71,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 				column.put(ExcludeTable.TYPE, type.id);
 				database.insertWithOnConflict(ExcludeTable.NAME, null, column, SQLiteDatabase.CONFLICT_IGNORE);
 			}
-			database.setTransactionSuccessful();
-			database.endTransaction();
+			commit();
 		}
 	}
 
@@ -97,8 +85,7 @@ public class ExcludeStore extends SQLiteOpenHelper {
 			for (long id : ids) {
 				database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
 			}
-			database.setTransactionSuccessful();
-			database.endTransaction();
+			commit();
 		}
 	}
 

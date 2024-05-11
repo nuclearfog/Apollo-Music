@@ -15,7 +15,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -35,7 +34,7 @@ import org.nuclearfog.apollo.ui.activities.ProfileActivity;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class RecentStore extends SQLiteOpenHelper {
+public class RecentStore extends AppStore {
 
 	/**
 	 * column projection of the RECENT table
@@ -79,11 +78,6 @@ public class RecentStore extends SQLiteOpenHelper {
 	public static final String DATABASENAME = "albumhistory.db";
 
 	/**
-	 * Version constant to increment when the database should be rebuilt
-	 */
-	private static final int VERSION = 2;
-
-	/**
 	 * singleton instance of this class
 	 */
 	private static RecentStore sInstance;
@@ -99,7 +93,7 @@ public class RecentStore extends SQLiteOpenHelper {
 	 * @param context The {@link Context} to use
 	 */
 	private RecentStore(Context context) {
-		super(context, DATABASENAME, null, VERSION);
+		super(context, DATABASENAME);
 	}
 
 	/**
@@ -120,15 +114,6 @@ public class RecentStore extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + RecentStoreColumns.NAME);
-		onCreate(db);
 	}
 
 	/**

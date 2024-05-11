@@ -17,7 +17,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 
@@ -26,7 +25,7 @@ import org.nuclearfog.apollo.model.Song;
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class FavoritesStore extends SQLiteOpenHelper {
+public class FavoritesStore extends AppStore {
 
 	/**
 	 * column projection of favorite table
@@ -61,11 +60,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
 	private static final String DB_NAME = "favorites.db";
 
 	/**
-	 * database version
-	 */
-	private static final int VERSION = 2;
-
-	/**
 	 * singleton instance
 	 */
 	private static FavoritesStore sInstance;
@@ -82,7 +76,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
 	 * @param context The {@link Context} to use
 	 */
 	private FavoritesStore(Context context) {
-		super(context, DB_NAME, null, VERSION);
+		super(context, DB_NAME);
 	}
 
 	/**
@@ -103,15 +97,6 @@ public class FavoritesStore extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(FAVORITE_TABLE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + FavoriteColumns.NAME);
-		onCreate(db);
 	}
 
 	/**
@@ -151,8 +136,7 @@ public class FavoritesStore extends SQLiteOpenHelper {
 				values.put(FavoriteColumns.DURATION, duration);
 
 				database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
-				database.setTransactionSuccessful();
-				database.endTransaction();
+				commit();
 			}
 		}
 	}

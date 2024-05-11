@@ -6,14 +6,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * database for popular tracks with the information how often a track was played
  *
  * @author nuclearfog
  */
-public class PopularStore extends SQLiteOpenHelper {
+public class PopularStore extends AppStore {
 
 	/**
 	 * column projection of track table
@@ -48,11 +47,6 @@ public class PopularStore extends SQLiteOpenHelper {
 	public static final String DB_NAME = "popular.db";
 
 	/**
-	 * database version
-	 */
-	private static final int VERSION = 1;
-
-	/**
 	 * singleton instance
 	 */
 	private static PopularStore singleton;
@@ -66,7 +60,7 @@ public class PopularStore extends SQLiteOpenHelper {
 	 *
 	 */
 	private PopularStore(Context context) {
-		super(context, DB_NAME, null, VERSION);
+		super(context, DB_NAME);
 	}
 
 	/**
@@ -85,13 +79,6 @@ public class PopularStore extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(MOSTPLAYED_TABLE);
-	}
-
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + PopularColumns.NAME);
-		onCreate(db);
 	}
 
 	/**
@@ -120,8 +107,7 @@ public class PopularStore extends SQLiteOpenHelper {
 				values.put(PopularColumns.DURATION, duration);
 
 				database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
-				database.setTransactionSuccessful();
-				database.endTransaction();
+				commit();
 			}
 		}
 	}
@@ -136,6 +122,7 @@ public class PopularStore extends SQLiteOpenHelper {
 			String[] args = {Long.toString(trackId)};
 			SQLiteDatabase database = getWritableDatabase();
 			database.delete(PopularColumns.NAME, TRACK_SELECT, args);
+			commit();
 		}
 	}
 
@@ -146,6 +133,7 @@ public class PopularStore extends SQLiteOpenHelper {
 		synchronized (LOCK) {
 			SQLiteDatabase database = getWritableDatabase();
 			database.delete(PopularColumns.NAME, null, null);
+			commit();
 		}
 	}
 

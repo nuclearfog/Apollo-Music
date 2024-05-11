@@ -32,15 +32,14 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 
 	/**
 	 * @param listener  listener to call if equalizer level changes
-	 * @param level     array of band levels (mB)
 	 * @param frequency array of band frequencies (Hz)
 	 * @param range     min/max limits of the band
 	 */
-	public EqualizerAdapter(BandLevelChangeListener listener, int[] level, int[] frequency, int[] range) {
+	public EqualizerAdapter(BandLevelChangeListener listener, int[] frequency, int[] range) {
 		this.listener = listener;
-		this.level = level;
 		this.frequency = frequency;
 		this.range = range;
+		level = new int[frequency.length];
 	}
 
 	@NonNull
@@ -103,6 +102,14 @@ public class EqualizerAdapter extends RecyclerView.Adapter<EqualizerAdapter.Equa
 	 */
 	public void setEnabled(boolean enable) {
 		this.enabled = enable;
+		notifyDataSetChanged();
+	}
+
+	/**
+	 * set band level
+	 */
+	public void setBands(int[] level) {
+		this.level = level;
 		notifyDataSetChanged();
 	}
 

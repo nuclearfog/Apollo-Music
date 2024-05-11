@@ -2,6 +2,7 @@ package org.nuclearfog.apollo.model;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -9,7 +10,9 @@ import java.util.Arrays;
  *
  * @author nuclearfog
  */
-public class AudioPreset {
+public class AudioPreset implements Serializable {
+
+	private static final long serialVersionUID = 3461944920100641078L;
 
 	public static final int MAX_NAME = 15;
 
@@ -25,17 +28,21 @@ public class AudioPreset {
 	 * @param reverb_level reverb level
 	 */
 	public AudioPreset(String name, int[] eq_bands, int bass_level, int reverb_level) {
-		this.name = name.substring(0, Math.min(name.length() - 1, MAX_NAME));
 		this.eq_bands = eq_bands;
 		this.bass_level = bass_level;
 		this.reverb_level = reverb_level;
+		setName(name);
 	}
 
 	/**
 	 * set preset name
 	 */
 	public void setName(String name) {
-		this.name = name;
+		if (name.length() > MAX_NAME) {
+			this.name = name.substring(0, MAX_NAME);
+		} else {
+			this.name = name;
+		}
 	}
 
 	/**

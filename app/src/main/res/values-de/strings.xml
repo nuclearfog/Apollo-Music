@@ -162,4 +162,5 @@
 	<string name="dialog_disable_bat_opt_message">Um eine reibungslose Wiedergabe zu gewährleisten, sollte die Akku-Optimierung deaktiviert werden</string>
 	<string name="dialog_disable_bat_opt_confirm">anwenden</string>
 	<string name="dialog_disable_bat_opt_ignore">ignorieren</string>
+	<string name="dialog_save_preset_title">Voreinstellung speichern</string>
 </resources>

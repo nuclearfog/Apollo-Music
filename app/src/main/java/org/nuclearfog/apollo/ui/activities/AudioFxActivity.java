@@ -32,6 +32,8 @@ import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.ui.adapters.listview.PresetAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.BandLevelChangeListener;
+import org.nuclearfog.apollo.ui.dialogs.PresetDialog;
+import org.nuclearfog.apollo.ui.dialogs.PresetDialog.OnPresetSaveCallback;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
@@ -44,7 +46,8 @@ import java.util.List;
  * @author nuclerfog
  */
 @SuppressLint("UseSwitchCompatOrMaterialCode")
-public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener, OnSeekBarChangeListener, AsyncCallback<List<AudioPreset>>, OnItemSelectedListener {
+public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener,
+		OnSeekBarChangeListener, AsyncCallback<List<AudioPreset>>, OnItemSelectedListener, OnPresetSaveCallback {
 
 	/**
 	 * maximum steps of the bassboost seekbar
@@ -52,6 +55,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	private static final int BASS_STEPS = 20;
 
 	private SeekBar bassBoost, reverb;
+	private Spinner presetSelector;
 	private Switch enableFx;
 
 	private EqualizerAdapter eqAdapter;
@@ -66,7 +70,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		setContentView(R.layout.activity_audiofx);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
-		Spinner presetSelector = findViewById(R.id.audiofx_preset);
+		presetSelector = findViewById(R.id.audiofx_preset);
 		enableFx = findViewById(R.id.audiofx_enable);
 		bassBoost = findViewById(R.id.audiofx_bass_boost);
 		reverb = findViewById(R.id.audiofx_reverb);
@@ -100,15 +104,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			eq_bands.setAdapter(eqAdapter);
 			setVisibility(audioEffects.isAudioFxEnabled());
 			setViews();
-			// select preset
-			String presetName = audioEffects.getPreset().getName();
-			for (int i = 0; i < presetAdapter.getCount(); i++) {
-				AudioPreset preset = presetAdapter.getItem(i);
-				if (preset != null && preset.getName().equals(presetName)) {
-					presetSelector.setSelection(i);
-					break;
-				}
-			}
+			setPreset();
 		} else {
 			Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
 			finish();
@@ -141,7 +137,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_preset) {
 			AudioPreset preset = audioEffects.getPreset();
-			// todo open dialog
+			PresetDialog presetDialog = PresetDialog.newInstance(preset);
+			presetDialog.show(getSupportFragmentManager(), PresetDialog.TAG + ":" + preset.getName());
 		} else if (item.getItemId() == android.R.id.home) {
 			finish();
 		}
@@ -192,12 +189,13 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	@Override
 	public void onResult(@NonNull List<AudioPreset> audioPresets) {
 		presetAdapter.setItems(audioPresets);
+		setPreset();
 	}
 
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		if (view.getId() == R.id.audiofx_preset) {
+		if (parent.getId() == R.id.audiofx_preset) {
 			AudioPreset preset = presetAdapter.getItem(position);
 			if (preset != null) {
 				audioEffects.setPreset(preset);
@@ -212,6 +210,14 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	}
 
 
+	@Override
+	public void onPresetSave(AudioPreset preset) {
+		presetLoader.execute(preset, this);
+	}
+
+	/**
+	 * set view values
+	 */
 	private void setViews() {
 		enableFx.setChecked(audioEffects.isAudioFxEnabled());
 		bassBoost.setProgress(audioEffects.getBassLevel() * BASS_STEPS / AudioEffects.MAX_BASSBOOST);
@@ -225,5 +231,19 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		reverb.setEnabled(enable);
 		bassBoost.setEnabled(enable);
 		eqAdapter.setEnabled(enable);
+	}
+
+	/**
+	 * select current selected preset
+	 */
+	private void setPreset() {
+		String presetName = audioEffects.getPreset().getName();
+		for (int i = 0; i < presetAdapter.getCount(); i++) {
+			AudioPreset preset = presetAdapter.getItem(i);
+			if (preset != null && preset.getName().equals(presetName)) {
+				presetSelector.setSelection(i);
+				break;
+			}
+		}
 	}
 }

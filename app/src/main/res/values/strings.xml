@@ -86,6 +86,7 @@
 	<string name="dialog_disable_bat_opt_title">Disable battery optimization</string>
 	<string name="dialog_disable_bat_opt_message">It\'s recommended to disable battery optimization to prevent Android system interrupting the playback.</string>
 	<string name="dialog_disable_bat_opt_confirm">apply</string>
+	<string name="dialog_save_preset_title">save preset</string>
 	<string name="dialog_disable_bat_opt_ignore">ignore</string>
 	<string name="delete_warning">This will permanently delete the cached image entries</string>
 	<string name="new_photo">Choose photo from Gallery</string>

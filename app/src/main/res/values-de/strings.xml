@@ -163,4 +163,6 @@
 	<string name="dialog_disable_bat_opt_confirm">anwenden</string>
 	<string name="dialog_disable_bat_opt_ignore">ignorieren</string>
 	<string name="dialog_save_preset_title">Voreinstellung speichern</string>
+	<string name="preset_name_hint">Name eingeben</string>
+	<string name="empty_preset_name">Name darf nicht leer sein!</string>
 </resources>

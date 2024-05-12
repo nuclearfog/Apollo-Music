@@ -45,7 +45,6 @@ import java.util.List;
  *
  * @author nuclerfog
  */
-@SuppressLint("UseSwitchCompatOrMaterialCode")
 public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener,
 		OnSeekBarChangeListener, AsyncCallback<List<AudioPreset>>, OnItemSelectedListener, OnPresetSaveCallback {
 
@@ -54,10 +53,10 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	 */
 	private static final int BASS_STEPS = 20;
 
+	@SuppressLint("UseSwitchCompatOrMaterialCode")
+	private Switch enableFx;
 	private SeekBar bassBoost, reverb;
 	private Spinner presetSelector;
-	private Switch enableFx;
-
 	private EqualizerAdapter eqAdapter;
 	private PresetAdapter presetAdapter;
 	private AudioEffects audioEffects;
@@ -65,8 +64,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 
 	@Override
-	protected void onCreate(Bundle inst) {
-		super.onCreate(inst);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_audiofx);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
@@ -134,7 +133,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_preset) {
 			AudioPreset preset = audioEffects.getPreset();
 			PresetDialog presetDialog = PresetDialog.newInstance(preset);
@@ -212,6 +211,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 	@Override
 	public void onPresetSave(AudioPreset preset) {
+		audioEffects.setPreset(preset);
 		presetLoader.execute(preset, this);
 	}
 

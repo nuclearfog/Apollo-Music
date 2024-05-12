@@ -8,6 +8,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,10 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.AudioPreset;
 
 /**
+ * Dialog used to save preset
+ *
  * @author nuclearfog
+ * @see org.nuclearfog.apollo.ui.activities.AudioFxActivity
  */
 public class PresetDialog extends DialogFragment implements OnClickListener, TextWatcher {
 
@@ -28,6 +32,7 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 
 	private AudioPreset preset;
 
+	private EditText text;
 
 	@NonNull
 	@Override
@@ -36,8 +41,13 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 			preset = (AudioPreset) savedInstanceState.getSerializable(KEY_PRESET);
 		else if (getArguments() != null)
 			preset = (AudioPreset) getArguments().getSerializable(KEY_PRESET);
-		EditText text = new EditText(getContext());
-		text.setText(preset.getName());
+		text = new EditText(getContext());
+		text.setLines(1);
+		text.setBackgroundColor(0);
+		text.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+		text.setPadding(30, 0, 0, 30);
+		text.append(preset.getName());
+		text.setHint(R.string.preset_name_hint);
 		text.addTextChangedListener(this);
 		return new AlertDialog.Builder(requireContext())
 				.setPositiveButton(R.string.save, this)
@@ -57,11 +67,16 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
-			Activity activity = getActivity();
-			if (activity instanceof OnPresetSaveCallback) {
-				((OnPresetSaveCallback)activity).onPresetSave(preset);
+			if (preset.getName().isEmpty()) {
+				text.setError(getString(R.string.empty_preset_name));
+			} else {
+				Activity activity = getActivity();
+				if (activity instanceof OnPresetSaveCallback) {
+					((OnPresetSaveCallback) activity).onPresetSave(preset);
+				}
+				text.setError(null);
+				dismiss();
 			}
-			dismiss();
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 			dismiss();
 		}
@@ -92,9 +107,16 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		return dialog;
 	}
 
-
+	/**
+	 * callback used to send the modified preset back to activity
+	 */
 	public interface OnPresetSaveCallback {
 
+		/**
+		 * called to set the new preset
+		 *
+		 * @param preset new preset
+		 */
 		void onPresetSave(AudioPreset preset);
 	}
 }

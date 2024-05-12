@@ -6,7 +6,6 @@ import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.BuildConfig;
@@ -72,7 +71,7 @@ public final class AudioEffects {
 			}
 		} catch (Exception e) {
 			// thrown if there is no support for audio effects
-			Log.d(TAG, "audio effects not supported!");
+			Log.e(TAG, "audio effects not supported!", e);
 		}
 		return instance;
 	}

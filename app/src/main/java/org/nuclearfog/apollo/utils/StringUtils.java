@@ -51,7 +51,7 @@ public class StringUtils {
 	 * @param secs    The track in seconds.
 	 * @return Duration of a track that's properly formatted.
 	 */
-	public static String makeTimeString(Context context, int secs) {
+	public static String makeTimeString(Context context, long secs) {
 		if (secs < 0) {
 			// invalid time
 			return "--:--";
@@ -60,8 +60,8 @@ public class StringUtils {
 			// no need to calculate
 			return "0:00";
 		}
-		int min = secs / 60;
-		int hour = min / 60;
+		long min = secs / 60;
+		long hour = min / 60;
 		String durationFormat = context.getString(hour == 0 ? R.string.durationformatshort : R.string.durationformatlong);
 		return String.format(durationFormat, hour, min % 60, secs % 60);
 	}

@@ -30,9 +30,9 @@ public class Song extends Music implements Comparable<Song> {
 	private String album_name = "";
 
 	/**
-	 * The song duration in seconds
+	 * The song duration in milliseconds
 	 */
-	private int duration = -1;
+	private long duration = -1;
 
 	/**
 	 * playlist position of the track
@@ -98,7 +98,7 @@ public class Song extends Music implements Comparable<Song> {
 			this.album_name = album_name;
 		}
 		if (length > 0) {
-			duration = (int) length / 1000;
+			duration = length;
 		}
 	}
 
@@ -131,23 +131,12 @@ public class Song extends Music implements Comparable<Song> {
 	}
 
 	/**
-	 * track duration in seconds
-	 *
-	 * @return duration in seconds
-	 */
-	public int duration() {
-		return duration;
-	}
-
-	/**
 	 * track duration in milliseconds
 	 *
 	 * @return duration in milliseconds
 	 */
-	public long durationMillis() {
-		if (duration > 0)
-			return (long) duration * 1000;
-		return -1L;
+	public long getDuration() {
+		return duration;
 	}
 
 	/**
@@ -195,7 +184,7 @@ public class Song extends Music implements Comparable<Song> {
 		int result = 1;
 		result = prime * result + getAlbum().hashCode();
 		result = prime * result + getArtist().hashCode();
-		result = prime * result + duration();
+		result = prime * result + Long.hashCode(getDuration());
 		result = prime * result + Long.hashCode(getId());
 		result = prime * result + getPlaylistIndex();
 		result = prime * result + getName().hashCode();
@@ -214,8 +203,8 @@ public class Song extends Music implements Comparable<Song> {
 			return true;
 		if (obj instanceof Song) {
 			Song other = (Song) obj;
-			return album_name.equals(other.album_name) && artist_name.equals(other.artist_name) &&
-					getName().equals(other.getName()) && duration == other.duration && getId() == other.getId() && other.playlist_index == playlist_index;
+			return getId() == other.getId() && album_name.equals(other.album_name) && artist_name.equals(other.artist_name) &&
+					getName().equals(other.getName()) && duration == other.duration && other.playlist_index == playlist_index;
 		}
 		return false;
 	}

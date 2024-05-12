@@ -44,6 +44,8 @@ import java.lang.ref.WeakReference;
  */
 public class RecentWidgetProvider extends AppWidgetBase {
 
+	private static final String TAG = "RecentWidgetProvider";
+
 	private static final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 
 	public static final String SET_ACTION = "set_action";
@@ -62,12 +64,10 @@ public class RecentWidgetProvider extends AppWidgetBase {
 
 	private RemoteViews mViews;
 
-	/**
-	 * Constructor of <code>RecentWidgetProvider</code>
-	 */
+
 	public RecentWidgetProvider() {
 		// Start the worker thread
-		HandlerThread workerThread = new HandlerThread("RecentWidgetProviderWorker", android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		HandlerThread workerThread = new HandlerThread(TAG, android.os.Process.THREAD_PRIORITY_BACKGROUND);
 		workerThread.start();
 		sWorkerQueue = new Handler(workerThread.getLooper());
 	}

@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.provider.RecentStore;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
@@ -126,7 +127,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	 * @param artist  The name of the artist in the profile the user is viewing.
 	 */
 	public void setArtistAlbumPhoto(final Context context, final String artist) {
-		final String lastAlbum = MusicUtils.getLastAlbumForArtist(context, artist);
+		final String lastAlbum = RecentStore.getInstance(context).getAlbumName(artist);
 		if (!TextUtils.isEmpty(lastAlbum)) {
 			// Set the last album the artist played
 			mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);

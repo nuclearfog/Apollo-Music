@@ -23,9 +23,12 @@ import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.provider.RecentStore.RecentStoreColumns;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 import org.nuclearfog.apollo.utils.CursorFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used to build the recently listened list for the
@@ -46,7 +49,7 @@ public class RecentWidgetService extends RemoteViewsService {
 	/**
 	 * This is the factory that will provide data to the collection widget.
 	 */
-	private static class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+	private static class WidgetRemoteViewsFactory implements RemoteViewsFactory {
 		/**
 		 * Number of views (ImageView and TextView)
 		 */
@@ -62,15 +65,9 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		private ImageFetcher mFetcher;
 
-		/**
-		 * Cursor to use
-		 */
-		private Cursor mCursor;
-
-		/**
-		 * application context
-		 */
 		private Context mContext;
+
+		private List<Album> albums = new ArrayList<>();
 
 		/**
 		 * Constructor of <code>WidgetRemoteViewsFactory</code>
@@ -81,7 +78,7 @@ public class RecentWidgetService extends RemoteViewsService {
 			// Initialize the image cache
 			mFetcher = ImageFetcher.getInstance(context);
 			mFetcher.setImageCache(ImageCache.getInstance(context));
-			this.mContext = context.getApplicationContext();
+			mContext = context.getApplicationContext();
 		}
 
 		/**
@@ -89,11 +86,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public int getCount() {
-			// Check for errors
-			if (mCursor == null || mCursor.isClosed() || mCursor.getCount() <= 0) {
-				return 0;
-			}
-			return Math.min(RECENT_LIMIT, mCursor.getCount());
+			return Math.min(albums.size(), RECENT_LIMIT);
 		}
 
 		/**
@@ -109,21 +102,15 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public RemoteViews getViewAt(int position) {
-			mCursor.moveToPosition(position);
+			Album album = albums.get(position);
 			// Create the remote views
 			RemoteViews mViews = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_recents_items);
-			// Copy the album id
-			long id = mCursor.getLong(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ID));
-			// Copy the album name
-			String albumName = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ALBUMNAME));
-			// Copy the artist name
-			String artist = mCursor.getString(mCursor.getColumnIndexOrThrow(RecentStoreColumns.ARTISTNAME));
 			// Set the album names
-			mViews.setTextViewText(R.id.app_widget_recents_line_one, albumName);
+			mViews.setTextViewText(R.id.app_widget_recents_line_one, album.getName());
 			// Set the artist names
-			mViews.setTextViewText(R.id.app_widget_recents_line_two, artist);
+			mViews.setTextViewText(R.id.app_widget_recents_line_two, album.getArtist());
 			// Set the album art
-			Bitmap bitmap = mFetcher.getCachedArtwork(albumName, artist, id);
+			Bitmap bitmap = mFetcher.getCachedArtwork(album.getName(), album.getArtist(), album.getId());
 			if (bitmap != null) {
 				mViews.setImageViewBitmap(R.id.app_widget_recents_base_image, bitmap);
 			} else {
@@ -131,14 +118,14 @@ public class RecentWidgetService extends RemoteViewsService {
 			}
 			// Open the profile of the touched album
 			Intent profileIntent = new Intent();
-			profileIntent.putExtra(Config.ID, id);
-			profileIntent.putExtra(Config.NAME, albumName);
-			profileIntent.putExtra(Config.ARTIST_NAME, artist);
+			profileIntent.putExtra(Config.ID, album.getId());
+			profileIntent.putExtra(Config.NAME, album.getName());
+			profileIntent.putExtra(Config.ARTIST_NAME, album.getArtist());
 			profileIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
 			// Play the album when the artwork is touched
 			Intent playAlbumIntent = new Intent();
-			playAlbumIntent.putExtra(Config.ID, id);
+			playAlbumIntent.putExtra(Config.ID, album.getId());
 			playAlbumIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbumIntent);
 			return mViews;
@@ -165,18 +152,26 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public void onDataSetChanged() {
-			if (mCursor != null && !mCursor.isClosed()) {
+			albums.clear();
+			Cursor mCursor = CursorFactory.makeRecentCursor(mContext);
+			if (mCursor != null) {
+				if (mCursor.moveToFirst()) {
+					do {
+						long id = mCursor.getLong(0);
+						String albumName = mCursor.getString(1);
+						String artist = mCursor.getString(2);
+						int songCount = mCursor.getInt(3);
+						String year = mCursor.getString(4);
+						albums.add(new Album(id, albumName, artist, songCount, year, true));
+					} while (mCursor.moveToNext());
+				}
 				mCursor.close();
 			}
-			mCursor = CursorFactory.makeRecentCursor(mContext);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
+
 		@Override
 		public void onDestroy() {
-			closeCursor();
 		}
 
 		/**
@@ -194,13 +189,6 @@ public class RecentWidgetService extends RemoteViewsService {
 		@Override
 		public void onCreate() {
 			// Nothing to do
-		}
-
-		private void closeCursor() {
-			if (mCursor != null && !mCursor.isClosed()) {
-				mCursor.close();
-				mCursor = null;
-			}
 		}
 	}
 }

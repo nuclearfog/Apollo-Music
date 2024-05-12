@@ -614,7 +614,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		// Set the artist name
 		mArtistName.setText(MusicUtils.getArtistName());
 		// Set the total time
-		mTotalTime.setText(StringUtils.makeTimeString(this, (int) MusicUtils.duration() / 1000));
+		mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.duration() / 1000));
 		// Set the album art
 		mImageFetcher.loadCurrentArtwork(mAlbumArt);
 		// Set the small artwork

@@ -7,6 +7,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+
+import org.nuclearfog.apollo.model.Song;
+
 /**
  * database for popular tracks with the information how often a track was played
  *
@@ -84,31 +88,22 @@ public class PopularStore extends AppStore {
 	/**
 	 * Used to store song IDs in our database
 	 *
-	 * @param songId     The album's ID
-	 * @param songName   The song name
-	 * @param albumName  The album name
-	 * @param artistName The artist name
-	 * @param duration   Track duration in milliseconds
+	 * @param song song to add
 	 */
-	public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
+	public void addSong(@NonNull Song song) {
 		synchronized (LOCK) {
-			if (songId > 0 && songName != null && albumName != null && artistName != null) {
-				// increment by 1
-				long playCount = getPlayCount(songId) + 1;
-				SQLiteDatabase database = getWritableDatabase();
-				ContentValues values = new ContentValues(6);
-				database.beginTransaction();
-
-				values.put(PopularColumns.ID, songId);
-				values.put(PopularColumns.SONGNAME, songName);
-				values.put(PopularColumns.ALBUMNAME, albumName);
-				values.put(PopularColumns.ARTISTNAME, artistName);
-				values.put(PopularColumns.PLAYCOUNT, playCount);
-				values.put(PopularColumns.DURATION, duration);
-
-				database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
-				commit();
-			}
+			// increment by 1
+			long playCount = getPlayCount(song.getId()) + 1;
+			SQLiteDatabase database = getWritableDatabase();
+			ContentValues values = new ContentValues(6);
+			values.put(PopularColumns.ID, song.getId());
+			values.put(PopularColumns.SONGNAME, song.getName());
+			values.put(PopularColumns.ALBUMNAME, song.getAlbum());
+			values.put(PopularColumns.ARTISTNAME, song.getArtist());
+			values.put(PopularColumns.PLAYCOUNT, playCount);
+			values.put(PopularColumns.DURATION, song.getDuration());
+			database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
+			commit();
 		}
 	}
 

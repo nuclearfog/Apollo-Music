@@ -64,7 +64,6 @@ public class ExcludeStore extends AppStore {
 	public void addIds(Type type, long... ids) {
 		synchronized (LOCK) {
 			SQLiteDatabase database = getWritableDatabase();
-			database.beginTransaction();
 			for (long id : ids) {
 				ContentValues column = new ContentValues(2);
 				column.put(ExcludeTable.ID, id);
@@ -81,7 +80,6 @@ public class ExcludeStore extends AppStore {
 	public void removeIds(Type type, long... ids) {
 		synchronized (LOCK) {
 			SQLiteDatabase database = getWritableDatabase();
-			database.beginTransaction();
 			for (long id : ids) {
 				database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
 			}

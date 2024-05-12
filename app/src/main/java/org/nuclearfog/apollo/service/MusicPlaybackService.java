@@ -55,7 +55,6 @@ import org.nuclearfog.apollo.provider.RecentStore;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.utils.CursorFactory;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
@@ -975,7 +974,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	synchronized void notifyChange(String what) {
 		if (!what.equals(CHANGED_POSITION)) {
 			long audio_id = getAudioId();
-			long album_id = getAlbumId();
 			String album_name = getAlbumName();
 			String artist_name = getArtistName();
 			String song_name = getTrackName();
@@ -995,13 +993,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			switch (what) {
 				case CHANGED_META:
 					// Increase the play count for favorite songs.
-					if (mFavoritesCache.exists(audio_id))
-						mFavoritesCache.addSongId(audio_id, song_name, album_name, artist_name, getDurationMillis());
-					mPopularCache.addSongId(audio_id, song_name, album_name, artist_name, getDurationMillis());
-					// Add the track to the recently played list.
-					String songCount = MusicUtils.getSongCountForAlbum(this, album_id);
-					String release = MusicUtils.getReleaseDateForAlbum(this, album_id);
-					mRecentsCache.addAlbumId(album_id, album_name, artist_name, songCount, release);
+					if (currentSong != null)
+						mPopularCache.addSong(currentSong);
+					if (currentAlbum != null)
+						mRecentsCache.addAlbum(currentAlbum);
 					// set session track information used for notification
 					mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, song_name)
 							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist_name)
@@ -1148,8 +1143,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return The current track ID
 	 */
 	synchronized long getAudioId() {
-		if (mPlayPos >= 0 && mPlayPos < mPlayList.size() && mPlayer.initialized()) {
-			return mPlayList.get(mPlayPos);
+		if (currentSong != null) {
+			return currentSong.getId();
 		}
 		return -1L;
 	}
@@ -1274,13 +1269,12 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * Toggles the current song as a favorite.
 	 */
 	synchronized void toggleFavorite() {
-		if (mFavoritesCache != null) {
-			long trackId = getAudioId();
+		if (mFavoritesCache != null && currentSong != null) {
 			// remove track if exists from the favorites
-			if (mFavoritesCache.exists(trackId)) {
-				mFavoritesCache.removeItem(trackId);
+			if (mFavoritesCache.exists(currentSong.getId())) {
+				mFavoritesCache.removeItem(currentSong.getId());
 			} else {
-				mFavoritesCache.addSongId(getAudioId(), getTrackName(), getAlbumName(), getArtistName(), getDurationMillis());
+				mFavoritesCache.addSongId(currentSong);
 			}
 		}
 	}
@@ -1850,7 +1844,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private long getDurationMillis() {
 		if (currentSong != null) {
-			return currentSong.durationMillis();
+			return currentSong.getDuration();
 		}
 		return -1L;
 	}

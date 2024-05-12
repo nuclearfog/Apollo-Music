@@ -106,38 +106,18 @@ public class FavoritesStore extends AppStore {
 	 */
 	public void addSongId(@NonNull Song mSong) {
 		synchronized (LOCK) {
-			addSongId(mSong.getId(), mSong.getName(), mSong.getAlbum(), mSong.getArtist(), mSong.durationMillis());
-		}
-	}
-
-	/**
-	 * Used to store song IDs in our database
-	 *
-	 * @param songId     The album's ID
-	 * @param songName   The song name
-	 * @param albumName  The album name
-	 * @param artistName The artist name
-	 * @param duration   Track duration in milliseconds
-	 */
-	public void addSongId(long songId, String songName, String albumName, String artistName, long duration) {
-		synchronized (LOCK) {
-			if (songId > 0 && songName != null && albumName != null && artistName != null) {
-				// increment by 1
-				long playCount = getPlayCount(songId) + 1;
-				SQLiteDatabase database = getWritableDatabase();
-				ContentValues values = new ContentValues(6);
-				database.beginTransaction();
-
-				values.put(FavoriteColumns.ID, songId);
-				values.put(FavoriteColumns.SONGNAME, songName);
-				values.put(FavoriteColumns.ALBUMNAME, albumName);
-				values.put(FavoriteColumns.ARTISTNAME, artistName);
-				values.put(FavoriteColumns.PLAYCOUNT, playCount);
-				values.put(FavoriteColumns.DURATION, duration);
-
-				database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
-				commit();
-			}
+			// increment by 1
+			long playCount = getPlayCount(mSong.getId()) + 1;
+			SQLiteDatabase database = getWritableDatabase();
+			ContentValues values = new ContentValues(6);
+			values.put(FavoriteColumns.ID, mSong.getId());
+			values.put(FavoriteColumns.SONGNAME, mSong.getName());
+			values.put(FavoriteColumns.ALBUMNAME, mSong.getAlbum());
+			values.put(FavoriteColumns.ARTISTNAME, mSong.getArtist());
+			values.put(FavoriteColumns.PLAYCOUNT, playCount);
+			values.put(FavoriteColumns.DURATION, mSong.getDuration());
+			database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
+			commit();
 		}
 	}
 

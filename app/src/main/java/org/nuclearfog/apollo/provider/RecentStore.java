@@ -19,6 +19,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 
 /**
@@ -119,29 +120,20 @@ public class RecentStore extends AppStore {
 	/**
 	 * Used to store artist IDs in the database.
 	 *
-	 * @param albumName  The album name.
-	 * @param artistName The artist album name.
-	 * @param songCount  The number of tracks for the album.
-	 * @param albumYear  The year the album was released.
+	 * @param album album to add
 	 */
-	public void addAlbumId(long albumId, String albumName, String artistName, String songCount, String albumYear) {
+	public void addAlbum(Album album) {
 		synchronized (LOCK) {
-			if (albumId > 0 && albumName != null && artistName != null && songCount != null) {
-				SQLiteDatabase database = getWritableDatabase();
-				ContentValues values = new ContentValues(6);
-
-				values.put(RecentStoreColumns.ID, albumId);
-				values.put(RecentStoreColumns.ALBUMNAME, albumName);
-				values.put(RecentStoreColumns.ARTISTNAME, artistName);
-				values.put(RecentStoreColumns.ALBUMSONGCOUNT, songCount);
-				values.put(RecentStoreColumns.ALBUMYEAR, albumYear);
-				values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
-
-				database.beginTransaction();
-				database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-				database.setTransactionSuccessful();
-				database.endTransaction();
-			}
+			SQLiteDatabase database = getWritableDatabase();
+			ContentValues values = new ContentValues(6);
+			values.put(RecentStoreColumns.ID, album.getId());
+			values.put(RecentStoreColumns.ALBUMNAME, album.getName());
+			values.put(RecentStoreColumns.ARTISTNAME, album.getArtist());
+			values.put(RecentStoreColumns.ALBUMSONGCOUNT, album.getTrackCount());
+			values.put(RecentStoreColumns.ALBUMYEAR, album.getRelease());
+			values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
+			database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			commit();
 		}
 	}
 

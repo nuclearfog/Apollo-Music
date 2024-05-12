@@ -111,7 +111,7 @@ public class SongAdapter extends ArrayAdapter<Song> {
 			// Set each song name (line one)
 			holder.mLineOne.setText(song.getName());
 			// Set the song duration (line one, right)
-			holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), song.duration()));
+			holder.mLineOneRight.setText(StringUtils.makeTimeString(getContext(), (int) song.getDuration() / 1000));
 			// Set the album name (line two)
 			holder.mLineTwo.setText(song.getArtist());
 			if (song.isVisible()) {

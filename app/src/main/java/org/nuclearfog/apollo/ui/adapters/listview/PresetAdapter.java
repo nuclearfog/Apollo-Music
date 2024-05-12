@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.AudioPreset;
 
 import java.util.ArrayList;
@@ -32,7 +33,8 @@ public class PresetAdapter extends BaseAdapter {
 			tv = (TextView) convertView;
 		} else {
 			tv = new TextView(parent.getContext());
-			tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			float textSize = parent.getResources().getDimension(R.dimen.text_size_large);
+			tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 		}
 		tv.setText(items.get(position).getName());
 		return tv;

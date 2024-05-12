@@ -697,7 +697,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return True if music is playing, false otherwise
 	 */
 	public boolean isPlaying() {
-		return mIsSupposedToBePlaying || mPlayer.isPlaying();
+		return mIsSupposedToBePlaying;
 	}
 
 	/**

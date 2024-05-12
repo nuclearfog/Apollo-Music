@@ -14,6 +14,12 @@ public class StringUtils {
 	private StringUtils() {
 	}
 
+	/**
+	 * Capitalizes the first character in a string
+	 *
+	 * @param str The string to capitalize
+	 * @return A captitalized string
+	 */
 	public static String capitalize(String str) {
 		return capitalize(str, null);
 	}
@@ -47,23 +53,25 @@ public class StringUtils {
 	/**
 	 * Used to create a formatted time string for the duration of tracks.
 	 *
-	 * @param context The {@link Context} to use.
-	 * @param secs    The track in seconds.
+	 * @param context  The {@link Context} to use.
+	 * @param duration The track in milliseconds.
 	 * @return Duration of a track that's properly formatted.
 	 */
-	public static String makeTimeString(Context context, long secs) {
-		if (secs < 0) {
+	public static String makeTimeString(Context context, long duration) {
+		if (duration < 0) {
 			// invalid time
 			return "--:--";
 		}
-		if (secs == 0) {
+		if (duration <= 500) {
 			// no need to calculate
 			return "0:00";
 		}
-		long min = secs / 60;
+		long sec = duration / 1000;
+		long min = sec / 60;
 		long hour = min / 60;
-		String durationFormat = context.getString(hour == 0 ? R.string.durationformatshort : R.string.durationformatlong);
-		return String.format(durationFormat, hour, min % 60, secs % 60);
+		if (hour > 0)
+			return String.format(context.getString(R.string.durationformatlong), hour, min % 60, sec % 60);
+		return String.format(context.getString(R.string.durationformatshort), hour, min % 60, sec % 60);
 	}
 
 	/**

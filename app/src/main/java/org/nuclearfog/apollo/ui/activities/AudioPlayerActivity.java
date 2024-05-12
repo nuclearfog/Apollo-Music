@@ -464,7 +464,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			if (now - mLastSeekEventTime > 250L) {
 				mLastSeekEventTime = now;
 				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.duration() * progress / 1000L;
+				mPosOverride = MusicUtils.getDurationMillis() * progress / 1000L;
 				MusicUtils.seek(mPosOverride);
 				if (!mFromTouch) {
 					// refreshCurrentTime();
@@ -472,7 +472,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				}
 			} else if (now - mLastShortSeekEventTime > 5L) {
 				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.duration() * progress / 1000L;
+				mPosOverride = MusicUtils.getDurationMillis() * progress / 1000L;
 				refreshCurrentTimeText(mPosOverride);
 			}
 		}
@@ -614,7 +614,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		// Set the artist name
 		mArtistName.setText(MusicUtils.getArtistName());
 		// Set the total time
-		mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.duration() / 1000));
+		mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis()));
 		// Set the album art
 		mImageFetcher.loadCurrentArtwork(mAlbumArt);
 		// Set the small artwork
@@ -722,11 +722,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * @param delta  The long press duration
 	 */
 	private void scanBackward(int repcnt, long delta) {
-		if (MusicUtils.isConnected()) {
+		if (!MusicUtils.isConnected()) {
 			return;
 		}
 		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.position();
+			mStartSeekPos = MusicUtils.getPositionMillis();
 			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
@@ -740,7 +740,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			if (newpos < 0) {
 				// move to previous track
 				MusicUtils.previous(this);
-				long duration = MusicUtils.duration();
+				long duration = MusicUtils.getDurationMillis();
 				mStartSeekPos += duration;
 				newpos += duration;
 			}
@@ -768,7 +768,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			return;
 		}
 		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.position();
+			mStartSeekPos = MusicUtils.getPositionMillis();
 			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
@@ -779,7 +779,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				delta = 50000 + (delta - 5000) * 40;
 			}
 			long newpos = mStartSeekPos + delta;
-			long duration = MusicUtils.duration();
+			long duration = MusicUtils.getDurationMillis();
 			if (newpos >= duration) {
 				// move to next track
 				MusicUtils.next(this);
@@ -803,7 +803,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 *
 	 */
 	private void refreshCurrentTimeText(long pos) {
-		mCurrentTime.setText(StringUtils.makeTimeString(this, (int) pos / 1000));
+		mCurrentTime.setText(StringUtils.makeTimeString(this, pos));
 	}
 
 	/**
@@ -814,12 +814,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			return 500;
 		}
 		try {
-			long pos = mPosOverride < 0 ? MusicUtils.position() : mPosOverride;
-			if (pos >= 0 && MusicUtils.duration() > 0) {
+			long pos = mPosOverride < 0 ? MusicUtils.getPositionMillis() : mPosOverride;
+			if (pos >= 0 && MusicUtils.getDurationMillis() > 0) {
 				refreshCurrentTimeText(pos);
-				int progress = (int) (1000 * pos / MusicUtils.duration());
+				int progress = (int) (1000 * pos / MusicUtils.getDurationMillis());
 				mProgress.setProgress(progress);
-
 				if (mFromTouch) {
 					return 500;
 				} else if (MusicUtils.isPlaying()) {
@@ -844,7 +843,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			if (width == 0) {
 				width = 320;
 			}
-			long smoothrefreshtime = MusicUtils.duration() / width;
+			long smoothrefreshtime = MusicUtils.getDurationMillis() / width;
 			if (smoothrefreshtime > remaining) {
 				return remaining;
 			}

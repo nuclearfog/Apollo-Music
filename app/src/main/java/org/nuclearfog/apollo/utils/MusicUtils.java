@@ -1396,7 +1396,7 @@ public final class MusicUtils {
 	/**
 	 * @return The current position time of the track
 	 */
-	public static long position() {
+	public static long getPositionMillis() {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
@@ -1413,7 +1413,7 @@ public final class MusicUtils {
 	/**
 	 * @return The total duration of the current track
 	 */
-	public static long duration() {
+	public static long getDurationMillis() {
 		IApolloService service = mService;
 		if (service != null) {
 			try {

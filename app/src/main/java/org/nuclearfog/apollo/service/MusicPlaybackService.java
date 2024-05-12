@@ -379,7 +379,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
 		saveQueue(true);
-
 		if (mIsSupposedToBePlaying || mPausedByTransientLossOfFocus) {
 			// Something is currently playing, or will be playing once
 			// an in-progress action requesting audio focus ends, so don't stop
@@ -391,6 +390,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			// Also delay stopping the service if we're transitioning between
 			// tracks.
 		} else if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
+			mIsSupposedToBePlaying = false;
 			scheduleDelayedShutdown();
 			return true;
 		}
@@ -697,7 +697,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @return True if music is playing, false otherwise
 	 */
 	public boolean isPlaying() {
-		return mIsSupposedToBePlaying;
+		return mIsSupposedToBePlaying || mPlayer.isPlaying();
 	}
 
 	/**

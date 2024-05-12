@@ -207,6 +207,7 @@
 	<string name="label_bass_boost">Bass boost</string>
 	<string name="label_reverb">Room size</string>
 	<string name="title_audio_effects">Audio effects</string>
+	<string name="label_preset">Preset:</string>
 
 	<!-- Duration format for duration < 1 hour -->
 	<string name="durationformatshort" translatable="false"><xliff:g id="format">%2$d:%3$02d</xliff:g></string>

@@ -314,12 +314,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private AlarmManager mAlarmManager;
 	private PendingIntent mShutdownIntent;
-	private boolean mShutdownScheduled;
 
-	/**
-	 * used to distinguish between different cards when saving/restoring playlists
-	 */
-	private int mCardId;
 	/**
 	 * Used to know when the service is active
 	 */
@@ -337,16 +332,18 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private boolean mPausedByTransientLossOfFocus = false;
 	/**
-	 * used to chekc if application is running in the foreground
+	 * used to check if application is running in the foreground
 	 */
 	private boolean isForeground = true;
-
+	/**
+	 * used to check if a shutdown of this service is planned after timeout
+	 */
+	private boolean mShutdownScheduled = false;
 	/**
 	 * current song to play
 	 */
 	@Nullable
 	private Song currentSong;
-
 	/**
 	 * current album of the song to play
 	 */
@@ -360,6 +357,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	private int mPrevious = 0;
 	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
+	 /**
+	  * used to distinguish between different cards when saving/restoring playlists
+	  */
+	private int mCardId = -1;
 	private int mMediaMountedCount = 0;
 
 	/**
@@ -701,7 +702,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 *
+	 * called if multimediacard is rejected by user
 	 */
 	public void onEject() {
 		saveQueue(true);
@@ -712,9 +713,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * callback used to notify if an external storage was unmounted
+	 * called if multimedia card was mounted
 	 */
-	public void onUnmount() {
+	public void onMediaMount() {
 		mMediaMountedCount++;
 		getCardId();
 		reloadQueue();
@@ -889,7 +890,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public synchronized void gotoPrev() {
 		if (!mPlayer.busy()) {
 			if (getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
-				mPlayPos = decrementPosition();
+				mPlayPos = decrementPosition(mPlayPos);
 				stop(false);
 				openCurrentAndNext();
 				play();
@@ -946,16 +947,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// restore track information after error
 		else {
 			updateTrackInformation();
-		}
-	}
-
-	/**
-	 * Called to open a new file as the current track and prepare the next for
-	 * playback
-	 */
-	public void openCurrentAndNext() {
-		if (openCurrentTrack()) {
-			setNextTrack(false);
 		}
 	}
 
@@ -1208,6 +1199,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
 	/**
 	 * True if the current track is a "favorite", false otherwise
+	 * // todo  move to another place
 	 */
 	synchronized boolean isFavorite() {
 		if (mFavoritesCache != null) {
@@ -1267,6 +1259,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 
 	/**
 	 * Toggles the current song as a favorite.
+	 * // todo move to another place
 	 */
 	synchronized void toggleFavorite() {
 		if (mFavoritesCache != null && currentSong != null) {
@@ -1583,6 +1576,16 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
+	 * Called to open a new file as the current track and prepare the next for
+	 * playback
+	 */
+	private void openCurrentAndNext() {
+		if (openCurrentTrack()) {
+			setNextTrack(false);
+		}
+	}
+
+	/**
 	 * prepare current track of the queue for playback and update track information
 	 * if an error occurs try the next tracks
 	 */
@@ -1713,25 +1716,24 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * decrement current play position in the queue
 	 *
+	 * @param pos position to decrement
 	 * @return play position
 	 */
-	private int decrementPosition() {
-		int position = mPlayPos;
+	private int decrementPosition(int pos) {
 		if (mShuffleMode == SHUFFLE_NORMAL) {
 			// Go to previously-played track and remove it from the history
 			if (mHistory.isEmpty()) {
-				position = -1;
+				return -1;
 			} else {
-				position = mHistory.removeLast();
+				return mHistory.removeLast();
 			}
 		} else {
-			if (position > 0) {
-				position--;
+			if (pos > 0) {
+				return pos - 1;
 			} else {
-				position = mPlayList.size() - 1;
+				return mPlayList.size() - 1;
 			}
 		}
-		return position;
 	}
 
 	/**

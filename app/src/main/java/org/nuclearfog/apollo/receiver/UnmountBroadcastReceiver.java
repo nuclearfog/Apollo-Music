@@ -31,7 +31,7 @@ public class UnmountBroadcastReceiver extends BroadcastReceiver {
 			if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
 				mService.onEject();
 			} else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-				mService.onUnmount();
+				mService.onMediaMount();
 			}
 		}
 	}

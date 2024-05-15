@@ -214,6 +214,13 @@ public class CursorFactory {
 	};
 
 	/**
+	 * projection for external sd card IDs
+	 */
+	private static final String[] CARD_COLUMNS = {
+			"fsid"
+	};
+
+	/**
 	 * condition to filter empty names
 	 */
 	private static final String GENRE_SELECT = Genres.NAME + "!=''";
@@ -819,6 +826,6 @@ public class CursorFactory {
 	@Nullable
 	public static Cursor makeCardCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
-		return resolver.query(CARD_URI, null, null, null, null);
+		return resolver.query(CARD_URI, CARD_COLUMNS, null, null, null);
 	}
 }

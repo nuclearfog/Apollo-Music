@@ -49,12 +49,12 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
-import org.nuclearfog.apollo.provider.FavoritesStore;
-import org.nuclearfog.apollo.provider.PopularStore;
-import org.nuclearfog.apollo.provider.RecentStore;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
+import org.nuclearfog.apollo.store.PopularStore;
+import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.utils.CursorFactory;
+import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.util.ArrayList;
@@ -301,10 +301,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private RecentStore mRecentsCache;
 	/**
-	 * Favorites database
-	 */
-	private FavoritesStore mFavoritesCache;
-	/**
 	 * most played tracks database
 	 */
 	private PopularStore mPopularCache;
@@ -343,12 +339,12 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * current song to play
 	 */
 	@Nullable
-	private Song currentSong;
+	private volatile Song currentSong;
 	/**
 	 * current album of the song to play
 	 */
 	@Nullable
-	private Album currentAlbum;
+	private volatile Album currentAlbum;
 
 	private int mServiceStartId = -1;
 	private int mShuffleMode = SHUFFLE_NONE;
@@ -357,11 +353,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	private int mPrevious = 0;
 	private int mPlayPos = -1;
 	private int mNextPlayPos = -1;
-	 /**
-	  * used to distinguish between different cards when saving/restoring playlists
-	  */
+	/**
+	 * used to distinguish between different cards when saving/restoring playlists
+	 */
 	private int mCardId = -1;
-	private int mMediaMountedCount = 0;
 
 	/**
 	 * {@inheritDoc}
@@ -417,7 +412,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		super.onCreate();
 		// Initialize the favorites and recents databases
 		mRecentsCache = RecentStore.getInstance(this);
-		mFavoritesCache = FavoritesStore.getInstance(this);
 		mPopularCache = PopularStore.getInstance(this);
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
@@ -716,7 +710,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * called if multimedia card was mounted
 	 */
 	public void onMediaMount() {
-		mMediaMountedCount++;
 		getCardId();
 		reloadQueue();
 		mQueueIsSaveable = true;
@@ -747,11 +740,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song album Name
 	 */
-	public String getAlbumName() {
-		if (currentAlbum != null) {
-			return currentAlbum.getName();
-		}
-		return "";
+	@Nullable
+	public Album getCurrentAlbum() {
+		return currentAlbum;
 	}
 
 	/**
@@ -759,47 +750,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 *
 	 * @return The current song name
 	 */
-	public String getTrackName() {
-		if (currentSong != null) {
-			return currentSong.getName();
-		}
-		return "";
-	}
-
-	/**
-	 * Returns the artist name
-	 *
-	 * @return The current song artist name
-	 */
-	public String getArtistName() {
-		if (currentSong != null) {
-			return currentSong.getArtist();
-		}
-		return "";
-	}
-
-	/**
-	 * Returns the album ID
-	 *
-	 * @return The current song album ID
-	 */
-	public long getAlbumId() {
-		if (currentSong != null) {
-			return currentSong.getAlbumId();
-		}
-		return -1L;
-	}
-
-	/**
-	 * Returns the album ID
-	 *
-	 * @return The current song album ID
-	 */
-	public long getTrackId() {
-		if (currentSong != null) {
-			return currentSong.getId();
-		}
-		return -1L;
+	@Nullable
+	public Song getCurrentSong() {
+		return currentSong;
 	}
 
 	/**
@@ -928,11 +881,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public synchronized void openFile(@NonNull Uri uri) {
 		stop();
 		updateTrackInformation(uri);
-		long id = getTrackId();
 		// check if track is valid
-		if (id != -1L) {
+		if (currentSong != null) {
 			// add at the beginning of the playlist
-			mPlayList.addFirst(id);
+			mPlayList.addFirst(currentSong.getId());
 			mPlayPos = 0;
 			// update metadata
 			notifyChange(CHANGED_META);
@@ -964,10 +916,10 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	synchronized void notifyChange(String what) {
 		if (!what.equals(CHANGED_POSITION)) {
-			long audio_id = getAudioId();
-			String album_name = getAlbumName();
-			String artist_name = getArtistName();
-			String song_name = getTrackName();
+			long audio_id = currentSong != null ? currentSong.getId() : -1;
+			String artist_name = currentSong != null ? currentSong.getArtist() : "";
+			String song_name = currentSong != null ? currentSong.getName() : "";
+			String album_name = currentAlbum != null ? currentAlbum.getName() : "";
 
 			Intent intent = new Intent(what);
 			intent.putExtra("id", audio_id);
@@ -975,7 +927,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			intent.putExtra("album", album_name);
 			intent.putExtra("track", song_name);
 			intent.putExtra("playing", isPlaying());
-			intent.putExtra("isfavorite", isFavorite());
+			intent.putExtra("isfavorite", MusicUtils.isFavorite(this));
 			Intent musicIntent = new Intent(intent);
 			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
 			sendBroadcast(musicIntent);
@@ -986,8 +938,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					// Increase the play count for favorite songs.
 					if (currentSong != null)
 						mPopularCache.addSong(currentSong);
-					if (currentAlbum != null)
+					if (currentAlbum != null) {
 						mRecentsCache.addAlbum(currentAlbum);
+					}
 					// set session track information used for notification
 					mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, song_name)
 							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist_name)
@@ -1016,15 +969,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	synchronized int getAudioSessionId() {
 		return mPlayer.getAudioSessionId();
-	}
-
-	/**
-	 * Indicates if the media storeage device has been mounted or not
-	 *
-	 * @return 1 if Intent.ACTION_MEDIA_MOUNTED is called, 0 otherwise
-	 */
-	int getMediaMountedCount() {
-		return mMediaMountedCount;
 	}
 
 	/**
@@ -1117,30 +1061,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * Returns the artist ID
-	 *
-	 * @return The current song artist ID
-	 */
-	synchronized long getArtistId() {
-		if (currentSong != null) {
-			return currentSong.getArtistId();
-		}
-		return -1L;
-	}
-
-	/**
-	 * Returns the current audio ID
-	 *
-	 * @return The current track ID
-	 */
-	synchronized long getAudioId() {
-		if (currentSong != null) {
-			return currentSong.getId();
-		}
-		return -1L;
-	}
-
-	/**
 	 * Removes all instances of the track with the given ID from the playlist.
 	 *
 	 * @param id The id to be removed
@@ -1198,17 +1118,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	}
 
 	/**
-	 * True if the current track is a "favorite", false otherwise
-	 * // todo  move to another place
-	 */
-	synchronized boolean isFavorite() {
-		if (mFavoritesCache != null) {
-			return mFavoritesCache.exists(getAudioId());
-		}
-		return false;
-	}
-
-	/**
 	 * Sets the repeat mode
 	 *
 	 * @param repeatmode The repeat mode to use
@@ -1227,7 +1136,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * @param position The position to start playback at
 	 */
 	synchronized void open(long[] list, int position) {
-		long oldId = getAudioId();
 		boolean newlist = false;
 		if (mShuffleMode == SHUFFLE_AUTO) {
 			mShuffleMode = SHUFFLE_NORMAL;
@@ -1252,24 +1160,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mHistory.clear();
 		openCurrentAndNext();
 		play();
-		if (oldId != getAudioId()) {
-			notifyChange(CHANGED_META);
-		}
-	}
-
-	/**
-	 * Toggles the current song as a favorite.
-	 * // todo move to another place
-	 */
-	synchronized void toggleFavorite() {
-		if (mFavoritesCache != null && currentSong != null) {
-			// remove track if exists from the favorites
-			if (mFavoritesCache.exists(currentSong.getId())) {
-				mFavoritesCache.removeItem(currentSong.getId());
-			} else {
-				mFavoritesCache.addSongId(currentSong);
-			}
-		}
+		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -1553,17 +1444,19 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void updateAlbumInformation() {
 		currentAlbum = null;
-		Cursor cursor = CursorFactory.makeAlbumCursor(this, getAlbumId());
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
-				String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
-				String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
-				int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
-				String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
-				currentAlbum = new Album(id, name, artist, count, year, true);
+		if (currentSong != null) {
+			Cursor cursor = CursorFactory.makeAlbumCursor(this, currentSong.getAlbumId());
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
+					String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
+					String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
+					int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
+					String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
+					currentAlbum = new Album(id, name, artist, count, year, true);
+				}
+				cursor.close();
 			}
-			cursor.close();
 		}
 	}
 
@@ -1597,7 +1490,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		stop(false);
 		updateTrackInformation();
 		boolean fileOpened = false;
-		long id = getTrackId();
+		long id = currentSong != null ? currentSong.getId() : 0;
 		if (id != -1L) {
 			fileOpened = openTrack(id);
 		}
@@ -1618,7 +1511,7 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					// skip faulty track and try open next track
 					else {
 						updateTrackInformation();
-						id = getTrackId();
+						id = currentSong != null ? currentSong.getId() : 0;
 						if (id != -1L && openTrack(id)) {
 							fileOpened = true;
 						}

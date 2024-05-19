@@ -1,8 +1,8 @@
 package org.nuclearfog.apollo.utils;
 
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static org.nuclearfog.apollo.provider.RecentStore.RecentStoreColumns.NAME;
-import static org.nuclearfog.apollo.provider.RecentStore.RecentStoreColumns.TIMEPLAYED;
+import static org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns.NAME;
+import static org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -24,12 +24,12 @@ import android.provider.MediaStore.MediaColumns;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.provider.FavoritesStore;
-import org.nuclearfog.apollo.provider.FavoritesStore.FavoriteColumns;
-import org.nuclearfog.apollo.provider.PopularStore;
-import org.nuclearfog.apollo.provider.PopularStore.PopularColumns;
-import org.nuclearfog.apollo.provider.RecentStore;
-import org.nuclearfog.apollo.provider.RecentStore.RecentStoreColumns;
+import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.FavoritesStore.FavoriteColumns;
+import org.nuclearfog.apollo.store.PopularStore;
+import org.nuclearfog.apollo.store.PopularStore.PopularColumns;
+import org.nuclearfog.apollo.store.RecentStore;
+import org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns;
 
 import java.util.List;
 

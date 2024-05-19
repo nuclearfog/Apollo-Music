@@ -19,6 +19,7 @@ import java.util.Arrays;
  * A class that represents a genre.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class Genre extends Music implements Comparable<Genre> {
 

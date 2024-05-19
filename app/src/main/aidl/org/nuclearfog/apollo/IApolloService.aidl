@@ -1,42 +1,34 @@
 package org.nuclearfog.apollo;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
+import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.model.Album;
 
-interface IApolloService
-{
+interface IApolloService {
+
     void openFile(in Uri uri);
-    void open(in long [] list, int position);
-    void stop();
+    void open(in long[] list, int position);
     void pause(boolean force);
     void play();
     void gotoNext();
     void gotoPrev();
-    void enqueue(in long [] list, int action);
+    void enqueue(in long[] list, int action);
     void setQueuePosition(int index);
     void setShuffleMode(int shufflemode);
     void setRepeatMode(int repeatmode);
     void moveQueueItem(int from, int to);
-    void toggleFavorite();
     void refresh();
-    boolean isFavorite();
     boolean isPlaying();
-    long [] getQueue();
+    long[] getQueue();
     long duration();
     long position();
     void seek(long pos);
-    long getAudioId();
-    long getArtistId();
-    long getAlbumId();
-    String getArtistName();
-    String getTrackName();
-    String getAlbumName();
-    String getPath();
     int getQueuePosition();
     int getShuffleMode();
     int removeTracks(int first, int last);
     int removeTrack(long id); 
     int getRepeatMode();
-    int getMediaMountedCount();
     int getAudioSessionId();
+    Song getCurrentTrack();
+    Album getCurrentAlbum();
+    String getPath();
 }

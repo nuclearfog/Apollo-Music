@@ -46,6 +46,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
@@ -310,13 +312,15 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.bottom_action_bar_album_art) {
-			if (MusicUtils.getCurrentAudioId() != -1L) {
-				NavUtils.openAlbumProfile(this, MusicUtils.getAlbumName(), MusicUtils.getArtistName(), MusicUtils.getCurrentAlbumId());
+			Album album = MusicUtils.getCurrentAlbum();
+			if (album != null) {
+				NavUtils.openAlbumProfile(this, album);
 			} else {
 				MusicUtils.shuffleAll(this);
 			}
 		} else if (v.getId() == R.id.bottom_action_bar_background) {
-			if (MusicUtils.getCurrentAudioId() != -1L) {
+			Album album = MusicUtils.getCurrentAlbum();
+			if (album != null) {
 				Intent intent = new Intent(this, AudioPlayerActivity.class);
 				startActivity(intent);
 			} else {
@@ -376,12 +380,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * Sets the track name, album name, and album art.
 	 */
 	private void updateBottomActionBarInfo() {
-		// Set the track name
-		mTrackName.setText(MusicUtils.getTrackName());
-		// Set the artist name
-		mArtistName.setText(MusicUtils.getArtistName());
+		Song song = MusicUtils.getCurrentTrack();
+		Album album = MusicUtils.getCurrentAlbum();
+		if (song != null) {
+			// Set the track name
+			mTrackName.setText(song.getName());
+			// Set the artist name
+			mArtistName.setText(song.getArtist());
+		}
 		// Set the album art
-		ApolloUtils.getImageFetcher(this).loadCurrentArtwork(mAlbumArt);
+		ApolloUtils.getImageFetcher(this).loadAlbumImage(album, mAlbumArt);
 	}
 
 	/**

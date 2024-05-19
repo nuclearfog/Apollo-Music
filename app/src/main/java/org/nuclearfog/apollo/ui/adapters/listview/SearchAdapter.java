@@ -106,7 +106,7 @@ public class SearchAdapter extends ArrayAdapter<Music> {
 			// Get the artist name
 			holder.mLineTwo.setText(album.getArtist());
 			// Asynchronously load the album images into the adapter
-			mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+			mImageFetcher.loadAlbumImage(album, holder.mImage);
 			// Highlight the query
 			mHighlighter.setText(holder.mLineOne, album.getName(), mPrefix);
 		} else if (music instanceof Song) {

@@ -1,9 +1,10 @@
 package org.nuclearfog.apollo.service;
 
-
 import android.net.Uri;
 
 import org.nuclearfog.apollo.IApolloService;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 
 import java.lang.ref.WeakReference;
 
@@ -40,17 +41,6 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (mService.get() != null && list != null) {
 			service.open(list, position);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stop() {
-		MusicPlaybackService service = mService.get();
-		if (service != null) {
-			service.stop();
 		}
 	}
 
@@ -124,33 +114,11 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void toggleFavorite() {
-		MusicPlaybackService service = mService.get();
-		if (service != null) {
-			service.toggleFavorite();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void refresh() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
 			service.notifyChange(MusicPlaybackService.ACTION_REFRESH);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isFavorite() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.isFavorite();
-		return false;
 	}
 
 	/**
@@ -212,66 +180,22 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getAudioId() {
+	public Album getCurrentAlbum() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
-			return service.getAudioId();
-		return -1L;
+			return service.getCurrentAlbum();
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getArtistId() {
+	public Song getCurrentTrack() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
-			return service.getArtistId();
-		return -1L;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getAlbumId() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getAlbumId();
-		return -1L;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getArtistName() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getArtistName();
-		return "";
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getTrackName() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getTrackName();
-		return "";
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getAlbumName() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getAlbumName();
-		return "";
+			return service.getCurrentSong();
+		return null;
 	}
 
 	/**
@@ -370,17 +294,6 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.removeTrack(id);
-		return 0;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getMediaMountedCount() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getMediaMountedCount();
 		return 0;
 	}
 

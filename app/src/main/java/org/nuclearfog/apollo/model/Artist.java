@@ -15,6 +15,7 @@ package org.nuclearfog.apollo.model;
  * A class that represents an artist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class Artist extends Music {
 

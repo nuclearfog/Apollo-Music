@@ -35,8 +35,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.GenreLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.GenreLoader;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;

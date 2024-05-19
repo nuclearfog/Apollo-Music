@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * Abstract superclass for all items that may contain images (such as
- * {@link Artist}s, {@link Album}s
+ * {@link ArtistEntry}s, {@link AlbumEntry}s
  *
  * @author Janni Kovacs
  */

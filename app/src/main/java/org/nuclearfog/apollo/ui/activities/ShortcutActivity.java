@@ -25,8 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.SearchLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;

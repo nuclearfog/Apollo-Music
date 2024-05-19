@@ -35,10 +35,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.RecentLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.RecentLoader;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.provider.RecentStore;
+import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -276,7 +276,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		} else {
 			Album selection = mAdapter.getItem(position);
 			if (selection != null) {
-				NavUtils.openAlbumProfile(requireActivity(), selection.getName(), selection.getArtist(), selection.getId());
+				NavUtils.openAlbumProfile(requireActivity(), selection);
 			}
 		}
 	}

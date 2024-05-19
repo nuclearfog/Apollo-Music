@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.SearchActivity;
@@ -56,19 +57,17 @@ public final class NavUtils {
 	/**
 	 * Opens the profile of an album.
 	 *
-	 * @param activity   The {@link Activity} to use.
-	 * @param albumName  The name of the album
-	 * @param artistName The name of the album artist
-	 * @param albumId    The id of the album
+	 * @param activity The {@link Activity} to use.
+	 * @param album    Album to open
 	 */
-	public static void openAlbumProfile(Activity activity, String albumName, String artistName, long albumId) {
+	public static void openAlbumProfile(Activity activity, Album album) {
 		// Create a new bundle to transfer the album info
 		Bundle bundle = new Bundle();
-		bundle.putString(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(activity.getApplicationContext(), albumId));
-		bundle.putString(Config.ARTIST_NAME, artistName);
+		bundle.putString(Config.ALBUM_YEAR, album.getRelease());
+		bundle.putString(Config.ARTIST_NAME, album.getArtist());
 		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
-		bundle.putLong(Config.ID, albumId);
-		bundle.putString(Config.NAME, albumName);
+		bundle.putLong(Config.ID, album.getId());
+		bundle.putString(Config.NAME, album.getName());
 		// Create the intent to launch the profile activity
 		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);

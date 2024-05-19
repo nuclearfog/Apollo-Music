@@ -17,12 +17,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -37,7 +38,6 @@ public class AppWidgetSmall extends AppWidgetBase {
 
 
 	public static final String CMDAPPWIDGETUPDATE = "app_widget_small_update";
-
 
 	/**
 	 * {@inheritDoc}
@@ -70,20 +70,16 @@ public class AppWidgetSmall extends AppWidgetBase {
 	@Override
 	public void performUpdate(MusicPlaybackService service, int[] appWidgetIds) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_small);
-		long albumId = service.getAlbumId();
-		String AlbumName = service.getAlbumName();
-		String trackName = service.getTrackName();
-		String artistName = service.getArtistName();
-		Bitmap bitmap = BitmapUtils.getAlbumArt(service, albumId, AlbumName, artistName);
-		// Set the titles and artwork
-		if (TextUtils.isEmpty(trackName) && TextUtils.isEmpty(artistName)) {
-			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.INVISIBLE);
-		} else {
+		Song song = service.getCurrentSong();
+		Album album = service.getCurrentAlbum();
+		if (song != null && album != null) {
+			Bitmap bitmap = BitmapUtils.getAlbumArt(service, album);
+			// Set the titles and artwork
 			appWidgetView.setViewVisibility(R.id.app_widget_small_info_container, View.VISIBLE);
-			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, trackName);
-			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, artistName);
+			appWidgetView.setTextViewText(R.id.app_widget_small_line_one, song.getName());
+			appWidgetView.setTextViewText(R.id.app_widget_small_line_two, song.getArtist());
+			appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, bitmap);
 		}
-		appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, bitmap);
 		// Set correct drawable for pause state
 		boolean isPlaying = service.isPlaying();
 		if (isPlaying) {

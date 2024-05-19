@@ -27,6 +27,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -173,44 +175,44 @@ public class NotificationHelper {
 	 * Changes the playback controls in and out of a paused state
 	 */
 	private Notification buildNotification() {
-		long albumId = mService.getAlbumId();
-		String AlbumName = mService.getAlbumName();
-		String trackName = mService.getTrackName();
-		String artistName = mService.getArtistName();
-		Bitmap albumArt = BitmapUtils.getAlbumArt(mService, albumId, AlbumName, artistName);
-		// build integrated media control
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
-			// set track information to notification directly
-			notificationBuilder.setContentTitle(trackName);
-			notificationBuilder.setContentText(artistName);
-			notificationBuilder.setLargeIcon(albumArt);
-			// init media control (fallback if not supported by MediaStyle)
-			notificationBuilder.clearActions();
-			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
-			if (mService.isPlaying()) {
-				notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
-			} else {
-				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
+		Album album = mService.getCurrentAlbum();
+		Song song = mService.getCurrentSong();
+		if (album != null && song != null) {
+			Bitmap albumArt = BitmapUtils.getAlbumArt(mService, album);
+			// build integrated media control
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
+				// set track information to notification directly
+				notificationBuilder.setContentTitle(song.getName());
+				notificationBuilder.setContentText(song.getArtist());
+				notificationBuilder.setLargeIcon(albumArt);
+				// init media control (fallback if not supported by MediaStyle)
+				notificationBuilder.clearActions();
+				notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
+				if (mService.isPlaying()) {
+					notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
+				} else {
+					notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
+				}
+				notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+				notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
 			}
-			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
-			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
-		}
-		// build legacy notification
-		else {
-			int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
-			// update small notification view
-			mSmallContent.setTextViewText(R.id.notification_base_line_one, trackName);
-			mSmallContent.setTextViewText(R.id.notification_base_line_two, artistName);
-			mSmallContent.setImageViewBitmap(R.id.notification_base_image, albumArt);
-			mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
-			// update expanded notification view
-			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, trackName);
-			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, AlbumName);
-			mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, artistName);
-			mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, albumArt);
-			mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-			// add view to notification
-			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+			// build legacy notification
+			else {
+				int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
+				// update small notification view
+				mSmallContent.setTextViewText(R.id.notification_base_line_one, song.getName());
+				mSmallContent.setTextViewText(R.id.notification_base_line_two, song.getArtist());
+				mSmallContent.setImageViewBitmap(R.id.notification_base_image, albumArt);
+				mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
+				// update expanded notification view
+				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, song.getName());
+				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, album.getName());
+				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, song.getArtist());
+				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, albumArt);
+				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
+				// add view to notification
+				notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+			}
 		}
 		return notificationBuilder.build();
 	}

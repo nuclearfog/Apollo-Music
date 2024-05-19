@@ -11,14 +11,39 @@
 
 package org.nuclearfog.apollo.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 
 /**
  * A class that represents a song.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class Song extends Music implements Comparable<Song> {
+public class Song extends Music implements Parcelable, Comparable<Song> {
 
+
+	public static final Creator<? extends Song> CREATOR = new Creator<Song>() {
+
+		@Override
+		public Song createFromParcel(Parcel source) {
+			long id = source.readLong();
+			String name = source.readString();
+			String artist = source.readString();
+			String album = source.readString();
+			long duration = source.readLong();
+			boolean visible = source.readInt() == 1;
+			return new Song(id, name, artist, album, duration, visible);
+		}
+
+
+		@Override
+		public Song[] newArray(int size) {
+			return new Song[size];
+		}
+	};
 	/**
 	 * The song artist
 	 */
@@ -207,5 +232,21 @@ public class Song extends Music implements Comparable<Song> {
 					getName().equals(other.getName()) && duration == other.duration && other.playlist_index == playlist_index;
 		}
 		return false;
+	}
+
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
+		dest.writeLong(getId());
+		dest.writeString(getName());
+		dest.writeString(getArtist());
+		dest.writeString(getAlbum());
+		dest.writeLong(getDuration());
+		dest.writeInt(isVisible() ? 1 : 0);
 	}
 }

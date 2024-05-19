@@ -45,7 +45,7 @@ import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.provider.PopularStore;
+import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.ProfileType;

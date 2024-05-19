@@ -47,19 +47,19 @@ import androidx.fragment.app.FragmentActivity;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.NowPlayingCursor;
+import org.nuclearfog.apollo.async.loader.NowPlayingCursor;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
-import org.nuclearfog.apollo.provider.ExcludeStore;
-import org.nuclearfog.apollo.provider.ExcludeStore.Type;
-import org.nuclearfog.apollo.provider.FavoritesStore;
-import org.nuclearfog.apollo.provider.PopularStore;
-import org.nuclearfog.apollo.provider.RecentStore;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.store.ExcludeStore;
+import org.nuclearfog.apollo.store.ExcludeStore.Type;
+import org.nuclearfog.apollo.store.FavoritesStore;
+import org.nuclearfog.apollo.store.PopularStore;
+import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -378,28 +378,12 @@ public final class MusicUtils {
 	/**
 	 * @return The current track name.
 	 */
-	public static String getTrackName() {
+	@Nullable
+	public static Song getCurrentTrack() {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				return service.getTrackName();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @return The current artist name.
-	 */
-	public static String getArtistName() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				return service.getArtistName();
+				return service.getCurrentTrack();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -412,11 +396,12 @@ public final class MusicUtils {
 	/**
 	 * @return The current album name.
 	 */
-	public static String getAlbumName() {
+	@Nullable
+	public static Album getCurrentAlbum() {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				return service.getAlbumName();
+				return service.getCurrentAlbum();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -424,57 +409,6 @@ public final class MusicUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * @return The current album Id.
-	 */
-	public static long getCurrentAlbumId() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				return service.getAlbumId();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return -1L;
-	}
-
-	/**
-	 * @return The current song Id.
-	 */
-	public static long getCurrentAudioId() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				return service.getAudioId();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return -1L;
-	}
-
-	/**
-	 * @return The current artist Id.
-	 */
-	public static long getCurrentArtistId() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				return service.getArtistId();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return -1L;
 	}
 
 	/**
@@ -738,9 +672,9 @@ public final class MusicUtils {
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 				}
-				long currentId = service.getAudioId();
+				Song song = getCurrentTrack();
 				int currentQueuePosition = getQueuePosition();
-				if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
+				if (position != -1 && currentQueuePosition == position && song != null && song.getId() == list[position]) {
 					long[] playlist = getQueue();
 					if (Arrays.equals(list, playlist)) {
 						service.play();
@@ -795,9 +729,9 @@ public final class MusicUtils {
 			}
 			try {
 				service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-				long mCurrentId = service.getAudioId();
+				Song song = getCurrentTrack();
 				int mCurrentQueuePosition = getQueuePosition();
-				if (mCurrentQueuePosition == 0 && mCurrentId == mTrackList[0]) {
+				if (mCurrentQueuePosition == 0 && song != null && song.getId() == mTrackList[0]) {
 					long[] mPlaylist = getQueue();
 					if (Arrays.equals(mTrackList, mPlaylist)) {
 						service.play();
@@ -1123,25 +1057,6 @@ public final class MusicUtils {
 	/**
 	 * @param context The {@link Context} to use.
 	 * @param id      The id of the album.
-	 * @return The song count for an album.
-	 */
-	public static String getSongCountForAlbum(Context context, long id) {
-		String count = "";
-		if (id >= 0) {
-			Cursor cursor = CursorFactory.makeAlbumCursor(context, id);
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					count = cursor.getString(3);
-				}
-				cursor.close();
-			}
-		}
-		return count;
-	}
-
-	/**
-	 * @param context The {@link Context} to use.
-	 * @param id      The id of the album.
 	 * @return The release date for an album.
 	 */
 	public static String getReleaseDateForAlbum(Context context, long id) {
@@ -1176,35 +1091,13 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Toggles the current song as a favorite.
-	 */
-	public static void toggleFavorite() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				service.toggleFavorite();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-	}
-
-	/**
 	 * @return True if the current song is a favorite, false otherwise.
 	 */
-	public static boolean isFavorite() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				return service.isFavorite();
-
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
+	public static boolean isFavorite(Context context) {
+		Song song = getCurrentTrack();
+		if (song != null) {
+			FavoritesStore mFavoritesCache = FavoritesStore.getInstance(context);
+			return mFavoritesCache.exists(song.getId());
 		}
 		return false;
 	}

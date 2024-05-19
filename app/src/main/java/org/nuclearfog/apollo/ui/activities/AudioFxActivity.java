@@ -25,8 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.PresetLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.PresetLoader;
 import org.nuclearfog.apollo.model.AudioPreset;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.ui.adapters.listview.PresetAdapter;
@@ -57,6 +57,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	private Switch enableFx;
 	private SeekBar bassBoost, reverb;
 	private Spinner presetSelector;
+	private View presetLabel;
 	private EqualizerAdapter eqAdapter;
 	private PresetAdapter presetAdapter;
 	private AudioEffects audioEffects;
@@ -69,6 +70,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		setContentView(R.layout.activity_audiofx);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
+		presetLabel = findViewById(R.id.audiofx_preset_label);
 		presetSelector = findViewById(R.id.audiofx_preset);
 		enableFx = findViewById(R.id.audiofx_enable);
 		bassBoost = findViewById(R.id.audiofx_bass_boost);
@@ -231,6 +233,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		reverb.setEnabled(enable);
 		bassBoost.setEnabled(enable);
 		eqAdapter.setEnabled(enable);
+		presetLabel.setEnabled(enable);
+		presetSelector.setEnabled(enable);
 	}
 
 	/**

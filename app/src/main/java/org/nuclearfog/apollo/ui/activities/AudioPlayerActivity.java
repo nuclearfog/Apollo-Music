@@ -57,9 +57,12 @@ import androidx.viewpager.widget.ViewPager;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
 import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
@@ -371,7 +374,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
 		// Add fav icon
-		mResources.setFavoriteIcon(favorite);
+		Song song = MusicUtils.getCurrentTrack();
+		if (song != null) {
+			boolean exits = FavoritesStore.getInstance(this).exists(song.getId());
+			mResources.setFavoriteIcon(favorite, exits);
+		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -391,11 +398,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			refreshQueue();
 		} else if (vId == R.id.menu_favorite) {
 			// Toggle the current track as a favorite and update the menu item
-			MusicUtils.toggleFavorite();
-			invalidateOptionsMenu();
+			Song song = MusicUtils.getCurrentTrack();
+			if (song != null) {
+				FavoritesStore.getInstance(this).addItem(song);
+				invalidateOptionsMenu();
+			}
 		} else if (vId == R.id.menu_audio_player_ringtone) {
 			// Set the current track as a ringtone
-			MusicUtils.setRingtone(this, MusicUtils.getCurrentAudioId());
+			Song song = MusicUtils.getCurrentTrack();
+			if (song != null) {
+				MusicUtils.setRingtone(this, song.getId());
+			}
 		} else if (vId == R.id.menu_audio_player_share) {
 			// Share the current meta data
 			shareCurrentTrack();
@@ -412,8 +425,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			NavUtils.openSettings(this);
 		} else if (vId == R.id.menu_audio_player_delete) {
 			// Delete current song
-			long[] ids = {MusicUtils.getCurrentAudioId()};
-			MusicUtils.openDeleteDialog(this, MusicUtils.getTrackName(), ids);
+			Song currentSong = MusicUtils.getCurrentTrack();
+			if (currentSong != null) {
+				long[] ids = {currentSong.getId()};
+				MusicUtils.openDeleteDialog(this, currentSong.getName(), ids);
+			}
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
@@ -528,10 +544,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public void onClick(@NonNull View v) {
 		if (v.getId() == R.id.audio_player_artist_name || v.getId() == R.id.audio_player_track_name) {
-			String albumname = MusicUtils.getAlbumName();
-			String artistname = MusicUtils.getArtistName();
-			long albumId = MusicUtils.getCurrentAlbumId();
-			NavUtils.openAlbumProfile(this, albumname, artistname, albumId);
+			Album album = MusicUtils.getCurrentAlbum();
+			if (album != null) {
+				NavUtils.openAlbumProfile(this, album);
+			}
 		}
 		// Show the queue, hide the artwork
 		else if (v.getId() == R.id.audio_player_switch_queue) {
@@ -609,18 +625,22 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Sets the track name, album name, and album art.
 	 */
 	private void updateNowPlayingInfo() {
-		// Set the track name
-		mTrackName.setText(MusicUtils.getTrackName());
-		// Set the artist name
-		mArtistName.setText(MusicUtils.getArtistName());
-		// Set the total time
-		mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis()));
-		// Set the album art
-		mImageFetcher.loadCurrentArtwork(mAlbumArt);
-		// Set the small artwork
-		mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
-		// Update the current time
-		queueNextRefresh(1);
+		Song song = MusicUtils.getCurrentTrack();
+		Album album = MusicUtils.getCurrentAlbum();
+		if (song != null && album != null) {
+			// Set the track name
+			mTrackName.setText(song.getName());
+			// Set the artist name
+			mArtistName.setText(song.getArtist());
+			// Set the total time
+			mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis()));
+			// Set the album art
+			mImageFetcher.loadAlbumImage(album, mAlbumArt);
+			// Set the small artwork
+			mImageFetcher.loadAlbumImage(album, mAlbumArtSmall);
+			// Update the current time
+			queueNextRefresh(1);
+		}
 	}
 
 	/**

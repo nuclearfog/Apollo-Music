@@ -34,8 +34,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.MusicSearchLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.MusicSearchLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Music;
@@ -380,8 +380,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		}
 		// If it's an album, open the album profile
 		else if (music instanceof Album) {
-			Album album = (Album) music;
-			NavUtils.openAlbumProfile(this, album.getName(), album.getArtist(), album.getId());
+			NavUtils.openAlbumProfile(this, (Album) music);
 		}
 		// If it's a song, play it and leave
 		else if (music instanceof Song) {

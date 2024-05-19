@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.provider.RecentStore;
+import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 

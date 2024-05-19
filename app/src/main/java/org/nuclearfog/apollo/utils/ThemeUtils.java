@@ -75,11 +75,12 @@ public class ThemeUtils {
 	 * Sets the {@link MenuItem} icon for the favorites action.
 	 *
 	 * @param favorite The favorites action.
+	 * @param enable   true to enable favorite icon
 	 */
-	public void setFavoriteIcon(MenuItem favorite) {
+	public void setFavoriteIcon(MenuItem favorite, boolean enable) {
 		Drawable favIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_action_favorite, null);
 		if (favIcon != null) {
-			if (MusicUtils.isFavorite()) {
+			if (enable) {
 				favIcon.mutate().setColorFilter(resources.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
 			}
 			favorite.setIcon(favIcon);

@@ -35,8 +35,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AlbumLoader;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -264,7 +264,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		} else {
 			Album selectedAlbum = mAdapter.getItem(position);
 			if (selectedAlbum != null) {
-				NavUtils.openAlbumProfile(requireActivity(), selectedAlbum.getName(), selectedAlbum.getArtist(), selectedAlbum.getId());
+				NavUtils.openAlbumProfile(requireActivity(), selectedAlbum);
 			}
 		}
 	}
@@ -297,12 +297,14 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
-				long albumId = MusicUtils.getCurrentAlbumId();
-				for (int i = 0; i < mAdapter.getCount(); i++) {
-					Album album = mAdapter.getItem(i);
-					if (album != null && album.getId() == albumId) {
-						mList.setSelection(i);
-						break;
+				Album current = MusicUtils.getCurrentAlbum();
+				if (current != null) {
+					for (int i = 0; i < mAdapter.getCount(); i++) {
+						Album item = mAdapter.getItem(i);
+						if (item != null && item.getId() == current.getId()) {
+							mList.setSelection(i);
+							break;
+						}
 					}
 				}
 				break;

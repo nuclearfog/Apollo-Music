@@ -11,11 +11,11 @@
 
 package org.nuclearfog.apollo.model;
 
-
 /**
  * A class that represents a playlist.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class Playlist extends Music {
 

@@ -11,12 +11,39 @@
 
 package org.nuclearfog.apollo.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 /**
  * A class that represents an album.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class Album extends Music {
+public class Album extends Music implements Parcelable {
+
+
+	public static final Creator<? extends Album> CREATOR = new Creator<Album>() {
+
+		@Override
+		public Album createFromParcel(Parcel source) {
+			long id = source.readLong();
+			String name = source.readString();
+			boolean visible = source.readInt() == 1;
+			String artist = source.readString();
+			int count = source.readInt();
+			String release = source.readString();
+			return new Album(id, name, artist, count, release, visible);
+		}
+
+
+		@Override
+		public Album[] newArray(int size) {
+			return new Album[size];
+		}
+	};
 
 	/**
 	 * The album artist
@@ -32,6 +59,7 @@ public class Album extends Music {
 	 * The year the album was released
 	 */
 	private String mYear = "";
+
 
 	/**
 	 * Constructor of <code>Album</code>
@@ -77,6 +105,23 @@ public class Album extends Music {
 	 */
 	public String getRelease() {
 		return mYear;
+	}
+
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+
+	@Override
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
+		dest.writeLong(getId());
+		dest.writeString(getName());
+		dest.writeInt(isVisible() ? 1 : 0);
+		dest.writeString(getArtist());
+		dest.writeInt(getTrackCount());
+		dest.writeString(getRelease());
 	}
 
 	/**

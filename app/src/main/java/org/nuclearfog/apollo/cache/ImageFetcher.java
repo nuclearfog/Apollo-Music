@@ -24,12 +24,12 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.lastfm.Album;
-import org.nuclearfog.apollo.lastfm.Artist;
+import org.nuclearfog.apollo.lastfm.AlbumEntry;
+import org.nuclearfog.apollo.lastfm.ArtistEntry;
 import org.nuclearfog.apollo.lastfm.ImageSize;
 import org.nuclearfog.apollo.lastfm.MusicEntry;
+import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 import java.io.BufferedInputStream;
@@ -234,6 +234,14 @@ public class ImageFetcher extends ImageWorker {
 		return inSampleSize;
 	}
 
+
+	@Nullable
+	public static String generateAlbumCacheKey(@Nullable Album album) {
+		if (album != null)
+			return generateAlbumCacheKey(album.getName(), album.getArtist());
+		return null;
+	}
+
 	/**
 	 * Generates key used by album art cache. It needs both album name and artist name
 	 * to let to select correct image for the case when there are two albums with the
@@ -244,10 +252,9 @@ public class ImageFetcher extends ImageWorker {
 	 */
 	@Nullable
 	public static String generateAlbumCacheKey(String albumName, String artistName) {
-		if (albumName == null || artistName == null) {
-			return null;
-		}
-		return albumName + "_" + artistName + "_" + ALBUM_ART_SUFFIX;
+		if (albumName != null && artistName != null)
+			return albumName + "_" + artistName + "_" + ALBUM_ART_SUFFIX;
+		return null;
 	}
 
 	/**
@@ -276,7 +283,7 @@ public class ImageFetcher extends ImageWorker {
 		switch (imageType) {
 			case ARTIST:
 				if (!TextUtils.isEmpty(artistName) && PreferenceUtils.getInstance(mContext).downloadMissingArtistImages()) {
-					Artist artist = Artist.getInfo(getContext(), artistName);
+					ArtistEntry artist = ArtistEntry.getInfo(getContext(), artistName);
 					if (artist != null) {
 						return getBestImage(artist);
 					}
@@ -286,9 +293,9 @@ public class ImageFetcher extends ImageWorker {
 			case ALBUM:
 				if (!TextUtils.isEmpty(artistName) && !TextUtils.isEmpty(albumName)
 						&& PreferenceUtils.getInstance(mContext).downloadMissingArtwork()) {
-					Artist correction = Artist.getCorrection(mContext, artistName);
+					ArtistEntry correction = ArtistEntry.getCorrection(mContext, artistName);
 					if (correction != null) {
-						Album album = Album.getInfo(getContext(), correction.getName(), albumName);
+						AlbumEntry album = AlbumEntry.getInfo(getContext(), correction.getName(), albumName);
 						if (album != null) {
 							return getBestImage(album);
 						}
@@ -302,17 +309,17 @@ public class ImageFetcher extends ImageWorker {
 	/**
 	 * Used to fetch album images.
 	 */
-	public void loadAlbumImage(String artistName, String albumName, long albumId, ImageView... imageViews) {
-		String key = generateAlbumCacheKey(albumName, artistName);
-		loadImage(key, artistName, albumName, albumId, ImageType.ALBUM, imageViews);
+	public void loadAlbumImage(@Nullable Album album, ImageView... imageViews) {
+		if (album != null) {
+			loadAlbumImage(album.getArtist(), album.getName(), album.getId(), imageViews);
+		} else {
+			setDefaultImage(imageViews);
+		}
 	}
 
-	/**
-	 * Used to fetch the current artwork.
-	 */
-	public void loadCurrentArtwork(ImageView imageView) {
-		String key = generateAlbumCacheKey(MusicUtils.getAlbumName(), MusicUtils.getArtistName());
-		loadImage(key, MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(), ImageType.ALBUM, imageView);
+	public void loadAlbumImage(String artist, String album, long id, ImageView... imageViews) {
+		String key = generateAlbumCacheKey(album, artist);
+		loadImage(key, artist, album, id, ImageType.ALBUM, imageViews);
 	}
 
 	/**
@@ -352,14 +359,12 @@ public class ImageFetcher extends ImageWorker {
 	}
 
 	/**
-	 * @param keyAlbum  The key (album name) used to find the album art to return
-	 * @param keyArtist The key (artist name) used to find the album art to return
-	 * @param keyId     The key (album id) used to find the album art to return
+	 * @param album Album to load artwork from
 	 */
-	public Bitmap getCachedArtwork(String keyAlbum, String keyArtist, long keyId) {
-		if (mImageCache != null) {
-			String key = generateAlbumCacheKey(keyAlbum, keyArtist);
-			return mImageCache.getCachedArtwork(mContext, key, keyId);
+	public Bitmap getCachedArtwork(@Nullable Album album) {
+		if (mImageCache != null && album != null) {
+			String key = generateAlbumCacheKey(album);
+			return mImageCache.getCachedArtwork(mContext, key, album.getId());
 		}
 		return getDefaultArtwork();
 	}
@@ -368,23 +373,18 @@ public class ImageFetcher extends ImageWorker {
 	 * Finds cached or downloads album art. Used in {@link MusicPlaybackService}
 	 * to set the current album art in the notification and lock screen
 	 *
-	 * @param albumName  The name of the current album
-	 * @param albumId    The ID of the current album
-	 * @param artistName The album artist in case we should have to download
-	 *                   missing artwork
+	 * @param album album to load the artwork from
 	 * @return The album art as an {@link Bitmap}
 	 */
 	@Nullable
-	public Bitmap getArtwork(String albumName, long albumId, String artistName) {
+	public Bitmap getArtwork(Album album) {
 		// Check the disk cache
 		Bitmap artwork = null;
-		if (mImageCache != null) {
-			if (albumName != null) {
-				artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(albumName, artistName));
-			}
-			if (artwork == null && albumId >= 0) {
+		if (mImageCache != null && album != null) {
+			artwork = mImageCache.getBitmapFromDiskCache(generateAlbumCacheKey(album));
+			if (artwork == null) {
 				// Check for local artwork
-				artwork = mImageCache.getArtworkFromFile(mContext, albumId);
+				artwork = mImageCache.getArtworkFromFile(mContext, album.getId());
 			}
 		}
 		if (artwork == null) {

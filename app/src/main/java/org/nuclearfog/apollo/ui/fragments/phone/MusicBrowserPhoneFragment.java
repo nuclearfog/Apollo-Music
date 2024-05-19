@@ -27,6 +27,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
 import org.nuclearfog.apollo.ui.fragments.AlbumFragment;
 import org.nuclearfog.apollo.ui.fragments.ArtistFragment;
@@ -101,17 +103,6 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// Get the preferences
-		mPreferences = PreferenceUtils.getInstance(requireContext());
-		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		// The View for the fragment's UI
 		View rootView = inflater.inflate(R.layout.fragment_music_browser_phone, container, false);
@@ -119,6 +110,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		MusicBrowserAdapter adapter = new MusicBrowserAdapter(requireContext(), getChildFragmentManager());
 		// Initialize the ViewPager
 		mViewPager = rootView.findViewById(R.id.fragment_home_phone_pager);
+		// Get the preferences
+		mPreferences = PreferenceUtils.getInstance(requireContext());
+		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
+		// Initialze the theme resources
+		mResources = new ThemeUtils(requireContext());
 		// Attach the adapter
 		mViewPager.setAdapter(adapter);
 		// Offscreen pager loading limit
@@ -133,21 +129,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		pageIndicator.setTextColor(ResourcesCompat.getColor(getResources(), R.color.tpi_unselected_text_color, null));
 		// Attach the ViewPager
 		pageIndicator.setViewPager(mViewPager);
+		// Enable the options menu
+		setHasOptionsMenu(true);
 		// Scroll to the current artist, album, or song
 		pageIndicator.setOnCenterItemClickListener(this);
 		return rootView;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		// Initialze the theme resources
-		mResources = new ThemeUtils(requireActivity());
-		// Enable the options menu
-		setHasOptionsMenu(true);
 	}
 
 	/**
@@ -171,7 +157,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		if (visibility != null) {
 			visibility.setChecked(mPreferences.getExcludeTracks());
 		}
-		mResources.setFavoriteIcon(favorite);
+		Song song = MusicUtils.getCurrentTrack();
+		if (song != null) {
+			boolean isFavorite = FavoritesStore.getInstance(requireContext()).exists(song.getId());
+			mResources.setFavoriteIcon(favorite, isFavorite);
+		}
 	}
 
 	/**
@@ -225,8 +215,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		}
 		// Toggle the current track as a favorite and update the menu item
 		else if (item.getItemId() == R.id.menu_favorite) {
-			MusicUtils.toggleFavorite();
-			requireActivity().invalidateOptionsMenu();
+			Song song = MusicUtils.getCurrentTrack();
+			if (song != null) {
+				FavoritesStore.getInstance(requireContext()).addItem(song);
+				requireActivity().invalidateOptionsMenu();
+			}
 		}
 		// sort track/album/artist list alphabetical
 		else if (item.getItemId() == R.id.menu_sort_by_az) {

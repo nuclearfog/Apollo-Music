@@ -35,9 +35,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.ArtistLoader;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.ArtistLoader;
 import org.nuclearfog.apollo.model.Artist;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -299,12 +300,14 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
-				long artistId = MusicUtils.getCurrentArtistId();
-				for (int i = 0; i < mAdapter.getCount(); i++) {
-					Artist artist = mAdapter.getItem(i);
-					if (artist != null && artist.getId() == artistId) {
-						mList.setSelection(i);
-						break;
+				Song song = MusicUtils.getCurrentTrack();
+				if (song != null) {
+					for (int i = 0; i < mAdapter.getCount(); i++) {
+						Artist artist = mAdapter.getItem(i);
+						if (artist != null && artist.getId() == song.getArtistId()) {
+							mList.setSelection(i);
+							break;
+						}
 					}
 				}
 				break;

@@ -33,11 +33,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.NowPlayingCursor;
-import org.nuclearfog.apollo.loaders.QueueLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.NowPlayingCursor;
+import org.nuclearfog.apollo.async.loader.QueueLoader;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.provider.FavoritesStore;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -228,7 +228,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireActivity()).addSongId(selectedSong);
+					FavoritesStore.getInstance(requireActivity()).addItem(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:

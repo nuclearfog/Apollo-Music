@@ -129,10 +129,7 @@ public abstract class ImageWorker {
 	protected void loadImage(String key, String artistName, String albumName, long albumId, ImageType imageType, ImageView... imageviews) {
 		if (key != null && mImageCache != null && imageviews.length > 0) {
 			// reset artwork
-			imageviews[0].setImageResource(R.drawable.default_artwork);
-			if (imageviews.length > 1) {
-				imageviews[1].setImageResource(0);
-			}
+			setDefaultImage(imageviews);
 			// First, check the cache for the image
 			Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
 			if (lruBitmap != null) {
@@ -151,6 +148,16 @@ public abstract class ImageWorker {
 				imageviews[0].setTag(asyncTag);
 				asyncTag.run(artistName, albumName, albumId);
 			}
+		}
+	}
+
+	/**
+	 * set default artwork
+	 */
+	protected void setDefaultImage(ImageView... imageviews) {
+		imageviews[0].setImageResource(R.drawable.default_artwork);
+		if (imageviews.length > 1) {
+			imageviews[1].setImageResource(0);
 		}
 	}
 

@@ -28,10 +28,10 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.PlaylistSongLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.provider.FavoritesStore;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
@@ -164,7 +164,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addSongId(mSong);
+					FavoritesStore.getInstance(requireContext()).addItem(mSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
@@ -258,11 +258,13 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	 */
 	@Override
 	protected void moveToCurrent() {
-		long trackId = MusicUtils.getCurrentAudioId();
-		for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-			if (mAdapter.getItemId(pos) == trackId) {
-				scrollTo(pos);
-				break;
+		Song song = MusicUtils.getCurrentTrack();
+		if (song != null) {
+			for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+				if (mAdapter.getItemId(pos) == song.getId()) {
+					scrollTo(pos);
+					break;
+				}
 			}
 		}
 	}

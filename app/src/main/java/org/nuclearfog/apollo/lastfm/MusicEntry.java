@@ -24,7 +24,7 @@ package org.nuclearfog.apollo.lastfm;
 import androidx.annotation.NonNull;
 
 /**
- * <code>MusicEntry</code> is the abstract superclass for{@link Artist} and {@link Album}.
+ * <code>MusicEntry</code> is the abstract superclass for{@link ArtistEntry} and {@link AlbumEntry}.
  * It encapsulates data and provides methods used in all subclasses, for example: name, playcount, images and more.
  *
  * @author Janni Kovacs

@@ -89,7 +89,7 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
 			// Set the artist name (line two)
 			holder.mLineTwo.setText(album.getArtist());
 			// Asynchronously load the album images into the adapter
-			mImageFetcher.loadAlbumImage(album.getArtist(), album.getName(), album.getId(), holder.mImage);
+			mImageFetcher.loadAlbumImage(album, holder.mImage);
 			// List view only items
 			if (mLoadExtraData) {
 				// Set the number of songs (line three)

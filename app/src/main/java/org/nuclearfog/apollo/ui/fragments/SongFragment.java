@@ -33,10 +33,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.loaders.SongLoader;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.provider.FavoritesStore;
+import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -209,7 +209,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addSongId(selectedSong);
+					FavoritesStore.getInstance(requireContext()).addItem(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
@@ -282,11 +282,13 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				// current unique track ID
-				long trackId = MusicUtils.getCurrentAudioId();
-				for (int pos = 0; pos < mAdapter.getCount(); pos++) {
-					if (mAdapter.getItemId(pos) == trackId) {
-						mList.setSelection(pos);
-						break;
+				Song song = MusicUtils.getCurrentTrack();
+				if (song != null) {
+					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
+						if (mAdapter.getItemId(pos) == song.getId()) {
+							mList.setSelection(pos);
+							break;
+						}
 					}
 				}
 				break;

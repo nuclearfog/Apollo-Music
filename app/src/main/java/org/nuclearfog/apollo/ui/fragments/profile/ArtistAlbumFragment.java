@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.loaders.ArtistAlbumLoader;
-import org.nuclearfog.apollo.loaders.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.ArtistAlbumLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAlbumAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
@@ -103,7 +103,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 			if (pos > 0) {
 				Album album = mAdapter.getItem(pos);
 				if (album != null) {
-					NavUtils.openAlbumProfile(requireActivity(), album.getName(), album.getArtist(), album.getId());
+					NavUtils.openAlbumProfile(requireActivity(), album);
 					requireActivity().finish();
 				}
 			}

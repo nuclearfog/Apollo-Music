@@ -37,18 +37,9 @@ import java.util.List;
  * {@link #getAlbumName(String)}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class RecentStore extends AppStore {
-
-	/**
-	 * column projection of the RECENT table
-	 */
-	private static final String[] RECENT_PROJECTION = {
-			RecentStoreColumns.ID,
-			RecentStoreColumns.ALBUMNAME,
-			RecentStoreColumns.ARTISTNAME,
-			RecentStoreColumns.TIMEPLAYED
-	};
 
 	/**
 	 * SQL query to create table with recently listened albums
@@ -62,9 +53,9 @@ public class RecentStore extends AppStore {
 			+ RecentStoreColumns.ALBUMYEAR + " TEXT);";
 
 	/**
-	 * projection of recent tracks
+	 * column projection of recent tracks
 	 */
-	private static final String[] RECENT_COLUMNS = {
+	private static final String[] COLUMNS = {
 			RecentStoreColumns.ID,
 			RecentStoreColumns.ALBUMNAME,
 			RecentStoreColumns.ARTISTNAME,
@@ -87,11 +78,6 @@ public class RecentStore extends AppStore {
 	 * default sort order
 	 */
 	private static final String RECENT_ORDER = RecentStoreColumns.TIMEPLAYED + " DESC";
-
-	/**
-	 * condition to filter only valid recent albums
-	 */
-	private static final String RECENT_SELECT = RecentStoreColumns.ID + ">=0";
 
 	/**
 	 * Name of database file
@@ -172,9 +158,9 @@ public class RecentStore extends AppStore {
 	public synchronized String getAlbumName(String artistName) {
 		String result = null;
 		if (!TextUtils.isEmpty(artistName)) {
-			String[] having = {artistName};
+			String[] args = {artistName};
 			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME, having, null, null, RECENT_ORDER);
+			Cursor cursor = database.query(RecentStoreColumns.NAME, COLUMNS, RECENT_SELECT_NAME, args, null, null, RECENT_ORDER);
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					result = cursor.getString(1);
@@ -190,17 +176,17 @@ public class RecentStore extends AppStore {
 	 */
 	public synchronized List<Album> getRecentAlbums() {
 		SQLiteDatabase database = getReadableDatabase();
-		Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_COLUMNS, RECENT_SELECT, null, null, null, RECENT_ORDER);
+		Cursor cursor = database.query(RecentStoreColumns.NAME, COLUMNS, null, null, null, null, RECENT_ORDER);
 		List<Album> result = new LinkedList<>();
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
 					long id = cursor.getLong(0);
-					String albumName = cursor.getString(1);
+					String name = cursor.getString(1);
 					String artist = cursor.getString(2);
-					int songCount = cursor.getInt(3);
+					int count = cursor.getInt(3);
 					String year = cursor.getString(4);
-					Album album = new Album(id, albumName, artist, songCount, year, true);
+					Album album = new Album(id, name, artist, count, year, true);
 					result.add(album);
 				} while (cursor.moveToNext());
 			}

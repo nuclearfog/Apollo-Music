@@ -27,19 +27,9 @@ import java.util.List;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class FavoritesStore extends AppStore {
-
-	/**
-	 * column projection of favorite table
-	 */
-	private static final String[] FAV_COLUMNS = {
-			FavoriteColumns.ID,
-			FavoriteColumns.SONGNAME,
-			FavoriteColumns.ALBUMNAME,
-			FavoriteColumns.ARTISTNAME,
-			FavoriteColumns.PLAYCOUNT
-	};
 
 	/**
 	 * query to create favorite table
@@ -55,13 +45,13 @@ public class FavoritesStore extends AppStore {
 	/**
 	 * Definition of the Columns to get from database
 	 */
-	private static final String[] FAVORITE_COLUMNS = {
+	private static final String[] COLUMNS = {
 			FavoriteColumns.ID,
 			FavoriteColumns.SONGNAME,
 			FavoriteColumns.ALBUMNAME,
 			FavoriteColumns.ARTISTNAME,
-			FavoriteColumns.PLAYCOUNT,
-			FavoriteColumns.DURATION
+			FavoriteColumns.DURATION,
+			FavoriteColumns.PLAYCOUNT
 	};
 
 	/**
@@ -166,16 +156,16 @@ public class FavoritesStore extends AppStore {
 	public synchronized List<Song> getFavorites() {
 		List<Song> result = new LinkedList<>();
 		SQLiteDatabase data = getReadableDatabase();
-		Cursor cursor = data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
+		Cursor cursor = data.query(FavoriteColumns.NAME, COLUMNS, null, null, null, null, FAV_ORDER);
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
 					long id = cursor.getLong(0);
-					String songName = cursor.getString(1);
-					String artist = cursor.getString(3);
+					String name = cursor.getString(1);
 					String album = cursor.getString(2);
-					long duration = cursor.getLong(5);
-					Song song = new Song(id, songName, artist, album, duration);
+					String artist = cursor.getString(3);
+					long duration = cursor.getLong(4);
+					Song song = new Song(id, name, artist, album, duration);
 					result.add(song);
 				} while (cursor.moveToNext());
 			}
@@ -193,12 +183,12 @@ public class FavoritesStore extends AppStore {
 	private long getPlayCount(long songId) {
 		long result = 0;
 		if (songId >= 0) {
-			String[] having = {Long.toString(songId)};
+			String[] args = {Long.toString(songId)};
 			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(FavoriteColumns.NAME, FAV_COLUMNS, FAVORITE_SELECT, having, null, null, null, null);
+			Cursor cursor = database.query(FavoriteColumns.NAME, COLUMNS, FAVORITE_SELECT, args, null, null, null, null);
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
-					result = cursor.getLong(4);
+					result = cursor.getLong(5);
 				}
 				cursor.close();
 			}

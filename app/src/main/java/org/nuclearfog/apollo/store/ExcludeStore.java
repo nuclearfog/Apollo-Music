@@ -29,6 +29,13 @@ public class ExcludeStore extends AppStore {
 	private static final String EXCLUDE_SELECT_TYPE = ExcludeTable.TYPE + "=?";
 
 	/**
+	 * select columns
+	 */
+	private static final String[] COLUMNS = {
+			ExcludeTable.ID
+	};
+
+	/**
 	 * database filename
 	 */
 	private static final String DB_NAME = "exclude.db";
@@ -86,7 +93,8 @@ public class ExcludeStore extends AppStore {
 	public synchronized void removeIds(Type type, long... ids) {
 		SQLiteDatabase database = getWritableDatabase();
 		for (long id : ids) {
-			database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
+			String[] args = {Long.toString(id), Integer.toString(type.id)};
+			database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, args);
 		}
 		commit();
 	}
@@ -100,7 +108,8 @@ public class ExcludeStore extends AppStore {
 	public synchronized Set<Long> getIds(Type type) {
 		Set<Long> result = new TreeSet<>();
 		SQLiteDatabase database = getReadableDatabase();
-		Cursor cursor = database.query(ExcludeTable.NAME, new String[]{ExcludeTable.ID}, EXCLUDE_SELECT_TYPE, new String[]{Integer.toString(type.id)}, null, null, null);
+		String[] args = {Integer.toString(type.id)};
+		Cursor cursor = database.query(ExcludeTable.NAME, COLUMNS, EXCLUDE_SELECT_TYPE, args, null, null, null);
 		if (cursor.moveToFirst()) {
 			do {
 				result.add(cursor.getLong(0));
@@ -114,16 +123,22 @@ public class ExcludeStore extends AppStore {
 	 * excluded tracks table columns
 	 */
 	private interface ExcludeTable {
-
+		/**
+		 * table name
+		 */
 		String NAME = "excluded_music";
-
+		/**
+		 * ID of the excluded item (e.g. album ID)
+		 */
 		String ID = "id";
-
+		/**
+		 * type of the excluded item {@link Type}
+		 */
 		String TYPE = "type";
 	}
 
 	/**
-	 *
+	 * Used to categorize the ID to exclude (e.g. album ID, song ID)
 	 */
 	public enum Type {
 		SONG(0),

@@ -20,7 +20,6 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,8 +76,6 @@ public class GenreSongLoader extends AsyncExecutor<String, List<Song>> {
 						mCursor.close();
 					}
 				}
-				// sort tracks by song name
-				Collections.sort(result);
 			} catch (Exception exception) {
 				Log.e(TAG, "error loading songs from genre:", exception);
 			}

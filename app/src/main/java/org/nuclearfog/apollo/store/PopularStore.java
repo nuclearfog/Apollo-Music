@@ -29,7 +29,7 @@ public class PopularStore extends AppStore {
 			PopularColumns.SONGNAME,
 			PopularColumns.ALBUMNAME,
 			PopularColumns.ARTISTNAME,
-			PopularColumns.PLAYCOUNT
+			PopularColumns.DURATION
 	};
 
 	/**
@@ -115,19 +115,12 @@ public class PopularStore extends AppStore {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				do {
-					// Copy the song Id
 					long id = cursor.getLong(0);
-					// Copy the song name
-					String songName = cursor.getString(1);
-					// Copy the artist name
-					String artist = cursor.getString(3);
-					// Copy the album name
+					String name = cursor.getString(1);
 					String album = cursor.getString(2);
-					// Copy the duration value in milliseconds
-					long duration = cursor.getLong(5);
-					// Create a new song
-					Song song = new Song(id, songName, artist, album, duration);
-					// Add everything up
+					String artist = cursor.getString(3);
+					long duration = cursor.getLong(4);
+					Song song = new Song(id, name, artist, album, duration);
 					result.add(song);
 				} while (cursor.moveToNext());
 			}

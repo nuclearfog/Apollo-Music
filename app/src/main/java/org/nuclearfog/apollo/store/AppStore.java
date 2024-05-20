@@ -42,7 +42,7 @@ public abstract class AppStore {
 	 *
 	 * @return database instance
 	 */
-	protected SQLiteDatabase getWritableDatabase() {
+	protected final SQLiteDatabase getWritableDatabase() {
 		if (db.inTransaction()) {
 			db.endTransaction();
 			Log.w(TAG, "previous database transaction not completed!");
@@ -56,7 +56,7 @@ public abstract class AppStore {
 	 *
 	 * @return database instance
 	 */
-	protected SQLiteDatabase getReadableDatabase() {
+	protected final SQLiteDatabase getReadableDatabase() {
 		if (db.inTransaction()) {
 			db.endTransaction();
 			Log.w(TAG, "previous database transaction not completed!");
@@ -67,7 +67,7 @@ public abstract class AppStore {
 	/**
 	 * commit changes to database after write action
 	 */
-	protected void commit() {
+	protected final void commit() {
 		if (db.inTransaction()) {
 			db.setTransactionSuccessful();
 			db.endTransaction();

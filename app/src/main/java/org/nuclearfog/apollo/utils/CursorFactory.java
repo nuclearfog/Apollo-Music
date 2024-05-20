@@ -268,11 +268,6 @@ public class CursorFactory {
 	private static final String PLAYLIST_ORDER = Playlists.NAME;
 
 	/**
-	 * default track order of a genre
-	 */
-	private static final String GENRE_TRACK_ORDER = Media.DEFAULT_SORT_ORDER;
-
-	/**
 	 * sort genres by name
 	 */
 	private static final String GENRE_ORDER = Genres.DEFAULT_SORT_ORDER;
@@ -439,9 +434,10 @@ public class CursorFactory {
 	@SuppressLint("InlinedApi")
 	public static Cursor makeGenreSongCursor(Context context, long genreId) {
 		ContentResolver resolver = context.getContentResolver();
+		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
 
 		Uri media = Genres.Members.getContentUri(VOLUME_EXTERNAL, genreId);
-		return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, GENRE_TRACK_ORDER);
+		return resolver.query(media, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
 	}
 
 	/**

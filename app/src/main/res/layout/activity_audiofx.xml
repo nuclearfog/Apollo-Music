@@ -56,7 +56,7 @@
 		android:layout_height="wrap_content"
 		android:lines="1"
 		android:text="@string/label_preset"
-		android:textSize="@dimen/text_size_small"
+		android:textSize="@dimen/text_size_medium"
 		android:layout_marginEnd="10dp"
 		android:layout_marginRight="10dp"
 		app:layout_constraintHorizontal_chainStyle="packed"
@@ -75,7 +75,8 @@
 		app:layout_constraintStart_toEndOf="@id/audiofx_preset_label"
 		app:layout_constraintTop_toBottomOf="@id/audiofx_enable"
 		app:layout_constraintBottom_toTopOf="@id/audiofx_eq_scroll"
-		app:layout_constraintEnd_toEndOf="parent" />
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:listitem="@layout/list_item_dropdown" />
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/audiofx_eq_scroll"

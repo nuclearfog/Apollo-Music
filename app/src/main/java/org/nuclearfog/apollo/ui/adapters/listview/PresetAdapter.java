@@ -1,5 +1,6 @@
 package org.nuclearfog.apollo.ui.adapters.listview;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.AudioPreset;
 
 import java.util.ArrayList;
@@ -26,21 +28,25 @@ public class PresetAdapter extends BaseAdapter {
 	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-		TextView tv;
-		if (convertView instanceof TextView) {
-			tv = (TextView) convertView;
-		} else {
-			tv = new TextView(parent.getContext());
+		if (convertView == null)  {
+			convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_dropdown, parent, false);
 		}
-		tv.setText(items.get(position).getName());
-		return tv;
+		TextView tv = convertView.findViewById(R.id.list_item_dropdown_text);
+		AudioPreset preset = getItem(position);
+		if (preset != null)
+			tv.setText(preset.getName());
+		else
+			tv.setText(R.string.preset_custom);
+		return convertView;
 	}
 
 
 	@Nullable
 	@Override
 	public AudioPreset getItem(int position) {
-		return items.get(position);
+		if (position == 0)
+			return null;
+		return items.get(position - 1);
 	}
 
 
@@ -52,7 +58,7 @@ public class PresetAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return items.size();
+		return items.size() + 1;
 	}
 
 	/**

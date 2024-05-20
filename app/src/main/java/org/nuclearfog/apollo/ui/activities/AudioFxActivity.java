@@ -116,7 +116,6 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		enableFx.setOnCheckedChangeListener(this);
 		bassBoost.setOnSeekBarChangeListener(this);
 		reverb.setOnSeekBarChangeListener(this);
-		presetSelector.setOnItemSelectedListener(this);
 	}
 
 
@@ -150,6 +149,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	@Override
 	public void onBandLevelChange(int pos, int level) {
 		audioEffects.setBandLevel(pos, level);
+		setCustomPreset();
 	}
 
 
@@ -184,6 +184,9 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
+		if (seekBar.getId() == R.id.audiofx_bass_boost || seekBar.getId() == R.id.audiofx_reverb) {
+			setCustomPreset();
+		}
 	}
 
 
@@ -198,8 +201,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if (parent.getId() == R.id.audiofx_preset) {
 			AudioPreset preset = presetAdapter.getItem(position);
+			audioEffects.setPreset(preset);
 			if (preset != null) {
-				audioEffects.setPreset(preset);
 				setViews();
 			}
 		}
@@ -227,7 +230,11 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		eqAdapter.setBands(audioEffects.getBandLevel());
 	}
 
-
+	/**
+	 * set visibity of the views
+	 *
+	 * @param enable true to make views visible
+	 */
 	private void setVisibility(boolean enable) {
 		// enable views only if effect is enabled
 		reverb.setEnabled(enable);
@@ -238,16 +245,28 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	}
 
 	/**
+	 * set selector to custom after any change
+	 */
+	private void setCustomPreset() {
+		if (presetSelector.getCount() > 0 && presetSelector.getSelectedItemPosition() > 0) {
+			presetSelector.setSelection(0, false);
+		}
+	}
+
+	/**
 	 * select current selected preset
 	 */
 	private void setPreset() {
 		String presetName = audioEffects.getPreset().getName();
+		int index = 0;
 		for (int i = 0; i < presetAdapter.getCount(); i++) {
 			AudioPreset preset = presetAdapter.getItem(i);
 			if (preset != null && preset.getName().equals(presetName)) {
-				presetSelector.setSelection(i);
+				index = i;
 				break;
 			}
 		}
+		presetSelector.setSelection(index, false);
+		presetSelector.setOnItemSelectedListener(this);
 	}
 }

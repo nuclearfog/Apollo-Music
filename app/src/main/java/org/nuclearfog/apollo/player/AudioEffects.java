@@ -317,13 +317,17 @@ public final class AudioEffects {
 	/**
 	 * set new preset
 	 *
-	 * @param preset preset to set
+	 * @param preset preset to set or null to set custom preset
 	 */
-	public void setPreset(AudioPreset preset) {
-		setBassLevel(preset.getBassLevel());
-		setReverbLevel(preset.getReverbLevel());
-		setBandLevel(preset.getBands());
-		prefs.setPresetName(preset.getName());
+	public void setPreset(@Nullable AudioPreset preset) {
+		if (preset != null) {
+			setBassLevel(preset.getBassLevel());
+			setReverbLevel(preset.getReverbLevel());
+			setBandLevel(preset.getBands());
+			prefs.setPresetName(preset.getName());
+		} else {
+			prefs.setPresetName("");
+		}
 	}
 
 	/**

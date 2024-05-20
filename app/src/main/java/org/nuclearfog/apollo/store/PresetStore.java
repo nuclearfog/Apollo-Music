@@ -38,6 +38,11 @@ public class PresetStore extends AppStore {
 	};
 
 	/**
+	 * default sort order
+	 */
+	private static final String SORT = PresetColumns.TIME + " DESC";
+
+	/**
 	 * database name
 	 */
 	private static final String DB_NAME = "fx_presets";
@@ -74,6 +79,7 @@ public class PresetStore extends AppStore {
 		column.put(PresetColumns.NAME, preset.getName());
 		column.put(PresetColumns.BASS, preset.getBassLevel());
 		column.put(PresetColumns.REVERB, preset.getReverbLevel());
+		column.put(PresetColumns.TIME, System.currentTimeMillis());
 		StringBuilder buf = new StringBuilder();
 		for (int band : preset.getBands()) {
 			buf.append(band).append(";");
@@ -91,7 +97,7 @@ public class PresetStore extends AppStore {
 	 */
 	public synchronized List<AudioPreset> loadPresets() {
 		SQLiteDatabase db = getReadableDatabase();
-		Cursor cursor = db.query(PresetColumns.TABLE, COLUMNS, null, null, null, null, PresetColumns.TIME + " DESC");
+		Cursor cursor = db.query(PresetColumns.TABLE, COLUMNS, null, null, null, null, SORT);
 		List<AudioPreset> result = new LinkedList<>();
 		if (cursor.moveToFirst()) {
 			do {

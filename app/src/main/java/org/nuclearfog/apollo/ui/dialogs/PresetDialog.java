@@ -98,7 +98,12 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		preset.setName(s.toString());
 	}
 
-
+	/**
+	 * create an instance of this dialog
+	 *
+	 * @param preset preset configuration to show
+	 * @return instance of this dialog
+	 */
 	public static PresetDialog newInstance(AudioPreset preset) {
 		PresetDialog dialog = new PresetDialog();
 		Bundle args = new Bundle();

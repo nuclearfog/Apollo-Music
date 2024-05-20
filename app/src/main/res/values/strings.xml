@@ -216,5 +216,6 @@
 	<!--other-->
 	<string name="lastfm_api_key">LastFM API key</string>
 	<string name="preset_name_hint">enter preset name</string>
+	<string name="preset_custom">custom</string>
 
 </resources>

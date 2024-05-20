@@ -231,7 +231,7 @@ public final class AudioEffects {
 	public void setBandLevel(int[] bands) {
 		try {
 			for (short i = 0; i < bands.length; i++) {
-				equalizer.setBandLevel((short) i, (short) bands[i]);
+				equalizer.setBandLevel(i, (short) bands[i]);
 			}
 			prefs.setEqualizerBands(bands);
 		} catch (RuntimeException exception) {

@@ -1322,7 +1322,9 @@ public final class MusicUtils {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				return service.duration();
+				Song song = service.getCurrentTrack();
+				if (song != null)
+					return song.getDuration();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1388,7 +1390,9 @@ public final class MusicUtils {
 		IApolloService service = mService;
 		if (service != null) {
 			try {
-				return service.getPath();
+				Song song = service.getCurrentTrack();
+				if (song != null)
+					return song.getPath();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();

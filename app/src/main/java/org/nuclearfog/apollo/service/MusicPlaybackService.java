@@ -822,11 +822,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				scheduleDelayedShutdown();
 				if (mIsSupposedToBePlaying) {
 					mIsSupposedToBePlaying = false;
-					notifyChange(CHANGED_PLAYSTATE);
 				}
 			} else {
 				mIsSupposedToBePlaying = true;
-				notifyChange(CHANGED_PLAYSTATE);
 			}
 		} else {
 			// reload next tracks if an error occured
@@ -835,6 +833,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			openCurrentAndNext();
 			mPlayer.play();
 		}
+		notifyChange(CHANGED_META);
+		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -847,11 +847,12 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				stop(false);
 				openCurrentAndNext();
 				play();
-				notifyChange(CHANGED_META);
 			} else {
 				seekTo(0);
 				play();
 			}
+			notifyChange(CHANGED_META);
+			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
@@ -881,13 +882,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public synchronized void openFile(@NonNull Uri uri) {
 		stop();
 		updateTrackInformation(uri);
+		Song song = currentSong;
 		// check if track is valid
-		if (currentSong != null) {
+		if (song != null) {
 			// add at the beginning of the playlist
-			mPlayList.addFirst(currentSong.getId());
+			mPlayList.addFirst(song.getId());
 			mPlayPos = 0;
 			// update metadata
-			notifyChange(CHANGED_META);
 			notifyChange(CHANGED_QUEUE);
 			if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 				play();
@@ -916,10 +917,13 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	synchronized void notifyChange(String what) {
 		if (!what.equals(CHANGED_POSITION)) {
-			long audio_id = currentSong != null ? currentSong.getId() : -1;
-			String artist_name = currentSong != null ? currentSong.getArtist() : "";
-			String song_name = currentSong != null ? currentSong.getName() : "";
-			String album_name = currentAlbum != null ? currentAlbum.getName() : "";
+			Song song = currentSong;
+			Album album = currentAlbum;
+			long audio_id = song != null ? song.getId() : -1;
+			long duration = song != null ? song.getDuration() : 0;
+			String artist_name = song != null ? song.getArtist() : "";
+			String song_name = song != null ? song.getName() : "";
+			String album_name = song != null ? song.getName() : "";
 
 			Intent intent = new Intent(what);
 			intent.putExtra("id", audio_id);
@@ -936,15 +940,15 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 			switch (what) {
 				case CHANGED_META:
 					// Increase the play count for favorite songs.
-					if (currentSong != null)
-						mPopularCache.addSong(currentSong);
-					if (currentAlbum != null) {
-						mRecentsCache.addAlbum(currentAlbum);
+					if (song != null)
+						mPopularCache.addSong(song);
+					if (album != null) {
+						mRecentsCache.addAlbum(album);
 					}
 					// set session track information used for notification
 					mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, song_name)
 							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist_name)
-							.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, getDurationMillis()).build());
+							.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration).build());
 					break;
 
 				case CHANGED_QUEUE:
@@ -1046,18 +1050,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	int getQueuePosition() {
 		return mPlayPos;
-	}
-
-	/**
-	 * Returns the path to current song
-	 *
-	 * @return The path to the current song
-	 */
-	synchronized String getPath() {
-		if (currentSong != null) {
-			return currentSong.getPath();
-		}
-		return "";
 	}
 
 	/**
@@ -1444,8 +1436,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private void updateAlbumInformation() {
 		currentAlbum = null;
-		if (currentSong != null) {
-			Cursor cursor = CursorFactory.makeAlbumCursor(this, currentSong.getAlbumId());
+		Song song = currentSong;
+		if (song != null) {
+			Cursor cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
@@ -1490,7 +1483,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		stop(false);
 		updateTrackInformation();
 		boolean fileOpened = false;
-		long id = currentSong != null ? currentSong.getId() : 0;
+		Song song = currentSong;
+		long id = song != null ? song.getId() : 0;
 		if (id != -1L) {
 			fileOpened = openTrack(id);
 		}
@@ -1511,7 +1505,8 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					// skip faulty track and try open next track
 					else {
 						updateTrackInformation();
-						id = currentSong != null ? currentSong.getId() : 0;
+						song = currentSong;
+						id = song != null ? song.getId() : 0;
 						if (id != -1L && openTrack(id)) {
 							fileOpened = true;
 						}
@@ -1732,16 +1727,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				stopSelf(mServiceStartId);
 			}
 		}
-	}
-
-	/**
-	 *
-	 */
-	private long getDurationMillis() {
-		if (currentSong != null) {
-			return currentSong.getDuration();
-		}
-		return -1L;
 	}
 
 	/**

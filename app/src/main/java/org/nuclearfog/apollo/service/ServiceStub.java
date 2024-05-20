@@ -147,17 +147,6 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long duration() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getDuration();
-		return 0L;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public long position() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
@@ -196,17 +185,6 @@ public class ServiceStub extends IApolloService.Stub {
 		if (service != null)
 			return service.getCurrentSong();
 		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getPath() {
-		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.getPath();
-		return "";
 	}
 
 	/**

@@ -168,7 +168,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).removeItem(mSong.getId());
+					FavoritesStore.getInstance(requireContext()).removeFavorite(mSong.getId());
 					mLoader.execute(null, this);
 					return true;
 

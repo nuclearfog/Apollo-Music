@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.model.Song;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * database for popular tracks with the information how often a track was played
  *
@@ -48,17 +51,17 @@ public class PopularStore extends AppStore {
 	/**
 	 * database filename
 	 */
-	public static final String DB_NAME = "popular.db";
+	private static final String DB_NAME = "popular.db";
+
+	/**
+	 * SQLite sport order
+	 */
+	private static final String MP_ORDER = PopularColumns.PLAYCOUNT + " DESC";
 
 	/**
 	 * singleton instance
 	 */
 	private static PopularStore singleton;
-
-	/**
-	 *
-	 */
-	private final Object LOCK = new Object();
 
 	/**
 	 *
@@ -81,7 +84,7 @@ public class PopularStore extends AppStore {
 
 
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	protected void onCreate(SQLiteDatabase db) {
 		db.execSQL(MOSTPLAYED_TABLE);
 	}
 
@@ -90,21 +93,47 @@ public class PopularStore extends AppStore {
 	 *
 	 * @param song song to add
 	 */
-	public void addSong(@NonNull Song song) {
-		synchronized (LOCK) {
-			// increment by 1
-			long playCount = getPlayCount(song.getId()) + 1;
-			SQLiteDatabase database = getWritableDatabase();
-			ContentValues values = new ContentValues(6);
-			values.put(PopularColumns.ID, song.getId());
-			values.put(PopularColumns.SONGNAME, song.getName());
-			values.put(PopularColumns.ALBUMNAME, song.getAlbum());
-			values.put(PopularColumns.ARTISTNAME, song.getArtist());
-			values.put(PopularColumns.PLAYCOUNT, playCount);
-			values.put(PopularColumns.DURATION, song.getDuration());
-			database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
-			commit();
+	public synchronized void addSong(@NonNull Song song) {
+		long playCount = getPlayCount(song.getId()) + 1; // increment by 1
+		SQLiteDatabase database = getWritableDatabase();
+		ContentValues values = new ContentValues(6);
+		values.put(PopularColumns.ID, song.getId());
+		values.put(PopularColumns.SONGNAME, song.getName());
+		values.put(PopularColumns.ALBUMNAME, song.getAlbum());
+		values.put(PopularColumns.ARTISTNAME, song.getArtist());
+		values.put(PopularColumns.PLAYCOUNT, playCount);
+		values.put(PopularColumns.DURATION, song.getDuration());
+		database.insertWithOnConflict(PopularColumns.NAME, null, values, CONFLICT_REPLACE);
+		commit();
+	}
+
+
+	public synchronized List<Song> getSongs() {
+		SQLiteDatabase data = getReadableDatabase();
+		Cursor cursor = data.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
+		List<Song> result = new LinkedList<>();
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				do {
+					// Copy the song Id
+					long id = cursor.getLong(0);
+					// Copy the song name
+					String songName = cursor.getString(1);
+					// Copy the artist name
+					String artist = cursor.getString(3);
+					// Copy the album name
+					String album = cursor.getString(2);
+					// Copy the duration value in milliseconds
+					long duration = cursor.getLong(5);
+					// Create a new song
+					Song song = new Song(id, songName, artist, album, duration);
+					// Add everything up
+					result.add(song);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
 		}
+		return result;
 	}
 
 	/**
@@ -112,24 +141,20 @@ public class PopularStore extends AppStore {
 	 *
 	 * @param trackId ID of the track to remove
 	 */
-	public void removeItem(long trackId) {
-		synchronized (LOCK) {
-			String[] args = {Long.toString(trackId)};
-			SQLiteDatabase database = getWritableDatabase();
-			database.delete(PopularColumns.NAME, TRACK_SELECT, args);
-			commit();
-		}
+	public synchronized void removeItem(long trackId) {
+		String[] args = {Long.toString(trackId)};
+		SQLiteDatabase database = getWritableDatabase();
+		database.delete(PopularColumns.NAME, TRACK_SELECT, args);
+		commit();
 	}
 
 	/**
 	 * remove all popular tracks from playlist
 	 */
-	public void removeAll() {
-		synchronized (LOCK) {
-			SQLiteDatabase database = getWritableDatabase();
-			database.delete(PopularColumns.NAME, null, null);
-			commit();
-		}
+	public synchronized void removeAll() {
+		SQLiteDatabase database = getWritableDatabase();
+		database.delete(PopularColumns.NAME, null, null);
+		commit();
 	}
 
 	/**
@@ -139,47 +164,60 @@ public class PopularStore extends AppStore {
 	 * @return The play count for a song
 	 */
 	private long getPlayCount(long songId) {
-		synchronized (LOCK) {
-			long result = 0;
-			if (songId >= 0) {
-				String[] having = {Long.toString(songId)};
-				SQLiteDatabase database = getReadableDatabase();
-				Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
-				if (cursor != null) {
-					if (cursor.moveToFirst()) {
-						result = cursor.getLong(4);
-					}
-					cursor.close();
+		long result = 0;
+		if (songId >= 0) {
+			String[] having = {Long.toString(songId)};
+			SQLiteDatabase database = getReadableDatabase();
+			Cursor cursor = database.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, TRACK_SELECT, having, null, null, null, null);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					result = cursor.getLong(4);
 				}
+				cursor.close();
 			}
-			return result;
 		}
+		return result;
+
 	}
 
 	/**
 	 * columns of the most played tracks table
 	 */
-	public interface PopularColumns {
+	private interface PopularColumns {
 
-		/* Table name */
+		/**
+		 *  Table name
+		 */
 		String NAME = "mostplayed";
 
-		/* Song IDs column */
+		/**
+		 *  Song IDs column
+		 */
 		String ID = "songid";
 
-		/* Song name column */
+		/**
+		 *  Song name column
+		 */
 		String SONGNAME = "songname";
 
-		/* Album name column */
+		/**
+		 * Album name column
+		 */
 		String ALBUMNAME = "albumname";
 
-		/* Artist name column */
+		/**
+		 * Artist name column
+		 */
 		String ARTISTNAME = "artistname";
 
-		/* Play count column */
+		/**
+		 * Play count column
+		 */
 		String PLAYCOUNT = "playcount";
 
-		/* Duraion of the track */
+		/**
+		 * Duraion of the track
+		 */
 		String DURATION = "duration";
 	}
 }

@@ -12,14 +12,10 @@
 package org.nuclearfog.apollo.async.loader;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.util.Log;
 
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Album;
-import org.nuclearfog.apollo.utils.CursorFactory;
-
-import java.util.LinkedList;
+import org.nuclearfog.apollo.store.RecentStore;
 import java.util.List;
 
 /**
@@ -30,11 +26,12 @@ import java.util.List;
  */
 public class RecentLoader extends AsyncExecutor<Void, List<Album>> {
 
-	private static final String TAG = "RecentLoader";
+	private RecentStore recentStore;
 
 
 	public RecentLoader(Context context) {
 		super(context);
+		recentStore = RecentStore.getInstance(context);
 	}
 
 	/**
@@ -42,38 +39,6 @@ public class RecentLoader extends AsyncExecutor<Void, List<Album>> {
 	 */
 	@Override
 	protected List<Album> doInBackground(Void v) {
-		List<Album> result = new LinkedList<>();
-		Context context = getContext();
-		if (context != null) {
-			try {
-				// Create the Cursor
-				Cursor mCursor = CursorFactory.makeRecentCursor(context);
-				// Gather the data
-				if (mCursor != null) {
-					if (mCursor.moveToFirst()) {
-						do {
-							// Copy the album id
-							long id = mCursor.getLong(0);
-							// Copy the album name
-							String albumName = mCursor.getString(1);
-							// Copy the artist name
-							String artist = mCursor.getString(2);
-							// Copy the number of songs
-							int songCount = mCursor.getInt(3);
-							// Copy the release year
-							String year = mCursor.getString(4);
-							// Create a new album
-							Album album = new Album(id, albumName, artist, songCount, year, true);
-							// Add everything up
-							result.add(album);
-						} while (mCursor.moveToNext());
-					}
-					mCursor.close();
-				}
-			} catch (Exception exception) {
-				Log.e(TAG, "error loading albums:", exception);
-			}
-		}
-		return result;
+		return recentStore.getRecentAlbums();
 	}
 }

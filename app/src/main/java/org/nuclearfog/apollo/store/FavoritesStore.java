@@ -22,6 +22,9 @@ import androidx.annotation.NonNull;
 
 import org.nuclearfog.apollo.model.Song;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
@@ -50,9 +53,26 @@ public class FavoritesStore extends AppStore {
 			+ FavoriteColumns.DURATION + " LONG);";
 
 	/**
+	 * Definition of the Columns to get from database
+	 */
+	private static final String[] FAVORITE_COLUMNS = {
+			FavoriteColumns.ID,
+			FavoriteColumns.SONGNAME,
+			FavoriteColumns.ALBUMNAME,
+			FavoriteColumns.ARTISTNAME,
+			FavoriteColumns.PLAYCOUNT,
+			FavoriteColumns.DURATION
+	};
+
+	/**
 	 * condition to find track in favorite table
 	 */
 	private static final String FAVORITE_SELECT = FavoriteColumns.ID + "=?";
+
+	/**
+	 * SQLite sport order
+	 */
+	private static final String FAV_ORDER = FavoriteColumns.PLAYCOUNT + " DESC";
 
 	/**
 	 * database filename
@@ -64,18 +84,14 @@ public class FavoritesStore extends AppStore {
 	 */
 	private static FavoritesStore sInstance;
 
-	/**
-	 * Constructor of <code>FavoritesStore</code>
-	 *
-	 * @param context The {@link Context} to use
-	 */
+
 	private FavoritesStore(Context context) {
 		super(context, DB_NAME);
 	}
 
 	/**
 	 * @param context The {@link Context} to use
-	 * @return A new instance of this class
+	 * @return A singleton instance of this class
 	 */
 	public static FavoritesStore getInstance(Context context) {
 		if (sInstance == null) {
@@ -89,7 +105,7 @@ public class FavoritesStore extends AppStore {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	protected void onCreate(SQLiteDatabase db) {
 		db.execSQL(FAVORITE_TABLE);
 	}
 
@@ -98,7 +114,7 @@ public class FavoritesStore extends AppStore {
 	 *
 	 * @param mSong song instance
 	 */
-	public synchronized void addItem(@NonNull Song mSong) {
+	public synchronized void addFavorite(@NonNull Song mSong) {
 		long playCount = getPlayCount(mSong.getId()) + 1; // increment by 1
 		SQLiteDatabase database = getWritableDatabase();
 		ContentValues values = new ContentValues(6);
@@ -109,6 +125,18 @@ public class FavoritesStore extends AppStore {
 		values.put(FavoriteColumns.PLAYCOUNT, playCount);
 		values.put(FavoriteColumns.DURATION, mSong.getDuration());
 		database.insertWithOnConflict(FavoriteColumns.NAME, null, values, CONFLICT_REPLACE);
+		commit();
+	}
+
+	/**
+	 * remove song from favorits
+	 *
+	 * @param songId track ID
+	 */
+	public synchronized void removeFavorite(long songId) {
+		String[] args = {Long.toString(songId)};
+		SQLiteDatabase database = getWritableDatabase();
+		database.delete(FavoriteColumns.NAME, FAVORITE_SELECT, args);
 		commit();
 	}
 
@@ -131,14 +159,29 @@ public class FavoritesStore extends AppStore {
 	}
 
 	/**
-	 * remove song from favorits
+	 * get all favorite songs
 	 *
-	 * @param songId track ID
+	 * @return list of favorite songs
 	 */
-	public synchronized void removeItem(long songId) {
-		String[] args = {Long.toString(songId)};
-		SQLiteDatabase database = getWritableDatabase();
-		database.delete(FavoriteColumns.NAME, FAVORITE_SELECT, args);
+	public synchronized List<Song> getFavorites() {
+		List<Song> result = new LinkedList<>();
+		SQLiteDatabase data = getReadableDatabase();
+		Cursor cursor = data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				do {
+					long id = cursor.getLong(0);
+					String songName = cursor.getString(1);
+					String artist = cursor.getString(3);
+					String album = cursor.getString(2);
+					long duration = cursor.getLong(5);
+					Song song = new Song(id, songName, artist, album, duration);
+					result.add(song);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return result;
 	}
 
 	/**
@@ -147,7 +190,7 @@ public class FavoritesStore extends AppStore {
 	 * @param songId The song Id to reference
 	 * @return The play count for a song
 	 */
-	private synchronized long getPlayCount(long songId) {
+	private long getPlayCount(long songId) {
 		long result = 0;
 		if (songId >= 0) {
 			String[] having = {Long.toString(songId)};
@@ -166,27 +209,41 @@ public class FavoritesStore extends AppStore {
 	/**
 	 * columns of the favorite table
 	 */
-	public interface FavoriteColumns {
+	private interface FavoriteColumns {
 
-		/* Table name */
+		/**
+		 * Table name
+		 */
 		String NAME = "favorites";
 
-		/* Song IDs column */
+		/**
+		 * Song IDs column
+		 */
 		String ID = "songid";
 
-		/* Song name column */
+		/**
+		 * Song name column
+		 */
 		String SONGNAME = "songname";
 
-		/* Album name column */
+		/**
+		 * Album name column
+		 */
 		String ALBUMNAME = "albumname";
 
-		/* Artist name column */
+		/**
+		 * Artist name column
+		 */
 		String ARTISTNAME = "artistname";
 
-		/* Play count column */
+		/**
+		 * Play count column
+		 */
 		String PLAYCOUNT = "playcount";
 
-		/* Duraion of the track */
+		/**
+		 * Duraion of the track
+		 */
 		String DURATION = "duration";
 	}
 }

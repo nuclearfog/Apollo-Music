@@ -11,12 +11,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Database used to store audio effect presets
+ *
  * @author nuclearfog
  */
 public class PresetStore extends AppStore {
 
-	private static final String DB_NAME = "fx_presets";
-
+	/**
+	 * sqlite database create query
+	 */
 	private static final String TABLE_PRESET = "CREATE TABLE IF NOT EXISTS " + PresetColumns.TABLE + "("
 			+ PresetColumns.NAME + " TEXT PRIMARY KEY,"
 			+ PresetColumns.EQUALIZER + " TEXT NOT NULL,"
@@ -24,12 +27,20 @@ public class PresetStore extends AppStore {
 			+ PresetColumns.BASS + " INTEGER,"
 			+ PresetColumns.REVERB + " INTEGER)";
 
+	/**
+	 * database columns
+	 */
 	private static final String[] COLUMNS = {
 			PresetColumns.NAME,
 			PresetColumns.BASS,
 			PresetColumns.REVERB,
 			PresetColumns.EQUALIZER
 	};
+
+	/**
+	 * database name
+	 */
+	private static final String DB_NAME = "fx_presets";
 
 	private static PresetStore instance;
 
@@ -38,7 +49,9 @@ public class PresetStore extends AppStore {
 		super(context, DB_NAME);
 	}
 
-
+	/**
+	 * get singleton instance
+	 */
 	public static PresetStore getInstance(Context context) {
 		if (instance == null) {
 			instance = new PresetStore(context);
@@ -48,11 +61,13 @@ public class PresetStore extends AppStore {
 
 
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	protected void onCreate(SQLiteDatabase db) {
 		db.execSQL(TABLE_PRESET);
 	}
 
-
+	/**
+	 * called to save custom audio preset
+	 */
 	public synchronized void savePreset(AudioPreset preset) {
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues column = new ContentValues();
@@ -71,7 +86,9 @@ public class PresetStore extends AppStore {
 		commit();
 	}
 
-
+	/**
+	 * loads all audio presets stored by the user
+	 */
 	public synchronized List<AudioPreset> loadPresets() {
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.query(PresetColumns.TABLE, COLUMNS, null, null, null, null, PresetColumns.TIME + " DESC");
@@ -94,19 +111,34 @@ public class PresetStore extends AppStore {
 		return result;
 	}
 
-
+	/**
+	 * database table
+	 */
 	interface PresetColumns {
-
+		/**
+		 * table name
+		 */
 		String TABLE = "audio_presets";
-
+		/**
+		 * preset name (primary key)
+		 * value type is String
+		 */
 		String NAME = "preset_name";
-
+		/**
+		 * a string of numbers of the equalizer levels
+		 */
 		String EQUALIZER = "eq_bands";
-
+		/**
+		 * bass level (integer)
+		 */
 		String BASS = "bass_boost";
-
+		/**
+		 * reverb level (integer)
+		 */
 		String REVERB = "reverb";
-
+		/**
+		 * time when the preset was created/updated
+		 */
 		String TIME = "timestamp";
 	}
 }

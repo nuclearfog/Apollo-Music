@@ -228,7 +228,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireActivity()).addItem(selectedSong);
+					FavoritesStore.getInstance(requireActivity()).addFavorite(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:

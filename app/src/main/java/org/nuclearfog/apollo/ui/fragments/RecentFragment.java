@@ -238,7 +238,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:
-					RecentStore.getInstance(requireActivity()).removeItem(selectedAlbum.getId());
+					RecentStore.getInstance(requireActivity()).removeAlbum(selectedAlbum.getId());
 					MusicUtils.refresh();
 					return true;
 

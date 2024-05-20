@@ -22,6 +22,9 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * The {@link RecentStore} is used to display a a grid or list of
  * recently listened to albums. In order to populate the this grid or list with
@@ -59,6 +62,18 @@ public class RecentStore extends AppStore {
 			+ RecentStoreColumns.ALBUMYEAR + " TEXT);";
 
 	/**
+	 * projection of recent tracks
+	 */
+	private static final String[] RECENT_COLUMNS = {
+			RecentStoreColumns.ID,
+			RecentStoreColumns.ALBUMNAME,
+			RecentStoreColumns.ARTISTNAME,
+			RecentStoreColumns.ALBUMSONGCOUNT,
+			RecentStoreColumns.ALBUMYEAR,
+			RecentStoreColumns.TIMEPLAYED
+	};
+
+	/**
 	 * select recent album by ID
 	 */
 	private static final String RECENT_SELECT_ID = RecentStoreColumns.ID + "=?";
@@ -74,19 +89,19 @@ public class RecentStore extends AppStore {
 	private static final String RECENT_ORDER = RecentStoreColumns.TIMEPLAYED + " DESC";
 
 	/**
+	 * condition to filter only valid recent albums
+	 */
+	private static final String RECENT_SELECT = RecentStoreColumns.ID + ">=0";
+
+	/**
 	 * Name of database file
 	 */
-	public static final String DATABASENAME = "albumhistory.db";
+	private static final String DATABASENAME = "albumhistory.db";
 
 	/**
 	 * singleton instance of this class
 	 */
 	private static RecentStore sInstance;
-
-	/**
-	 *
-	 */
-	private final Object LOCK = new Object();
 
 	/**
 	 * Constructor of <code>RecentStore</code>
@@ -113,7 +128,7 @@ public class RecentStore extends AppStore {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	protected void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE);
 	}
 
@@ -122,19 +137,29 @@ public class RecentStore extends AppStore {
 	 *
 	 * @param album album to add
 	 */
-	public void addAlbum(Album album) {
-		synchronized (LOCK) {
-			SQLiteDatabase database = getWritableDatabase();
-			ContentValues values = new ContentValues(6);
-			values.put(RecentStoreColumns.ID, album.getId());
-			values.put(RecentStoreColumns.ALBUMNAME, album.getName());
-			values.put(RecentStoreColumns.ARTISTNAME, album.getArtist());
-			values.put(RecentStoreColumns.ALBUMSONGCOUNT, album.getTrackCount());
-			values.put(RecentStoreColumns.ALBUMYEAR, album.getRelease());
-			values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
-			database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			commit();
-		}
+	public synchronized void addAlbum(Album album) {
+		SQLiteDatabase database = getWritableDatabase();
+		ContentValues values = new ContentValues(6);
+		values.put(RecentStoreColumns.ID, album.getId());
+		values.put(RecentStoreColumns.ALBUMNAME, album.getName());
+		values.put(RecentStoreColumns.ARTISTNAME, album.getArtist());
+		values.put(RecentStoreColumns.ALBUMSONGCOUNT, album.getTrackCount());
+		values.put(RecentStoreColumns.ALBUMYEAR, album.getRelease());
+		values.put(RecentStoreColumns.TIMEPLAYED, System.currentTimeMillis());
+		database.insertWithOnConflict(RecentStoreColumns.NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+		commit();
+	}
+
+	/**
+	 * remove recent album from history
+	 *
+	 * @param albumId ID of the album to remove
+	 */
+	public synchronized void removeAlbum(long albumId) {
+		String[] args = {Long.toString(albumId)};
+		SQLiteDatabase database = getWritableDatabase();
+		database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
+		commit();
 	}
 
 	/**
@@ -144,42 +169,50 @@ public class RecentStore extends AppStore {
 	 * @return The most recently listened album for an artist.
 	 */
 	@Nullable
-	public String getAlbumName(String artistName) {
-		synchronized (LOCK) {
-			String result = null;
-			if (!TextUtils.isEmpty(artistName)) {
-				String[] having = {artistName};
-				SQLiteDatabase database = getReadableDatabase();
-				Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME,
-						having, null, null, RECENT_ORDER);
-				if (cursor != null) {
-					if (cursor.moveToFirst()) {
-						result = cursor.getString(1);
-					}
-					cursor.close();
+	public synchronized String getAlbumName(String artistName) {
+		String result = null;
+		if (!TextUtils.isEmpty(artistName)) {
+			String[] having = {artistName};
+			SQLiteDatabase database = getReadableDatabase();
+			Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_PROJECTION, RECENT_SELECT_NAME, having, null, null, RECENT_ORDER);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					result = cursor.getString(1);
 				}
+				cursor.close();
 			}
-			return result;
 		}
+		return result;
 	}
 
 	/**
-	 * remove recent album from history
-	 *
-	 * @param albumId ID of the album to remove
+	 * get all recent played albums
 	 */
-	public void removeItem(long albumId) {
-		synchronized (LOCK) {
-			String[] args = {Long.toString(albumId)};
-			SQLiteDatabase database = getWritableDatabase();
-			database.delete(RecentStoreColumns.NAME, RECENT_SELECT_ID, args);
+	public synchronized List<Album> getRecentAlbums() {
+		SQLiteDatabase database = getReadableDatabase();
+		Cursor cursor = database.query(RecentStoreColumns.NAME, RECENT_COLUMNS, RECENT_SELECT, null, null, null, RECENT_ORDER);
+		List<Album> result = new LinkedList<>();
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				do {
+					long id = cursor.getLong(0);
+					String albumName = cursor.getString(1);
+					String artist = cursor.getString(2);
+					int songCount = cursor.getInt(3);
+					String year = cursor.getString(4);
+					Album album = new Album(id, albumName, artist, songCount, year, true);
+					result.add(album);
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
 		}
+		return result;
 	}
 
 	/**
 	 * table columns of recent played tracks
 	 */
-	public interface RecentStoreColumns {
+	private interface RecentStoreColumns {
 
 		/* Table name */
 		String NAME = "albumhistory";

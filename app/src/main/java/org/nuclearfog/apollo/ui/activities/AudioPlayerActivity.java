@@ -400,7 +400,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			// Toggle the current track as a favorite and update the menu item
 			Song song = MusicUtils.getCurrentTrack();
 			if (song != null) {
-				FavoritesStore.getInstance(this).addItem(song);
+				FavoritesStore favoriteStore = FavoritesStore.getInstance(this);
+				if (favoriteStore.exists(song.getId()))
+					favoriteStore.removeFavorite(song.getId());
+				else
+					favoriteStore.addFavorite(song);
 				invalidateOptionsMenu();
 			}
 		} else if (vId == R.id.menu_audio_player_ringtone) {

@@ -209,7 +209,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addItem(selectedSong);
+					FavoritesStore.getInstance(requireContext()).addFavorite(selectedSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:

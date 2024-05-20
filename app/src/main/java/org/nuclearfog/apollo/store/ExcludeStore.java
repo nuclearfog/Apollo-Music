@@ -9,27 +9,30 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
+ * database used to save lists of excluded IDs (e.g. Album IDs)
+ *
  * @author nuclearfog
  */
 public class ExcludeStore extends AppStore {
+
+	/**
+	 * sqlite query to create a new table
+	 */
+	private static final String TABLE_EXCLUDE_TRACKS = "CREATE TABLE IF NOT EXISTS " + ExcludeTable.NAME + "("
+			+ ExcludeTable.ID + " INTEGER,"
+			+ ExcludeTable.TYPE + " INTEGER);";
+
+	/**
+	 * select where condition
+	 */
+	private static final String EXCLUDE_SELECT = ExcludeTable.ID + "=? AND " + ExcludeTable.TYPE + "=?";
+	private static final String EXCLUDE_SELECT_TYPE = ExcludeTable.TYPE + "=?";
 
 	/**
 	 * database filename
 	 */
 	private static final String DB_NAME = "exclude.db";
 
-	/**
-	 *
-	 */
-	private static final String TABLE_EXCLUDE_TRACKS = "CREATE TABLE IF NOT EXISTS " + ExcludeTable.NAME + "("
-			+ ExcludeTable.ID + " INTEGER,"
-			+ ExcludeTable.TYPE + " INTEGER);";
-
-	private static final String EXCLUDE_SELECT = ExcludeTable.ID + "=? AND " + ExcludeTable.TYPE + "=?";
-
-	private static final String EXCLUDE_SELECT_TYPE = ExcludeTable.TYPE + "=?";
-
-	private static final Object LOCK = new Object();
 
 	private static ExcludeStore sInstance;
 
@@ -42,73 +45,75 @@ public class ExcludeStore extends AppStore {
 
 	/**
 	 * @param context The {@link Context} to use
-	 * @return A new instance of this class
+	 * @return A singleton instance of this class
 	 */
 	public static ExcludeStore getInstance(Context context) {
 		if (sInstance == null) {
-			// use application context to avoid memory leak
-			sInstance = new ExcludeStore(context.getApplicationContext());
+			sInstance = new ExcludeStore(context);
 		}
 		return sInstance;
 	}
 
 
 	@Override
-	public void onCreate(SQLiteDatabase db) {
+	protected void onCreate(SQLiteDatabase db) {
 		db.execSQL(TABLE_EXCLUDE_TRACKS);
 	}
 
 	/**
-	 * add song IDs to exclude lsit
+	 * add item ID to exclude lsit
+	 *
+	 * @param type type of item to exclude
+	 * @param ids  IDs to exclude
 	 */
-	public void addIds(Type type, long... ids) {
-		synchronized (LOCK) {
-			SQLiteDatabase database = getWritableDatabase();
-			for (long id : ids) {
-				ContentValues column = new ContentValues(2);
-				column.put(ExcludeTable.ID, id);
-				column.put(ExcludeTable.TYPE, type.id);
-				database.insertWithOnConflict(ExcludeTable.NAME, null, column, SQLiteDatabase.CONFLICT_IGNORE);
-			}
-			commit();
+	public synchronized void addIds(Type type, long... ids) {
+		SQLiteDatabase database = getWritableDatabase();
+		for (long id : ids) {
+			ContentValues column = new ContentValues(2);
+			column.put(ExcludeTable.ID, id);
+			column.put(ExcludeTable.TYPE, type.id);
+			database.insertWithOnConflict(ExcludeTable.NAME, null, column, SQLiteDatabase.CONFLICT_IGNORE);
 		}
+		commit();
 	}
 
 	/**
-	 * remove song IDs from exclode list
+	 * remove item IDs from the database
+	 *
+	 * @param type type of item to exclude
+	 * @param ids  IDs to exclude
 	 */
-	public void removeIds(Type type, long... ids) {
-		synchronized (LOCK) {
-			SQLiteDatabase database = getWritableDatabase();
-			for (long id : ids) {
-				database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
-			}
-			commit();
+	public synchronized void removeIds(Type type, long... ids) {
+		SQLiteDatabase database = getWritableDatabase();
+		for (long id : ids) {
+			database.delete(ExcludeTable.NAME, EXCLUDE_SELECT, new String[]{Long.toString(id), Integer.toString(type.id)});
 		}
+		commit();
 	}
 
 	/**
-	 * get excluded song IDs
+	 * get a set of excluded IDs
+	 *
+	 * @param type type of items to get the exclude list from
+	 * @return a set of IDs
 	 */
-	public Set<Long> getIds(Type type) {
+	public synchronized Set<Long> getIds(Type type) {
 		Set<Long> result = new TreeSet<>();
-		synchronized (LOCK) {
-			SQLiteDatabase database = getReadableDatabase();
-			Cursor cursor = database.query(ExcludeTable.NAME, new String[]{ExcludeTable.ID}, EXCLUDE_SELECT_TYPE, new String[]{Integer.toString(type.id)}, null, null, null);
-			if (cursor.moveToFirst()) {
-				do {
-					result.add(cursor.getLong(0));
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
+		SQLiteDatabase database = getReadableDatabase();
+		Cursor cursor = database.query(ExcludeTable.NAME, new String[]{ExcludeTable.ID}, EXCLUDE_SELECT_TYPE, new String[]{Integer.toString(type.id)}, null, null, null);
+		if (cursor.moveToFirst()) {
+			do {
+				result.add(cursor.getLong(0));
+			} while (cursor.moveToNext());
 		}
+		cursor.close();
 		return result;
 	}
 
 	/**
 	 * excluded tracks table columns
 	 */
-	public interface ExcludeTable {
+	private interface ExcludeTable {
 
 		String NAME = "excluded_music";
 

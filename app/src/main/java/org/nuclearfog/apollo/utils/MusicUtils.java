@@ -580,20 +580,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Plays songs by an artist.
-	 *
-	 * @param context  The {@link Context} to use.
-	 * @param artistId The artist Id.
-	 * @param position Specify where to start.
-	 */
-	public static void playArtist(Context context, long artistId, int position) {
-		long[] artistList = getSongListForArtist(context, artistId);
-		if (artistList.length > position) {
-			playAll(context, artistList, position, false);
-		}
-	}
-
-	/**
 	 * @param context The {@link Context} to use.
 	 * @param id      The ID of the genre.
 	 * @return The song list for an genre.
@@ -694,19 +680,27 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param list The list to enqueue.
+	 *
 	 */
-	public static void playNext(long[] list) {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
+	public static void playAllFromUserItemClick(Context context, ArrayAdapter<Song> adapter, int position) {
+		if (position < adapter.getViewTypeCount() - 1) {
+			// invalid position
+			return;
 		}
+		// if view type count is greater than 1, a header exists at first position
+		// calculate position offset
+		int off = (adapter.getViewTypeCount() - 1);
+		// length of the arrayadapter
+		int len = adapter.getCount();
+		// calculate real position
+		position -= off;
+		// copy all IDs to an array
+		long[] list = new long[len - off];
+		for (int i = 0; i < list.length; i++) {
+			list[i] = adapter.getItemId(i + off);
+		}
+		// play whole ID list
+		playAll(context, list, position, false);
 	}
 
 	/**
@@ -845,20 +839,6 @@ public final class MusicUtils {
 			cursor.close();
 		}
 		return id;
-	}
-
-	/**
-	 * Plays songs from an album.
-	 *
-	 * @param context  The {@link Context} to use.
-	 * @param albumId  The album Id.
-	 * @param position Specify where to start.
-	 */
-	public static void playAlbum(Context context, long albumId, int position) {
-		long[] albumList = getSongListForAlbum(context, albumId);
-		if (albumList.length > 0) {
-			playAll(context, albumList, position, false);
-		}
 	}
 
 	/**
@@ -1124,44 +1104,17 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Plays a user created playlist.
-	 *
-	 * @param context    The {@link Context} to use.
-	 * @param playlistId The playlist Id.
-	 */
-	public static void playPlaylist(Context context, long playlistId) {
-		long[] trackIds = getSongListForPlaylist(context, playlistId);
-		playAll(context, trackIds, -1, false);
-	}
-
-	/**
 	 * @param context The {@link Context} to use
 	 * @return The song list from our favorites database
 	 */
 	@NonNull
 	public static long[] getSongListForFavorites(Context context) {
-		Cursor cursor = CursorFactory.makeFavoritesCursor(context);
-		long[] ids = EMPTY_LIST;
-		if (cursor != null) {
-			ids = new long[cursor.getCount()];
-			if (cursor.moveToFirst()) {
-				for (int i = 0; i < ids.length; i++) {
-					ids[i] = cursor.getLong(0);
-					cursor.moveToNext();
-				}
-			}
-			cursor.close();
+		List<Song> favorits = FavoritesStore.getInstance(context).getFavorites();
+		long[] ids = new long[favorits.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = favorits.get(i).getId();
 		}
 		return ids;
-	}
-
-	/**
-	 * Play the songs that have been marked as favorites.
-	 *
-	 * @param context The {@link Context} to use
-	 */
-	public static void playFavorites(Context context) {
-		playAll(context, getSongListForFavorites(context), 0, false);
 	}
 
 	/**
@@ -1191,17 +1144,67 @@ public final class MusicUtils {
 	 */
 	@NonNull
 	public static long[] getPopularSongList(Context context) {
-		Cursor cursor = CursorFactory.makePopularCursor(context);
-		long[] list = EMPTY_LIST;
-		if (cursor != null) {
-			list = new long[cursor.getCount()];
-			for (int i = 0; i < list.length; i++) {
-				cursor.moveToNext();
-				list[i] = cursor.getLong(0);
-			}
-			cursor.close();
+		List<Song> songs = PopularStore.getInstance(context).getSongs();
+		long[] ids = new long[songs.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = songs.get(i).getId();
 		}
-		return list;
+		return ids;
+	}
+
+	/**
+	 * @param list The list to enqueue.
+	 */
+	public static void playNext(long[] list) {
+		IApolloService service = mService;
+		if (service != null) {
+			try {
+				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
+			} catch (RemoteException err) {
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Plays songs by an artist.
+	 *
+	 * @param context  The {@link Context} to use.
+	 * @param artistId The artist Id.
+	 * @param position Specify where to start.
+	 */
+	public static void playArtist(Context context, long artistId, int position) {
+		long[] artistList = getSongListForArtist(context, artistId);
+		if (artistList.length > position) {
+			playAll(context, artistList, position, false);
+		}
+	}
+
+	/**
+	 * Plays songs from an album.
+	 *
+	 * @param context  The {@link Context} to use.
+	 * @param albumId  The album Id.
+	 * @param position Specify where to start.
+	 */
+	public static void playAlbum(Context context, long albumId, int position) {
+		long[] albumList = getSongListForAlbum(context, albumId);
+		if (albumList.length > 0) {
+			playAll(context, albumList, position, false);
+		}
+	}
+
+	/**
+	 * Plays a user created playlist.
+	 *
+	 * @param context    The {@link Context} to use.
+	 * @param playlistId The playlist Id.
+	 */
+	public static void playPlaylist(Context context, long playlistId) {
+		long[] trackIds = getSongListForPlaylist(context, playlistId);
+		playAll(context, trackIds, -1, false);
 	}
 
 	/**
@@ -1218,6 +1221,15 @@ public final class MusicUtils {
 	 */
 	public static void playPopular(Context context) {
 		playAll(context, getPopularSongList(context), 0, false);
+	}
+
+	/**
+	 * Play the songs that have been marked as favorites.
+	 *
+	 * @param context The {@link Context} to use
+	 */
+	public static void playFavorites(Context context) {
+		playAll(context, getSongListForFavorites(context), 0, false);
 	}
 
 	/**
@@ -1437,30 +1449,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 *
-	 */
-	public static void playAllFromUserItemClick(Context context, ArrayAdapter<Song> adapter, int position) {
-		if (position < adapter.getViewTypeCount() - 1) {
-			// invalid position
-			return;
-		}
-		// if view type count is greater than 1, a header exists at first position
-		// calculate position offset
-		int off = (adapter.getViewTypeCount() - 1);
-		// length of the arrayadapter
-		int len = adapter.getCount();
-		// calculate real position
-		position -= off;
-		// copy all IDs to an array
-		long[] list = new long[len - off];
-		for (int i = 0; i < list.length; i++) {
-			list[i] = adapter.getItemId(i + off);
-		}
-		// play whole ID list
-		playAll(context, list, position, false);
-	}
-
-	/**
 	 * open delete dialog for tracks
 	 *
 	 * @param activity activity
@@ -1522,9 +1510,9 @@ public final class MusicUtils {
 					//
 					removeTrack(trackId);
 					// Remove from the favorites playlist
-					favStore.removeItem(trackId);
+					favStore.removeFavorite(trackId);
 					// Remove any items in the recents database
-					recents.removeItem(albumId);
+					recents.removeAlbum(albumId);
 					// remove track from most played list
 					popular.removeItem(trackId);
 					// remove track from database

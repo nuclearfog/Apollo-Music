@@ -144,7 +144,7 @@ public class LastAddedFragment extends ProfileFragment implements AsyncCallback<
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addItem(mSong);
+					FavoritesStore.getInstance(requireContext()).addFavorite(mSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:

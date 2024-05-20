@@ -3,6 +3,7 @@ package org.nuclearfog.apollo.store;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import java.io.File;
 
@@ -12,6 +13,8 @@ import java.io.File;
  * @author nuclearfog
  */
 public abstract class AppStore {
+
+	private static final String TAG = "AppStore";
 
 	/**
 	 * database
@@ -40,6 +43,10 @@ public abstract class AppStore {
 	 * @return database instance
 	 */
 	protected SQLiteDatabase getWritableDatabase() {
+		if (db.inTransaction()) {
+			db.endTransaction();
+			Log.w(TAG, "previous database transaction not completed!");
+		}
 		db.beginTransaction();
 		return db;
 	}
@@ -49,7 +56,11 @@ public abstract class AppStore {
 	 *
 	 * @return database instance
 	 */
-	public SQLiteDatabase getReadableDatabase() {
+	protected SQLiteDatabase getReadableDatabase() {
+		if (db.inTransaction()) {
+			db.endTransaction();
+			Log.w(TAG, "previous database transaction not completed!");
+		}
 		return db;
 	}
 

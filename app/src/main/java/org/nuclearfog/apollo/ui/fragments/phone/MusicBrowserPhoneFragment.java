@@ -217,7 +217,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		else if (item.getItemId() == R.id.menu_favorite) {
 			Song song = MusicUtils.getCurrentTrack();
 			if (song != null) {
-				FavoritesStore.getInstance(requireContext()).addItem(song);
+				FavoritesStore.getInstance(requireContext()).addFavorite(song);
 				requireActivity().invalidateOptionsMenu();
 			}
 		}

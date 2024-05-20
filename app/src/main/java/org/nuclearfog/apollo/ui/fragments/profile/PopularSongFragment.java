@@ -138,7 +138,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 					return true;
 
 				case ContextMenuItems.ADD_TO_FAVORITES:
-					FavoritesStore.getInstance(requireContext()).addItem(mSong);
+					FavoritesStore.getInstance(requireContext()).addFavorite(mSong);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:

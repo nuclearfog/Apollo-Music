@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.service;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -24,8 +23,8 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
-import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,21 +151,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		 */
 		@Override
 		public void onDataSetChanged() {
-			albums.clear();
-			Cursor mCursor = CursorFactory.makeRecentCursor(mContext);
-			if (mCursor != null) {
-				if (mCursor.moveToFirst()) {
-					do {
-						long id = mCursor.getLong(0);
-						String albumName = mCursor.getString(1);
-						String artist = mCursor.getString(2);
-						int songCount = mCursor.getInt(3);
-						String year = mCursor.getString(4);
-						albums.add(new Album(id, albumName, artist, songCount, year, true));
-					} while (mCursor.moveToNext());
-				}
-				mCursor.close();
-			}
+			albums = RecentStore.getInstance(mContext).getRecentAlbums();
 		}
 
 

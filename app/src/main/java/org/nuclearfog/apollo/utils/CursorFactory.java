@@ -1,14 +1,11 @@
 package org.nuclearfog.apollo.utils;
 
 import static android.provider.MediaStore.VOLUME_EXTERNAL;
-import static org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns.NAME;
-import static org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns.TIMEPLAYED;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
@@ -23,13 +20,6 @@ import android.provider.MediaStore.MediaColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.nuclearfog.apollo.store.FavoritesStore;
-import org.nuclearfog.apollo.store.FavoritesStore.FavoriteColumns;
-import org.nuclearfog.apollo.store.PopularStore;
-import org.nuclearfog.apollo.store.PopularStore.PopularColumns;
-import org.nuclearfog.apollo.store.RecentStore;
-import org.nuclearfog.apollo.store.RecentStore.RecentStoreColumns;
 
 import java.util.List;
 
@@ -100,42 +90,6 @@ public class CursorFactory {
 			Artists.ARTIST,
 			Artists.NUMBER_OF_ALBUMS,
 			Artists.NUMBER_OF_TRACKS
-	};
-
-	/**
-	 * projection of recent tracks
-	 */
-	public static final String[] RECENT_COLUMNS = {
-			RecentStoreColumns.ID,
-			RecentStoreColumns.ALBUMNAME,
-			RecentStoreColumns.ARTISTNAME,
-			RecentStoreColumns.ALBUMSONGCOUNT,
-			RecentStoreColumns.ALBUMYEAR,
-			RecentStoreColumns.TIMEPLAYED
-	};
-
-	/**
-	 * Definition of the Columns to get from database
-	 */
-	public static final String[] FAVORITE_COLUMNS = {
-			FavoriteColumns.ID,
-			FavoriteColumns.SONGNAME,
-			FavoriteColumns.ALBUMNAME,
-			FavoriteColumns.ARTISTNAME,
-			FavoriteColumns.PLAYCOUNT,
-			FavoriteColumns.DURATION
-	};
-
-	/**
-	 *
-	 */
-	public static final String[] MOSTPLAYED_COLUMNS = {
-			PopularColumns.ID,
-			PopularColumns.SONGNAME,
-			PopularColumns.ALBUMNAME,
-			PopularColumns.ARTISTNAME,
-			PopularColumns.PLAYCOUNT,
-			PopularColumns.DURATION
 	};
 
 	/**
@@ -225,10 +179,7 @@ public class CursorFactory {
 	 */
 	private static final String GENRE_SELECT = Genres.NAME + "!=''";
 
-	/**
-	 * condition to filter only valid recent albums
-	 */
-	private static final String RECENT_SELECT = RecentStoreColumns.ID + ">=0";
+
 
 	/**
 	 * Selection to filter songs with empty name
@@ -327,11 +278,6 @@ public class CursorFactory {
 	private static final String GENRE_ORDER = Genres.DEFAULT_SORT_ORDER;
 
 	/**
-	 * sort recent played audio tracks
-	 */
-	private static final String RECENT_ORDER = TIMEPLAYED + DEF_SORT;
-
-	/**
 	 * sort folder tracks
 	 */
 	private static final String FOLDER_TRACKS_ORDER = Media.TRACK + "," + Media.TITLE;
@@ -340,16 +286,6 @@ public class CursorFactory {
 	 * default order to sort last added tracks
 	 */
 	public static final String ORDER_TIME = Media.DATE_ADDED + DEF_SORT;
-
-	/**
-	 * SQLite sport order
-	 */
-	public static final String FAV_ORDER = FavoriteColumns.PLAYCOUNT + DEF_SORT;
-
-	/**
-	 * SQLite sport order
-	 */
-	public static final String MP_ORDER = PopularColumns.PLAYCOUNT + DEF_SORT;
 
 	/**
 	 *
@@ -373,18 +309,6 @@ public class CursorFactory {
 
 		String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sort);
-	}
-
-	/**
-	 * create a cursor to get album history information with fixed column order
-	 * {@link #RECENT_COLUMNS}
-	 *
-	 * @return cursor with album informatiom
-	 */
-	@Nullable
-	public static Cursor makeRecentCursor(Context context) {
-		SQLiteDatabase database = RecentStore.getInstance(context).getReadableDatabase();
-		return database.query(NAME, RECENT_COLUMNS, RECENT_SELECT, null, null, null, RECENT_ORDER);
 	}
 
 	/**
@@ -560,29 +484,6 @@ public class CursorFactory {
 
 		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
 		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, FOLDER_COLUMNS, TRACK_FILTER_SELECT, null, sortOrder);
-	}
-
-	/**
-	 * create a cursor to parse a table with favorite lists with fixed column order
-	 * {@link #FAVORITE_COLUMNS}
-	 *
-	 * @return cursor with favorite list information
-	 */
-	@Nullable
-	public static Cursor makeFavoritesCursor(Context context) {
-		SQLiteDatabase data = FavoritesStore.getInstance(context).getReadableDatabase();
-		return data.query(FavoriteColumns.NAME, FAVORITE_COLUMNS, null, null, null, null, FAV_ORDER);
-	}
-
-	/**
-	 * create a cursor to parse a table with the most played tracks
-	 *
-	 * @return cursor with most played tracks
-	 */
-	@Nullable
-	public static Cursor makePopularCursor(Context context) {
-		SQLiteDatabase data = PopularStore.getInstance(context).getReadableDatabase();
-		return data.query(PopularColumns.NAME, MOSTPLAYED_COLUMNS, null, null, null, null, MP_ORDER);
 	}
 
 	/**

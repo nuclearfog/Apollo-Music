@@ -107,7 +107,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			setViews();
 			setPreset();
 		} else {
-			Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
+			if (MusicUtils.getAudioSessionId() != 0)
+				Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}

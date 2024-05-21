@@ -25,14 +25,12 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files.FileColumns;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -40,7 +38,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.media.MediaBrowserServiceCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
@@ -60,7 +57,6 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -71,7 +67,7 @@ import java.util.TreeSet;
  *
  * @author nuclearfog
  */
-public class MusicPlaybackService extends MediaBrowserServiceCompat implements OnAudioFocusChangeListener, OnPlaybackStatusCallback {
+public class MusicPlaybackService extends Service implements OnAudioFocusChangeListener, OnPlaybackStatusCallback {
 	/**
 	 *
 	 */
@@ -236,10 +232,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 */
 	private static final int MAX_HISTORY_SIZE = 100;
 	/**
-	 *
-	 */
-	private static final String MEDIA_ID_ROOT = "apollo_root";
-	/**
 	 * Keeps a mapping of the track history
 	 */
 	private LinkedList<Integer> mHistory = new LinkedList<>();
@@ -264,10 +256,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	 * random generator used for shuffle
 	 */
 	private Random mRandom = new Random();
-	/**
-	 * Service stub
-	 */
-	private IBinder mBinder = new ServiceStub(this);
 	/**
 	 * app wide settings
 	 */
@@ -365,7 +353,16 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	public IBinder onBind(Intent intent) {
 		cancelShutdown();
 		mServiceInUse = true;
-		return mBinder;
+		return new ServiceStub(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onRebind(Intent intent) {
+		cancelShutdown();
+		mServiceInUse = true;
 	}
 
 	/**
@@ -397,15 +394,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void onRebind(Intent intent) {
-		cancelShutdown();
-		mServiceInUse = true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate() {
@@ -425,7 +413,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
 		mSession.setActive(true);
-		setSessionToken(mSession.getSessionToken());
 		setPlaybackState(false);
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
@@ -504,19 +491,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		super.onDestroy();
 	}
 
-
-	@Nullable
-	@Override
-	public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable @org.jetbrains.annotations.Nullable Bundle rootHints) {
-		return new BrowserRoot(MEDIA_ID_ROOT, null);
-	}
-
-
-	@Override
-	public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-		result.sendResult(null);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -539,7 +513,9 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
-				onAudioFocusGain();
+				if (!isPlaying() && mPausedByTransientLossOfFocus) {
+					mPausedByTransientLossOfFocus = false;
+				}
 				break;
 		}
 	}
@@ -783,14 +759,16 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 					} else {
 						return;
 					}
+					// update playstate and notification
+					if (!isForeground)
+						mNotificationHelper.updateNotification();
+					setPlaybackState(true);
 				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
 				}
+			} else {
+				Log.v(TAG, "could not gain audio focus!");
 			}
-			if (!isForeground) {
-				mNotificationHelper.updateNotification();
-			}
-			setPlaybackState(true);
 		}
 	}
 
@@ -900,15 +878,6 @@ public class MusicPlaybackService extends MediaBrowserServiceCompat implements O
 		// restore track information after error
 		else {
 			updateTrackInformation();
-		}
-	}
-
-	/**
-	 * notify on audio focus gain
-	 */
-	public void onAudioFocusGain() {
-		if (!isPlaying() && mPausedByTransientLossOfFocus) {
-			mPausedByTransientLossOfFocus = false;
 		}
 	}
 

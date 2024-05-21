@@ -15,8 +15,11 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -154,7 +157,11 @@ public class NotificationHelper {
 		Notification notification = buildNotification();
 		if (postNotification)
 			postNotification(notification);
-		mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
+		if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+			mService.startForeground(APOLLO_MUSIC_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+		} else {
+			mService.startForeground(APOLLO_MUSIC_SERVICE, notification);
+		}
 	}
 
 	/**
@@ -230,7 +237,7 @@ public class NotificationHelper {
 				notificationManager.cancel(APOLLO_MUSIC_SERVICE);
 			}
 		} catch (SecurityException exception) {
-			Log.e(TAG, "missing permission to post notification");
+			Log.e(TAG, "error while updating notification");
 		}
 	}
 }

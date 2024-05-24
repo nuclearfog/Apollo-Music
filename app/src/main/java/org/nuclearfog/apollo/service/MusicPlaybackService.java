@@ -60,7 +60,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -77,11 +76,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 *
 	 */
-	public static final String APOLLO_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
+	private static final String APOLLO_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 	/**
 	 *
 	 */
-	public static final String MUSIC_PACKAGE_NAME = "com.android.music";
+	private static final String MUSIC_PACKAGE_NAME = "com.android.music";
 	/**
 	 * Notification channel ID
 	 */
@@ -101,7 +100,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Indicates that music playback position within a title was changed
 	 */
-	public static final String CHANGED_POSITION = APOLLO_PACKAGE_NAME + ".positionchanged";
+	private static final String CHANGED_POSITION = APOLLO_PACKAGE_NAME + ".positionchanged";
 	/**
 	 * Indicates the meta data has changed in some way, like a track change
 	 */
@@ -109,7 +108,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Indicates the queue has been updated
 	 */
-	public static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
+	private static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
 	/**
 	 * Indicates the repeat mode chaned
 	 */
@@ -126,10 +125,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Called to go toggle between pausing and playing the music
 	 */
 	public static final String ACTION_TOGGLEPAUSE = APOLLO_PACKAGE_NAME + ".togglepause";
-	/**
-	 * Called to go to pause the playback
-	 */
-	public static final String ACTION_PAUSE = APOLLO_PACKAGE_NAME + ".pause";
 	/**
 	 * Called to go to stop the playback
 	 */
@@ -165,27 +160,27 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 *
 	 */
-	public static final String CMDTOGGLEPAUSE = "togglepause";
+	private static final String CMDTOGGLEPAUSE = "togglepause";
 	/**
 	 *
 	 */
-	public static final String CMDSTOP = "stop";
+	private static final String CMDSTOP = "stop";
 	/**
 	 *
 	 */
-	public static final String CMDPAUSE = "pause";
+	private static final String CMDPAUSE = "pause";
 	/**
 	 *
 	 */
-	public static final String CMDPLAY = "play";
+	private static final String CMDPLAY = "play";
 	/**
 	 *
 	 */
-	public static final String CMDPREVIOUS = "previous";
+	private static final String CMDPREVIOUS = "previous";
 	/**
 	 *
 	 */
-	public static final String CMDNEXT = "next";
+	private static final String CMDNEXT = "next";
 	/**
 	 * Moves a list to the next position in the queue
 	 */
@@ -252,7 +247,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	private LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
 
-	private Set<Integer> mPreviousNumbers = new TreeSet<>();
+	private TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
 	/**
 	 * random generator used for shuffle
 	 */
@@ -420,7 +415,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		IntentFilter filterAction = new IntentFilter();
 		filterAction.addAction(SERVICECMD);
 		filterAction.addAction(ACTION_TOGGLEPAUSE);
-		filterAction.addAction(ACTION_PAUSE);
 		filterAction.addAction(ACTION_STOP);
 		filterAction.addAction(ACTION_NEXT);
 		filterAction.addAction(ACTION_PREVIOUS);
@@ -580,7 +574,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * used by widgets or other intents to
+	 * used by widgets or other intents to change playback state
 	 */
 	public void handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
@@ -603,7 +597,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 		}
 		// pause track
-		else if (CMDPAUSE.equals(command) || ACTION_PAUSE.equals(action)) {
+		else if (CMDPAUSE.equals(command)) {
 			pause(false);
 			mPausedByTransientLossOfFocus = false;
 		}
@@ -714,14 +708,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Stops playback.
 	 */
-	public synchronized void stop() {
+	synchronized void stop() {
 		stop(true);
 	}
 
 	/**
 	 * Resumes or starts playback.
 	 */
-	public synchronized void play() {
+	synchronized void play() {
 		if (mAudio != null) {
 			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
 			request.setOnAudioFocusChangeListener(this);
@@ -733,9 +727,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						gotoNext();
 					}
 					if (mPlayer.play()) {
-						if (!mIsSupposedToBePlaying) {
-							mIsSupposedToBePlaying = true;
-						}
+						mIsSupposedToBePlaying = true;
 						notifyChange(CHANGED_META);
 						cancelShutdown();
 					}
@@ -751,20 +743,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Temporarily pauses playback.
 	 */
-	public synchronized void pause(boolean force) {
+	synchronized void pause(boolean force) {
 		if (mPlayer.pause(force)) {
 			if (mIsSupposedToBePlaying) {
 				scheduleDelayedShutdown();
 				mIsSupposedToBePlaying = false;
-				notifyChange(CHANGED_PLAYSTATE);
 			}
+			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
 	/**
 	 * Changes from the current track to the next track
 	 */
-	public synchronized void gotoNext() {
+	synchronized void gotoNext() {
 		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
 		} else {
@@ -782,16 +774,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mIsSupposedToBePlaying = true;
 				mPlayPos = incrementPosition(mPlayPos, true);
 				openCurrentAndNext();
-				mPlayer.play();
+				play();
 			}
-			notifyChange(CHANGED_META);
 		}
 	}
 
 	/**
 	 * restart current track or go to preview track
 	 */
-	public synchronized void gotoPrev() {
+	synchronized void gotoPrev() {
 		if (!mPlayer.busy()) {
 			if (getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
 				mPlayPos = decrementPosition(mPlayPos);
@@ -810,7 +801,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param position The time to seek to
 	 */
-	public synchronized void seekTo(long position) {
+	synchronized void seekTo(long position) {
 		if (mPlayer.initialized() && !mPlayer.busy()) {
 			if (position < 0) {
 				position = 0;
@@ -828,7 +819,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @param uri URI of the local file
 	 */
-	public synchronized void openFile(@NonNull Uri uri) {
+	synchronized void openFile(@NonNull Uri uri) {
 		stop();
 		updateTrackInformation(uri);
 		Song song = currentSong;
@@ -1021,18 +1012,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Returns the full duration of the current track
-	 *
-	 * @return The duration of the current track in miliseconds
-	 */
-	synchronized long getDuration() {
-		if (mPlayer.initialized()) {
-			return mPlayer.getDuration();
-		}
-		return -1L;
-	}
-
-	/**
 	 * Returns the queue
 	 *
 	 * @return The queue as a long[]
@@ -1205,8 +1184,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 */
 	private void scheduleDelayedShutdown() {
-		mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY, mShutdownIntent);
-		mShutdownScheduled = true;
+		if (!mShutdownScheduled) {
+			mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY, mShutdownIntent);
+			mShutdownScheduled = true;
+		}
 	}
 
 	/**
@@ -1229,7 +1210,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayer.stop();
 		}
 		clearCurrentTrackInformation();
-		notifyChange(CHANGED_META);
+		notifyChange(CHANGED_PLAYSTATE);
 		if (goToIdle) {
 			scheduleDelayedShutdown();
 			mIsSupposedToBePlaying = false;
@@ -1294,8 +1275,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void addToPlayList(long[] list, int position) {
 		if (position < 0) {
 			position = 0;
-		}
-		if (position > mPlayList.size()) {
+		} else if (position > mPlayList.size()) {
 			position = mPlayList.size();
 		}
 		for (long trackId : list) {
@@ -1771,7 +1751,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			if (mPlayer.initialized()) {
 				long seekpos = settings.getSeekPosition();
-				seekTo(seekpos >= 0 && seekpos < getDuration() ? seekpos : 0);
+				seekTo(seekpos >= 0 && seekpos < mPlayer.getDuration() ? seekpos : 0);
 			}
 			//
 			mRepeatMode = settings.getRepeatMode();

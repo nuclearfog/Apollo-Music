@@ -38,7 +38,7 @@ public class PlaybackStatus extends BroadcastReceiver {
 			switch (action) {
 				case MusicPlaybackService.CHANGED_META:
 					callback.onMetaChange();
-					break;
+					// fall through
 
 				case MusicPlaybackService.CHANGED_PLAYSTATE:
 					callback.onStateChange();

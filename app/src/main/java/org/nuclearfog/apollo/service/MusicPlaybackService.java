@@ -38,6 +38,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media.AudioFocusRequestCompat;
+import androidx.media.AudioManagerCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.NotificationHelper;
@@ -73,8 +75,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private static final String TAG = "MusicPlaybackService";
 	/**
-	 * For backwards compatibility reasons, also provide sticky
-	 * broadcasts under the music package
+	 *
 	 */
 	public static final String APOLLO_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 	/**
@@ -372,17 +373,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
 		saveQueue(true);
-		if (mIsSupposedToBePlaying || mPausedByTransientLossOfFocus) {
-			// Something is currently playing, or will be playing once
-			// an in-progress action requesting audio focus ends, so don't stop
-			// the service now.
-			return true;
-
-			// If there is a playlist but playback is paused, then wait a while
-			// before stopping the service, so that pause/resume isn't slow.
-			// Also delay stopping the service if we're transitioning between
-			// tracks.
-		} else if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
+		if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
 			mIsSupposedToBePlaying = false;
 			scheduleDelayedShutdown();
 			return true;
@@ -413,7 +404,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mSession = new MediaSessionCompat(getApplicationContext(), TAG);
 		mSession.setCallback(new MediaButtonCallback(this), null);
 		mSession.setActive(true);
-		setPlaybackState(false);
 		// Initialize the notification helper
 		mNotificationHelper = new NotificationHelper(this, mSession);
 		// Initialize the preferences
@@ -526,18 +516,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
-		// set empty notification to keep service alive
-		mNotificationHelper.createNotification(false);
-
+		// setup notification for service
+		mNotificationHelper.createNotification();
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
-					mNotificationHelper.dismissNotification();
-				} else if (isPlaying()) {
-					mNotificationHelper.createNotification(true);
 				}
+				updateNotification();
 			}
 			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
 				mShutdownScheduled = false;
@@ -563,7 +550,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			// no repeat mode set, check if reached end of the queue, then stop playback
 			else if (mRepeatMode == REPEAT_NONE && mPlayPos < 0) {
-				setPlaybackState(false);
 				mIsSupposedToBePlaying = false;
 				notifyChange(CHANGED_PLAYSTATE);
 			}
@@ -575,11 +561,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				updateTrackInformation();
 				// notify that track changed
 				notifyChange(CHANGED_META);
-				notifyChange(CHANGED_POSITION);
-				setPlaybackState(true);
-				if (!isForeground) {
-					mNotificationHelper.updateNotification();
-				}
 				return true;
 			}
 		} else if (mPlayer.isPlaying()) {
@@ -679,7 +660,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mQueueIsSaveable = false;
 		stop(true);
 		notifyChange(CHANGED_QUEUE);
-		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -743,7 +723,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public synchronized void play() {
 		if (mAudio != null) {
-			int returnCode = mAudio.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
+			request.setOnAudioFocusChangeListener(this);
+			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
 				if (mPlayer.initialized()) {
 					long duration = mPlayer.getDuration();
@@ -753,16 +735,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					if (mPlayer.play()) {
 						if (!mIsSupposedToBePlaying) {
 							mIsSupposedToBePlaying = true;
-							notifyChange(CHANGED_PLAYSTATE);
 						}
+						notifyChange(CHANGED_META);
 						cancelShutdown();
-					} else {
-						return;
 					}
-					// update playstate and notification
-					if (!isForeground)
-						mNotificationHelper.updateNotification();
-					setPlaybackState(true);
 				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
 				}
@@ -782,10 +758,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mIsSupposedToBePlaying = false;
 				notifyChange(CHANGED_PLAYSTATE);
 			}
-			if (!isForeground) {
-				mNotificationHelper.updateNotification();
-			}
-			setPlaybackState(false);
 		}
 	}
 
@@ -795,24 +767,25 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public synchronized void gotoNext() {
 		if (mPlayList.isEmpty()) {
 			scheduleDelayedShutdown();
-		} else if (mPlayer.isPlaying() && mPlayer.next()) {
-			if (mNextPlayPos < 0) {
-				scheduleDelayedShutdown();
-				if (mIsSupposedToBePlaying) {
-					mIsSupposedToBePlaying = false;
+		} else {
+			if (mPlayer.isPlaying() && mPlayer.next()) {
+				if (mNextPlayPos < 0) {
+					scheduleDelayedShutdown();
+					if (mIsSupposedToBePlaying) {
+						mIsSupposedToBePlaying = false;
+					}
+				} else {
+					mIsSupposedToBePlaying = true;
 				}
 			} else {
+				// reload next tracks if an error occured
 				mIsSupposedToBePlaying = true;
+				mPlayPos = incrementPosition(mPlayPos, true);
+				openCurrentAndNext();
+				mPlayer.play();
 			}
-		} else {
-			// reload next tracks if an error occured
-			mIsSupposedToBePlaying = true;
-			mPlayPos = incrementPosition(mPlayPos, true);
-			openCurrentAndNext();
-			mPlayer.play();
+			notifyChange(CHANGED_META);
 		}
-		notifyChange(CHANGED_META);
-		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -829,8 +802,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				seekTo(0);
 				play();
 			}
-			notifyChange(CHANGED_META);
-			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
@@ -848,7 +819,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			mPlayer.setPosition(position);
 			notifyChange(CHANGED_POSITION);
-			setPlaybackState(isPlaying());
+			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
@@ -883,56 +854,56 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * Notify the change-receivers that something has changed.
+	 *
+	 * @param what what changed e.g. {@link #CHANGED_PLAYSTATE,#CHANGED_META}
 	 */
 	synchronized void notifyChange(String what) {
-		if (!what.equals(CHANGED_POSITION)) {
-			Song song = currentSong;
-			Album album = currentAlbum;
-			long audio_id = song != null ? song.getId() : -1;
-			long duration = song != null ? song.getDuration() : 0;
-			String artist_name = song != null ? song.getArtist() : "";
-			String song_name = song != null ? song.getName() : "";
-			String album_name = song != null ? song.getName() : "";
-
+		Song song = currentSong;
+		Album album = currentAlbum;
+		// send broadcase
+		if (song != null) {
 			Intent intent = new Intent(what);
-			intent.putExtra("id", audio_id);
-			intent.putExtra("artist", artist_name);
-			intent.putExtra("album", album_name);
-			intent.putExtra("track", song_name);
+			intent.putExtra("id", song.getId());
+			intent.putExtra("artist", song.getArtist());
+			intent.putExtra("album", song.getAlbum());
+			intent.putExtra("track", song.getName());
 			intent.putExtra("playing", isPlaying());
 			intent.putExtra("isfavorite", MusicUtils.isFavorite(this));
 			Intent musicIntent = new Intent(intent);
 			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
 			sendBroadcast(musicIntent);
 			sendBroadcast(intent);
-
-			switch (what) {
-				case CHANGED_META:
-					// Increase the play count for favorite songs.
-					if (song != null)
-						mPopularCache.addSong(song);
-					if (album != null) {
-						mRecentsCache.addAlbum(album);
-					}
-					// set session track information used for notification
-					mSession.setMetadata(new MediaMetadataCompat.Builder().putString(MediaMetadataCompat.METADATA_KEY_TITLE, song_name)
-							.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist_name)
-							.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration).build());
-					break;
-
-				case CHANGED_QUEUE:
-					saveQueue(true);
-					if (isPlaying()) {
-						setNextTrack(false);
-					}
-					break;
-
-				default:
-					saveQueue(false);
-					break;
-			}
-			mIntentReceiver.updateWidgets(this, what);
 		}
+		switch (what) {
+			case CHANGED_META:
+				// Increase the play count for favorite songs.
+				if (song != null)
+					mPopularCache.addSong(song);
+				if (album != null)
+					mRecentsCache.addAlbum(album);
+				updateMetadata();
+				// fall through
+
+			case CHANGED_PLAYSTATE:
+				updateNotification();
+				// fall through
+
+			case CHANGED_POSITION:
+				updatePlaybackstate();
+				break;
+
+			case CHANGED_QUEUE:
+				saveQueue(true);
+				if (isPlaying()) {
+					setNextTrack(false);
+				}
+				break;
+
+			default:
+				saveQueue(false);
+				break;
+		}
+		mIntentReceiver.updateWidgets(this, what);
 	}
 
 	/**
@@ -976,7 +947,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = 0;
 					openCurrentAndNext();
 					play();
-					notifyChange(CHANGED_META);
 				} else {
 					mShuffleMode = SHUFFLE_NONE;
 				}
@@ -987,7 +957,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = 0;
 					openCurrentAndNext();
 					play();
-					notifyChange(CHANGED_META);
 				} else {
 					mShuffleMode = SHUFFLE_NONE;
 				}
@@ -1006,7 +975,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mPlayPos = index;
 		openCurrentAndNext();
 		play();
-		notifyChange(CHANGED_META);
 		if (mShuffleMode == SHUFFLE_AUTO) {
 			doAutoShuffleUpdate();
 		}
@@ -1121,7 +1089,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mHistory.clear();
 		openCurrentAndNext();
 		play();
-		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -1167,7 +1134,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				stop(false);
 				openCurrentAndNext();
 				play();
-				notifyChange(CHANGED_META);
 			}
 		} else if (action == MOVE_LAST) {
 			addToPlayList(list, Integer.MAX_VALUE);
@@ -1176,16 +1142,44 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * update playback state of the media session (used to update
-	 *
-	 * @param play true to set play state, false to pause state
+	 * update current track metadata of the media session (used to update player control notification)
 	 */
-	private void setPlaybackState(boolean play) {
-		PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
-				.setState(play ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f)
-				.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-						| PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
-		mSession.setPlaybackState(playbackState);
+	private void updateMetadata() {
+		MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+		Song song = currentSong;
+		Album album = currentAlbum;
+		if (song != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getName());
+			builder.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getArtist());
+			builder.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, song.getAlbum());
+			builder.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, song.getDuration());
+		}
+		if (album != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DATE, album.getRelease());
+			builder.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, album.getTrackCount());
+		}
+		mSession.setMetadata(builder.build());
+	}
+
+	/**
+	 * update playback state of the media session (used to update player control notification)
+	 */
+	private void updatePlaybackstate() {
+		PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
+		builder.setState(mIsSupposedToBePlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
+		builder.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
+		mSession.setPlaybackState(builder.build());
+	}
+
+	/**
+	 * update player control notification (player control and legacy notification)
+	 */
+	private void updateNotification() {
+		if (!isForeground) {
+			mNotificationHelper.updateNotification();
+		} else {
+			mNotificationHelper.dismissNotification();
+		}
 	}
 
 	/**
@@ -1235,6 +1229,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			mPlayer.stop();
 		}
 		clearCurrentTrackInformation();
+		notifyChange(CHANGED_META);
 		if (goToIdle) {
 			scheduleDelayedShutdown();
 			mIsSupposedToBePlaying = false;
@@ -1273,7 +1268,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (mPlayList.isEmpty()) {
 				stop(true);
 				mPlayPos = -1;
-				clearCurrentTrackInformation();
 			} else {
 				if (mShuffleMode != SHUFFLE_NONE) {
 					mPlayPos = incrementPosition(mPlayPos, true);
@@ -1287,7 +1281,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					play();
 				}
 			}
-			notifyChange(CHANGED_META);
 		}
 		return last - first + 1;
 	}

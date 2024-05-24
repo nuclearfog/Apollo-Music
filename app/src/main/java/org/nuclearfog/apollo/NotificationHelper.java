@@ -149,14 +149,10 @@ public class NotificationHelper {
 	}
 
 	/**
-	 * Call this to build the {@link Notification}.
-	 *
-	 * @param postNotification true to show notification to user
+	 * create a new notification and attach it to the foreground service
 	 */
-	public void createNotification(boolean postNotification) {
+	public void createNotification() {
 		Notification notification = buildNotification();
-		if (postNotification)
-			postNotification(notification);
 		if (VERSION.SDK_INT >= VERSION_CODES.Q) {
 			mService.startForeground(APOLLO_MUSIC_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
 		} else {
@@ -172,7 +168,7 @@ public class NotificationHelper {
 	}
 
 	/**
-	 * dismiss notification when app is in foreground
+	 * dismiss existing notification
 	 */
 	public void dismissNotification() {
 		postNotification(null);
@@ -225,7 +221,7 @@ public class NotificationHelper {
 	}
 
 	/**
-	 * post/cancel notification
+	 * update/dismiss notification
 	 *
 	 * @param notification notification to post or null to remove existing notification
 	 */

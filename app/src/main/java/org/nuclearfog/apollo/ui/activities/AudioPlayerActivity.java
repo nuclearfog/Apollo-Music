@@ -16,18 +16,15 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio.Albums;
@@ -73,9 +70,9 @@ import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
+import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.StringUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -87,7 +84,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class AudioPlayerActivity extends AppCompatActivity implements ServiceConnection, OnSeekBarChangeListener,
+public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnSeekBarChangeListener,
 		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
 
 	/**
@@ -99,12 +96,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * MIME type for sharing songs
 	 */
 	private static final String MIME_AUDIO = "audio/*";
-
-	/**
-	 * The service token
-	 */
-	@Nullable
-	private ServiceToken mToken;
 	/**
 	 * Play and pause button
 	 */
@@ -224,7 +215,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
-		mToken = MusicUtils.bindToService(this, this);
+		MusicUtils.bindToService(this, this);
 		// Initialize the image fetcher/cache
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
 		// Initialize the handler used to update the current time
@@ -254,6 +245,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 
 		mPreviousButton.setRepeatListener(this);
 		mNextButton.setRepeatListener(this);
+		mPreviousButton.setOnClickListener(this);
+		mNextButton.setOnClickListener(this);
+		mShuffleButton.setOnClickListener(this);
+		mRepeatButton.setOnClickListener(this);
+		mPlayPauseButton.setOnClickListener(this);
 		mProgress.setOnSeekBarChangeListener(this);
 		mTrackName.setOnClickListener(this);
 		mArtistName.setOnClickListener(this);
@@ -333,10 +329,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	protected void onDestroy() {
 		mIsPaused = false;
 		mTimeHandler.removeMessages(MSG_ID);
-		// Unbind from the service
-		if (MusicUtils.isConnected()) {
-			MusicUtils.unbindFromService(mToken);
-		}
+		MusicUtils.unbindFromService(this);
 		super.onDestroy();
 	}
 
@@ -374,7 +367,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
 		MenuItem favorite = menu.findItem(R.id.menu_favorite);
 		// Add fav icon
-		Song song = MusicUtils.getCurrentTrack();
+		Song song = MusicUtils.getCurrentTrack(this);
 		if (song != null) {
 			boolean exits = FavoritesStore.getInstance(this).exists(song.getId());
 			mResources.setFavoriteIcon(favorite, exits);
@@ -398,7 +391,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			refreshQueue();
 		} else if (vId == R.id.menu_favorite) {
 			// Toggle the current track as a favorite and update the menu item
-			Song song = MusicUtils.getCurrentTrack();
+			Song song = MusicUtils.getCurrentTrack(this);
 			if (song != null) {
 				FavoritesStore favoriteStore = FavoritesStore.getInstance(this);
 				if (favoriteStore.exists(song.getId()))
@@ -409,7 +402,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			}
 		} else if (vId == R.id.menu_audio_player_ringtone) {
 			// Set the current track as a ringtone
-			Song song = MusicUtils.getCurrentTrack();
+			Song song = MusicUtils.getCurrentTrack(this);
 			if (song != null) {
 				MusicUtils.setRingtone(this, song.getId());
 			}
@@ -422,6 +415,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				NavUtils.openEffectsPanel(this);
 			} else {
 				Intent intent = new Intent(this, AudioFxActivity.class);
+				intent.putExtra(AudioFxActivity.KEY_SESSION_ID, MusicUtils.getAudioSessionId(this));
 				startActivity(intent);
 			}
 		} else if (vId == R.id.menu_settings) {
@@ -429,7 +423,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			NavUtils.openSettings(this);
 		} else if (vId == R.id.menu_audio_player_delete) {
 			// Delete current song
-			Song currentSong = MusicUtils.getCurrentTrack();
+			Song currentSong = MusicUtils.getCurrentTrack(this);
 			if (currentSong != null) {
 				long[] ids = {currentSong.getId()};
 				MusicUtils.openDeleteDialog(this, currentSong.getName(), ids);
@@ -454,7 +448,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
+	public void onServiceConnected() {
 		// Check whether we were asked to start any playback
 		startPlayback();
 		// Set the playback drawables
@@ -471,7 +465,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceDisconnected(ComponentName name) {
+	public void onServiceDisconnected() {
 	}
 
 	/**
@@ -479,20 +473,20 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	@Override
 	public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-		if (fromuser && MusicUtils.isConnected()) {
+		if (fromuser) {
 			long now = SystemClock.elapsedRealtime();
 			if (now - mLastSeekEventTime > 250L) {
 				mLastSeekEventTime = now;
 				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.getDurationMillis() * progress / 1000L;
-				MusicUtils.seek(mPosOverride);
+				mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
+				MusicUtils.seek(this, mPosOverride);
 				if (!mFromTouch) {
 					// refreshCurrentTime();
 					mPosOverride = -1L;
 				}
 			} else if (now - mLastShortSeekEventTime > 5L) {
 				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.getDurationMillis() * progress / 1000L;
+				mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
 				refreshCurrentTimeText(mPosOverride);
 			}
 		}
@@ -514,7 +508,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public void onStopTrackingTouch(SeekBar bar) {
 		if (mPosOverride != -1L) {
-			MusicUtils.seek(mPosOverride);
+			MusicUtils.seek(this, mPosOverride);
 		}
 		mPosOverride = -1L;
 		mFromTouch = false;
@@ -548,7 +542,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public void onClick(@NonNull View v) {
 		if (v.getId() == R.id.audio_player_artist_name || v.getId() == R.id.audio_player_track_name) {
-			Album album = MusicUtils.getCurrentAlbum();
+			Album album = MusicUtils.getCurrentAlbum(this);
 			if (album != null) {
 				NavUtils.openAlbumProfile(this, album);
 			}
@@ -581,6 +575,29 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				fade(albumArtBorder2, true);
 			fade(mAlbumArt, true);
 		}
+		// repeat button clicked
+		else if (v.getId() == R.id.action_button_repeat) {
+			int mode = MusicUtils.cycleRepeat(this);
+			mRepeatButton.updateRepeatState(mode);
+		}
+		// shuffle button clicked
+		else if (v.getId() == R.id.action_button_shuffle) {
+			int mode = MusicUtils.cycleShuffle(this);
+			mShuffleButton.updateShuffleState(mode);
+		}
+		// play button clicked
+		else if (v.getId() == R.id.action_button_play) {
+			boolean isPlaying = MusicUtils.togglePlayPause(this);
+			mPlayPauseButton.updateState(isPlaying);
+		}
+		// go to previous track
+		else if (v.getId() == R.id.action_button_previous) {
+			MusicUtils.previous(this);
+		}
+		// go to next track
+		else if (v.getId() == R.id.action_button_next) {
+			MusicUtils.next(this);
+		}
 	}
 
 
@@ -608,16 +625,16 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	@Override
 	public void onStateChange() {
 		// Set the play and pause image
-		mPlayPauseButton.updateState();
+		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 	}
 
 
 	@Override
 	public void onModeChange() {
 		// Set the repeat image
-		mRepeatButton.updateRepeatState();
+		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState();
+		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 	}
 
 
@@ -629,15 +646,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Sets the track name, album name, and album art.
 	 */
 	private void updateNowPlayingInfo() {
-		Song song = MusicUtils.getCurrentTrack();
-		Album album = MusicUtils.getCurrentAlbum();
+		Song song = MusicUtils.getCurrentTrack(this);
+		Album album = MusicUtils.getCurrentAlbum(this);
 		if (song != null && album != null) {
 			// Set the track name
 			mTrackName.setText(song.getName());
 			// Set the artist name
 			mArtistName.setText(song.getArtist());
 			// Set the total time
-			mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis()));
+			mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis(this)));
 			// Set the album art
 			mImageFetcher.loadAlbumImage(album, mAlbumArt);
 			// Set the small artwork
@@ -671,13 +688,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	private void startPlayback() {
 		Intent intent = getIntent();
-		if (intent != null && MusicUtils.isConnected()) {
+		if (intent != null) {
 			Uri uri = intent.getData();
 			String mimeType = intent.getType();
 			boolean handled = false;
 			// open file
 			if (uri != null && !uri.toString().trim().isEmpty()) {
-				MusicUtils.playFile(getApplicationContext(), uri);
+				MusicUtils.playFile(this, uri);
 				handled = true;
 			}
 			// open playlist
@@ -721,11 +738,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 */
 	private void updatePlaybackControls() {
 		// Set the play and pause image
-		mPlayPauseButton.updateState();
+		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState();
+		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
-		mRepeatButton.updateRepeatState();
+		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 	}
 
 	/**
@@ -746,11 +763,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * @param delta  The long press duration
 	 */
 	private void scanBackward(int repcnt, long delta) {
-		if (!MusicUtils.isConnected()) {
-			return;
-		}
 		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.getPositionMillis();
+			mStartSeekPos = MusicUtils.getPositionMillis(this);
 			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
@@ -764,12 +778,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			if (newpos < 0) {
 				// move to previous track
 				MusicUtils.previous(this);
-				long duration = MusicUtils.getDurationMillis();
+				long duration = MusicUtils.getDurationMillis(this);
 				mStartSeekPos += duration;
 				newpos += duration;
 			}
 			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
-				MusicUtils.seek(newpos);
+				MusicUtils.seek(this, newpos);
 				mLastSeekEventTime = delta;
 			}
 			if (repcnt >= 0) {
@@ -788,11 +802,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * @param delta  The long press duration
 	 */
 	private void scanForward(int repcnt, long delta) {
-		if (!MusicUtils.isConnected()) {
-			return;
-		}
 		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.getPositionMillis();
+			mStartSeekPos = MusicUtils.getPositionMillis(this);
 			mLastSeekEventTime = 0L;
 		} else {
 			if (delta < 5000) {
@@ -803,7 +814,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				delta = 50000 + (delta - 5000) * 40;
 			}
 			long newpos = mStartSeekPos + delta;
-			long duration = MusicUtils.getDurationMillis();
+			long duration = MusicUtils.getDurationMillis(this);
 			if (newpos >= duration) {
 				// move to next track
 				MusicUtils.next(this);
@@ -811,7 +822,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 				newpos -= duration;
 			}
 			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
-				MusicUtils.seek(newpos);
+				MusicUtils.seek(this,  newpos);
 				mLastSeekEventTime = delta;
 			}
 			if (repcnt >= 0) {
@@ -834,18 +845,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Used to update the current time string
 	 */
 	private long refreshCurrentTime() {
-		if (!MusicUtils.isConnected()) {
-			return 500;
-		}
 		try {
-			long pos = mPosOverride < 0 ? MusicUtils.getPositionMillis() : mPosOverride;
-			if (pos >= 0 && MusicUtils.getDurationMillis() > 0) {
+			long pos = mPosOverride < 0 ? MusicUtils.getPositionMillis(this) : mPosOverride;
+			if (pos >= 0 && MusicUtils.getDurationMillis(this) > 0) {
 				refreshCurrentTimeText(pos);
-				int progress = (int) (1000 * pos / MusicUtils.getDurationMillis());
+				int progress = (int) (1000 * pos / MusicUtils.getDurationMillis(this));
 				mProgress.setProgress(progress);
 				if (mFromTouch) {
 					return 500;
-				} else if (MusicUtils.isPlaying()) {
+				} else if (MusicUtils.isPlaying(this)) {
 					mCurrentTime.setVisibility(View.VISIBLE);
 				} else {
 					// blink the counter
@@ -867,7 +875,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 			if (width == 0) {
 				width = 320;
 			}
-			long smoothrefreshtime = MusicUtils.getDurationMillis() / width;
+			long smoothrefreshtime = MusicUtils.getDurationMillis(this) / width;
 			if (smoothrefreshtime > remaining) {
 				return remaining;
 			}
@@ -899,7 +907,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceCon
 	 * Used to shared what the user is currently listening to
 	 */
 	private void shareCurrentTrack() {
-		String path = MusicUtils.getPlaybackFilePath();
+		String path = MusicUtils.getPlaybackFilePath(this);
 		if (path != null && !path.isEmpty()) {
 			try {
 				File file = new File(path);

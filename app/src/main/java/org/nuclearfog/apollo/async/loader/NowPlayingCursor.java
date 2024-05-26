@@ -209,7 +209,7 @@ public class NowPlayingCursor extends AbstractCursor {
 		for (long trackId : mNowPlaying) {
 			int cursorIndex = mCursorIndexes.indexOf(trackId);
 			if (cursorIndex < 0) {
-				removed += MusicUtils.removeTrack(trackId);
+				//removed += MusicUtils.removeTrack(trackId);// fixme
 			}
 		}
 		if (removed > 0) {
@@ -223,22 +223,22 @@ public class NowPlayingCursor extends AbstractCursor {
 	/**
 	 * @param which The position to remove
 	 */
-	public void removeItem(int which) {
+	public void removeItem(int which) {/*
 		if (MusicUtils.removeTracks(which)) {
 			mNowPlaying.remove(which);
 			onMove(-1, mCurPos);
-		}
+		}*/
 	}
 
 	/**
 	 * get queue from MusicUtils
 	 */
-	private void getQueue() {
+	private void getQueue() {/*
 		long[] ids = MusicUtils.getQueue();
 		mNowPlaying.clear();
 		mNowPlaying.ensureCapacity(ids.length);
 		for (long id : ids) {
 			mNowPlaying.add(id);
-		}
+		}*/
 	}
 }

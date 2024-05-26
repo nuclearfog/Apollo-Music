@@ -25,7 +25,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display the albums for a particular
@@ -110,7 +110,7 @@ public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
 			// Set each album name (line one)
 			holder.mLineOne.setText(album.getName());
 			// Set the number of songs (line two)
-			holder.mLineTwo.setText(MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
+			holder.mLineTwo.setText(StringUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount()));
 			// Set the album year (line three)
 			holder.mLineThree.setText(album.getRelease());
 			// Asynchronously load the album images into the adapter

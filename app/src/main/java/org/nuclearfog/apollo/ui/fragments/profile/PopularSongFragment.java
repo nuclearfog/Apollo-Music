@@ -80,7 +80,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	@Override
 	protected void onItemClick(View v, int pos, long id) {
 		// play all tracks
-		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, pos);
+		MusicUtils.playAllFromUserItemClick(requireActivity(), mAdapter, pos);
 	}
 
 	/**
@@ -126,11 +126,11 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 			long[] trackId = {mSong.getId()};
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), trackId, 0, false);
+					MusicUtils.playAll(requireActivity(), trackId, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(trackId);
+					MusicUtils.playNext(requireActivity(), trackId);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -177,7 +177,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	 */
 	@Override
 	protected void moveToCurrent() {
-		Song song = MusicUtils.getCurrentTrack();
+		Song song = MusicUtils.getCurrentTrack(requireActivity());
 		if (song != null) {
 			for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 				if (mAdapter.getItemId(pos) == song.getId()) {

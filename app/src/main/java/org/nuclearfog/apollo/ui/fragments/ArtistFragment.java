@@ -210,7 +210,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 			long[] mArtistList = MusicUtils.getSongListForArtist(requireContext(), selectedArtist.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), mArtistList, 0, true);
+					MusicUtils.playAll(requireActivity(), mArtistList, 0, true);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -228,7 +228,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 
 				case ContextMenuItems.HIDE_ARTIST:
 					MusicUtils.excludeArtist(requireContext(), selectedArtist);
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 
 				case ContextMenuItems.DELETE:
@@ -260,7 +260,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
 		if (view.getId() == R.id.image) {
 			long[] list = MusicUtils.getSongListForArtist(getContext(), id);
-			MusicUtils.playAll(requireContext(), list, 0, false);
+			MusicUtils.playAll(requireActivity(), list, 0, false);
 		} else {
 			Artist selectedArtist = mAdapter.getItem(position);
 			if (selectedArtist != null) {
@@ -300,7 +300,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
-				Song song = MusicUtils.getCurrentTrack();
+				Song song = MusicUtils.getCurrentTrack(requireActivity());
 				if (song != null) {
 					for (int i = 0; i < mAdapter.getCount(); i++) {
 						Artist artist = mAdapter.getItem(i);

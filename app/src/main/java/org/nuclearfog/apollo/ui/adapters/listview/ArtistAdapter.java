@@ -25,8 +25,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
-
+import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
@@ -84,7 +83,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 		Artist artist = getItem(position);
 		if (artist != null) {
 			// Number of albums (line two)
-			String numAlbums = MusicUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
+			String numAlbums = StringUtils.makeLabel(getContext(), R.plurals.Nalbums, artist.getAlbumCount());
 			// Set each artist name (line one)
 			holder.mLineOne.setText(artist.getName());
 			// Set the number of albums (line two)
@@ -93,7 +92,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 			mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
 			if (mLoadExtraData) {
 				// Number of songs (line three)
-				String numTracks = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
+				String numTracks = StringUtils.makeLabel(getContext(), R.plurals.Nsongs, artist.getTrackCount());
 				// Set the number of songs (line three)
 				if (holder.mLineThree != null)
 					holder.mLineThree.setText(numTracks);

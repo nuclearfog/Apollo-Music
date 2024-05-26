@@ -93,7 +93,7 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 
 	@Override
 	protected void onItemClick(View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireActivity(), mAdapter, position);
 	}
 
 	/**
@@ -134,11 +134,11 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), trackId, 0, false);
+					MusicUtils.playAll(requireActivity(), trackId, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(trackId);
+					MusicUtils.playNext(requireActivity(), trackId);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -193,7 +193,7 @@ public class ArtistSongFragment extends ProfileFragment implements AsyncCallback
 	 */
 	@Override
 	protected void moveToCurrent() {
-		Song song = MusicUtils.getCurrentTrack();
+		Song song = MusicUtils.getCurrentTrack(requireActivity());
 		if (song != null) {
 			for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 				if (mAdapter.getItemId(pos) == song.getId()) {

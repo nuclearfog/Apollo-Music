@@ -92,4 +92,18 @@ public class StringUtils {
 		}
 		return false;
 	}
+
+	/**
+	 * Used to make number of labels for the number of artists, albums, songs,
+	 * genres, and playlists.
+	 *
+	 * @param context   The {@link Context} to use.
+	 * @param pluralInt The ID of the plural string to use.
+	 * @param number    The number of artists, albums, songs, genres, or playlists.
+	 * @return A {@link String} used as a label for the number of artists,
+	 * albums, songs, genres, and playlists.
+	 */
+	public static String makeLabel(Context context, int pluralInt, int number) {
+		return context.getResources().getQuantityString(pluralInt, number, number);
+	}
 }

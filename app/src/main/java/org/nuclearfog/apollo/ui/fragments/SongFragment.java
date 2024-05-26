@@ -197,11 +197,11 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), trackIds, 0, false);
+					MusicUtils.playAll(requireActivity(), trackIds, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(trackIds);
+					MusicUtils.playNext(requireActivity(), trackIds);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -233,7 +233,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 
 				case ContextMenuItems.HIDE_SONG:
 					MusicUtils.excludeSong(requireContext(), selectedSong);
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 
 				case ContextMenuItems.DELETE:
@@ -249,7 +249,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 	 */
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireActivity(), mAdapter, position);
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
 				// current unique track ID
-				Song song = MusicUtils.getCurrentTrack();
+				Song song = MusicUtils.getCurrentTrack(requireActivity());
 				if (song != null) {
 					for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 						if (mAdapter.getItemId(pos) == song.getId()) {

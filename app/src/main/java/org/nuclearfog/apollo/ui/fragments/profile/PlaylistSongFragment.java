@@ -105,7 +105,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 
 	@Override
 	protected void onItemClick(View view, int position, long id) {
-		MusicUtils.playAllFromUserItemClick(requireContext(), mAdapter, position);
+		MusicUtils.playAllFromUserItemClick(requireActivity(), mAdapter, position);
 		// mark playlist as current queue
 		queueIsPlaylist = true;
 	}
@@ -152,11 +152,11 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), trackId, 0, false);
+					MusicUtils.playAll(requireActivity(), trackId, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					MusicUtils.playNext(trackId);
+					MusicUtils.playNext(requireActivity(), trackId);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -245,7 +245,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 				mAdapter.insert(selectedSong, to);
 				// move track item in the current queue
 				if (queueIsPlaylist) {
-					MusicUtils.moveQueueItem(from - HEADER_COUNT, to - HEADER_COUNT);
+					MusicUtils.moveQueueItem(requireActivity(), from - HEADER_COUNT, to - HEADER_COUNT);
 				}
 			}
 		} else {
@@ -258,7 +258,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	 */
 	@Override
 	protected void moveToCurrent() {
-		Song song = MusicUtils.getCurrentTrack();
+		Song song = MusicUtils.getCurrentTrack(requireActivity());
 		if (song != null) {
 			for (int pos = 0; pos < mAdapter.getCount(); pos++) {
 				if (mAdapter.getItemId(pos) == song.getId()) {

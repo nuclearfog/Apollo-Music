@@ -18,14 +18,12 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -33,7 +31,7 @@ import java.lang.ref.WeakReference;
  * A {@link RepeatingImageButton} that will repeatedly call a 'listener' method as long
  * as the button is pressed, otherwise functions like a typecal ImageView
  */
-public class RepeatingImageButton extends AppCompatImageButton implements OnClickListener {
+public class RepeatingImageButton extends AppCompatImageButton {
 
 	private static final long S_INTERVAL = 400;
 
@@ -53,21 +51,8 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
 		setBackground(new HoloSelector(context));
 		setFocusable(true);
 		setLongClickable(true);
-		setOnClickListener(this);
 		repeater = new Repeater(this);
 		updateState();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onClick(View view) {
-		if (view.getId() == R.id.action_button_previous) {
-			MusicUtils.previous(getContext());
-		} else if (view.getId() == R.id.action_button_next) {
-			MusicUtils.next(getContext());
-		}
 	}
 
 	/**

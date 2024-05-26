@@ -46,8 +46,8 @@ import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
 import org.nuclearfog.apollo.utils.NavUtils;
+import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -57,7 +57,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends ActivityBase implements AsyncCallback<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
+public class SearchActivity extends ActivityBase implements ServiceBinderCallback, AsyncCallback<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid
@@ -68,12 +68,6 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * context menu group ID
 	 */
 	private static final int GROUP_ID = 0xC1A35EE4;
-
-	/**
-	 * The service token
-	 */
-	@Nullable
-	private ServiceToken mToken;
 
 	/**
 	 * The query
@@ -112,7 +106,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
-		mToken = MusicUtils.bindToService(this, this);
+		MusicUtils.bindToService(this, this);
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
 		mFilterString = !TextUtils.isEmpty(query) ? query : "";
@@ -179,12 +173,9 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 */
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		// Unbind from the service
-		if (MusicUtils.isConnected()) {
-			MusicUtils.unbindFromService(mToken);
-			mToken = null;
-		}
+		MusicUtils.unbindFromService(this);
+		super.onDestroy();
 	}
 
 	/**
@@ -223,13 +214,13 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 				case ContextMenuItems.PLAY_SELECTION:
 					if (selection instanceof Album) {
 						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
-						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+						MusicUtils.playAll(this, ids, 0, false);
 					} else if (selection instanceof Artist) {
 						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
-						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+						MusicUtils.playAll(this, ids, 0, false);
 					} else if (selection instanceof Song) {
 						long[] ids = new long[]{selection.getId()};
-						MusicUtils.playAll(getApplicationContext(), ids, 0, false);
+						MusicUtils.playAll(this, ids, 0, false);
 					}
 					return true;
 
@@ -270,7 +261,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 				case ContextMenuItems.PLAY_NEXT:
 					if (selection instanceof Song) {
 						long[] ids = new long[]{selection.getId()};
-						MusicUtils.playNext(ids);
+						MusicUtils.playNext(this, ids);
 					}
 					return true;
 
@@ -386,7 +377,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		else if (music instanceof Song) {
 			Song song = (Song) music;
 			long[] list = new long[]{song.getId()};
-			MusicUtils.playAll(getApplicationContext(), list, 0, false);
+			MusicUtils.playAll(this, list, 0, false);
 		}
 		// All done
 		finish();

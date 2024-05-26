@@ -91,8 +91,8 @@ public class AppWidgetLarge extends AppWidgetBase {
 	@NonNull
 	private static RemoteViews getRemoteViews(MusicPlaybackService service) {
 		RemoteViews appWidgetView = new RemoteViews(BuildConfig.APPLICATION_ID, R.layout.app_widget_large);
-		Album album = MusicUtils.getCurrentAlbum();
-		Song song = MusicUtils.getCurrentTrack();
+		Album album = service.getCurrentAlbum();
+		Song song = service.getCurrentSong();
 		if (album != null && song != null) {
 			Bitmap albumArt = BitmapUtils.getAlbumArt(service, album);
 			// Set the titles and artwork

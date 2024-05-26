@@ -15,7 +15,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 
@@ -24,14 +23,13 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * A custom {@link ImageButton} that represents the "play and pause" button.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlayPauseButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
+public class PlayPauseButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
 	 * @param context The {@link Context} to use
@@ -41,22 +39,9 @@ public class PlayPauseButton extends AppCompatImageButton implements OnClickList
 		super(context, attrs);
 		// Theme the selector
 		setBackground(new HoloSelector(context));
-		// Control playback (play/pause)
-		setOnClickListener(this);
 		// Show the cheat sheet
 		setOnLongClickListener(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onClick(View v) {
-		if (MusicUtils.isPlaying())
-			MusicUtils.pause();
-		else
-			MusicUtils.play(getContext());
-		updateState();
+		updateState(false);
 	}
 
 	/**
@@ -73,13 +58,14 @@ public class PlayPauseButton extends AppCompatImageButton implements OnClickList
 	/**
 	 * Sets the correct drawable for playback.
 	 */
-	public void updateState() {
-		if (MusicUtils.isPlaying()) {
+	public void updateState(boolean play) {
+		if (play) {
 			setContentDescription(getResources().getString(R.string.accessibility_pause));
 			setImageResource(R.drawable.btn_playback_pause);
 		} else {
 			setContentDescription(getResources().getString(R.string.accessibility_play));
 			setImageResource(R.drawable.btn_playback_play);
 		}
+		requestLayout();
 	}
 }

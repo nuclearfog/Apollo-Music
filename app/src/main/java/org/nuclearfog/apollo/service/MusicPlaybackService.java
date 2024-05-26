@@ -859,7 +859,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			intent.putExtra("album", song.getAlbum());
 			intent.putExtra("track", song.getName());
 			intent.putExtra("playing", isPlaying());
-			intent.putExtra("isfavorite", MusicUtils.isFavorite(this));
+			intent.putExtra("isfavorite", MusicUtils.isFavorite(song, this));
 			Intent musicIntent = new Intent(intent);
 			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
 			sendBroadcast(musicIntent);

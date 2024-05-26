@@ -173,16 +173,16 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 				case ContextMenuItems.PLAY_SELECTION:
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
 						// play favorite playlist
-						MusicUtils.playFavorites(requireContext());
+						MusicUtils.playFavorites(requireActivity());
 					} else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
 						// play last added playlist
-						MusicUtils.playLastAdded(requireContext());
+						MusicUtils.playLastAdded(requireActivity());
 					} else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
 						// play popular playlist
-						MusicUtils.playPopular(requireContext());
+						MusicUtils.playPopular(requireActivity());
 					} else {
 						// play custom playlist
-						MusicUtils.playPlaylist(requireContext(), selectedPlaylist.getId());
+						MusicUtils.playPlaylist(requireActivity(), selectedPlaylist.getId());
 					}
 					return true;
 
@@ -221,7 +221,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 								public void onClick(DialogInterface dialog, int which) {
 									Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, selectedPlaylist.getId());
 									requireActivity().getContentResolver().delete(mUri, null, null);
-									MusicUtils.refresh();
+									MusicUtils.refresh(requireActivity());
 								}
 							}).setNegativeButton(R.string.cancel, new OnClickListener() {
 								@Override

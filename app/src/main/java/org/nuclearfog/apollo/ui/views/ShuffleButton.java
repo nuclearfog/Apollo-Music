@@ -20,22 +20,21 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ShuffleButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
+public class ShuffleButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
 	 * highlight color
@@ -50,19 +49,8 @@ public class ShuffleButton extends AppCompatImageButton implements OnClickListen
 		super(context, attrs);
 		// Theme the selector
 		setBackground(new HoloSelector(context));
-		// Control playback (cycle shuffle)
-		setOnClickListener(this);
 		// Show the cheat sheet
 		setOnLongClickListener(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onClick(View v) {
-		MusicUtils.cycleShuffle(getContext());
-		updateShuffleState();
 	}
 
 	/**
@@ -90,25 +78,17 @@ public class ShuffleButton extends AppCompatImageButton implements OnClickListen
 	/**
 	 * Sets the correct drawable for the shuffle state.
 	 */
-	public void updateShuffleState() {
-		String info;
-		Drawable button;
-		switch (MusicUtils.getShuffleMode()) {
-			case MusicPlaybackService.SHUFFLE_NORMAL:
-			case MusicPlaybackService.SHUFFLE_AUTO:
-				info = getResources().getString(R.string.accessibility_shuffle_all);
-				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
-				if (button != null)
-					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
-				break;
-
-			default:
-			case MusicPlaybackService.SHUFFLE_NONE:
-				info = getResources().getString(R.string.accessibility_shuffle);
-				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
-				break;
+	public void updateShuffleState(int shuffleMode) {
+		if (shuffleMode == MusicUtils.SHUFFLE_AUTO || shuffleMode == MusicUtils.SHUFFLE_NORMAL) {
+			setContentDescription(getResources().getString(R.string.accessibility_shuffle_all));
+			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle_all);
+			if (drawable != null)
+				drawable.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+			setImageDrawable(drawable);
+		} else if (shuffleMode == MusicUtils.SHUFFLE_NONE) {
+			setContentDescription(getResources().getString(R.string.accessibility_shuffle));
+			Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_shuffle);
+			setImageDrawable(drawable);
 		}
-		setContentDescription(info);
-		setImageDrawable(button);
 	}
 }

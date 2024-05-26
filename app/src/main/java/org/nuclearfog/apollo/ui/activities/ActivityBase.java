@@ -21,15 +21,12 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,8 +54,8 @@ import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
 import org.nuclearfog.apollo.utils.NavUtils;
+import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and
@@ -67,8 +64,9 @@ import org.nuclearfog.apollo.utils.NavUtils;
  * {@link HomeActivity} extends from this skeleton.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public abstract class ActivityBase extends AppCompatActivity implements ServiceConnection, OnClickListener, OnQueryTextListener, PlayStatusListener {
+public abstract class ActivityBase extends AppCompatActivity implements ServiceBinderCallback, OnClickListener, OnQueryTextListener, PlayStatusListener {
 
 	/**
 	 * request code for permission result
@@ -79,12 +77,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * permissions needed for this app
 	 */
 	private static final String[] PERMISSIONS;
-
-	/**
-	 * The service token
-	 */
-	@Nullable
-	private ServiceToken mToken;
 	/**
 	 * Play and pause button (BAB)
 	 */
@@ -131,7 +123,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Bind Apollo's service
-		mToken = MusicUtils.bindToService(this, this);
+		MusicUtils.bindToService(this, this);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
 	}
@@ -154,6 +146,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
 		// Album art
 		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
+		// next track button
+		View previousButton = findViewById(R.id.action_button_previous);
+		// previous track button
+		View nextButton = findViewById(R.id.action_button_next);
 		// background of bottom action bar
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 		// set bottom action bar color
@@ -173,6 +169,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 				}
 			}
 		}
+		previousButton.setOnClickListener(this);
+		nextButton.setOnClickListener(this);
+		mPlayPauseButton.setOnClickListener(this);
+		mShuffleButton.setOnClickListener(this);
+		mRepeatButton.setOnClickListener(this);
 		init();
 	}
 
@@ -180,7 +181,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
+	public void onServiceConnected() {
 		// Set the playback drawables
 		updatePlaybackControls();
 		// Current info
@@ -193,7 +194,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceDisconnected(ComponentName name) {
+	public void onServiceDisconnected() {
 	}
 
 	/**
@@ -300,9 +301,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	protected void onDestroy() {
 		// Unbind from the service
-		if (mToken != null) {
-			MusicUtils.unbindFromService(mToken);
-		}
+		MusicUtils.unbindFromService(this);
 		super.onDestroy();
 	}
 
@@ -311,21 +310,47 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 */
 	@Override
 	public void onClick(View v) {
+		// album art clicked
 		if (v.getId() == R.id.bottom_action_bar_album_art) {
-			Album album = MusicUtils.getCurrentAlbum();
+			Album album = MusicUtils.getCurrentAlbum(this);
 			if (album != null) {
 				NavUtils.openAlbumProfile(this, album);
 			} else {
 				MusicUtils.shuffleAll(this);
 			}
-		} else if (v.getId() == R.id.bottom_action_bar_background) {
-			Album album = MusicUtils.getCurrentAlbum();
+		}
+		// background clicked
+		else if (v.getId() == R.id.bottom_action_bar_background) {
+			Album album = MusicUtils.getCurrentAlbum(this);
 			if (album != null) {
 				Intent intent = new Intent(this, AudioPlayerActivity.class);
 				startActivity(intent);
 			} else {
 				MusicUtils.shuffleAll(this);
 			}
+		}
+		// repeat button clicked
+		else if (v.getId() == R.id.action_button_repeat) {
+			int mode = MusicUtils.cycleRepeat(this);
+			mRepeatButton.updateRepeatState(mode);
+		}
+		// shuffle button clicked
+		else if (v.getId() == R.id.action_button_shuffle) {
+			MusicUtils.cycleRepeat(this);
+			mShuffleButton.updateShuffleState(MusicUtils.getRepeatMode(this));
+		}
+		// play button clicked
+		else if (v.getId() == R.id.action_button_play) {
+			boolean isPlaying = MusicUtils.togglePlayPause(this);
+			mPlayPauseButton.updateState(isPlaying);
+		}
+		// go to previous track
+		else if (v.getId() == R.id.action_button_previous) {
+			MusicUtils.previous(this);
+		}
+		// go to next track
+		else if (v.getId() == R.id.action_button_next) {
+			MusicUtils.next(this);
 		}
 	}
 
@@ -358,16 +383,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	@Override
 	public final void onStateChange() {
 		// Set the play and pause image
-		mPlayPauseButton.updateState();
+		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 	}
 
 
 	@Override
 	public final void onModeChange() {
 		// Set the repeat image
-		mRepeatButton.updateRepeatState();
+		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState();
+		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 	}
 
 
@@ -380,8 +405,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 * Sets the track name, album name, and album art.
 	 */
 	private void updateBottomActionBarInfo() {
-		Song song = MusicUtils.getCurrentTrack();
-		Album album = MusicUtils.getCurrentAlbum();
+		Song song = MusicUtils.getCurrentTrack(this);
+		Album album = MusicUtils.getCurrentAlbum(this);
 		if (song != null) {
 			// Set the track name
 			mTrackName.setText(song.getName());
@@ -397,11 +422,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceC
 	 */
 	private void updatePlaybackControls() {
 		// Set the play and pause image
-		mPlayPauseButton.updateState();
+		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 		// Set the shuffle image
-		mShuffleButton.updateShuffleState();
+		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
-		mRepeatButton.updateRepeatState();
+		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 	}
 
 	/**

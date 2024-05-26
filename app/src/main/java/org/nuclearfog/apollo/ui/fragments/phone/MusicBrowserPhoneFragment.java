@@ -157,7 +157,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		if (visibility != null) {
 			visibility.setChecked(mPreferences.getExcludeTracks());
 		}
-		Song song = MusicUtils.getCurrentTrack();
+		Song song = MusicUtils.getCurrentTrack(requireActivity());
 		if (song != null) {
 			boolean isFavorite = FavoritesStore.getInstance(requireContext()).exists(song.getId());
 			mResources.setFavoriteIcon(favorite, isFavorite);
@@ -211,11 +211,11 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		// Shuffle all the songs
 		if (item.getItemId() == R.id.menu_shuffle) {
-			MusicUtils.shuffleAll(requireContext());
+			MusicUtils.shuffleAll(requireActivity());
 		}
 		// Toggle the current track as a favorite and update the menu item
 		else if (item.getItemId() == R.id.menu_favorite) {
-			Song song = MusicUtils.getCurrentTrack();
+			Song song = MusicUtils.getCurrentTrack(requireActivity());
 			if (song != null) {
 				FavoritesStore.getInstance(requireContext()).addFavorite(song);
 				requireActivity().invalidateOptionsMenu();

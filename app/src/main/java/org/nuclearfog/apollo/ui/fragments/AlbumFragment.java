@@ -205,7 +205,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 			long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
+					MusicUtils.playAll(requireActivity(), mAlbumList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -231,7 +231,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 
 				case ContextMenuItems.HIDE_ALBUM:
 					MusicUtils.excludeAlbum(requireContext(), selectedAlbum);
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 			}
 		}
@@ -260,7 +260,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
 			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(requireContext(), list, 0, false);
+			MusicUtils.playAll(requireActivity(), list, 0, false);
 		} else {
 			Album selectedAlbum = mAdapter.getItem(position);
 			if (selectedAlbum != null) {
@@ -297,7 +297,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
-				Album current = MusicUtils.getCurrentAlbum();
+				Album current = MusicUtils.getCurrentAlbum(requireActivity());
 				if (current != null) {
 					for (int i = 0; i < mAdapter.getCount(); i++) {
 						Album item = mAdapter.getItem(i);

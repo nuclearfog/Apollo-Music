@@ -131,14 +131,6 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 		if (!TextUtils.isEmpty(lastAlbum)) {
 			// Set the last album the artist played
 			mFetcher.loadAlbumImage(artist, lastAlbum, MusicUtils.getIdForAlbum(context, lastAlbum, artist), mPhoto);
-			// Play the album
-			mPhoto.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					long[] albumList = MusicUtils.getSongListForAlbum(getContext(), MusicUtils.getIdForAlbum(context, lastAlbum, artist));
-					MusicUtils.playAll(getContext(), albumList, 0, false);
-				}
-			});
 		} else {
 			setDefault(context);
 		}

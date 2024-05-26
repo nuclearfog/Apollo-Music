@@ -99,10 +99,10 @@ public abstract class BasePlaylistDialog extends DialogFragment implements TextW
 		if (dialog == mPlaylistDialog) {
 			if (which == Dialog.BUTTON_POSITIVE) {
 				onSaveClick();
-				MusicUtils.refresh();
+				MusicUtils.refresh(getActivity());
 			} else if (which == Dialog.BUTTON_NEGATIVE) {
 				closeKeyboard();
-				MusicUtils.refresh();
+				MusicUtils.refresh(getActivity());
 			}
 		}
 	}

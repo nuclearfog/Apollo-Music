@@ -149,7 +149,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_FOLDER:
 					long[] selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getName());
-					MusicUtils.playAll(requireContext(), selectedFolderSongs, 0, false);
+					MusicUtils.playAll(requireActivity(), selectedFolderSongs, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_FOLDER_QUEUE:
@@ -159,7 +159,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 
 				case ContextMenuItems.HIDE_FOLDER:
 					MusicUtils.excludeFolder(requireContext(), selectedFolder);
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 			}
 		}

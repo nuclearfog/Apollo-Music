@@ -19,6 +19,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,7 +35,6 @@ import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter;
 import org.nuclearfog.apollo.ui.adapters.recyclerview.EqualizerAdapter.BandLevelChangeListener;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog;
 import org.nuclearfog.apollo.ui.dialogs.PresetDialog.OnPresetSaveCallback;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
@@ -47,6 +47,12 @@ import java.util.List;
  */
 public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener,
 		OnSeekBarChangeListener, AsyncCallback<List<AudioPreset>>, OnItemSelectedListener, OnPresetSaveCallback {
+
+	/**
+	 * Bundle key used to set current audio session id
+	 * value type is Integer
+	 */
+	public static final String KEY_SESSION_ID = "session_id";
 
 	/**
 	 * maximum steps of the bassboost seekbar
@@ -65,7 +71,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_audiofx);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
@@ -77,7 +83,9 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		reverb = findViewById(R.id.audiofx_reverb);
 		presetAdapter = new PresetAdapter();
 		presetLoader = new PresetLoader(this);
-		audioEffects = AudioEffects.getInstance(this, MusicUtils.getAudioSessionId());
+
+		int sessionId = getIntent().getIntExtra(KEY_SESSION_ID, 0);
+		audioEffects = AudioEffects.getInstance(this, sessionId);
 
 		// set theme colors
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(this);
@@ -107,7 +115,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			setViews();
 			setPreset();
 		} else {
-			if (MusicUtils.getAudioSessionId() != 0)
+			if (sessionId != 0)
 				Toast.makeText(this, R.string.error_audioeffects_not_supported, Toast.LENGTH_SHORT).show();
 			finish();
 			return;

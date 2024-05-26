@@ -176,7 +176,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					long[] selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
-					MusicUtils.playAll(requireContext(), selectedGenreSongs, 0, false);
+					MusicUtils.playAll(requireActivity(), selectedGenreSongs, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -186,7 +186,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 
 				case ContextMenuItems.HIDE_GENRE:
 					MusicUtils.excludeGenre(requireContext(), selection);
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 			}
 		}

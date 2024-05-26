@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.NonNull;
@@ -28,7 +27,6 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -37,8 +35,9 @@ import org.nuclearfog.apollo.utils.MusicUtils;
  * A custom {@link AppCompatImageButton} that represents the "repeat" button.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class RepeatButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
+public class RepeatButton extends AppCompatImageButton implements OnLongClickListener {
 
 	/**
 	 * Highlight color
@@ -53,19 +52,8 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
 		super(context, attrs);
 		// Set the selector
 		setBackground(new HoloSelector(context));
-		// Control playback (cycle repeat modes)
-		setOnClickListener(this);
 		// Show the cheat sheet
 		setOnLongClickListener(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onClick(View v) {
-		MusicUtils.cycleRepeat(getContext());
-		updateRepeatState();
 	}
 
 	/**
@@ -92,32 +80,33 @@ public class RepeatButton extends AppCompatImageButton implements OnClickListene
 
 	/**
 	 * Sets the correct drawable for the repeat state.
+	 *
+	 * @param repeatMode repeat mode state {@link MusicUtils#REPEAT_NONE,MusicUtils#REPEAT_CURRENT,MusicUtils#REPEAT_ALL}
 	 */
-	public void updateRepeatState() {
-		String info;
-		Drawable button;
-		switch (MusicUtils.getRepeatMode()) {
-			case MusicPlaybackService.REPEAT_ALL:
-				info = getResources().getString(R.string.accessibility_repeat_all);
-				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
+	public void updateRepeatState(int repeatMode) {
+		switch (repeatMode) {
+			case MusicUtils.REPEAT_ALL:
+				setContentDescription(getContext().getString(R.string.accessibility_repeat_all));
+				Drawable button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_all);
 				if (button != null)
 					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				setImageDrawable(button);
 				break;
 
-			case MusicPlaybackService.REPEAT_CURRENT:
-				info = getResources().getString(R.string.accessibility_repeat_one);
+			case MusicUtils.REPEAT_CURRENT:
+				setContentDescription(getContext().getString(R.string.accessibility_repeat_one));
 				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat_one);
 				if (button != null)
 					button.setColorFilter(new PorterDuffColorFilter(color, MULTIPLY));
+				setImageDrawable(button);
 				break;
 
 			default:
-			case MusicPlaybackService.REPEAT_NONE:
-				info = getResources().getString(R.string.accessibility_repeat);
+			case MusicUtils.REPEAT_NONE:
+				setContentDescription(getContext().getString(R.string.accessibility_repeat));
 				button = ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_repeat);
+				setImageDrawable(button);
 				break;
 		}
-		setContentDescription(info);
-		setImageDrawable(button);
 	}
 }

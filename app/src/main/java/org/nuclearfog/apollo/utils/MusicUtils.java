@@ -14,19 +14,16 @@ package org.nuclearfog.apollo.utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -63,6 +60,7 @@ import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -80,6 +78,18 @@ import java.util.concurrent.Executors;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class MusicUtils {
+
+	public static final int REPEAT_NONE = 0;
+
+	public static final int REPEAT_ALL = 1;
+
+	public static final int REPEAT_CURRENT = 2;
+
+	public static final int SHUFFLE_NONE = 10;
+
+	public static final int SHUFFLE_NORMAL = 11;
+
+	public static final int SHUFFLE_AUTO = 12;
 
 	/**
 	 * selection to remove track from playlist
@@ -105,13 +115,7 @@ public final class MusicUtils {
 	/**
 	 * information about activities accessing this service interface
 	 */
-	private static WeakHashMap<Context, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
-
-	/**
-	 * weak reference to the service to avoid memory leaks
-	 */
-	@Nullable
-	private static volatile IApolloService mService;
+	private static WeakHashMap<Activity, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
 
 	/**
 	 *
@@ -133,19 +137,10 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * check if service is connected
-	 */
-	public static boolean isConnected() {
-		return mService != null;
-	}
-
-	/**
 	 * @param activity The {@link Activity} to use
-	 * @param callback The {@link ServiceConnection} to use
-	 * @return The new instance of {@link ServiceToken}
+	 * @param callback The {@link ServiceBinderCallback} to use
 	 */
-	@Nullable
-	public static ServiceToken bindToService(Activity activity, @Nullable ServiceConnection callback) {
+	public static void bindToService(Activity activity, @Nullable ServiceBinderCallback callback) {
 		if (activity.getParent() != null)
 			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
@@ -153,57 +148,33 @@ public final class MusicUtils {
 		ContextCompat.startForegroundService(activity.getApplicationContext(), serviceIntent);
 		ServiceBinder binder = new ServiceBinder(callback);
 		if (contextWrapper.bindService(serviceIntent, binder, 0)) {
-			mConnectionMap.put(contextWrapper, binder);
-			return new ServiceToken(contextWrapper);
+			mConnectionMap.put(activity, binder);
 		}
-		return null;
 	}
 
-	/**
-	 * @param token The {@link ServiceToken} to unbind from
-	 */
-	public static void unbindFromService(ServiceToken token) {
-		if (token == null) {
-			return;
-		}
-		ContextWrapper mContextWrapper = token.mWrappedContext;
-		ServiceBinder mBinder = mConnectionMap.remove(mContextWrapper);
-		if (mBinder == null) {
-			return;
-		}
-		mContextWrapper.unbindService(mBinder);
-		if (mConnectionMap.isEmpty()) {
-			if (BuildConfig.DEBUG) {
-				Log.v("Utils", "All connections closed, cleaning Service");
+
+	public static void unbindFromService(Activity activity) {
+		ServiceBinder mBinder = mConnectionMap.remove(activity);
+		if (mBinder != null) {
+			activity.unbindService(mBinder);
+			if (mConnectionMap.isEmpty()) {
+				if (BuildConfig.DEBUG) {
+					Log.v("Utils", "All connections closed, cleaning Service");
+				}
 			}
-			// destroying instance
-			mService = null;
 		}
-	}
-
-	/**
-	 * Used to make number of labels for the number of artists, albums, songs,
-	 * genres, and playlists.
-	 *
-	 * @param context   The {@link Context} to use.
-	 * @param pluralInt The ID of the plural string to use.
-	 * @param number    The number of artists, albums, songs, genres, or playlists.
-	 * @return A {@link String} used as a label for the number of artists,
-	 * albums, songs, genres, and playlists.
-	 */
-	public static String makeLabel(Context context, int pluralInt, int number) {
-		return context.getResources().getQuantityString(pluralInt, number, number);
 	}
 
 	/**
 	 * switch to next track
 	 */
-	public static void next(Context context) {
-		IApolloService service = mService;
+	public static void next(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.gotoNext();
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -215,12 +186,13 @@ public final class MusicUtils {
 	/**
 	 * switch to previous track or repeat current track
 	 */
-	public static void previous(Context context) {
-		IApolloService service = mService;
+	public static void previous(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				service.gotoPrev();
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -230,77 +202,69 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * plays the music.
+	 * toggle playstate
 	 */
-	public static void play(Context context) {
-		IApolloService service = mService;
+	public static boolean togglePlayPause(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.play();
-				AudioEffects.getInstance(context, getAudioSessionId());
+				if (service.isPlaying()) {
+					service.pause(false);
+					return false;
+				} else {
+					service.play();
+					int sessionId = service.getAudioSessionId();
+					AudioEffects.getInstance(activity, sessionId);
+					return true;
+				}
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
 				}
 			}
 		}
-	}
-
-	/**
-	 * pauses the music.
-	 */
-	public static void pause() {
-		IApolloService service = mService;
-		if (service != null) {
-			try {
-				service.pause(false);
-			} catch (Exception err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
+		return false;
 	}
 
 	/**
 	 * Cycles through the repeat options.
 	 */
-	public static void cycleRepeat(Context context) {
-		IApolloService service = mService;
+	public static int cycleRepeat(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				switch (service.getRepeatMode()) {
 					case MusicPlaybackService.REPEAT_NONE:
 						service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
-						break;
+						return REPEAT_ALL;
 
 					case MusicPlaybackService.REPEAT_ALL:
 						service.setRepeatMode(MusicPlaybackService.REPEAT_CURRENT);
-						if (service.getShuffleMode() != MusicPlaybackService.SHUFFLE_NONE) {
+						if (service.getShuffleMode() != MusicPlaybackService.SHUFFLE_NONE)
 							service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
-						}
-						break;
+						return REPEAT_CURRENT;
 
-					default:
+					case MusicPlaybackService.REPEAT_CURRENT:
 						service.setRepeatMode(MusicPlaybackService.REPEAT_NONE);
-						break;
+						return REPEAT_NONE;
 				}
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
 				}
 			}
 		}
+		return REPEAT_NONE;
 	}
 
 	/**
 	 * Cycles through the shuffle options.
 	 */
-	public static void cycleShuffle(Context context) {
-		IApolloService service = mService;
+	public static int cycleShuffle(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
 				switch (service.getShuffleMode()) {
 					case MusicPlaybackService.SHUFFLE_NONE:
@@ -308,13 +272,14 @@ public final class MusicUtils {
 						if (service.getRepeatMode() == MusicPlaybackService.REPEAT_CURRENT) {
 							service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
 						}
-						break;
+						int sessionId = service.getAudioSessionId();
+						AudioEffects.getInstance(activity, sessionId);
+						return SHUFFLE_NORMAL;
+
 					case MusicPlaybackService.SHUFFLE_NORMAL:
 					case MusicPlaybackService.SHUFFLE_AUTO:
 						service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
-						break;
-					default:
-						break;
+						return SHUFFLE_NONE;
 				}
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
@@ -322,13 +287,14 @@ public final class MusicUtils {
 				}
 			}
 		}
+		return SHUFFLE_NONE;
 	}
 
 	/**
 	 * @return True if we're playing music, false otherwise.
 	 */
-	public static boolean isPlaying() {
-		IApolloService service = mService;
+	public static boolean isPlaying(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.isPlaying();
@@ -344,27 +310,46 @@ public final class MusicUtils {
 	/**
 	 * @return The current shuffle mode.
 	 */
-	public static int getShuffleMode() {
-		IApolloService service = mService;
+	public static int getShuffleMode(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				return service.getShuffleMode();
+				switch (service.getShuffleMode()) {
+					case MusicPlaybackService.SHUFFLE_AUTO:
+						return SHUFFLE_AUTO;
+
+					case MusicPlaybackService.SHUFFLE_NORMAL:
+						return SHUFFLE_NORMAL;
+
+					case MusicPlaybackService.SHUFFLE_NONE:
+						return SHUFFLE_NONE;
+				}
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
 				}
 			}
 		}
-		return 0;
+		return SHUFFLE_NONE;
 	}
 
 	/**
 	 * @return The current repeat mode.
 	 */
-	public static int getRepeatMode() {
-		IApolloService service = mService;
+	public static int getRepeatMode(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
+				switch (service.getRepeatMode()) {
+					case MusicPlaybackService.REPEAT_ALL:
+						return REPEAT_ALL;
+
+					case MusicPlaybackService.REPEAT_NONE:
+						return REPEAT_NONE;
+
+					case MusicPlaybackService.REPEAT_CURRENT:
+						return REPEAT_CURRENT;
+				}
 				return service.getRepeatMode();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
@@ -372,15 +357,15 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return 0;
+		return REPEAT_NONE;
 	}
 
 	/**
 	 * @return The current track name.
 	 */
 	@Nullable
-	public static Song getCurrentTrack() {
-		IApolloService service = mService;
+	public static Song getCurrentTrack(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.getCurrentTrack();
@@ -397,8 +382,8 @@ public final class MusicUtils {
 	 * @return The current album name.
 	 */
 	@Nullable
-	public static Album getCurrentAlbum() {
-		IApolloService service = mService;
+	public static Album getCurrentAlbum(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.getCurrentAlbum();
@@ -414,8 +399,8 @@ public final class MusicUtils {
 	/**
 	 * @return The audio session ID or 0 if not initialized or if an error occured
 	 */
-	public static int getAudioSessionId() {
-		IApolloService service = mService;
+	public static int getAudioSessionId(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.getAudioSessionId();
@@ -432,8 +417,8 @@ public final class MusicUtils {
 	 * @return The queue.
 	 */
 	@NonNull
-	public static long[] getQueue() {
-		IApolloService service = mService;
+	public static long[] getQueue(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.getQueue();
@@ -450,8 +435,8 @@ public final class MusicUtils {
 	 * @param id The ID of the track to remove.
 	 * @return how many instances of the track were removed
 	 */
-	public static int removeTrack(long id) {
-		IApolloService service = mService;
+	public static int removeTrack(Activity activity, long id) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.removeTrack(id);
@@ -469,8 +454,8 @@ public final class MusicUtils {
 	 *
 	 * @param pos index of the track
 	 */
-	public static void removeQueueItem(int pos) {
-		IApolloService service = mService;
+	public static void removeQueueItem(Activity activity, int pos) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.removeTracks(pos, pos);
@@ -485,8 +470,8 @@ public final class MusicUtils {
 	/**
 	 * @return The position of the current track in the queue.
 	 */
-	public static int getQueuePosition() {
-		IApolloService service = mService;
+	public static int getQueuePosition(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.getQueuePosition();
@@ -502,8 +487,8 @@ public final class MusicUtils {
 	/**
 	 * @param position The position to move the queue to
 	 */
-	public static void setQueuePosition(int position) {
-		IApolloService service = mService;
+	public static void setQueuePosition(Activity activity, int position) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.setQueuePosition(position);
@@ -521,8 +506,8 @@ public final class MusicUtils {
 	 * @param which track ID
 	 * @return true if track was removed
 	 */
-	public static boolean removeTracks(int which) {
-		IApolloService service = mService;
+	public static boolean removeTracks(Activity activity, int which) {
+		IApolloService service = getService(activity);
 		try {
 			if (service != null && service.removeTracks(which, which) > 0) {
 				return true;
@@ -629,11 +614,12 @@ public final class MusicUtils {
 	/**
 	 * @param uri The source of the file
 	 */
-	public static void playFile(Context context, Uri uri) {
-		IApolloService service = mService;
+	public static void playFile(Activity activity, Uri uri) {
+		IApolloService service = getService(activity);
 		if (uri != null && service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 				service.openFile(uri);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
@@ -648,20 +634,21 @@ public final class MusicUtils {
 	 * @param position     Specify where to start.
 	 * @param forceShuffle True to force a shuffle, false otherwise.
 	 */
-	public static void playAll(Context context, long[] list, int position, boolean forceShuffle) {
-		IApolloService service = mService;
+	public static void playAll(Activity activity, long[] list, int position, boolean forceShuffle) {
+		IApolloService service = getService(activity);
 		if (list.length > 0 && service != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			try {
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 				}
-				Song song = getCurrentTrack();
-				int currentQueuePosition = getQueuePosition();
+				Song song = service.getCurrentTrack();
+				int currentQueuePosition = service.getQueuePosition();
 				if (position != -1 && currentQueuePosition == position && song != null && song.getId() == list[position]) {
-					long[] playlist = getQueue();
+					long[] playlist = service.getQueue();
 					if (Arrays.equals(list, playlist)) {
 						service.play();
 						return;
@@ -682,7 +669,7 @@ public final class MusicUtils {
 	/**
 	 *
 	 */
-	public static void playAllFromUserItemClick(Context context, ArrayAdapter<Song> adapter, int position) {
+	public static void playAllFromUserItemClick(Activity activity, ArrayAdapter<Song> adapter, int position) {
 		if (position < adapter.getViewTypeCount() - 1) {
 			// invalid position
 			return;
@@ -700,17 +687,15 @@ public final class MusicUtils {
 			list[i] = adapter.getItemId(i + off);
 		}
 		// play whole ID list
-		playAll(context, list, position, false);
+		playAll(activity, list, position, false);
 	}
 
 	/**
-	 * @param context The {@link Context} to use.
 	 */
-	public static void shuffleAll(Context context) {
-		Cursor cursor = CursorFactory.makeTrackCursor(context);
-		IApolloService service = mService;
+	public static void shuffleAll(Activity activity) {
+		Cursor cursor = CursorFactory.makeTrackCursor(activity.getApplicationContext());
+		IApolloService service = getService(activity);
 		if (service != null && cursor != null) {
-			AudioEffects.getInstance(context, getAudioSessionId());
 			cursor.moveToFirst();
 			long[] mTrackList = new long[cursor.getCount()];
 			for (int i = 0; i < mTrackList.length; i++) {
@@ -722,11 +707,13 @@ public final class MusicUtils {
 				return;
 			}
 			try {
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 				service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-				Song song = getCurrentTrack();
-				int mCurrentQueuePosition = getQueuePosition();
+				Song song = service.getCurrentTrack();
+				int mCurrentQueuePosition = service.getQueuePosition();
 				if (mCurrentQueuePosition == 0 && song != null && song.getId() == mTrackList[0]) {
-					long[] mPlaylist = getQueue();
+					long[] mPlaylist = service.getQueue();
 					if (Arrays.equals(mTrackList, mPlaylist)) {
 						service.play();
 						return;
@@ -969,11 +956,11 @@ public final class MusicUtils {
 	 * @param list The list to enqueue.
 	 */
 	public static void addToQueue(Activity activity, long[] list) {
-		IApolloService service = mService;
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_LAST);
-				String message = makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
+				String message = StringUtils.makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
@@ -1057,8 +1044,8 @@ public final class MusicUtils {
 	 * @param from The index the item is currently at.
 	 * @param to   The index the item is moving to.
 	 */
-	public static void moveQueueItem(int from, int to) {
-		IApolloService service = mService;
+	public static void moveQueueItem(Activity activity, int from, int to) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.moveQueueItem(from, to);
@@ -1073,13 +1060,9 @@ public final class MusicUtils {
 	/**
 	 * @return True if the current song is a favorite, false otherwise.
 	 */
-	public static boolean isFavorite(Context context) {
-		Song song = getCurrentTrack();
-		if (song != null) {
-			FavoritesStore mFavoritesCache = FavoritesStore.getInstance(context);
-			return mFavoritesCache.exists(song.getId());
-		}
-		return false;
+	public static boolean isFavorite(Song song, Context context) {
+		FavoritesStore mFavoritesCache = FavoritesStore.getInstance(context.getApplicationContext());
+		return mFavoritesCache.exists(song.getId());
 	}
 
 	/**
@@ -1155,8 +1138,8 @@ public final class MusicUtils {
 	/**
 	 * @param list The list to enqueue.
 	 */
-	public static void playNext(long[] list) {
-		IApolloService service = mService;
+	public static void playNext(Activity activity, long[] list) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_NEXT);
@@ -1171,65 +1154,58 @@ public final class MusicUtils {
 	/**
 	 * Plays songs by an artist.
 	 *
-	 * @param context  The {@link Context} to use.
 	 * @param artistId The artist Id.
 	 * @param position Specify where to start.
 	 */
-	public static void playArtist(Context context, long artistId, int position) {
-		long[] artistList = getSongListForArtist(context, artistId);
+	public static void playArtist(Activity activity, long artistId, int position) {
+		long[] artistList = getSongListForArtist(activity, artistId);
 		if (artistList.length > position) {
-			playAll(context, artistList, position, false);
+			playAll(activity, artistList, position, false);
 		}
 	}
 
 	/**
 	 * Plays songs from an album.
 	 *
-	 * @param context  The {@link Context} to use.
 	 * @param albumId  The album Id.
 	 * @param position Specify where to start.
 	 */
-	public static void playAlbum(Context context, long albumId, int position) {
-		long[] albumList = getSongListForAlbum(context, albumId);
+	public static void playAlbum(Activity activity, long albumId, int position) {
+		long[] albumList = getSongListForAlbum(activity, albumId);
 		if (albumList.length > 0) {
-			playAll(context, albumList, position, false);
+			playAll(activity, albumList, position, false);
 		}
 	}
 
 	/**
 	 * Plays a user created playlist.
 	 *
-	 * @param context    The {@link Context} to use.
 	 * @param playlistId The playlist Id.
 	 */
-	public static void playPlaylist(Context context, long playlistId) {
-		long[] trackIds = getSongListForPlaylist(context, playlistId);
-		playAll(context, trackIds, -1, false);
+	public static void playPlaylist(Activity activity, long playlistId) {
+		playAll(activity, getSongListForPlaylist(activity, playlistId), -1, false);
 	}
 
 	/**
 	 * Plays the last added songs from the past two weeks.
 	 *
-	 * @param context The {@link Context} to use
 	 */
-	public static void playLastAdded(Context context) {
-		playAll(context, getSongListForLastAdded(context), 0, false);
+	public static void playLastAdded(Activity activity) {
+		playAll(activity, getSongListForLastAdded(activity), 0, false);
 	}
 
 	/**
 	 * Plays popular tracks starting with the most listened tracks
 	 */
-	public static void playPopular(Context context) {
-		playAll(context, getPopularSongList(context), 0, false);
+	public static void playPopular(Activity activity) {
+		playAll(activity, getPopularSongList(activity), 0, false);
 	}
 
 	/**
 	 * Play the songs that have been marked as favorites.
-	 *
-	 * @param context The {@link Context} to use
 	 */
-	public static void playFavorites(Context context) {
-		playAll(context, getSongListForFavorites(context), 0, false);
+	public static void playFavorites(Activity activity) {
+		playAll(activity, getSongListForFavorites(activity), 0, false);
 	}
 
 	/**
@@ -1267,8 +1243,8 @@ public final class MusicUtils {
 	/**
 	 * Called when one of the lists should refresh or requery.
 	 */
-	public static void refresh() {
-		IApolloService service = mService;
+	public static void refresh(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.refresh();
@@ -1285,8 +1261,8 @@ public final class MusicUtils {
 	 *
 	 * @param position The position to seek to
 	 */
-	public static void seek(long position) {
-		IApolloService service = mService;
+	public static void seek(Activity activity, long position) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.seek(position);
@@ -1301,8 +1277,8 @@ public final class MusicUtils {
 	/**
 	 * @return The current position time of the track
 	 */
-	public static long getPositionMillis() {
-		IApolloService service = mService;
+	public static long getPositionMillis(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				return service.position();
@@ -1318,8 +1294,8 @@ public final class MusicUtils {
 	/**
 	 * @return The total duration of the current track
 	 */
-	public static long getDurationMillis() {
-		IApolloService service = mService;
+	public static long getDurationMillis(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				Song song = service.getCurrentTrack();
@@ -1347,8 +1323,8 @@ public final class MusicUtils {
 	/**
 	 * Clears the qeueue
 	 */
-	public static void clearQueue() {
-		IApolloService service = mService;
+	public static void clearQueue(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				service.removeTracks(0, Integer.MAX_VALUE);
@@ -1386,8 +1362,8 @@ public final class MusicUtils {
 	 *
 	 * @return path to the music file
 	 */
-	public static String getPlaybackFilePath() {
-		IApolloService service = mService;
+	public static String getPlaybackFilePath(Activity activity) {
+		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				Song song = service.getCurrentTrack();
@@ -1412,7 +1388,7 @@ public final class MusicUtils {
 	public static void deleteTracks(Activity activity, long[] list) {
 		markedTracks = list.length;
 		ContentResolver resolver = activity.getContentResolver();
-		String[] paths = removeTracksFromDatabase(activity.getApplicationContext(), list);
+		String[] paths = removeTracksFromDatabase(activity, list);
 
 		// Use Scoped storage and build in dialog
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -1475,44 +1451,41 @@ public final class MusicUtils {
 	 * @param activity activity context
 	 */
 	public static void onPostDelete(Activity activity) {
-		String message = makeLabel(activity, R.plurals.NNNtracksdeleted, markedTracks);
+		String message = StringUtils.makeLabel(activity, R.plurals.NNNtracksdeleted, markedTracks);
 		AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 		// We deleted a number of tracks, which could affect any number of
 		// things in the media content domain, so update everything.
 		activity.getContentResolver().notifyChange(Uri.parse("content://media"), null);
 		// Notify the lists to update
-		refresh();
+		refresh(activity);
 	}
 
 	/**
 	 * remove tracks from media database
 	 *
-	 * @param context application context
 	 * @param ids     list of track IDs
 	 * @return path to removed entries
 	 */
-	private static String[] removeTracksFromDatabase(Context context, long[] ids) {
+	private static String[] removeTracksFromDatabase(Activity activity, long[] ids) {
 		String[] result = {};
 		// get cursor to fetch track information
-		Cursor cursor = CursorFactory.makeTrackListCursor(context, ids);
-
+		Cursor cursor = CursorFactory.makeTrackListCursor(activity, ids);
+		IApolloService service = getService(activity);
 		// Step 1: Remove selected tracks from the current playlist, as well
 		// as from the album art cache
-		if (cursor != null) {
+		if (cursor != null && service != null) {
 			if (cursor.moveToFirst()) {
 				result = new String[cursor.getCount()];
-				FavoritesStore favStore = FavoritesStore.getInstance(context);
-				RecentStore recents = RecentStore.getInstance(context);
-				PopularStore popular = PopularStore.getInstance(context);
-				ContentResolver resolver = context.getContentResolver();
+				FavoritesStore favStore = FavoritesStore.getInstance(activity);
+				RecentStore recents = RecentStore.getInstance(activity);
+				PopularStore popular = PopularStore.getInstance(activity);
+				ContentResolver resolver = activity.getContentResolver();
 				for (int i = 0; i < ids.length; i++) {
 					// Remove from current playlist
 					long trackId = cursor.getLong(0);
 					result[i] = cursor.getString(1);
 					long albumId = cursor.getLong(2);
 					String[] idStr = {Long.toString(trackId)};
-					//
-					removeTrack(trackId);
 					// Remove from the favorites playlist
 					favStore.removeFavorite(trackId);
 					// Remove any items in the recents database
@@ -1523,6 +1496,14 @@ public final class MusicUtils {
 					resolver.delete(Media.EXTERNAL_CONTENT_URI, DATABASE_REMOVE_TRACK, idStr);
 					// move to next track
 					cursor.moveToNext();
+					//
+					try {
+						service.removeTrack(trackId);
+					} catch (RemoteException exception) {
+						if (BuildConfig.DEBUG) {
+							exception.printStackTrace();
+						}
+					}
 				}
 			}
 			cursor.close();
@@ -1593,56 +1574,15 @@ public final class MusicUtils {
 		}
 	}
 
-	/**
-	 *
-	 */
-	public static final class ServiceToken {
-		public ContextWrapper mWrappedContext;
 
-		/**
-		 * Constructor of <code>ServiceToken</code>
-		 *
-		 * @param context The {@link ContextWrapper} to use
-		 */
-		public ServiceToken(ContextWrapper context) {
-			mWrappedContext = context;
-		}
-	}
-
-	/**
-	 *
-	 */
-	private static final class ServiceBinder implements ServiceConnection {
-
-		/**
-		 * callback called when the service is connected/disconnected
-		 */
-		private final ServiceConnection mCallback;
-
-		/**
-		 * Constructor of <code>ServiceBinder</code>
-		 *
-		 * @param callback The {@link ServiceConnection} to use
-		 */
-		public ServiceBinder(@Nullable ServiceConnection callback) {
-			mCallback = callback;
-		}
-
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mService = IApolloService.Stub.asInterface(service);
-			if (mCallback != null) {
-				mCallback.onServiceConnected(className, service);
+	private static IApolloService getService(@Nullable Activity activity) {
+		if (activity != null) {
+			ServiceBinder binder = mConnectionMap.get(activity);
+			if (binder != null) {
+				return binder.getService();
 			}
 		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName className) {
-			if (mCallback != null) {
-				mCallback.onServiceDisconnected(className);
-			}
-			mService = null;
-		}
+		return null;
 	}
 
 	/**

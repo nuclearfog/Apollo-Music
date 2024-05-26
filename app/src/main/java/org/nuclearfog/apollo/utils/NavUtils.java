@@ -80,7 +80,7 @@ public final class NavUtils {
 	 * @param activity The {@link Activity} to use.
 	 */
 	public static void openEffectsPanel(Activity activity) {
-		int sessionId = MusicUtils.getAudioSessionId();
+		int sessionId = MusicUtils.getAudioSessionId(activity);
 		if (sessionId != 0) {
 			Intent effects = new Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
 			effects.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);

@@ -19,8 +19,8 @@ import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PrefixHighlighter;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.util.Locale;
 
@@ -91,9 +91,9 @@ public class SearchAdapter extends ArrayAdapter<Music> {
 			// Get the artist name
 			holder.mLineOne.setText(artist.getName());
 			// Get the album count
-			holder.mLineTwo.setText(MusicUtils.makeLabel(context, R.plurals.Nalbums, artist.getAlbumCount()));
+			holder.mLineTwo.setText(StringUtils.makeLabel(context, R.plurals.Nalbums, artist.getAlbumCount()));
 			// Get the song count
-			holder.mLineThree.setText(MusicUtils.makeLabel(context, R.plurals.Nsongs, artist.getTrackCount()));
+			holder.mLineThree.setText(StringUtils.makeLabel(context, R.plurals.Nsongs, artist.getTrackCount()));
 			// Asynchronously load the artist image into the adapter
 			mImageFetcher.loadArtistImage(artist.getName(), holder.mImage);
 			// Highlight the query

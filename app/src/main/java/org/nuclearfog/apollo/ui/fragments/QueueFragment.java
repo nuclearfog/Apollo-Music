@@ -169,7 +169,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 			MusicUtils.saveQueue(requireActivity());
 			return true;
 		} else if (item.getItemId() == R.id.menu_clear_queue) {
-			MusicUtils.clearQueue();
+			MusicUtils.clearQueue(requireActivity());
 			NavUtils.goHome(requireActivity());
 			return true;
 		}
@@ -219,7 +219,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 					NowPlayingCursor queueCursor = new NowPlayingCursor(requireContext());
 					queueCursor.removeItem(mSelectedPosition);
 					queueCursor.close();
-					MusicUtils.playNext(trackId);
+					MusicUtils.playNext(requireActivity(), trackId);
 					mLoader.execute(null, this);
 					return true;
 
@@ -266,7 +266,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 		// When selecting a track from the queue, just jump there instead of
 		// reloading the queue. This is both faster, and prevents accidentally
 		// dropping out of party shuffle.
-		MusicUtils.setQueuePosition(position);
+		MusicUtils.setQueuePosition(requireActivity(), position);
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 		Song mSong = mAdapter.getItem(which);
 		if (mSong != null) {
 			// remove track from queue
-			MusicUtils.removeQueueItem(which);
+			MusicUtils.removeQueueItem(requireActivity(), which);
 			// remove track from list
 			mAdapter.remove(mSong);
 			// check if queue is empty
@@ -318,7 +318,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	@Override
 	public void drop(int from, int to) {
 		if (from != to) {
-			MusicUtils.moveQueueItem(from, to);
+			MusicUtils.moveQueueItem(requireActivity(), from, to);
 		}
 		mAdapter.moveTrack(from, to);
 	}
@@ -343,7 +343,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	 *
 	 */
 	private void setCurrentTrack() {
-		int pos = MusicUtils.getQueuePosition();
+		int pos = MusicUtils.getQueuePosition(requireActivity());
 		if (pos >= 0 && pos < mList.getCount()) {
 			mList.smoothScrollToPosition(pos);
 			mAdapter.setCurrentTrackPos(pos);

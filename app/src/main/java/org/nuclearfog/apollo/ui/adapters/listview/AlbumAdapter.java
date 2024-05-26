@@ -27,7 +27,7 @@ import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * This {@link ArrayAdapter} is used to display all of the albums on a user's
@@ -93,9 +93,10 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
 			// List view only items
 			if (mLoadExtraData) {
 				// Set the number of songs (line three)
-				String count = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
-				if (holder.mLineThree != null)
+				if (holder.mLineThree != null) {
+					String count = StringUtils.makeLabel(getContext(), R.plurals.Nsongs, album.getTrackCount());
 					holder.mLineThree.setText(count);
+				}
 				// register album art click listener
 				ApolloUtils.registerItemViewListener(holder.mImage, parent, position, album.getId());
 			}

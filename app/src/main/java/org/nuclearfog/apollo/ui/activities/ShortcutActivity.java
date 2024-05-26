@@ -12,15 +12,11 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.Config;
@@ -30,7 +26,7 @@ import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.MusicUtils.ServiceToken;
+import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.util.List;
@@ -44,7 +40,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class ShortcutActivity extends AppCompatActivity implements ServiceConnection, AsyncCallback<List<Song>> {
+public class ShortcutActivity extends AppCompatActivity implements ServiceBinderCallback, AsyncCallback<List<Song>> {
 
 	/**
 	 * Play from search intent
@@ -57,11 +53,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	 * app-widget
 	 */
 	public static final String OPEN_AUDIO_PLAYER = null;
-	/**
-	 * Service token
-	 */
-	@Nullable
-	private ServiceToken mToken;
 	/**
 	 * Gather the intent action and extras
 	 */
@@ -88,7 +79,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Bind Apollo's service
-		mToken = MusicUtils.bindToService(this, this);
+		MusicUtils.bindToService(this, this);
 		// Initialize the intent
 		mIntent = getIntent();
 		mLoader = new SearchLoader(this);
@@ -99,11 +90,11 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
+	public void onServiceConnected() {
 		// Check for a voice query
 		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
 			mLoader.execute(mVoiceQuery, this);
-		} else if (MusicUtils.isConnected()) {
+		} else {
 			//sHandler.post(new AsyncHandler(this));
 			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
 			long id = mIntent.getLongExtra(Config.ID, -1L);
@@ -179,7 +170,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceDisconnected(ComponentName name) {
+	public void onServiceDisconnected() {
 	}
 
 	/**
@@ -189,10 +180,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 	protected void onDestroy() {
 		super.onDestroy();
 		// Unbind from the service
-		if (MusicUtils.isConnected()) {
-			MusicUtils.unbindFromService(mToken);
-			mToken = null;
-		}
+		MusicUtils.unbindFromService(this);
 	}
 
 	/**
@@ -260,7 +248,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceConnec
 		boolean shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		// Play the list
 		if (mList.length > 0) {
-			MusicUtils.playAll(getApplicationContext(), mList, 0, mShouldShuffle);
+			MusicUtils.playAll(this, mList, 0, mShouldShuffle);
 		}
 		// Open the now playing screen
 		if (shouldOpenAudioPlayer) {

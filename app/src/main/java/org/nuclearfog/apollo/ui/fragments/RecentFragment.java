@@ -212,7 +212,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 				case ContextMenuItems.PLAY_SELECTION:
 					// Create a list of the album's songs
 					long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-					MusicUtils.playAll(requireContext(), mAlbumList, 0, false);
+					MusicUtils.playAll(requireActivity(), mAlbumList, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
@@ -239,7 +239,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:
 					RecentStore.getInstance(requireActivity()).removeAlbum(selectedAlbum.getId());
-					MusicUtils.refresh();
+					MusicUtils.refresh(requireActivity());
 					return true;
 
 				case ContextMenuItems.DELETE:
@@ -272,7 +272,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
 			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(requireContext(), list, 0, false);
+			MusicUtils.playAll(requireActivity(), list, 0, false);
 		} else {
 			Album selection = mAdapter.getItem(position);
 			if (selection != null) {

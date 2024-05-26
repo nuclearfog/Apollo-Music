@@ -350,17 +350,17 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			switch (type) {
 				case ARTIST:
 					long[] list = MusicUtils.getSongListForArtist(this, ids[0]);
-					MusicUtils.playAll(getApplicationContext(), list, 0, true);
+					MusicUtils.playAll(this, list, 0, true);
 					break;
 
 				case ALBUM:
 					list = MusicUtils.getSongListForAlbum(this, ids[0]);
-					MusicUtils.playAll(getApplicationContext(), list, 0, true);
+					MusicUtils.playAll(this, list, 0, true);
 					break;
 
 				case GENRE:
 					list = MusicUtils.getSongListForGenres(this, ids);
-					MusicUtils.playAll(getApplicationContext(), list, 0, true);
+					MusicUtils.playAll(this, list, 0, true);
 					break;
 
 				case PLAYLIST:
@@ -383,7 +383,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					list = MusicUtils.getSongListForFolder(this, folderName);
 					if (list.length > 0) {
 						// play list at random position
-						MusicUtils.playAll(getApplicationContext(), list, r.nextInt(list.length - 1), true);
+						MusicUtils.playAll(this, list, r.nextInt(list.length - 1), true);
 					}
 					break;
 			}

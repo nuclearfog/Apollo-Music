@@ -20,7 +20,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -142,7 +142,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistCreateDialog.getInstance(trackId).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

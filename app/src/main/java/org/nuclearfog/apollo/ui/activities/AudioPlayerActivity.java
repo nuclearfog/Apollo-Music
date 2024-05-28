@@ -291,20 +291,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onResume() {
-		super.onResume();
-		// Set the playback drawables
-		updatePlaybackControls();
-		// Current info
-		updateNowPlayingInfo();
-		// Refresh the queue
-		refreshQueue();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
 		NavUtils.goHome(this);
@@ -459,13 +445,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		invalidateOptionsMenu();
 		// refresh queue after connected
 		refreshQueue();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onServiceDisconnected() {
 	}
 
 	/**

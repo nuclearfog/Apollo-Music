@@ -41,7 +41,7 @@ import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -218,7 +218,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistCreateDialog.getInstance(mArtistList).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, mArtistList, null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

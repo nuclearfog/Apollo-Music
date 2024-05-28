@@ -351,20 +351,6 @@ public class CursorFactory {
 	}
 
 	/**
-	 * create a cursor for a single playlist with fixed column order
-	 * {@link #PLAYLIST_COLUMNS}
-	 *
-	 * @param id ID of the playlist
-	 * @return cursor with playlist information
-	 */
-	@Nullable
-	public static Cursor makePlaylistCursor(Context context, long id) {
-		String[] param = {String.valueOf(id)};
-		ContentResolver resolver = context.getContentResolver();
-		return resolver.query(Playlists.EXTERNAL_CONTENT_URI, PLAYLIST_COLUMNS, PLAYLIST_ID_SELECT, param, Playlists.NAME);
-	}
-
-	/**
 	 * create a cursor to search for tracks with fixed column order
 	 * {@link #TRACK_COLUMNS}
 	 *

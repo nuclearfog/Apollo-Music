@@ -42,7 +42,7 @@ import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.SearchAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -267,14 +267,14 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 
 				case ContextMenuItems.NEW_PLAYLIST:
 					if (selection instanceof Album) {
-						long[] albumSongIds = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
-						PlaylistCreateDialog.getInstance(albumSongIds).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+						long[] ids = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
+						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
 					} else if (selection instanceof Artist) {
-						long[] artistSongIds = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
-						PlaylistCreateDialog.getInstance(artistSongIds).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+						long[] ids = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
+						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
 					} else if (selection instanceof Song) {
 						long[] ids = new long[]{selection.getId()};
-						PlaylistCreateDialog.getInstance(ids).show(getSupportFragmentManager(), PlaylistCreateDialog.NAME);
+						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
 					}
 					return true;
 

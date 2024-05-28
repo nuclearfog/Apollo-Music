@@ -34,9 +34,6 @@ public class ServiceBinder implements ServiceConnection {
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
 		service = null;
-		if (callback.get() != null) {
-			callback.get().onServiceDisconnected();
-		}
 	}
 
 
@@ -44,11 +41,14 @@ public class ServiceBinder implements ServiceConnection {
 		return service;
 	}
 
-
+	/**
+	 * callback interface used to informa activity when a service is connected/disconnected
+	 */
 	public interface ServiceBinderCallback {
 
+		/**
+		 * called when the service was connected successfully
+		 */
 		void onServiceConnected();
-
-		void onServiceDisconnected();
 	}
 }

@@ -194,13 +194,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceDisconnected() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		// check if permissions are granted

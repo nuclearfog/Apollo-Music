@@ -12,11 +12,11 @@
 package org.nuclearfog.apollo.async.loader;
 
 import android.content.Context;
-import android.util.Log;
+import android.database.Cursor;
 
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Song;
-
+import org.nuclearfog.apollo.utils.CursorFactory;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,9 +26,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class QueueLoader extends AsyncExecutor<Void, List<Song>> {
-
-	private static final String TAG = "QueueLoader";
+public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 
 
 	public QueueLoader(Context context) {
@@ -39,35 +37,33 @@ public class QueueLoader extends AsyncExecutor<Void, List<Song>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected List<Song> doInBackground(Void v) {
+	protected List<Song> doInBackground(List<Long> param) {
 		List<Song> result = new LinkedList<>();
 		Context context = getContext();
 		if (context != null) {
-			try {
-				// Create the Cursor
-				NowPlayingCursor mCursor = new NowPlayingCursor(context);
-				// Gather the data
-				if (mCursor.moveToFirst()) {
+			// Create the Cursor
+			Cursor cursor = CursorFactory.makeNowPlayingCursor(context, param);
+			// Gather the data
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
 					do {
 						// Copy the song Id
-						long id = mCursor.getLong(0);
+						long id = cursor.getLong(0);
 						// Copy the song name
-						String songName = mCursor.getString(1);
+						String songName = cursor.getString(1);
 						// Copy the artist name
-						String artist = mCursor.getString(2);
+						String artist = cursor.getString(2);
 						// Copy the album name
-						String album = mCursor.getString(3);
+						String album = cursor.getString(3);
 						// Copy the duration
-						long duration = mCursor.getLong(4);
+						long duration = cursor.getLong(4);
 						// Create a new song
 						Song song = new Song(id, songName, artist, album, duration);
 						// Add everything up
 						result.add(song);
-					} while (mCursor.moveToNext());
+					} while (cursor.moveToNext());
 				}
-				mCursor.close();
-			} catch (Exception exception) {
-				Log.e(TAG, "error loading songs:", exception);
+				cursor.close();
 			}
 		}
 		return result;

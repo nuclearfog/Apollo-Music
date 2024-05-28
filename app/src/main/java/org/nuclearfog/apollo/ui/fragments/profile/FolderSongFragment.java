@@ -18,7 +18,7 @@ import org.nuclearfog.apollo.async.loader.FolderSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -140,7 +140,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistCreateDialog.getInstance(ids).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:

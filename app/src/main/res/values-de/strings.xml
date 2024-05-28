@@ -167,4 +167,8 @@
 	<string name="empty_preset_name">Name darf nicht leer sein!</string>
 	<string name="label_preset">Voreinstellung:</string>
 	<string name="preset_custom">Benutzerdefiniert</string>
+	<string name="rename_playlist">Playlist umbenennen</string>
+	<string name="copy_playlist">Playlist kopieren</string>
+	<string name="error_create_playlist">Playlist konnte nicht erstellt werden!</string>
+	<string name="error_rename_playlist">Playlist konnte nicht umbenannt werden!</string>
 </resources>

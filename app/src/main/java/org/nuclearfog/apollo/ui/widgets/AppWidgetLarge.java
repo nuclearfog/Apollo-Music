@@ -29,7 +29,6 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.utils.BitmapUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * 4x2 App-Widget

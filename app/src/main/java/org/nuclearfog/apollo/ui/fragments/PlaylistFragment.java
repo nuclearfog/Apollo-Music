@@ -50,8 +50,7 @@ import org.nuclearfog.apollo.model.Playlist;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.PlaylistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCopyDialog;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistRenameDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -88,7 +87,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	 * context menu selection
 	 */
 	@Nullable
-	private Playlist selectedPlaylist = null;
+	private Playlist selectedPlaylist;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -205,11 +204,11 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					return true;
 
 				case ContextMenuItems.RENAME_PLAYLIST:
-					PlaylistRenameDialog.getInstance(selectedPlaylist.getId()).show(getParentFragmentManager(), PlaylistRenameDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.MOVE, selectedPlaylist.getId(), null, selectedPlaylist.getName());
 					return true;
 
 				case ContextMenuItems.COPY_PLAYLIST:
-					PlaylistCopyDialog.getInstance(selectedPlaylist.getId()).show(getParentFragmentManager(), PlaylistCopyDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.COPY, selectedPlaylist.getId(), null, selectedPlaylist.getName());
 					break;
 
 				case ContextMenuItems.DELETE:

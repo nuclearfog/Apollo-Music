@@ -44,7 +44,6 @@ import androidx.fragment.app.FragmentActivity;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.IApolloService;
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.async.loader.NowPlayingCursor;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Folder;
@@ -59,18 +58,15 @@ import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.WeakHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * A collection of helpers directly related to music or Apollo's service.
@@ -80,15 +76,11 @@ import java.util.concurrent.Executors;
 public final class MusicUtils {
 
 	public static final int REPEAT_NONE = 0;
-
 	public static final int REPEAT_ALL = 1;
-
 	public static final int REPEAT_CURRENT = 2;
 
 	public static final int SHUFFLE_NONE = 10;
-
 	public static final int SHUFFLE_NORMAL = 11;
-
 	public static final int SHUFFLE_AUTO = 12;
 
 	/**
@@ -432,24 +424,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param id The ID of the track to remove.
-	 * @return how many instances of the track were removed
-	 */
-	public static int removeTrack(Activity activity, long id) {
-		IApolloService service = getService(activity);
-		if (service != null) {
-			try {
-				return service.removeTrack(id);
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		return 0;
-	}
-
-	/**
 	 * remove track from the current playlist
 	 *
 	 * @param pos index of the track
@@ -498,26 +472,6 @@ public final class MusicUtils {
 				}
 			}
 		}
-	}
-
-	/**
-	 * remove current tracks from service
-	 *
-	 * @param which track ID
-	 * @return true if track was removed
-	 */
-	public static boolean removeTracks(Activity activity, int which) {
-		IApolloService service = getService(activity);
-		try {
-			if (service != null && service.removeTracks(which, which) > 0) {
-				return true;
-			}
-		} catch (RemoteException e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -848,39 +802,40 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param context The {@link Context} to use.
-	 * @param name    The name of the new playlist.
+	 * @param name  The name of the new playlist.
 	 * @return A new playlist ID.
 	 */
-	public static long createPlaylist(Context context, String name) {
-		if (name != null && !name.trim().isEmpty()) {
-			Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
-			// check if playlist exists
-			if (cursor != null) {
-				// create only playlist if there isn't any conflict
-				if (!cursor.moveToFirst()) {
-					ContentResolver resolver = context.getContentResolver();
-					ContentValues values = new ContentValues(1);
-					values.put(Playlists.NAME, name);
-					Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
-					if (uri != null && uri.getLastPathSegment() != null) {
-						return Long.parseLong(uri.getLastPathSegment());
+	public static long createPlaylist(Activity activity, String name) {
+		try {
+			if (name != null && !name.trim().isEmpty()) {
+				// check if playlist already exists
+				if (getIdForPlaylist(activity, name) != -1)
+					return -1;
+				Cursor cursor = CursorFactory.makePlaylistCursor(activity, name);
+				// check if playlist exists
+				if (cursor != null) {
+					// create only playlist if there isn't any conflict
+					if (!cursor.moveToFirst()) {
+						ContentResolver resolver = activity.getContentResolver();
+						ContentValues values = new ContentValues(1);
+						values.put(Playlists.NAME, name);
+						Uri uri = resolver.insert(Playlists.EXTERNAL_CONTENT_URI, values);
+						if (uri != null && uri.getLastPathSegment() != null) {
+							return Long.parseLong(uri.getLastPathSegment());
+						}
 					}
+					cursor.close();
 				}
-				cursor.close();
+			}
+		} catch (Exception exception) {
+			// thrown when the app does not own the playlist
+			String message = activity.getString(R.string.error_create_playlist);
+			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
 			}
 		}
 		return -1L;
-	}
-
-	/**
-	 * @param context    The {@link Context} to use.
-	 * @param playlistId The playlist ID.
-	 */
-	@SuppressLint("InlinedApi")
-	public static void clearPlaylist(Context context, long playlistId) {
-		Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistId);
-		context.getContentResolver().delete(uri, null, null);
 	}
 
 	/**
@@ -906,15 +861,40 @@ public final class MusicUtils {
 					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
 					AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 				}
-			} catch (SecurityException err) {
+			} catch (Exception exception) {
 				// thrown when the app does not own the playlist
 				String message = activity.getString(R.string.error_add_playlist);
 				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
+					exception.printStackTrace();
 				}
 			}
 			cursor.close();
+		}
+	}
+
+	/**
+	 * rename existing playlist
+	 *
+	 * @param id	       ID of the playlist to rename
+	 * @param playlistName new playlist name
+	 */
+	public static void renamePlaylist(Activity activity, long id, String playlistName) {
+		try {
+			// seting new name
+			ContentValues values = new ContentValues(1);
+			values.put(Playlists.NAME, StringUtils.capitalize(playlistName));
+			// update old playlist
+			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, id);
+			ContentResolver resolver = activity.getContentResolver();
+			resolver.update(uri, values, null, null);
+		} catch (Exception exception) {
+			// thrown when the app does not own the playlist
+			String message = activity.getString(R.string.error_rename_playlist);
+			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
 	}
 
@@ -1316,8 +1296,8 @@ public final class MusicUtils {
 	 * @param activity activity of the fragment
 	 */
 	public static void saveQueue(FragmentActivity activity) {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.submit(new QueueWorker(activity));
+		long[] ids = MusicUtils.getQueue(activity);
+		PlaylistDialog.show(activity.getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
 	}
 
 	/**
@@ -1583,45 +1563,5 @@ public final class MusicUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * background worker to create a dialog for saving the current queue to a playlist
-	 */
-	private static class QueueWorker implements Runnable {
-
-		private WeakReference<FragmentActivity> activity;
-
-
-		QueueWorker(FragmentActivity activity) {
-			this.activity = new WeakReference<>(activity);
-		}
-
-
-		@Override
-		public void run() {
-			Activity activity = this.activity.get();
-			if (activity != null) {
-				// fetch all track IDs of the qurrent queue
-				NowPlayingCursor queue = new NowPlayingCursor(activity.getApplicationContext());
-				queue.moveToFirst();
-				final long[] ids = new long[queue.getCount()];
-				for (int i = 0; i < ids.length && !queue.isAfterLast(); i++) {
-					ids[i] = queue.getLong(0);
-					queue.moveToNext();
-				}
-				queue.close();
-
-				activity.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						FragmentActivity activity = QueueWorker.this.activity.get();
-						if (activity != null) {
-							PlaylistCreateDialog.getInstance(ids).show(activity.getSupportFragmentManager(), PlaylistCreateDialog.NAME);
-						}
-					}
-				});
-			}
-		}
 	}
 }

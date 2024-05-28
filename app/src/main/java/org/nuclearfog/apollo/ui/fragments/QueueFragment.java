@@ -34,13 +34,12 @@ import androidx.lifecycle.ViewModelProvider;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.NowPlayingCursor;
 import org.nuclearfog.apollo.async.loader.QueueLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.SongAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
-import org.nuclearfog.apollo.ui.dialogs.PlaylistCreateDialog;
+import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
@@ -50,6 +49,7 @@ import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,8 +58,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class QueueFragment extends Fragment implements OnItemClickListener, DropListener, RemoveListener, DragScrollProfile,
-		AsyncCallback<List<Song>>, Observer<String> {
+public class QueueFragment extends Fragment implements OnItemClickListener, DropListener, RemoveListener, DragScrollProfile, AsyncCallback<List<Song>>, Observer<String> {
 
 	/**
 	 *
@@ -135,11 +134,8 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 		mList.setDropListener(this);
 		mList.setRemoveListener(this);
 		mList.setDragScrollProfile(this);
-		// start loader
-		mLoader.execute(null, this);
 		return rootView;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -216,11 +212,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_NEXT:
-					NowPlayingCursor queueCursor = new NowPlayingCursor(requireContext());
-					queueCursor.removeItem(mSelectedPosition);
-					queueCursor.close();
 					MusicUtils.playNext(requireActivity(), trackId);
-					mLoader.execute(null, this);
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_QUEUE:
@@ -232,7 +224,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistCreateDialog.getInstance(trackId).show(getParentFragmentManager(), PlaylistCreateDialog.NAME);
+					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackId, null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
@@ -330,7 +322,13 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	public void onChanged(String action) {
 		switch (action) {
 			case REFRESH:
-				mLoader.execute(null, this);
+				// get queue with song IDs
+				long[] ids = MusicUtils.getQueue(requireActivity());
+				List<Long> idList = new ArrayList<>(ids.length);
+				for (long id : ids)
+					idList.add(id);
+				// load songs of the queue
+				mLoader.execute(idList, this);
 				break;
 
 			case META_CHANGED:

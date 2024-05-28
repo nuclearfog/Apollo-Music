@@ -170,13 +170,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onServiceDisconnected() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		// Unbind from the service

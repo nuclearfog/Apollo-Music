@@ -76,6 +76,8 @@
 
 	<!-- AlertDialog items -->
 	<string name="new_playlist">New playlist</string>
+	<string name="rename_playlist">rename playlist</string>
+	<string name="copy_playlist">copy playlist</string>
 	<string name="save">Save</string>
 	<string name="cancel">Cancel</string>
 	<string name="overwrite">Overwrite</string>
@@ -135,6 +137,8 @@
 	<string name="pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> pinned to your home screen</string>
 	<string name="could_not_be_pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> could not be pinned to your home screen</string>
 	<string name="error_add_playlist">could not add to playlist!</string>
+	<string name="error_create_playlist">could not create playlist!</string>
+	<string name="error_rename_playlist">could not rename playlist!</string>
 	<string name="error_empty_playlistname">Playlist name empty!</string>
 	<string name="error_duplicate_playlistname">Playlist already exists with this name!</string>
 	<string name="set_as_ringtone">\'<xliff:g id="name" example="Alarm Bell">%s</xliff:g>\' set as ringtone</string>

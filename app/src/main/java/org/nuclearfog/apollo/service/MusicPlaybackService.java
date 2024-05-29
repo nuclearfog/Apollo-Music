@@ -510,15 +510,14 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
-		// setup notification for service
-		mNotificationHelper.createNotification();
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
+				mNotificationHelper.createNotification();
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
+					mNotificationHelper.dismissNotification();
 				}
-				updateNotification();
 			}
 			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
 				mShutdownScheduled = false;
@@ -802,12 +801,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param position The time to seek to
 	 */
 	synchronized void seekTo(long position) {
-		if (mPlayer.initialized() && !mPlayer.busy()) {
-			if (position < 0) {
-				position = 0;
-			} else if (position > mPlayer.getDuration()) {
-				position = mPlayer.getDuration();
-			}
+		if (!mPlayer.busy()) {
 			mPlayer.setPosition(position);
 			notifyChange(CHANGED_POSITION);
 			notifyChange(CHANGED_PLAYSTATE);
@@ -876,7 +870,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// fall through
 
 			case CHANGED_PLAYSTATE:
-				updateNotification();
+				if (!isForeground) {
+					mNotificationHelper.updateNotification();
+				} else {
+					mNotificationHelper.dismissNotification();
+				}
 				// fall through
 
 			case CHANGED_POSITION:
@@ -1148,17 +1146,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		builder.setState(mIsSupposedToBePlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
 		builder.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 		mSession.setPlaybackState(builder.build());
-	}
-
-	/**
-	 * update player control notification (player control and legacy notification)
-	 */
-	private void updateNotification() {
-		if (!isForeground) {
-			mNotificationHelper.updateNotification();
-		} else {
-			mNotificationHelper.dismissNotification();
-		}
 	}
 
 	/**
@@ -1617,7 +1604,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void doAutoShuffleUpdate() {
 		if (mPlayPos > 10) {
 			removeTracks(0, mPlayPos - 9);
-			notifyChange(CHANGED_QUEUE);
 		}
 		int toAdd = 7 - (mPlayList.size() - (mPlayPos < 0 ? -1 : mPlayPos));
 		for (int i = 0; i < toAdd; i++) {

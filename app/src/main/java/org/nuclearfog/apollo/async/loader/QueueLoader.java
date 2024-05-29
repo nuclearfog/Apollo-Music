@@ -17,6 +17,9 @@ import android.database.Cursor;
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.CursorFactory;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +40,7 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected List<Song> doInBackground(List<Long> param) {
+	protected List<Song> doInBackground(final List<Long> param) {
 		List<Song> result = new LinkedList<>();
 		Context context = getContext();
 		if (context != null) {
@@ -66,6 +69,13 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 				cursor.close();
 			}
 		}
+		// the resulting song list should have the same order than the source song Id list
+		Collections.sort(result, new Comparator<Song>() {
+			@Override
+			public int compare(Song o1, Song o2) {
+				return Long.compare(param.indexOf(o1.getId()), param.indexOf(o2.getId()));
+			}
+		});
 		return result;
 	}
 }

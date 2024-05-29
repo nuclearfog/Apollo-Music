@@ -260,7 +260,7 @@ public class MultiPlayer {
 			return mPlayers[currentPlayer].getDuration();
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to get track duration");
-			return -1L;
+			return 0;
 		}
 	}
 
@@ -273,7 +273,8 @@ public class MultiPlayer {
 		try {
 			return mPlayers[currentPlayer].getCurrentPosition();
 		} catch (IllegalStateException exception) {
-			return -1L;
+			Log.e(TAG, "failed to get track position");
+			return 0;
 		}
 	}
 
@@ -286,8 +287,14 @@ public class MultiPlayer {
 		try {
 			// limit max position to prevent conflict with fade out
 			long max = getDuration() - (XFADE_DELAY * 2);
-			position = Math.min(position, max);
-			mPlayers[currentPlayer].seekTo((int) position);
+			if (max > 0) {
+				if (position > max) {
+					position = max;
+				} else if (position < 0) {
+					position = 0;
+				}
+				mPlayers[currentPlayer].seekTo((int) position);
+			}
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to set track position");
 		}
@@ -311,6 +318,7 @@ public class MultiPlayer {
 		try {
 			return mPlayers[currentPlayer].isPlaying();
 		} catch (IllegalStateException exception) {
+			Log.e(TAG, "failed to get play state");
 			return false;
 		}
 	}

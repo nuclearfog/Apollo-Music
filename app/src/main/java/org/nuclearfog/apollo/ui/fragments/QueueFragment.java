@@ -320,20 +320,22 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	 */
 	@Override
 	public void onChanged(String action) {
-		switch (action) {
-			case REFRESH:
-				// get queue with song IDs
-				long[] ids = MusicUtils.getQueue(requireActivity());
-				List<Long> idList = new ArrayList<>(ids.length);
-				for (long id : ids)
-					idList.add(id);
-				// load songs of the queue
-				mLoader.execute(idList, this);
-				break;
+		if (isAdded()) {
+			switch (action) {
+				case REFRESH:
+					// get queue with song IDs
+					long[] ids = MusicUtils.getQueue(requireActivity());
+					List<Long> idList = new ArrayList<>(ids.length);
+					for (long id : ids)
+						idList.add(id);
+					// load songs of the queue
+					mLoader.execute(idList, this);
+					break;
 
-			case META_CHANGED:
-				setCurrentTrack();
-				break;
+				case META_CHANGED:
+					setCurrentTrack();
+					break;
+			}
 		}
 	}
 

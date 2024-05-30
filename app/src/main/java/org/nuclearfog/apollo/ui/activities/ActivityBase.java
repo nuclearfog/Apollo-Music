@@ -122,8 +122,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		super.onCreate(savedInstanceState);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
 	}
@@ -242,18 +240,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// Set the playback drawables
-		updatePlaybackControls();
-		// Current info
-		updateBottomActionBarInfo();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	protected void onStart() {
@@ -264,6 +250,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Shuffle and repeat changes
 		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
 		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
+		filter.addAction(MusicPlaybackService.CHANGED_QUEUE);
 		// Track changes
 		filter.addAction(MusicPlaybackService.CHANGED_META);
 		// Update a list, probably the playlist fragment's
@@ -274,7 +261,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		} else {
 			registerReceiver(mPlaybackStatus, filter);
 		}
-		MusicUtils.notifyForegroundStateChanged(this, true);
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -314,12 +302,15 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// background clicked
 		else if (v.getId() == R.id.bottom_action_bar_background) {
-			Album album = MusicUtils.getCurrentAlbum(this);
-			if (album != null) {
+			// open audio player activity
+			if (MusicUtils.getQueue(this).length > 0) {
 				Intent intent = new Intent(this, AudioPlayerActivity.class);
 				startActivity(intent);
-			} else {
+			}
+			// shuffle all track if queue is empty
+			else {
 				MusicUtils.shuffleAll(this);
+				updatePlaybackControls();
 			}
 		}
 		// repeat button clicked
@@ -401,10 +392,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		Song song = MusicUtils.getCurrentTrack(this);
 		Album album = MusicUtils.getCurrentAlbum(this);
 		if (song != null) {
-			// Set the track name
 			mTrackName.setText(song.getName());
-			// Set the artist name
 			mArtistName.setText(song.getArtist());
+		} else {
+			mTrackName.setText("");
+			mArtistName.setText("");
 		}
 		// Set the album art
 		ApolloUtils.getImageFetcher(this).loadAlbumImage(album, mAlbumArt);

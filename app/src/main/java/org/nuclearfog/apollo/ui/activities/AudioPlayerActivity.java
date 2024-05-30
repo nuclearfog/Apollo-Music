@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -124,7 +125,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * album art borders
 	 */
-	private View albumArtBorder1, albumArtBorder2;
+	private View controls, albumArtBorder1, albumArtBorder2;
 	/**
 	 * Tiny artwork
 	 */
@@ -190,6 +191,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mRepeatButton = findViewById(R.id.action_button_repeat);
 		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
 		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
+		controls = findViewById(R.id.audio_player_controls);
 		mTrackName = findViewById(R.id.audio_player_track_name);
 		mArtistName = findViewById(R.id.audio_player_artist_name);
 		mAlbumArt = findViewById(R.id.audio_player_album_art);
@@ -240,6 +242,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mRepeatButton.setColor(themeColor);
 		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
+		controls.setVisibility(View.INVISIBLE);
 
 		mPreviousButton.setRepeatListener(this);
 		mNextButton.setRepeatListener(this);
@@ -284,7 +287,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		queueNextRefresh(next);
 		// Bind Apollo's service
 		MusicUtils.bindToService(this, this);
-		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
 	/**
@@ -304,7 +306,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
-		MusicUtils.unbindFromService(this);
 		mImageFetcher.flush();
 		super.onStop();
 	}
@@ -717,6 +718,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Sets the correct drawable states for the playback controls.
 	 */
 	private void updatePlaybackControls() {
+		// fade in player control after initialization
+		if (controls.getVisibility() != View.VISIBLE && controls.getAnimation() == null) {
+			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+			anim.setDuration(500);
+			controls.setVisibility(View.VISIBLE);
+			controls.startAnimation(anim);
+		}
 		// Set the play and pause image
 		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
 		// Set the shuffle image

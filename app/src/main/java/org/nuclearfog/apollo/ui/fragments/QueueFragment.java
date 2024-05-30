@@ -166,7 +166,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 			return true;
 		} else if (item.getItemId() == R.id.menu_clear_queue) {
 			MusicUtils.clearQueue(requireActivity());
-			NavUtils.goHome(requireActivity());
+			requireActivity().finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -299,7 +299,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 			mAdapter.remove(mSong);
 			// check if queue is empty
 			if (mAdapter.isEmpty()) {
-				NavUtils.goHome(requireActivity());
+				requireActivity().finish();
 			}
 		}
 	}

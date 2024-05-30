@@ -108,7 +108,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Indicates the queue has been updated
 	 */
-	private static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
+	public static final String CHANGED_QUEUE = APOLLO_PACKAGE_NAME + ".queuechanged";
 	/**
 	 * Indicates the repeat mode chaned
 	 */
@@ -446,8 +446,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 		// Bring the queue back
 		reloadQueue();
-		notifyChange(CHANGED_QUEUE);
-		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -510,9 +508,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
+		mNotificationHelper.createNotification();
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
-				mNotificationHelper.createNotification();
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 				if (isForeground) {
 					stopForeground(true);
@@ -525,11 +523,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				return START_NOT_STICKY;
 			}
 			handleCommandIntent(intent);
+			return START_STICKY;
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
 		scheduleDelayedShutdown();
-		return START_STICKY;
+		return START_NOT_STICKY;
 	}
 
 
@@ -552,12 +551,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				mPlayPos = mNextPlayPos;
 				setNextTrack(mRepeatMode != REPEAT_NONE);
 				updateTrackInformation();
-				// notify that track changed
-				notifyChange(CHANGED_META);
 				return true;
 			}
 		} else if (mPlayer.isPlaying()) {
 			pause(true);
+		} else {
+			mIsSupposedToBePlaying = false;
+			notifyChange(CHANGED_PLAYSTATE);
 		}
 		return false;
 	}
@@ -662,8 +662,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		getCardId();
 		reloadQueue();
 		mQueueIsSaveable = true;
-		notifyChange(CHANGED_QUEUE);
-		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -727,7 +725,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					}
 					if (mPlayer.play()) {
 						mIsSupposedToBePlaying = true;
-						notifyChange(CHANGED_META);
+						notifyChange(CHANGED_PLAYSTATE);
 						cancelShutdown();
 					}
 				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
@@ -804,7 +802,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!mPlayer.busy()) {
 			mPlayer.setPosition(position);
 			notifyChange(CHANGED_POSITION);
-			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
@@ -845,20 +842,21 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void notifyChange(String what) {
 		Song song = currentSong;
 		Album album = currentAlbum;
-		// send broadcase
+		// send broadcast
+		Intent intent = new Intent(what);
+		intent.putExtra("playing", isPlaying());
 		if (song != null) {
-			Intent intent = new Intent(what);
 			intent.putExtra("id", song.getId());
 			intent.putExtra("artist", song.getArtist());
 			intent.putExtra("album", song.getAlbum());
 			intent.putExtra("track", song.getName());
-			intent.putExtra("playing", isPlaying());
 			intent.putExtra("isfavorite", MusicUtils.isFavorite(song, this));
-			Intent musicIntent = new Intent(intent);
-			musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
-			sendBroadcast(musicIntent);
-			sendBroadcast(intent);
 		}
+		Intent musicIntent = new Intent(intent);
+		musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
+		sendBroadcast(musicIntent);
+		sendBroadcast(intent);
+
 		switch (what) {
 			case CHANGED_META:
 				// Increase the play count for favorite songs.
@@ -972,8 +970,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		stop(true);
 		mPlayPos = -1;
 		mPlayList.clear();
+		clearCurrentTrackInformation();
 		notifyChange(CHANGED_QUEUE);
-		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -1161,7 +1159,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void enqueue(long[] list, int action) {
 		if (action == MOVE_NEXT) {
 			addToPlayList(list, mPlayPos + 1);
-			notifyChange(CHANGED_QUEUE);
 			if (mPlayPos < 0) {
 				mPlayPos = 0;
 				stop(false);
@@ -1170,7 +1167,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 		} else if (action == MOVE_LAST) {
 			addToPlayList(list, Integer.MAX_VALUE);
-			notifyChange(CHANGED_QUEUE);
 		}
 	}
 
@@ -1277,10 +1273,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		for (long trackId : list) {
 			mPlayList.add(position++, trackId);
 		}
-		if (mPlayList.isEmpty()) {
-			clearCurrentTrackInformation();
-			notifyChange(CHANGED_META);
+		if (mPlayPos == -1) {
+			mPlayPos = 0;
+			openCurrentAndNext();
 		}
+		notifyChange(CHANGED_QUEUE);
 	}
 
 	/**
@@ -1292,7 +1289,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			clearCurrentTrackInformation();
 			Cursor cursor = CursorFactory.makeTrackCursor(this, trackId);
 			updateTrackInformation(cursor);
-			updateAlbumInformation();
 		}
 	}
 
@@ -1343,7 +1339,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 		}
 		updateTrackInformation(cursor);
-		updateAlbumInformation();
 	}
 
 	/**
@@ -1352,7 +1347,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param cursor cursor with track information
 	 */
 	private void updateTrackInformation(@Nullable Cursor cursor) {
-		currentSong = null;
+		Song song = null;
+		Album album = null;
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				long songId = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
@@ -1363,20 +1359,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				String albumName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
 				String path = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.DATA));
 				long length = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.DURATION));
-				currentSong = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
+				song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
 			}
 			cursor.close();
 		}
-	}
-
-	/**
-	 * search album information using album ID from the current song
-	 */
-	private void updateAlbumInformation() {
-		currentAlbum = null;
-		Song song = currentSong;
 		if (song != null) {
-			Cursor cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
+			cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
@@ -1384,12 +1372,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
 					int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
 					String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
-					currentAlbum = new Album(id, name, artist, count, year, true);
+					album = new Album(id, name, artist, count, year, true);
 				}
 				cursor.close();
 			}
 		}
+		currentAlbum = album;
+		currentSong = song;
+		notifyChange(CHANGED_META);
 	}
+
 
 	/**
 	 *
@@ -1397,6 +1389,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void clearCurrentTrackInformation() {
 		currentAlbum = null;
 		currentSong = null;
+		notifyChange(CHANGED_META);
 	}
 
 	/**
@@ -1758,5 +1751,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 		}
+		notifyChange(CHANGED_QUEUE);
 	}
 }

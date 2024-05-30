@@ -136,15 +136,41 @@ public final class MusicUtils {
 		if (activity.getParent() != null)
 			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
-		Intent serviceIntent = new Intent(activity.getApplicationContext(), MusicPlaybackService.class);
-		ContextCompat.startForegroundService(activity.getApplicationContext(), serviceIntent);
+		Intent serviceIntent = new Intent(activity, MusicPlaybackService.class);
+		ContextCompat.startForegroundService(activity, serviceIntent);
 		ServiceBinder binder = new ServiceBinder(callback);
 		if (contextWrapper.bindService(serviceIntent, binder, 0)) {
 			mConnectionMap.put(activity, binder);
 		}
+		notifyForegroundStateChanged(activity, true);
 	}
 
+	/**
+	 * Used to build and show a notification when Apollo is sent into the
+	 * background
+	 *
+	 * @param context The {@link Context} to use.
+	 */
+	public static void notifyForegroundStateChanged(Context context, boolean inForeground) {
+		int old = sForegroundActivities;
+		if (inForeground) {
+			sForegroundActivities++;
+		} else {
+			sForegroundActivities--;
+		}
+		if (old == 0 || sForegroundActivities == 0) {
+			Intent intent = new Intent(context, MusicPlaybackService.class);
+			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
+			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
+			context.startService(intent);
+		}
+	}
 
+	/**
+	 * unregister connection to service
+	 *
+	 * @param activity activity to unregister
+	 */
 	public static void unbindFromService(Activity activity) {
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
@@ -203,11 +229,13 @@ public final class MusicUtils {
 				if (service.isPlaying()) {
 					service.pause(false);
 					return false;
-				} else {
+				} else if (service.getQueue().length > 0){
 					service.play();
 					int sessionId = service.getAudioSessionId();
 					AudioEffects.getInstance(activity, sessionId);
 					return true;
+				} else {
+					shuffleAll(activity);
 				}
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
@@ -1245,7 +1273,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.seek(position);
+				service.setPlayerPosition(position);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1261,7 +1289,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				return service.position();
+				return service.getPlayerPosition();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1313,27 +1341,6 @@ public final class MusicUtils {
 					err.printStackTrace();
 				}
 			}
-		}
-	}
-
-	/**
-	 * Used to build and show a notification when Apollo is sent into the
-	 * background
-	 *
-	 * @param context The {@link Context} to use.
-	 */
-	public static void notifyForegroundStateChanged(Context context, boolean inForeground) {
-		int old = sForegroundActivities;
-		if (inForeground) {
-			sForegroundActivities++;
-		} else {
-			sForegroundActivities--;
-		}
-		if (old == 0 || sForegroundActivities == 0) {
-			Intent intent = new Intent(context, MusicPlaybackService.class);
-			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
-			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
-			context.startService(intent);
 		}
 	}
 

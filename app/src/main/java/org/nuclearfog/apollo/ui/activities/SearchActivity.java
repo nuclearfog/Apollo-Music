@@ -154,15 +154,6 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onStart() {
-		super.onStart();
-		MusicUtils.notifyForegroundStateChanged(this, true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void onStop() {
 		super.onStop();
 		MusicUtils.notifyForegroundStateChanged(this, false);

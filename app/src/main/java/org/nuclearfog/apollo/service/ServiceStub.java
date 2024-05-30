@@ -147,7 +147,7 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long position() {
+	public long getPlayerPosition() {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.getPosition();
@@ -158,7 +158,7 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void seek(long position) {
+	public void setPlayerPosition(long position) {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {
 			service.seekTo(position);

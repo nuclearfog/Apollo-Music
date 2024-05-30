@@ -148,12 +148,12 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		if (item.getGroupId() == GROUP_ID && selectedFolder != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_FOLDER:
-					long[] selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getName());
+					long[] selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getPath());
 					MusicUtils.playAll(requireActivity(), selectedFolderSongs, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_FOLDER_QUEUE:
-					selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getName());
+					selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getPath());
 					MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
 					return true;
 

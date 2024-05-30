@@ -30,7 +30,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
-import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
@@ -74,25 +73,6 @@ public class SettingsActivity extends AppCompatActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStart() {
-		super.onStart();
-		MusicUtils.notifyForegroundStateChanged(this, true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStop() {
-		super.onStop();
-		MusicUtils.notifyForegroundStateChanged(this, false);
-	}
-
 
 	/**
 	 * Preference fragment class

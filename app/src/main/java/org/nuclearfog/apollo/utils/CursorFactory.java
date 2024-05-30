@@ -179,8 +179,6 @@ public class CursorFactory {
 	 */
 	private static final String GENRE_SELECT = Genres.NAME + "!=''";
 
-
-
 	/**
 	 * Selection to filter songs with empty name
 	 */

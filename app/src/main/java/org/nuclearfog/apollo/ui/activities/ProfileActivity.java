@@ -138,14 +138,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	private String mProfileName = "";
 
 	/**
-	 * name of th emusic folder if defined
+	 * folder path of the music files
 	 */
-	private String folderName = "";
+	private String folderPath = "";
 
 	/**
 	 * random generator for folder shuffle
 	 */
-	private Random r = new Random();
+	private Random random = new Random();
 
 	/**
 	 * Image cache
@@ -201,7 +201,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			// get album yeas
 			year = mArguments.getString(Config.ALBUM_YEAR, "");
 			// get folder name if defined
-			folderName = mArguments.getString(Config.FOLDER, "");
+			folderPath = mArguments.getString(Config.FOLDER, "");
 		}
 		type = Type.getEnum(mType);
 		// Initialize the pager adapter
@@ -380,10 +380,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					break;
 
 				case FOLDER:
-					list = MusicUtils.getSongListForFolder(this, folderName);
+					list = MusicUtils.getSongListForFolder(this, folderPath);
 					if (list.length > 0) {
 						// play list at random position
-						MusicUtils.playAll(this, list, r.nextInt(list.length - 1), true);
+						MusicUtils.playAll(this, list, random.nextInt(list.length - 1), true);
 					}
 					break;
 			}

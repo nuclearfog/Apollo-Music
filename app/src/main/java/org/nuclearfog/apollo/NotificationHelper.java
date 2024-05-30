@@ -121,7 +121,8 @@ public class NotificationHelper {
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(contentIntent)
 				.setDefaults(NotificationCompat.DEFAULT_ALL)
-				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC).
+				setWhen(System.currentTimeMillis());
 
 		// use embedded media control notification of Android
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {

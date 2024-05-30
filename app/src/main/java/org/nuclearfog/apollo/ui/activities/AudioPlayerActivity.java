@@ -214,8 +214,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mResources.setOverflowStyle(this);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 		// Initialize the image fetcher/cache
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
 		// Initialize the handler used to update the current time
@@ -284,6 +282,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Refresh the current time
 		long next = refreshCurrentTime();
 		queueNextRefresh(next);
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
@@ -304,6 +304,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
 		MusicUtils.notifyForegroundStateChanged(this, false);
+		MusicUtils.unbindFromService(this);
 		mImageFetcher.flush();
 		super.onStop();
 	}

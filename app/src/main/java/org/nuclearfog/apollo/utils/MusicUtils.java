@@ -432,7 +432,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.removeTracks(pos, pos);
+				service.removeTrack(pos);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1307,7 +1307,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
-				service.removeTracks(0, Integer.MAX_VALUE);
+				service.clearQueue();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1453,7 +1453,7 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		// Step 1: Remove selected tracks from the current playlist, as well
 		// as from the album art cache
-		if (cursor != null && service != null) {
+		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				result = new String[cursor.getCount()];
 				FavoritesStore favStore = FavoritesStore.getInstance(activity);
@@ -1476,17 +1476,19 @@ public final class MusicUtils {
 					resolver.delete(Media.EXTERNAL_CONTENT_URI, DATABASE_REMOVE_TRACK, idStr);
 					// move to next track
 					cursor.moveToNext();
-					//
-					try {
-						service.removeTrack(trackId);
-					} catch (RemoteException exception) {
-						if (BuildConfig.DEBUG) {
-							exception.printStackTrace();
-						}
-					}
 				}
 			}
 			cursor.close();
+		}
+		// remove tracks from queue
+		if (service != null) {
+			try {
+				service.removeTracks(ids);
+			} catch (RemoteException exception) {
+				if (BuildConfig.DEBUG) {
+					exception.printStackTrace();
+				}
+			}
 		}
 		// return path to the files
 		return result;

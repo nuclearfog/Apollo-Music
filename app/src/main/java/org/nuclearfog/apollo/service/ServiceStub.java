@@ -257,21 +257,32 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int removeTracks(int first, int last) {
+	public void clearQueue() {
 		MusicPlaybackService service = mService.get();
-		if (service != null)
-			return service.removeTracks(first, last);
-		return 0;
+		if (service != null) {
+			service.clearQueue();
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int removeTrack(long id) {
+	public void removeTrack(int pos) {
+		MusicPlaybackService service = mService.get();
+		if (service != null) {
+			service.removeQueueTrack(pos);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int removeTracks(long[] id) {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
-			return service.removeTrack(id);
+			return service.removeQueueTracks(id);
 		return 0;
 	}
 

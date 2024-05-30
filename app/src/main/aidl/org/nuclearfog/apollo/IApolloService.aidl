@@ -22,8 +22,9 @@ interface IApolloService {
     void seek(long pos);
     int getQueuePosition();
     int getShuffleMode();
-    int removeTracks(int first, int last);
-    int removeTrack(long id); 
+    void clearQueue();
+    void removeTrack(int pos);
+    int removeTracks(in long[] ids);
     int getRepeatMode();
     int getAudioSessionId();
     Song getCurrentTrack();

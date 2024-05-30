@@ -905,23 +905,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Removes the range of tracks specified from the play list. If a file
-	 * within the range is the file currently being played, playback will move
-	 * to the next file after the range.
-	 *
-	 * @param first The first file to be removed
-	 * @param last  The last file to be removed
-	 * @return the number of tracks deleted
-	 */
-	synchronized int removeTracks(int first, int last) {
-		int numremoved = removeTracksInternal(first, last);
-		if (numremoved > 0) {
-			notifyChange(CHANGED_QUEUE);
-		}
-		return numremoved;
-	}
-
-	/**
 	 * Sets the shuffle mode
 	 *
 	 * @param shufflemode The shuffle mode to use
@@ -949,6 +932,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				} else {
 					mShuffleMode = SHUFFLE_NONE;
 				}
+			}
+			// reset shuffle mode
+			else if (mShuffleMode == SHUFFLE_NONE) {
+				setNextTrack(false);
 			}
 			saveQueue(false);
 			notifyChange(CHANGED_SHUFFLEMODE);
@@ -979,34 +966,91 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 * Removes all instances of the track with the given ID from the playlist.
-	 *
-	 * @param id The id to be removed
-	 * @return how many instances of the track were removed
+	 * clear the curren queue and stop playback
 	 */
-	synchronized int removeTrack(long id) {
-		int numremoved = 0;
-		for (int pos = 0; pos < mPlayList.size(); pos++) {
-			if (mPlayList.get(pos) == id) {
-				numremoved += removeTracksInternal(pos, pos);
-			}
-		}
-		if (numremoved > 0) {
-			notifyChange(CHANGED_QUEUE);
-		}
-		return numremoved;
+	synchronized void clearQueue() {
+		stop(true);
+		mPlayPos = -1;
+		mPlayList.clear();
+		notifyChange(CHANGED_QUEUE);
+		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
-	 * Returns the current position in time of the currenttrack
+	 * remove single track from queue at specific position
 	 *
-	 * @return The current playback position in miliseconds
+	 * @param pos position of the track in the queue
 	 */
-	synchronized long getPosition() {
-		if (mPlayer.initialized()) {
-			return mPlayer.getPosition();
+	synchronized void removeQueueTrack(int pos) {
+		if (pos >= 0 && pos < mPlayList.size()) {
+			// remove track at position
+			mPlayList.remove(pos);
+			// check if current play position is higher than the removed track
+			if (mPlayPos > pos) {
+				mPlayPos--;
+				notifyChange(CHANGED_POSITION);
+			}
+			// check if current track was removed then stop playback
+			else if (mPlayPos == pos) {
+				if (mPlayPos > 0)
+					mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
+				stop(false);
+			}
+			// stop playback if queue is empty
+			if (mPlayList.isEmpty()) {
+				mPlayPos = -1;
+				stop(true);
+			}
+			// notify that queue changed
+			else {
+				notifyChange(CHANGED_QUEUE);
+			}
 		}
-		return -1L;
+	}
+
+	/**
+	 * Removes all instances of the track with the given ID from the playlist.
+	 *
+	 * @param ids track IDs to remove
+	 * @return how many instances of the track were removed
+	 */
+	synchronized int removeQueueTracks(long[] ids) {
+		int numremoved = 0;
+		for (long id: ids) {
+			int pos;
+			do {
+				// get index of the track ID
+				pos = mPlayList.indexOf(id);
+				if (pos >= 0) {
+					mPlayList.remove(pos);
+					// check if current play position is higher than the removed track
+					if (mPlayPos > pos) {
+						mPlayPos--;
+					}
+					// check if current track was removed then stop playback
+					else if (mPlayPos == pos) {
+						if (mPlayPos > 0)
+							mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
+						stop(false);
+					}
+					numremoved++;
+				}
+			} while (pos >= 0);
+			if (mPlayList.isEmpty()) {
+				break;
+			}
+		}
+		// stop playback if queue is empty
+		if (mPlayList.isEmpty()) {
+			mPlayPos = -1;
+			stop(true);
+		}
+		// notify if any tracks were removed
+		if (numremoved > 0) {
+			notifyChange(CHANGED_QUEUE);
+			notifyChange(CHANGED_POSITION);
+		}
+		return numremoved;
 	}
 
 	/**
@@ -1021,6 +1065,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			list[i] = mPlayList.get(i);
 		}
 		return list;
+	}
+
+	/**
+	 * Returns the current position in time of the currenttrack
+	 *
+	 * @return The current playback position in miliseconds
+	 */
+	synchronized long getPosition() {
+		if (mPlayer.initialized()) {
+			return mPlayer.getPosition();
+		}
+		return -1L;
 	}
 
 	/**
@@ -1204,53 +1260,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		} else {
 			stopForeground(false);
 		}
-	}
-
-	/**
-	 * Removes the range of tracks specified from the play list. If a file
-	 * within the range is the file currently being played, playback will move
-	 * to the next file after the range.
-	 *
-	 * @param first The first file to be removed
-	 * @param last  The last file to be removed
-	 * @return the number of tracks deleted
-	 */
-	private int removeTracksInternal(int first, int last) {
-		if (last < first) {
-			return 0;
-		} else if (first < 0) {
-			first = 0;
-		} else if (last >= mPlayList.size()) {
-			last = mPlayList.size() - 1;
-		}
-		boolean gotonext = false;
-		if (first <= mPlayPos && mPlayPos <= last) {
-			mPlayPos = first;
-			gotonext = true;
-		} else if (mPlayPos > last) {
-			mPlayPos -= last - first + 1;
-		}
-		// remove a range of tracks from playlist
-		mPlayList.subList(first, last + 1).clear();
-		if (gotonext) {
-			if (mPlayList.isEmpty()) {
-				stop(true);
-				mPlayPos = -1;
-			} else {
-				if (mShuffleMode != SHUFFLE_NONE) {
-					mPlayPos = incrementPosition(mPlayPos, true);
-				} else if (mPlayPos >= mPlayList.size()) {
-					mPlayPos = 0;
-				}
-				boolean wasPlaying = isPlaying();
-				stop(false);
-				openCurrentAndNext();
-				if (wasPlaying) {
-					play();
-				}
-			}
-		}
-		return last - first + 1;
 	}
 
 	/**
@@ -1462,7 +1471,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		int nextPos = mPlayPos;
 		for (int i = 0; i < 10; i++) {
 			nextPos = incrementPosition(nextPos, force);
-			if (nextPos >= 0) {
+			if (nextPos >= 0 && nextPos < mPlayList.size()) {
 				long id = mPlayList.get(nextPos);
 				Uri uri = Uri.parse(Media.EXTERNAL_CONTENT_URI + "/" + id);
 				if (mPlayer.setNextDataSource(getApplicationContext(), uri)) {
@@ -1602,9 +1611,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Creates the party shuffle playlist
 	 */
 	private void doAutoShuffleUpdate() {
-		if (mPlayPos > 10) {
-			removeTracks(0, mPlayPos - 9);
-		}
 		int toAdd = 7 - (mPlayList.size() - (mPlayPos < 0 ? -1 : mPlayPos));
 		for (int i = 0; i < toAdd; i++) {
 			int lookback = mHistory.size();

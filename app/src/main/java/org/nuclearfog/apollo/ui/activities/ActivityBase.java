@@ -74,10 +74,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	private static final int REQ_CHECK_PERM = 0x1139398F;
 
 	/**
-	 * permissions needed for this app
-	 */
-	private static final String[] PERMISSIONS;
-	/**
 	 * Play and pause button (BAB)
 	 */
 	private PlayPauseButton mPlayPauseButton;
@@ -105,14 +101,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * Broadcast receiver
 	 */
 	private PlaybackStatus mPlaybackStatus;
-
-	static {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			PERMISSIONS = new String[]{READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
-		} else {
-			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
-		}
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -152,26 +140,30 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));
-		// Display the now playing screen or shuffle if this isn't anything playing
+
+		previousButton.setOnClickListener(this);
+		nextButton.setOnClickListener(this);
 		bottomActionBar.setOnClickListener(this);
-		// Open to the currently playing album profile
+		mPlayPauseButton.setOnClickListener(this);
+		mShuffleButton.setOnClickListener(this);
+		mRepeatButton.setOnClickListener(this);
 		mAlbumArt.setOnClickListener(this);
 
 		// check permissions before initialization
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			for (String permission : PERMISSIONS) {
+			String[] permissions;
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				permissions = new String[]{READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
+			} else {
+				permissions = new String[]{READ_EXTERNAL_STORAGE};
+			}
+			for (String permission : permissions) {
 				if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-					// request first permission before initialization
-					requestPermissions(PERMISSIONS, REQ_CHECK_PERM);
+					requestPermissions(permissions, REQ_CHECK_PERM);
 					return;
 				}
 			}
 		}
-		previousButton.setOnClickListener(this);
-		nextButton.setOnClickListener(this);
-		mPlayPauseButton.setOnClickListener(this);
-		mShuffleButton.setOnClickListener(this);
-		mRepeatButton.setOnClickListener(this);
 		init();
 	}
 
@@ -199,6 +191,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			for (int grantResult : grantResults) {
 				if (grantResult == PERMISSION_DENIED) {
 					Toast.makeText(getApplicationContext(), R.string.error_permission_denied, Toast.LENGTH_LONG).show();
+					finish();
 					return;
 				}
 			}

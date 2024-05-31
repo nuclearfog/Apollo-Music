@@ -140,7 +140,7 @@ public class ServiceStub extends IApolloService.Stub {
 		MusicPlaybackService service = mService.get();
 		if (service != null)
 			return service.getQueue();
-		return new long[]{};
+		return new long[0];
 	}
 
 	/**

@@ -70,7 +70,7 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 			}
 		}
 		// the resulting song list should have the same order than the source song Id list
-		if (!result.isEmpty() && param.size() > result.size()) {
+		if (!result.isEmpty() && param.size() >= result.size()) {
 			Collections.sort(result, new Comparator<Song>() {
 				@Override
 				public int compare(Song o1, Song o2) {

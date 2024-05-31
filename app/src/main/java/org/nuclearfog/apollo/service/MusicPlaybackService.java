@@ -781,7 +781,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void gotoPrev() {
 		if (!mPlayer.busy()) {
-			if (getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
+			if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
 				mPlayPos = decrementPosition(mPlayPos);
 				stop(false);
 				openCurrentAndNext();
@@ -1054,14 +1054,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Returns the queue
 	 *
-	 * @return The queue as a long[]
+	 * @return The queue containing song IDs
 	 */
 	synchronized long[] getQueue() {
-		int len = mPlayList.size();
-		long[] list = new long[len];
-		for (int i = 0; i < len; i++) {
-			list[i] = mPlayList.get(i);
-		}
+		Long[] ids = mPlayList.toArray(new Long[0]);
+		long[] list = new long[ids.length];
+		for (int i = 0; i < ids.length; i++)
+			list[i] = ids[i];
 		return list;
 	}
 
@@ -1074,7 +1073,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mPlayer.initialized()) {
 			return mPlayer.getPosition();
 		}
-		return -1L;
+		return 0;
 	}
 
 	/**

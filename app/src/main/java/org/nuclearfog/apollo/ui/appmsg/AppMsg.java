@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.R;
@@ -69,6 +70,17 @@ public class AppMsg {
 	 */
 	public AppMsg(Activity activity) {
 		this.activity = activity;
+	}
+
+	/**
+	 * Make a {@link AppMsg} that just contains a text view.
+	 *
+	 * @param activity The context to use. Usually your {@link AppCompatActivity} object.
+	 * @param id       ID of the strign resource
+	 */
+	public static AppMsg makeText(Activity activity, @StringRes int id, Style style) {
+		String text = activity.getString(id);
+		return makeText(activity, text, style);
 	}
 
 	/**

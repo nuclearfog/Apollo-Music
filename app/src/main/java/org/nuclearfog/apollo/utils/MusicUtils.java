@@ -62,7 +62,6 @@ import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -72,6 +71,7 @@ import java.util.WeakHashMap;
  * A collection of helpers directly related to music or Apollo's service.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public final class MusicUtils {
 
@@ -620,26 +620,15 @@ public final class MusicUtils {
 		IApolloService service = getService(activity);
 		if (list.length > 0 && service != null) {
 			try {
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
 				if (forceShuffle) {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
+					service.open(list, 0);
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
+					service.open(list, position);
 				}
-				Song song = service.getCurrentTrack();
-				int currentQueuePosition = service.getQueuePosition();
-				if (position != -1 && currentQueuePosition == position && song != null && song.getId() == list[position]) {
-					long[] playlist = service.getQueue();
-					if (Arrays.equals(list, playlist)) {
-						service.play();
-						return;
-					}
-				}
-				if (position < 0) {
-					position = 0;
-				}
-				service.open(list, forceShuffle ? 0 : position);
+				int sessionId = service.getAudioSessionId();
+				AudioEffects.getInstance(activity, sessionId);
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -652,63 +641,42 @@ public final class MusicUtils {
 	 *
 	 */
 	public static void playAllFromUserItemClick(Activity activity, ArrayAdapter<Song> adapter, int position) {
-		if (position < adapter.getViewTypeCount() - 1) {
-			// invalid position
-			return;
+		if (position >= adapter.getViewTypeCount() - 1) {
+			// if view type count is greater than 1, a header exists at first position
+			// calculate position offset
+			int off = (adapter.getViewTypeCount() - 1);
+			// length of the arrayadapter
+			int len = adapter.getCount();
+			// calculate real position
+			position -= off;
+			// copy all IDs to an array
+			long[] list = new long[len - off];
+			for (int i = 0; i < list.length; i++) {
+				list[i] = adapter.getItemId(i + off);
+			}
+			// play whole ID list
+			playAll(activity, list, position, false);
 		}
-		// if view type count is greater than 1, a header exists at first position
-		// calculate position offset
-		int off = (adapter.getViewTypeCount() - 1);
-		// length of the arrayadapter
-		int len = adapter.getCount();
-		// calculate real position
-		position -= off;
-		// copy all IDs to an array
-		long[] list = new long[len - off];
-		for (int i = 0; i < list.length; i++) {
-			list[i] = adapter.getItemId(i + off);
-		}
-		// play whole ID list
-		playAll(activity, list, position, false);
 	}
 
 	/**
+	 * shuffle all available songs
 	 */
 	public static void shuffleAll(Activity activity) {
 		Cursor cursor = CursorFactory.makeTrackCursor(activity.getApplicationContext());
-		IApolloService service = getService(activity);
-		if (service != null && cursor != null) {
-			cursor.moveToFirst();
-			long[] mTrackList = new long[cursor.getCount()];
-			for (int i = 0; i < mTrackList.length; i++) {
-				mTrackList[i] = cursor.getLong(0);
-				cursor.moveToNext();
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				long[] mTrackList = new long[cursor.getCount()];
+				for (int i = 0; i < mTrackList.length; i++) {
+					mTrackList[i] = cursor.getLong(0);
+					cursor.moveToNext();
+				}
+				if (mTrackList.length > 0) {
+					int pos = random.nextInt(mTrackList.length - 1);
+					playAll(activity, mTrackList, pos, true);
+				}
 			}
 			cursor.close();
-			if (mTrackList.length == 0) {
-				return;
-			}
-			try {
-				int sessionId = service.getAudioSessionId();
-				AudioEffects.getInstance(activity, sessionId);
-				service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-				Song song = service.getCurrentTrack();
-				int mCurrentQueuePosition = service.getQueuePosition();
-				if (mCurrentQueuePosition == 0 && song != null && song.getId() == mTrackList[0]) {
-					long[] mPlaylist = service.getQueue();
-					if (Arrays.equals(mTrackList, mPlaylist)) {
-						service.play();
-						return;
-					}
-				}
-				int pos = random.nextInt(mTrackList.length - 1);
-				service.open(mTrackList, pos);
-				service.play();
-			} catch (RemoteException err) {
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
 		}
 	}
 
@@ -720,17 +688,11 @@ public final class MusicUtils {
 	 * @return The ID for a playlist.
 	 */
 	public static long getIdForPlaylist(Context context, String name) {
-		Cursor cursor = CursorFactory.makePlaylistCursor(context);
+		Cursor cursor = CursorFactory.makePlaylistCursor(context, name);
 		long playlistId = -1L;
 		if (cursor != null) {
-			if (cursor.moveToFirst() && name != null) {
-				do {
-					String playlist = cursor.getString(1);
-					if (name.equals(playlist)) {
-						playlistId = cursor.getLong(0);
-						break;
-					}
-				} while (cursor.moveToNext());
+			if (cursor.moveToFirst()) {
+				playlistId = cursor.getLong(0);
 			}
 			cursor.close();
 		}
@@ -1191,7 +1153,7 @@ public final class MusicUtils {
 	 * @param playlistId The playlist Id.
 	 */
 	public static void playPlaylist(Activity activity, long playlistId) {
-		playAll(activity, getSongListForPlaylist(activity, playlistId), -1, false);
+		playAll(activity, getSongListForPlaylist(activity, playlistId), 0, false);
 	}
 
 	/**

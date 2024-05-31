@@ -383,7 +383,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 					list = MusicUtils.getSongListForFolder(this, folderPath);
 					if (list.length > 0) {
 						// play list at random position
-						MusicUtils.playAll(this, list, random.nextInt(list.length - 1), true);
+						int position = random.nextInt(list.length - 1);
+						MusicUtils.playAll(this, list, position, true);
 					}
 					break;
 			}

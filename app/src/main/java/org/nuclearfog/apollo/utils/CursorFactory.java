@@ -236,11 +236,6 @@ public class CursorFactory {
 	private static final String PLAYLIST_NAME_SELECT = Playlists.NAME + "=?";
 
 	/**
-	 * select playlist by ID
-	 */
-	private static final String PLAYLIST_ID_SELECT = Playlists._ID + "=?";
-
-	/**
 	 * selection to find artist name matching search
 	 */
 	private static final String ARTIST_MATCH = Artists.ARTIST + " LIKE ?";

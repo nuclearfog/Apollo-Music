@@ -243,6 +243,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		controls.setVisibility(View.INVISIBLE);
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
 
 		mPreviousButton.setRepeatListener(this);
 		mNextButton.setRepeatListener(this);
@@ -285,17 +287,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Refresh the current time
 		long next = refreshCurrentTime();
 		queueNextRefresh(next);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		NavUtils.goHome(this);
+		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
 	/**
@@ -308,6 +300,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		MusicUtils.notifyForegroundStateChanged(this, false);
 		mImageFetcher.flush();
 		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onBackPressed() {
+		NavUtils.goHome(this);
 	}
 
 	/**

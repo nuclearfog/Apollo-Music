@@ -374,6 +374,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			return true;
 		}
 		stopSelf(mServiceStartId);
+		mNotificationHelper.dismissNotification();
 		return true;
 	}
 
@@ -607,10 +608,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// stop track/dismiss notification
 		else if (CMDSTOP.equals(command) || ACTION_STOP.equals(action)) {
 			pause(true);
-			mPausedByTransientLossOfFocus = false;
 			seekTo(0);
+			mPausedByTransientLossOfFocus = false;
 			releaseServiceUiAndStop();
-			mNotificationHelper.dismissNotification();
 		}
 		// repeat set
 		else if (ACTION_REPEAT.equals(action)) {
@@ -868,10 +868,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// fall through
 
 			case CHANGED_PLAYSTATE:
-				if (!isForeground) {
-					mNotificationHelper.updateNotification();
-				} else {
+				if (isForeground) {
 					mNotificationHelper.dismissNotification();
+				} else {
+					mNotificationHelper.updateNotification();
 				}
 				// fall through
 
@@ -1650,6 +1650,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			stopForeground(true);
 			if (!mServiceInUse) {
 				saveQueue(true);
+				mNotificationHelper.dismissNotification();
 				stopSelf(mServiceStartId);
 			}
 		}

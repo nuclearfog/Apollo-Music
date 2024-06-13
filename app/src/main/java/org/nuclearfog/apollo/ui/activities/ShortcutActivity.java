@@ -78,12 +78,39 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 		// Initialize the intent
 		mIntent = getIntent();
 		mLoader = new SearchLoader(this);
 		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
+		MusicUtils.bindToService(this, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStop() {
+		MusicUtils.notifyForegroundStateChanged(this, false);
+		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		// Unbind from the service
+		MusicUtils.unbindFromService(this);
 	}
 
 	/**
@@ -164,16 +191,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 			// Finish up
 			allDone();
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		// Unbind from the service
-		MusicUtils.unbindFromService(this);
 	}
 
 	/**

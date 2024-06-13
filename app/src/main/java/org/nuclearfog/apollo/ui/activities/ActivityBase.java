@@ -112,6 +112,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -165,6 +167,54 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			}
 		}
 		init();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressLint("UnspecifiedRegisterReceiverFlag")
+	@Override
+	protected void onStart() {
+		super.onStart();
+		IntentFilter filter = new IntentFilter();
+		// Play and pause changes
+		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
+		// Shuffle and repeat changes
+		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
+		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
+		filter.addAction(MusicPlaybackService.CHANGED_QUEUE);
+		// Track changes
+		filter.addAction(MusicPlaybackService.CHANGED_META);
+		// Update a list, probably the playlist fragment's
+		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
+		// register playstate callback
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
+		} else {
+			registerReceiver(mPlaybackStatus, filter);
+		}
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStop() {
+		// Unregister the receiver
+		unregisterReceiver(mPlaybackStatus);
+		MusicUtils.notifyForegroundStateChanged(this, false);
+		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		// Unbind from the service
+		MusicUtils.unbindFromService(this);
+		super.onDestroy();
 	}
 
 	/**
@@ -228,55 +278,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressLint("UnspecifiedRegisterReceiverFlag")
-	@Override
-	protected void onStart() {
-		super.onStart();
-		IntentFilter filter = new IntentFilter();
-		// Play and pause changes
-		filter.addAction(MusicPlaybackService.CHANGED_PLAYSTATE);
-		// Shuffle and repeat changes
-		filter.addAction(MusicPlaybackService.CHANGED_SHUFFLEMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_REPEATMODE);
-		filter.addAction(MusicPlaybackService.CHANGED_QUEUE);
-		// Track changes
-		filter.addAction(MusicPlaybackService.CHANGED_META);
-		// Update a list, probably the playlist fragment's
-		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
-		// register playstate callback
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
-		} else {
-			registerReceiver(mPlaybackStatus, filter);
-		}
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStop() {
-		// Unregister the receiver
-		unregisterReceiver(mPlaybackStatus);
-		MusicUtils.notifyForegroundStateChanged(this, false);
-		super.onStop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		// Unbind from the service
-		MusicUtils.unbindFromService(this);
-		super.onDestroy();
 	}
 
 	/**

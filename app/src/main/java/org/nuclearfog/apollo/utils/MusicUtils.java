@@ -142,7 +142,23 @@ public final class MusicUtils {
 		if (contextWrapper.bindService(serviceIntent, binder, 0)) {
 			mConnectionMap.put(activity, binder);
 		}
-		notifyForegroundStateChanged(activity, true);
+	}
+
+	/**
+	 * unregister connection to service
+	 *
+	 * @param activity activity to unregister
+	 */
+	public static void unbindFromService(Activity activity) {
+		ServiceBinder mBinder = mConnectionMap.remove(activity);
+		if (mBinder != null) {
+			activity.unbindService(mBinder);
+			if (mConnectionMap.isEmpty()) {
+				if (BuildConfig.DEBUG) {
+					Log.v("MusicUtils", "All connections closed");
+				}
+			}
+		}
 	}
 
 	/**
@@ -162,24 +178,7 @@ public final class MusicUtils {
 			Intent intent = new Intent(context, MusicPlaybackService.class);
 			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
 			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
-			context.startService(intent);
-		}
-	}
-
-	/**
-	 * unregister connection to service
-	 *
-	 * @param activity activity to unregister
-	 */
-	public static void unbindFromService(Activity activity) {
-		ServiceBinder mBinder = mConnectionMap.remove(activity);
-		if (mBinder != null) {
-			activity.unbindService(mBinder);
-			if (mConnectionMap.isEmpty()) {
-				if (BuildConfig.DEBUG) {
-					Log.v("Utils", "All connections closed, cleaning Service");
-				}
-			}
+			ContextCompat.startForegroundService(context, intent);
 		}
 	}
 

@@ -137,6 +137,31 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 		mLoader.execute(mFilterString, this);
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onStop() {
+		MusicUtils.notifyForegroundStateChanged(this, false);
+		super.onStop();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		// Unbind from the service
+		MusicUtils.unbindFromService(this);
+		super.onDestroy();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -148,25 +173,6 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
 		mLoader.execute(mFilterString, this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStop() {
-		super.onStop();
-		MusicUtils.notifyForegroundStateChanged(this, false);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		// Unbind from the service
-		MusicUtils.unbindFromService(this);
-		super.onDestroy();
 	}
 
 	/**

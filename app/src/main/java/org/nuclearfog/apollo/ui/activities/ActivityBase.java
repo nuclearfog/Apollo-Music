@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -97,6 +98,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * Album art (BAB)
 	 */
 	private ImageView mAlbumArt;
+
+	private View controls;
 	/**
 	 * Broadcast receiver
 	 */
@@ -134,6 +137,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mArtistName = findViewById(R.id.bottom_action_bar_line_two);
 		// Album art
 		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
+		// media controls
+		controls = findViewById(R.id.action_controls);
 		// next track button
 		View previousButton = findViewById(R.id.action_button_previous);
 		// previous track button
@@ -142,6 +147,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));
+		// hide player controls
+		controls.setVisibility(View.INVISIBLE);
 
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);
@@ -200,6 +207,17 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void onPostResume() {
+		super.onPostResume();
+		// update playback control after resuming
+		updatePlaybackControls();
+		updateBottomActionBarInfo();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void onStop() {
 		// Unregister the receiver
 		unregisterReceiver(mPlaybackStatus);
@@ -222,6 +240,12 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	public void onServiceConnected() {
+		if (controls.getVisibility() != View.VISIBLE) {
+			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+			anim.setDuration(250);
+			controls.startAnimation(anim);
+			controls.setVisibility(View.VISIBLE);
+		}
 		// Set the playback drawables
 		updatePlaybackControls();
 		// Current info

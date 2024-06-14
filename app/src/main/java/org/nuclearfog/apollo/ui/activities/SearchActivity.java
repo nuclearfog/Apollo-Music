@@ -47,7 +47,6 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
-import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
@@ -57,7 +56,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends ActivityBase implements ServiceBinderCallback, AsyncCallback<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
+public class SearchActivity extends ActivityBase implements AsyncCallback<List<Music>>, OnScrollListener, OnQueryTextListener, OnItemClickListener {
 
 	/**
 	 * Grid view column count. ONE - list, TWO - normal grid
@@ -105,8 +104,6 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 		}
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
 		mFilterString = !TextUtils.isEmpty(query) ? query : "";
@@ -135,31 +132,6 @@ public class SearchActivity extends ActivityBase implements ServiceBinderCallbac
 		// or start a new one.
 		mLoader = new MusicSearchLoader(this);
 		mLoader.execute(mFilterString, this);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		MusicUtils.notifyForegroundStateChanged(this, true);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStop() {
-		MusicUtils.notifyForegroundStateChanged(this, false);
-		super.onStop();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onDestroy() {
-		// Unbind from the service
-		MusicUtils.unbindFromService(this);
-		super.onDestroy();
 	}
 
 	/**

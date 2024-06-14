@@ -119,7 +119,7 @@ public final class MusicUtils {
 	 */
 	private static Random random = new Random();
 
-	private static int sForegroundActivities = 0;
+	private static int foregroundActivities = 0;
 
 	private static int markedTracks = 0;
 
@@ -164,21 +164,32 @@ public final class MusicUtils {
 	/**
 	 * Used to build and show a notification when Apollo is sent into the
 	 * background
-	 *
-	 * @param context The {@link Context} to use.
 	 */
-	public static void notifyForegroundStateChanged(Context context, boolean inForeground) {
-		int old = sForegroundActivities;
+	public static void notifyForegroundStateChanged(Activity activity, boolean inForeground) {
+		int oldForegroundActivities = foregroundActivities;
 		if (inForeground) {
-			sForegroundActivities++;
+			foregroundActivities++;
 		} else {
-			sForegroundActivities--;
+			foregroundActivities--;
 		}
-		if (old == 0 || sForegroundActivities == 0) {
-			Intent intent = new Intent(context, MusicPlaybackService.class);
-			intent.setAction(MusicPlaybackService.CHANGED_FOREGROUND_STATE);
-			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, sForegroundActivities != 0);
-			ContextCompat.startForegroundService(context, intent);
+		// start foreground service if application is in background
+		if (foregroundActivities == 0) {
+			Intent intent = new Intent(activity, MusicPlaybackService.class);
+			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
+			ContextCompat.startForegroundService(activity, intent);
+		}
+		// stop foreground activity of the playback service
+		else if (oldForegroundActivities == 0) {
+			IApolloService service = getService(activity);
+			if (service != null) {
+				try {
+					service.stopForeground();
+				} catch (RemoteException err) {
+					if (BuildConfig.DEBUG) {
+						err.printStackTrace();
+					}
+				}
+			}
 		}
 	}
 
@@ -228,7 +239,7 @@ public final class MusicUtils {
 				if (service.isPlaying()) {
 					service.pause(false);
 					return false;
-				} else if (service.getQueue().length > 0){
+				} else if (service.getQueue().length > 0) {
 					service.play();
 					int sessionId = service.getAudioSessionId();
 					AudioEffects.getInstance(activity, sessionId);
@@ -1524,7 +1535,10 @@ public final class MusicUtils {
 		}
 	}
 
-
+	/**
+	 * get service connected with a specific activity
+	 */
+	@Nullable
 	private static IApolloService getService(@Nullable Activity activity) {
 		if (activity != null) {
 			ServiceBinder binder = mConnectionMap.get(activity);

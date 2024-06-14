@@ -4,6 +4,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.model.Album;
 
 interface IApolloService {
+    void stopForeground();
     int getAudioSessionId();
     void openFile(in Uri uri);
     void open(in long[] list, int position);

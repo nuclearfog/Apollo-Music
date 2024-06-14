@@ -118,10 +118,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String CHANGED_SHUFFLEMODE = APOLLO_PACKAGE_NAME + ".shufflemodechanged";
 	/**
-	 * Called to update the service about the foreground state of Apollo's activities
-	 */
-	public static final String CHANGED_FOREGROUND_STATE = APOLLO_PACKAGE_NAME + ".fgstatechanged";
-	/**
 	 * Called to go toggle between pausing and playing the music
 	 */
 	public static final String ACTION_TOGGLEPAUSE = APOLLO_PACKAGE_NAME + ".togglepause";
@@ -312,9 +308,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private boolean mPausedByTransientLossOfFocus = false;
 	/**
-	 * used to check if application is running in the foreground
+	 * used to check if service is running in the foreground
 	 */
-	private boolean isForeground = true;
+	private boolean isForeground = false;
 	/**
 	 * used to check if a shutdown of this service is planned after timeout
 	 */
@@ -511,13 +507,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceStartId = startId;
 		mNotificationHelper.createNotification();
 		if (intent != null) {
-			if (intent.hasExtra(EXTRA_FOREGROUND)) {
-				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-				if (isForeground) {
-					stopForeground(true);
-					mNotificationHelper.dismissNotification();
-				}
-			}
+			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
 				mShutdownScheduled = false;
 				releaseServiceUiAndStop();
@@ -869,9 +859,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_PLAYSTATE:
 				if (isForeground) {
-					mNotificationHelper.dismissNotification();
-				} else {
 					mNotificationHelper.updateNotification();
+				} else {
+					mNotificationHelper.dismissNotification();
 				}
 				// fall through
 
@@ -1147,6 +1137,15 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		mNextPlayPos = incrementPosition(mPlayPos, false);
 		notifyChange(CHANGED_QUEUE);
+	}
+
+	/**
+	 *
+	 */
+	synchronized void stopForeground() {
+		stopForeground(true);
+		isForeground = false;
+		mNotificationHelper.dismissNotification();
 	}
 
 	/**

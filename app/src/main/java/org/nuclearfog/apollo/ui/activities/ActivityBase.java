@@ -200,7 +200,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		} else {
 			registerReceiver(mPlaybackStatus, filter);
 		}
-		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
 	/**
@@ -240,6 +239,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	public void onServiceConnected() {
+		MusicUtils.notifyForegroundStateChanged(this, true);
 		if (controls.getVisibility() != View.VISIBLE) {
 			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
 			anim.setDuration(250);

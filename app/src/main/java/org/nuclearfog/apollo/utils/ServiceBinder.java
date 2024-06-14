@@ -9,6 +9,8 @@ import org.nuclearfog.apollo.IApolloService;
 import java.lang.ref.WeakReference;
 
 /**
+ * Connector class used by Activities to communicate to Service
+ *
  * @author nuclearfog
  */
 public class ServiceBinder implements ServiceConnection {

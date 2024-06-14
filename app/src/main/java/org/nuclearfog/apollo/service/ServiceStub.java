@@ -114,6 +114,17 @@ public class ServiceStub extends IApolloService.Stub {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void stopForeground() {
+		MusicPlaybackService service = mService.get();
+		if (service != null) {
+			service.stopForeground();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void refresh() {
 		MusicPlaybackService service = mService.get();
 		if (service != null) {

@@ -287,7 +287,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Refresh the current time
 		long next = refreshCurrentTime();
 		queueNextRefresh(next);
-		MusicUtils.notifyForegroundStateChanged(this, true);
 	}
 
 	/**
@@ -426,17 +425,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		setIntent(intent);
-		startPlayback();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void onServiceConnected() {
+		MusicUtils.notifyForegroundStateChanged(this, true);
 		// Check whether we were asked to start any playback
 		startPlayback();
 		// Set the playback drawables

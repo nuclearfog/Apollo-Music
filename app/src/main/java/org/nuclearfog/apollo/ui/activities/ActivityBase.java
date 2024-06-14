@@ -409,6 +409,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	private void updateBottomActionBarInfo() {
 		Song song = MusicUtils.getCurrentTrack(this);
 		Album album = MusicUtils.getCurrentAlbum(this);
+		// set current track information
 		if (song != null) {
 			mTrackName.setText(song.getName());
 			mArtistName.setText(song.getArtist());
@@ -417,7 +418,11 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			mArtistName.setText("");
 		}
 		// Set the album art
-		ApolloUtils.getImageFetcher(this).loadAlbumImage(album, mAlbumArt);
+		if (album != null) {
+			ApolloUtils.getImageFetcher(this).loadAlbumImage(album, mAlbumArt);
+		} else {
+			mAlbumArt.setImageResource(0);
+		}
 	}
 
 	/**

@@ -1387,7 +1387,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void clearCurrentTrackInformation() {
 		currentAlbum = null;
 		currentSong = null;
-		notifyChange(CHANGED_META);
 	}
 
 	/**

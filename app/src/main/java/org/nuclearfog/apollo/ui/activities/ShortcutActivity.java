@@ -89,6 +89,16 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void onStart() {
+		super.onStart();
+		// bind activity to service
+		MusicUtils.notifyForegroundStateChanged(this, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void onStop() {
 		MusicUtils.notifyForegroundStateChanged(this, false);
 		super.onStop();
@@ -109,7 +119,6 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	 */
 	@Override
 	public void onServiceConnected() {
-		MusicUtils.notifyForegroundStateChanged(this, true);
 		// Check for a voice query
 		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
 			mLoader.execute(mVoiceQuery, this);

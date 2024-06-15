@@ -54,7 +54,12 @@ public class NotificationHelper {
 	private static final int APOLLO_MUSIC_SERVICE = BuildConfig.DEBUG ? 0x5D74E856 : 0x28E61796;
 
 	/**
-	 *
+	 * Notification channel ID
+	 */
+	public static final String NOTIFICAITON_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
+
+	/**
+	 * intent used to open audio player after clicking on notification
 	 */
 	private static final String INTENT_AUDIO_PLAYER = BuildConfig.APPLICATION_ID + ".AUDIO_PLAYER";
 
@@ -99,7 +104,7 @@ public class NotificationHelper {
 		mService = service;
 		mPreferences = PreferenceUtils.getInstance(service.getApplicationContext());
 		// init notification manager & channel
-		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(MusicPlaybackService.NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
+		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
 				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(notificationChannel);
@@ -117,7 +122,7 @@ public class NotificationHelper {
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
 		// create notification builder
-		notificationBuilder = new NotificationCompat.Builder(mService, MusicPlaybackService.NOTIFICAITON_CHANNEL_ID)
+		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICAITON_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(contentIntent)
 				.setDefaults(NotificationCompat.DEFAULT_ALL)

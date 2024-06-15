@@ -180,15 +180,9 @@ public final class MusicUtils {
 		}
 		// stop foreground activity of the playback service
 		else if (oldForegroundActivities == 0) {
-			IApolloService service = getService(activity);
-			if (service != null) {
-				try {
-					service.stopForeground();
-				} catch (RemoteException err) {
-					if (BuildConfig.DEBUG) {
-						err.printStackTrace();
-					}
-				}
+			ServiceBinder binder = mConnectionMap.get(activity);
+			if (binder != null) {
+				binder.stopForeground();
 			}
 		}
 	}

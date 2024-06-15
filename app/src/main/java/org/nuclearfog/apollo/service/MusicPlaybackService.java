@@ -12,8 +12,6 @@
 package org.nuclearfog.apollo.service;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +24,6 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -38,6 +35,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ServiceCompat;
 import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
 
@@ -81,10 +79,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 */
 	private static final String MUSIC_PACKAGE_NAME = "com.android.music";
-	/**
-	 * Notification channel ID
-	 */
-	public static final String NOTIFICAITON_CHANNEL_ID = APOLLO_PACKAGE_NAME + ".controlpanel";
 	/**
 	 * Called to indicate a general service commmand.
 	 */
@@ -146,37 +140,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public static final String ACTION_REFRESH = APOLLO_PACKAGE_NAME + ".refresh";
 	/**
-	 * Used by the alarm intent to shutdown the service after being idle
-	 */
-	private static final String ACTION_SHUTDOWN = APOLLO_PACKAGE_NAME + ".shutdown";
-	/**
 	 *
 	 */
 	public static final String CMDNAME = "command";
-	/**
-	 *
-	 */
-	private static final String CMDTOGGLEPAUSE = "togglepause";
-	/**
-	 *
-	 */
-	private static final String CMDSTOP = "stop";
-	/**
-	 *
-	 */
-	private static final String CMDPAUSE = "pause";
-	/**
-	 *
-	 */
-	private static final String CMDPLAY = "play";
-	/**
-	 *
-	 */
-	private static final String CMDPREVIOUS = "previous";
-	/**
-	 *
-	 */
-	private static final String CMDNEXT = "next";
 	/**
 	 * Moves a list to the next position in the queue
 	 */
@@ -209,10 +175,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Repeats all the tracks in a list
 	 */
 	public static final int REPEAT_ALL = 0xEE3F9E0B;
-	/**
-	 * Idle time before stopping the foreground notfication (1 minute)
-	 */
-	private static final int IDLE_DELAY = 60000;
+
 	/**
 	 * Song play time used as threshold for rewinding to the beginning of the
 	 * track instead of skipping to the previous track when getting the PREVIOUS
@@ -265,6 +228,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private BroadcastReceiver mUnmountReceiver;
 	/**
+	 * handler used to shutdown service after idle
+	 */
+	private ShutdownHandler shutdownHandler;
+	/**
 	 * The media player
 	 */
 	private MultiPlayer mPlayer;
@@ -285,13 +252,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private PopularStore mPopularCache;
 	/**
-	 * Alarm intent for removing the notification when nothing is playing
-	 * for some time
-	 */
-	private AlarmManager mAlarmManager;
-	private PendingIntent mShutdownIntent;
-
-	/**
 	 * Used to know when the service is active
 	 */
 	private boolean mServiceInUse = false;
@@ -311,10 +271,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * used to check if service is running in the foreground
 	 */
 	private boolean isForeground = false;
-	/**
-	 * used to check if a shutdown of this service is planned after timeout
-	 */
-	private boolean mShutdownScheduled = false;
 	/**
 	 * current song to play
 	 */
@@ -343,7 +299,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
-		cancelShutdown();
+		shutdownHandler.stop();
 		mServiceInUse = true;
 		return new ServiceStub(this);
 	}
@@ -353,7 +309,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public void onRebind(Intent intent) {
-		cancelShutdown();
+		shutdownHandler.stop();
 		mServiceInUse = true;
 	}
 
@@ -366,7 +322,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		saveQueue(true);
 		if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
 			mIsSupposedToBePlaying = false;
-			scheduleDelayedShutdown();
+			shutdownHandler.start();
 			return true;
 		}
 		stopSelf(mServiceStartId);
@@ -389,7 +345,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
 		//
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 		// Initialize the media player
 		mPlayer = new MultiPlayer(getMainLooper(), this);
 		// init media session
@@ -400,6 +355,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mNotificationHelper = new NotificationHelper(this, mSession);
 		// Initialize the preferences
 		settings = PreferenceUtils.getInstance(this);
+		// init shutdown handler
+		shutdownHandler = new ShutdownHandler(this);
 		getCardId();
 
 		// register external storage listener
@@ -432,15 +389,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
 			sendBroadcast(intent);
 		}
-
-		// Initialize the delayed shutdown intent
-		Intent shutdownIntent = new Intent(this, MusicPlaybackService.class);
-		shutdownIntent.setAction(ACTION_SHUTDOWN);
-		mShutdownIntent = PendingIntent.getService(this, 0, shutdownIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-		// Listen for the idle state
-		scheduleDelayedShutdown();
-
+		shutdownHandler.start();
 		// Bring the queue back
 		reloadQueue();
 	}
@@ -456,8 +405,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		audioEffectsIntent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, APOLLO_PACKAGE_NAME);
 		sendBroadcast(audioEffectsIntent);
 		AudioEffects.release();
-		// remove any pending alarms
-		mAlarmManager.cancel(mShutdownIntent);
 		// Release the player
 		mPlayer.release();
 		// release player callbacks
@@ -507,11 +454,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceStartId = startId;
 		int state = START_NOT_STICKY;
 		if (intent != null) {
-			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
-				mShutdownScheduled = false;
-				releaseServiceUiAndStop();
-			}
+			if (intent.hasExtra(EXTRA_FOREGROUND))
+				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 			handleCommandIntent(intent);
 			state = START_STICKY;
 		}
@@ -521,7 +465,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
 		if (state == START_NOT_STICKY) {
-			scheduleDelayedShutdown();
+			shutdownHandler.start();
 		}
 		return state;
 	}
@@ -572,17 +516,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	public void handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
-		String command = SERVICECMD.equals(action) ? intent.getStringExtra(CMDNAME) : null;
 		// next track
-		if (CMDNEXT.equals(command) || ACTION_NEXT.equals(action)) {
+		if (ACTION_NEXT.equals(action)) {
 			gotoNext();
 		}
 		// previous track
-		else if (CMDPREVIOUS.equals(command) || ACTION_PREVIOUS.equals(action)) {
+		else if (ACTION_PREVIOUS.equals(action)) {
 			gotoPrev();
 		}
 		// pause/play track
-		else if (CMDTOGGLEPAUSE.equals(command) || ACTION_TOGGLEPAUSE.equals(action)) {
+		else if (ACTION_TOGGLEPAUSE.equals(action)) {
 			if (isPlaying()) {
 				pause(false);
 				mPausedByTransientLossOfFocus = false;
@@ -590,17 +533,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				play();
 			}
 		}
-		// pause track
-		else if (CMDPAUSE.equals(command)) {
-			pause(false);
-			mPausedByTransientLossOfFocus = false;
-		}
-		// play track
-		else if (CMDPLAY.equals(command)) {
-			play();
-		}
 		// stop track/dismiss notification
-		else if (CMDSTOP.equals(command) || ACTION_STOP.equals(action)) {
+		else if (ACTION_STOP.equals(action)) {
 			pause(true);
 			seekTo(0);
 			mPausedByTransientLossOfFocus = false;
@@ -720,7 +654,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					if (mPlayer.play()) {
 						mIsSupposedToBePlaying = true;
 						notifyChange(CHANGED_PLAYSTATE);
-						cancelShutdown();
+						shutdownHandler.stop();
 					}
 				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
@@ -737,7 +671,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void pause(boolean force) {
 		if (mPlayer.pause(force)) {
 			if (mIsSupposedToBePlaying) {
-				scheduleDelayedShutdown();
+				shutdownHandler.start();
 				mIsSupposedToBePlaying = false;
 			}
 		}
@@ -748,11 +682,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void gotoNext() {
 		if (mPlayList.isEmpty()) {
-			scheduleDelayedShutdown();
+			shutdownHandler.start();
 		} else {
 			if (mPlayer.isPlaying() && mPlayer.next()) {
 				if (mNextPlayPos < 0) {
-					scheduleDelayedShutdown();
+					shutdownHandler.start();
 					if (mIsSupposedToBePlaying) {
 						mIsSupposedToBePlaying = false;
 					}
@@ -1146,9 +1080,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 */
 	synchronized void stopForeground() {
-		stopForeground(true);
-		isForeground = false;
+		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 		mNotificationHelper.dismissNotification();
+		isForeground = false;
 	}
 
 	/**
@@ -1221,26 +1155,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 *
-	 */
-	private void scheduleDelayedShutdown() {
-		if (!mShutdownScheduled) {
-			mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + IDLE_DELAY, mShutdownIntent);
-			mShutdownScheduled = true;
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void cancelShutdown() {
-		if (mShutdownScheduled) {
-			mAlarmManager.cancel(mShutdownIntent);
-			mShutdownScheduled = false;
-		}
-	}
-
-	/**
 	 * Stops playback
 	 *
 	 * @param goToIdle True to go to the idle state, false otherwise
@@ -1252,7 +1166,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		clearCurrentTrackInformation();
 		notifyChange(CHANGED_PLAYSTATE);
 		if (goToIdle) {
-			scheduleDelayedShutdown();
+			shutdownHandler.start();
 			mIsSupposedToBePlaying = false;
 		} else {
 			stopForeground(false);
@@ -1428,7 +1342,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = incrementPosition(mPlayPos, false);
 					// check if the end of the queue is reached
 					if (mPlayPos < 0) {
-						scheduleDelayedShutdown();
+						shutdownHandler.start();
 						if (mIsSupposedToBePlaying) {
 							mIsSupposedToBePlaying = false;
 							notifyChange(CHANGED_PLAYSTATE);
@@ -1448,7 +1362,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (!fileOpened) {
 				Log.w(TAG, "Failed to open file for playback");
 				// give up and prepare shutdown
-				scheduleDelayedShutdown();
+				shutdownHandler.start();
 				if (mIsSupposedToBePlaying) {
 					mIsSupposedToBePlaying = false;
 					notifyChange(CHANGED_PLAYSTATE);
@@ -1647,7 +1561,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 *
 	 */
-	private void releaseServiceUiAndStop() {
+	void releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			stopForeground(true);
 			if (!mServiceInUse) {

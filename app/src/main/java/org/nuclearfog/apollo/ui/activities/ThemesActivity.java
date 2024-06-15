@@ -31,8 +31,7 @@ public class ThemesActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void init(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// Initialize the theme resources
@@ -75,14 +74,6 @@ public class ThemesActivity extends ActivityBase {
 	 */
 	@Override
 	protected void onRefresh() {
-		// not used
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void init() {
 		// not used
 	}
 }

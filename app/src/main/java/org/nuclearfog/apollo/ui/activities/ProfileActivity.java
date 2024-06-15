@@ -161,8 +161,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@SuppressLint("SourceLockedOrientationActivity")
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void init(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_profile_base);
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
 		// Initialize the theme resources
@@ -657,14 +656,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void onMetaChanged() {
 		viewModel.notify(ProfileFragment.SHOW_CURRENT);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void init() {
-		// not used
 	}
 
 	/**

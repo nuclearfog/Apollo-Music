@@ -37,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
@@ -109,22 +108,14 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
+		init(savedInstanceState);
 		// Play and pause button
 		mPlayPauseButton = findViewById(R.id.action_button_play);
 		// Shuffle button
@@ -150,6 +141,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// hide player controls
 		controls.setVisibility(View.INVISIBLE);
 
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
+
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);
 		bottomActionBar.setOnClickListener(this);
@@ -173,7 +167,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 				}
 			}
 		}
-		init();
 	}
 
 	/**
@@ -200,6 +193,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		} else {
 			registerReceiver(mPlaybackStatus, filter);
 		}
+		MusicUtils.notifyForegroundStateChanged(this, true);
+		updatePlaybackControls();
 	}
 
 	/**
@@ -239,7 +234,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	public void onServiceConnected() {
-		MusicUtils.notifyForegroundStateChanged(this, true);
 		if (controls.getVisibility() != View.VISIBLE) {
 			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
 			anim.setDuration(250);
@@ -269,7 +263,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 					return;
 				}
 			}
-			init();
+			init(getIntent().getExtras());
 		}
 	}
 
@@ -450,5 +444,5 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 *
 	 */
-	protected abstract void init();
+	protected abstract void init(Bundle savedInstanceState);
 }

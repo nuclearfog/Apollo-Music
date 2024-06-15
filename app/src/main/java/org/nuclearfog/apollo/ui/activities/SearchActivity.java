@@ -87,8 +87,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void init(Bundle savedInstanceState) {
 		setContentView(R.layout.grid_search);
 		// init view
 		GridView mGridView = findViewById(R.id.grid_search);
@@ -373,14 +372,6 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 */
 	@Override
 	protected void onRefresh() {
-		// not used
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void init() {
 		// not used
 	}
 }

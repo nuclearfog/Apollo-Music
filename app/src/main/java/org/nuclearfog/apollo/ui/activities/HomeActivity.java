@@ -46,8 +46,7 @@ public class HomeActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void init(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// init fragment callback
@@ -60,6 +59,8 @@ public class HomeActivity extends ActivityBase {
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
+		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
+		ApolloUtils.openBatteryOptimizationDialog(this);
 	}
 
 	/**
@@ -76,15 +77,6 @@ public class HomeActivity extends ActivityBase {
 	@Override
 	protected void onMetaChanged() {
 		viewModel.notify(MusicBrowserPhoneFragment.META_CHANGED);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void init() {
-		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
-		ApolloUtils.openBatteryOptimizationDialog(this);
 	}
 
 	/**

@@ -256,10 +256,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private boolean mServiceInUse = false;
 	/**
-	 * Used to know if something should be playing or not
-	 */
-	private boolean mIsSupposedToBePlaying = false;
-	/**
 	 * Used to indicate if the queue can be saved
 	 */
 	private boolean mQueueIsSaveable = true;
@@ -321,7 +317,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		mServiceInUse = false;
 		saveQueue(true);
 		if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
-			mIsSupposedToBePlaying = false;
 			shutdownHandler.start();
 			return true;
 		}
@@ -481,7 +476,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			// no repeat mode set, check if reached end of the queue, then stop playback
 			else if (mRepeatMode == REPEAT_NONE && mPlayPos < 0) {
-				mIsSupposedToBePlaying = false;
 				notifyChange(CHANGED_PLAYSTATE);
 			}
 			// go to next track if any
@@ -494,7 +488,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 		} else {
 			pause(true);
-			mIsSupposedToBePlaying = false;
 			notifyChange(CHANGED_PLAYSTATE);
 		}
 		return false;
@@ -503,7 +496,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	@Override
 	public void onPlaybackError() {
-		if (mIsSupposedToBePlaying) {
+		if (isPlaying()) {
 			gotoNext();
 		} else {
 			openCurrentAndNext();
@@ -569,7 +562,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return True if music is playing, false otherwise
 	 */
 	public boolean isPlaying() {
-		return mIsSupposedToBePlaying;
+		return mPlayer.isPlaying();
 	}
 
 	/**
@@ -651,7 +644,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 						gotoNext();
 					}
 					if (mPlayer.play()) {
-						mIsSupposedToBePlaying = true;
 						notifyChange(CHANGED_PLAYSTATE);
 						shutdownHandler.stop();
 					}
@@ -669,9 +661,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void pause(boolean force) {
 		if (mPlayer.pause(force)) {
-			if (mIsSupposedToBePlaying) {
+			if (!mPlayer.isContinious()) {
 				shutdownHandler.start();
-				mIsSupposedToBePlaying = false;
 			}
 		}
 	}
@@ -686,15 +677,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (mPlayer.isPlaying() && mPlayer.next()) {
 				if (mNextPlayPos < 0) {
 					shutdownHandler.start();
-					if (mIsSupposedToBePlaying) {
-						mIsSupposedToBePlaying = false;
-					}
-				} else {
-					mIsSupposedToBePlaying = true;
 				}
 			} else {
 				// reload next tracks if an error occured
-				mIsSupposedToBePlaying = true;
 				mPlayPos = incrementPosition(mPlayPos, true);
 				openCurrentAndNext();
 				play();
@@ -1129,7 +1114,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	private void updatePlaybackstate() {
 		PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder();
-		builder.setState(mIsSupposedToBePlaying ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
+		builder.setState(mPlayer.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED, getPosition(), 1.0f);
 		builder.setActions(PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
 		mSession.setPlaybackState(builder.build());
 	}
@@ -1166,7 +1151,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		notifyChange(CHANGED_PLAYSTATE);
 		if (goToIdle) {
 			shutdownHandler.start();
-			mIsSupposedToBePlaying = false;
 		} else {
 			stopForeground(false);
 		}
@@ -1341,11 +1325,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = incrementPosition(mPlayPos, false);
 					// check if the end of the queue is reached
 					if (mPlayPos < 0) {
-						shutdownHandler.start();
-						if (mIsSupposedToBePlaying) {
-							mIsSupposedToBePlaying = false;
-							notifyChange(CHANGED_PLAYSTATE);
-						}
+						stop(true);
 					}
 					// skip faulty track and try open next track
 					else {
@@ -1361,11 +1341,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (!fileOpened) {
 				Log.w(TAG, "Failed to open file for playback");
 				// give up and prepare shutdown
-				shutdownHandler.start();
-				if (mIsSupposedToBePlaying) {
-					mIsSupposedToBePlaying = false;
-					notifyChange(CHANGED_PLAYSTATE);
-				}
+				stop(true);
 			}
 		}
 		return fileOpened;

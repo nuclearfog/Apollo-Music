@@ -86,6 +86,10 @@ public class MultiPlayer {
 	 */
 	private int currentPlayer = 0;
 	/**
+	 * true if mediaplayer is currently playing
+	 */
+	private volatile boolean isPlaying = false;
+	/**
 	 * set to true if player was initialized successfully
 	 */
 	private volatile boolean initialized = false;
@@ -126,7 +130,7 @@ public class MultiPlayer {
 	 */
 	public boolean setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
-		if (initialized && isPlaying())
+		if (initialized && isPlaying)
 			stop();
 		// set source of the current selected player
 		initialized = setDataSourceImpl(mPlayers[currentPlayer], context, uri);
@@ -175,6 +179,7 @@ public class MultiPlayer {
 	 */
 	public boolean play() {
 		if (xfadeMode == NONE) {
+			isPlaying = true;
 			xfadeMode = FADE_IN;
 			setCrossfadeTask(true);
 			return true;
@@ -190,6 +195,7 @@ public class MultiPlayer {
 	 */
 	public boolean pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
+		isPlaying = false;
 		try {
 			if (force) {
 				xfadeMode = NONE;
@@ -213,6 +219,7 @@ public class MultiPlayer {
 	 */
 	public void stop() {
 		xfadeMode = NONE;
+		isPlaying = false;
 		setCrossfadeTask(false);
 		try {
 			mPlayers[currentPlayer].stop();
@@ -315,12 +322,11 @@ public class MultiPlayer {
 	 * @return true if a playback is in progress
 	 */
 	public boolean isPlaying() {
-		try {
-			return mPlayers[currentPlayer].isPlaying();
-		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to get play state");
-			return false;
-		}
+		return isPlaying;
+	}
+
+	public boolean isContinious() {
+		return continious;
 	}
 
 	/**
@@ -457,9 +463,12 @@ public class MultiPlayer {
 	 */
 	private void gotoNext() {
 		stop();
+		isPlaying = true;
 		currentPlayer = (currentPlayer + 1) % mPlayers.length;
 		if (callback.onPlaybackEnd(true) && continious) {
 			play();
+		} else {
+			isPlaying = false;
 		}
 	}
 
@@ -473,6 +482,7 @@ public class MultiPlayer {
 		if (initialized) {
 			setCrossfadeTask(false);
 			initialized = false;
+			isPlaying = false;
 			xfadeMode = NONE;
 			mp.reset();
 			playerHandler.postDelayed(new Runnable() {

@@ -562,8 +562,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// play button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			boolean isPlaying = MusicUtils.togglePlayPause(this);
-			mPlayPauseButton.updateState(isPlaying);
+			MusicUtils.togglePlayPause(this);
 		}
 		// go to previous track
 		else if (v.getId() == R.id.action_button_previous) {

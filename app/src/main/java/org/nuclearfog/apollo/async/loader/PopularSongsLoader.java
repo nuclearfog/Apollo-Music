@@ -5,6 +5,7 @@ import android.content.Context;
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
+
 import java.util.List;
 
 /**

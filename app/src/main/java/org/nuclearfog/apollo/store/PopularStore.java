@@ -179,17 +179,17 @@ public class PopularStore extends AppStore {
 	private interface PopularColumns {
 
 		/**
-		 *  Table name
+		 * Table name
 		 */
 		String NAME = "mostplayed";
 
 		/**
-		 *  Song IDs column
+		 * Song IDs column
 		 */
 		String ID = "songid";
 
 		/**
-		 *  Song name column
+		 * Song name column
 		 */
 		String SONGNAME = "songname";
 

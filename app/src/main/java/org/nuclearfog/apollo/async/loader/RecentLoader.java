@@ -16,6 +16,7 @@ import android.content.Context;
 import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.store.RecentStore;
+
 import java.util.List;
 
 /**

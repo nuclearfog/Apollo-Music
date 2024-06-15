@@ -28,7 +28,7 @@ public class PresetAdapter extends BaseAdapter {
 	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-		if (convertView == null)  {
+		if (convertView == null) {
 			convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_dropdown, parent, false);
 		}
 		TextView tv = convertView.findViewById(R.id.list_item_dropdown_text);

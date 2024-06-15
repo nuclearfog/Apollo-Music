@@ -796,7 +796,7 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param name  The name of the new playlist.
+	 * @param name The name of the new playlist.
 	 * @return A new playlist ID.
 	 */
 	public static long createPlaylist(Activity activity, String name) {
@@ -870,14 +870,14 @@ public final class MusicUtils {
 	/**
 	 * rename existing playlist
 	 *
-	 * @param id	       ID of the playlist to rename
-	 * @param playlistName new playlist name
+	 * @param id   ID of the playlist to rename
+	 * @param name new playlist name
 	 */
-	public static void renamePlaylist(Activity activity, long id, String playlistName) {
+	public static void renamePlaylist(Activity activity, long id, String name) {
 		try {
 			// seting new name
 			ContentValues values = new ContentValues(1);
-			values.put(Playlists.NAME, StringUtils.capitalize(playlistName));
+			values.put(Playlists.NAME, StringUtils.capitalize(name));
 			// update old playlist
 			Uri uri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, id);
 			ContentResolver resolver = activity.getContentResolver();
@@ -1162,7 +1162,6 @@ public final class MusicUtils {
 
 	/**
 	 * Plays the last added songs from the past two weeks.
-	 *
 	 */
 	public static void playLastAdded(Activity activity) {
 		playAll(activity, getSongListForLastAdded(activity), 0, false);
@@ -1416,7 +1415,7 @@ public final class MusicUtils {
 	/**
 	 * remove tracks from media database
 	 *
-	 * @param ids     list of track IDs
+	 * @param ids list of track IDs
 	 * @return path to removed entries
 	 */
 	private static String[] removeTracksFromDatabase(Activity activity, long[] ids) {

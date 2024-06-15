@@ -941,7 +941,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized int removeQueueTracks(long[] ids) {
 		int numremoved = 0;
-		for (long id: ids) {
+		for (long id : ids) {
 			int pos;
 			do {
 				// get index of the track ID

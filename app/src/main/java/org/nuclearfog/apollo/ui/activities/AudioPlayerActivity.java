@@ -804,7 +804,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				newpos -= duration;
 			}
 			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
-				MusicUtils.seek(this,  newpos);
+				MusicUtils.seek(this, newpos);
 				mLastSeekEventTime = delta;
 			}
 			if (repcnt >= 0) {

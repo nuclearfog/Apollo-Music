@@ -505,21 +505,25 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
-		mNotificationHelper.createNotification();
+		int state = START_NOT_STICKY;
 		if (intent != null) {
 			isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
 			if (ACTION_SHUTDOWN.equals(intent.getAction())) {
 				mShutdownScheduled = false;
 				releaseServiceUiAndStop();
-				return START_NOT_STICKY;
 			}
 			handleCommandIntent(intent);
-			return START_STICKY;
+			state = START_STICKY;
+		}
+		if (isForeground) {
+			mNotificationHelper.createNotification();
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
-		scheduleDelayedShutdown();
-		return START_NOT_STICKY;
+		if (state == START_NOT_STICKY) {
+			scheduleDelayedShutdown();
+		}
+		return state;
 	}
 
 
@@ -736,7 +740,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				scheduleDelayedShutdown();
 				mIsSupposedToBePlaying = false;
 			}
-			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
 
@@ -1408,7 +1411,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			clearCurrentTrackInformation();
 			return false;
 		}
-		stop(false);
+		if (mPlayer.isPlaying())
+			stop(false);
 		updateTrackInformation();
 		boolean fileOpened = false;
 		Song song = currentSong;

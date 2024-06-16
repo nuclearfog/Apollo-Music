@@ -1,12 +1,10 @@
 package org.nuclearfog.apollo.player;
 
 import android.content.Context;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -58,7 +56,6 @@ public class MultiPlayer {
 	private static final long XFADE_DELAY = 1000;
 	/**
 	 * number of player instances used for playback
-	 *
 	 * @see #mPlayers
 	 */
 	private static final int PLAYER_INST = 2;
@@ -73,7 +70,6 @@ public class MultiPlayer {
 	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(3);
 
 	private Handler playerHandler, xfadeHandler;
-
 
 	@Nullable
 	private Future<?> xfadeTask;
@@ -130,7 +126,7 @@ public class MultiPlayer {
 	 */
 	public boolean setDataSource(Context context, @NonNull Uri uri) {
 		// stop current playback
-		if (initialized && isPlaying)
+		if (initialized)
 			stop();
 		// set source of the current selected player
 		initialized = setDataSourceImpl(mPlayers[currentPlayer], context, uri);
@@ -195,10 +191,10 @@ public class MultiPlayer {
 	 */
 	public boolean pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
-		isPlaying = false;
 		try {
 			if (force) {
 				xfadeMode = NONE;
+				isPlaying = false;
 				setCrossfadeTask(false);
 				if (player.isPlaying()) {
 					player.pause();
@@ -209,7 +205,8 @@ public class MultiPlayer {
 				return true;
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to pause track");
+			Log.e(TAG, "failed to pause player");
+			stop();
 		}
 		return false;
 	}
@@ -224,7 +221,10 @@ public class MultiPlayer {
 		try {
 			mPlayers[currentPlayer].stop();
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to stop track");
+			Log.e(TAG, "failed to stop player");
+			for (MediaPlayer mp : mPlayers)
+				mp.reset();
+			initialized = false;
 		}
 	}
 
@@ -236,6 +236,7 @@ public class MultiPlayer {
 	public boolean next() {
 		if (continious && initialized && xfadeMode == NONE) {
 			xfadeMode = XFADE;
+			isPlaying = true;
 			setCrossfadeTask(true);
 			return true;
 		}
@@ -243,17 +244,17 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * Releases resources associated with this MediaPlayer object.
+	 * Releases mediaplayer
 	 */
 	public void release() {
-		stop();
 		THREAD_POOL.shutdown();
-		try {
-			for (MediaPlayer player : mPlayers) {
+		stop();
+		for (MediaPlayer player : mPlayers) {
+			try {
 				player.release();
+			} catch (IllegalStateException exception) {
+				Log.e(TAG, "failed to release player", exception);
 			}
-		} catch (IllegalStateException exception) {
-			// ignore
 		}
 	}
 
@@ -266,7 +267,7 @@ public class MultiPlayer {
 		try {
 			return mPlayers[currentPlayer].getDuration();
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to get track duration");
+			Log.e(TAG, "invalid player duration");
 			return 0;
 		}
 	}
@@ -280,7 +281,7 @@ public class MultiPlayer {
 		try {
 			return mPlayers[currentPlayer].getCurrentPosition();
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to get track position");
+			Log.e(TAG, "invalid player position");
 			return 0;
 		}
 	}
@@ -303,7 +304,7 @@ public class MultiPlayer {
 				mPlayers[currentPlayer].seekTo((int) position);
 			}
 		} catch (IllegalStateException exception) {
-			Log.e(TAG, "failed to set track position");
+			Log.e(TAG, "failed to set player position: " + position + " duration:" + getDuration());
 		}
 	}
 
@@ -325,6 +326,9 @@ public class MultiPlayer {
 		return isPlaying;
 	}
 
+	/**
+	 * check if next track is set
+	 */
 	public boolean isContinious() {
 		return continious;
 	}
@@ -332,16 +336,10 @@ public class MultiPlayer {
 	/**
 	 * create and configure MediaPlayer instance
 	 *
-	 * @return player
+	 * @return mediaplayer instance
 	 */
 	private MediaPlayer createPlayer() {
 		MediaPlayer player = new MediaPlayer();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			AudioAttributes attr = new AudioAttributes.Builder()
-					.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-					.setUsage(AudioAttributes.USAGE_MEDIA).build();
-			player.setAudioAttributes(attr);
-		}
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		return player;
 	}
@@ -465,7 +463,7 @@ public class MultiPlayer {
 		stop();
 		isPlaying = true;
 		currentPlayer = (currentPlayer + 1) % mPlayers.length;
-		if (callback.onPlaybackEnd(true) && continious) {
+		if (callback.onPlaybackEnd(true)) {
 			play();
 		} else {
 			isPlaying = false;

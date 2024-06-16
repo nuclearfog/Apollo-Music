@@ -36,6 +36,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ServiceCompat;
+import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
 
@@ -424,6 +425,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// fall through
 
 			case AudioManager.AUDIOFOCUS_LOSS:
+				pause(true);
+				break;
+
 			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
 				pause(false);
 				break;
@@ -443,19 +447,16 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
 		int state = START_NOT_STICKY;
-		boolean stopped = false;
 		if (intent != null) {
-			if (intent.hasExtra(EXTRA_FOREGROUND))
+			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
-			if (ACTION_STOP.equals(intent.getAction()))
-				stopped = true;
+				// create player control notification if player is not stopped
+				if (!ACTION_STOP.equals(intent.getAction())) {
+					mNotificationHelper.createNotification();
+				}
+			}
 			handleCommandIntent(intent);
 			state = START_STICKY;
-		}
-		// create player control notification if this service is in
-		// foreground state and player is not stopped
-		if (isForeground && !stopped) {
-			mNotificationHelper.createNotification();
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
@@ -527,8 +528,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 		// stop track/dismiss notification
 		else if (ACTION_STOP.equals(action)) {
-			pause(true);
-			seekTo(0);
+			stop();
 			mPausedByTransientLossOfFocus = false;
 			releaseServiceUiAndStop();
 		}
@@ -634,7 +634,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void play() {
 		if (mAudio != null) {
+			AudioAttributesCompat.Builder attrCompat = new AudioAttributesCompat.Builder();
+			attrCompat.setContentType(AudioAttributesCompat.CONTENT_TYPE_MUSIC);
+			attrCompat.setUsage(AudioAttributesCompat.USAGE_MEDIA).build();
 			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
+			request.setAudioAttributes(attrCompat.build());
 			request.setOnAudioFocusChangeListener(this);
 			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {

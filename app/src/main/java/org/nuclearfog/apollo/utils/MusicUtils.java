@@ -75,12 +75,34 @@ import java.util.WeakHashMap;
  */
 public final class MusicUtils {
 
+	/**
+	 * repeat mode disabled
+	 */
 	public static final int REPEAT_NONE = 0;
+
+	/**
+	 * repeat playlist
+	 */
 	public static final int REPEAT_ALL = 1;
+
+	/**
+	 * repeat current track
+	 */
 	public static final int REPEAT_CURRENT = 2;
 
+	/**
+	 * shuffle mode disabled
+	 */
 	public static final int SHUFFLE_NONE = 10;
+
+	/**
+	 * shuffle playlist
+	 */
 	public static final int SHUFFLE_NORMAL = 11;
+
+	/**
+	 * shuffle all songs
+	 */
 	public static final int SHUFFLE_AUTO = 12;
 
 	/**
@@ -167,7 +189,6 @@ public final class MusicUtils {
 	 * background
 	 */
 	public static void notifyForegroundStateChanged(Activity activity, boolean inForeground) {
-		int oldForegroundActivities = foregroundActivities;
 		if (inForeground) {
 			foregroundActivities++;
 		} else {
@@ -180,7 +201,7 @@ public final class MusicUtils {
 			ContextCompat.startForegroundService(activity, intent);
 		}
 		// stop foreground activity of the playback service
-		else if (oldForegroundActivities == 0) {
+		else {
 			ServiceBinder binder = mConnectionMap.get(activity);
 			if (binder != null) {
 				binder.stopForeground();
@@ -227,18 +248,16 @@ public final class MusicUtils {
 	/**
 	 * toggle playstate
 	 */
-	public static boolean togglePlayPause(Activity activity) {
+	public static void togglePlayPause(Activity activity) {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
 				if (service.isPlaying()) {
 					service.pause(false);
-					return false;
 				} else if (service.getQueue().length > 0) {
 					service.play();
 					int sessionId = service.getAudioSessionId();
 					AudioEffects.getInstance(activity, sessionId);
-					return true;
 				} else {
 					shuffleAll(activity);
 				}
@@ -248,11 +267,12 @@ public final class MusicUtils {
 				}
 			}
 		}
-		return false;
 	}
 
 	/**
 	 * Cycles through the repeat options.
+	 *
+	 * @return repeat mode {@link #REPEAT_ALL,#REPEAT_CURRENT,#REPEAT_NONE}
 	 */
 	public static int cycleRepeat(Activity activity) {
 		IApolloService service = getService(activity);
@@ -333,7 +353,9 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @return The current shuffle mode.
+	 * get current shuffle mode
+	 *
+	 * @return The current shuffle mode {@link #SHUFFLE_NONE,#SHUFFLE_NORMAL,#SHUFFLE_AUTO}
 	 */
 	public static int getShuffleMode(Activity activity) {
 		IApolloService service = getService(activity);

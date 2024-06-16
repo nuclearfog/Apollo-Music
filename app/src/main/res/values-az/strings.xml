@@ -52,7 +52,6 @@
 	<string name="playlist_last_added">Ən son əlavə olunan</string>
 	<string name="save">Saxla</string>
 	<string name="cancel">İmtina</string>
-	<string name="overwrite">Üzərinə yaz</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> silinsin?</string>
 	<string name="new_photo">Qalereyadan fotoşəkil seç</string>
 	<string name="google_search">Google-da axtar</string>

@@ -58,8 +58,6 @@
 	<string name="new_playlist">Llista nueva</string>
 	<string name="save">Guardar</string>
 	<string name="cancel">Encaboxar</string>
-	<string name="overwrite">Trocar</string>
-	<string name="new_playlist_name_template">Llista <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Nome de llista</string>
 	<string name="delete_dialog_title">¿Desaniciar <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Esta operación nun pue desfacese</string>

@@ -58,8 +58,6 @@
 	<string name="new_playlist">لیستی لێدانی تازه‌</string>
 	<string name="save">پاشەکەوتکردن</string>
 	<string name="cancel">لابردن</string>
-	<string name="overwrite">له‌جیاتیدانان</string>
-	<string name="new_playlist_name_template">لیستی لێدانی <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">ناوی لیستی لێدان</string>
 	<string name="delete_dialog_title">دڵنیای له‌ سڕینه‌وه‌ی  <xliff:g id="item" example="album">%s</xliff:g> ؟</string>
 	<string name="cannot_be_undone">ئه‌مه‌ دواتر ناتوانی بیگه‌ڕێنیته‌وه‌</string>

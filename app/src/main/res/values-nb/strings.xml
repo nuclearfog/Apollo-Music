@@ -58,8 +58,6 @@
 	<string name="new_playlist">Ny spilleliste</string>
 	<string name="save">Lagre</string>
 	<string name="cancel">Avbryt</string>
-	<string name="overwrite">Overskriv</string>
-	<string name="new_playlist_name_template">Spilleliste <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Navnet på spillelisten</string>
 	<string name="delete_dialog_title">Slett <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Dette kan ikke omgjøres</string>

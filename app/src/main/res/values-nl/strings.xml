@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nieuwe afspeellijst</string>
 	<string name="save">Opslaan</string>
 	<string name="cancel">Annuleren</string>
-	<string name="overwrite">Overschrijven</string>
-	<string name="new_playlist_name_template">Afspeellijst <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Naam afspeellijst</string>
 	<string name="delete_dialog_title">\'<xliff:g id="item" example="album">%s</xliff:g>\' verwijderen?</string>
 	<string name="cannot_be_undone">Dit kan niet ongedaan worden gemaakt</string>

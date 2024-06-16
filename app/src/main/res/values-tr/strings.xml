@@ -58,8 +58,6 @@
 	<string name="new_playlist">Yeni çalma listesi</string>
 	<string name="save">Kaydet</string>
 	<string name="cancel">İptal</string>
-	<string name="overwrite">Üzerine yaz</string>
-	<string name="new_playlist_name_template">Çalma listesi <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Çalma listesi adı</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> silinsin mi?</string>
 	<string name="cannot_be_undone">Bu geri alınamaz</string>

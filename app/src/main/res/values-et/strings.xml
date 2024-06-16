@@ -58,8 +58,6 @@
 	<string name="new_playlist">Uus esitusloend</string>
 	<string name="save">Salvesta</string>
 	<string name="cancel">Tühista</string>
-	<string name="overwrite">Kirjuta üle</string>
-	<string name="new_playlist_name_template">Esitusloend <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Esitusloendi nimi</string>
 	<string name="delete_dialog_title">Kustutada <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Seda ei saa tagasi võtta</string>

@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nov seznam predvajanja</string>
 	<string name="save">Shrani</string>
 	<string name="cancel">Prekliči</string>
-	<string name="overwrite">Prepiši</string>
-	<string name="new_playlist_name_template">Seznam predvajanja <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Ime seznama predvajanja</string>
 	<string name="delete_dialog_title">Izbriši <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tega ni mogoče razveljaviti</string>

@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nuova playlist</string>
 	<string name="save">Salva</string>
 	<string name="cancel">Annulla</string>
-	<string name="overwrite">Sovrascrivi</string>
-	<string name="new_playlist_name_template">Playlist <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Nome playlist</string>
 	<string name="delete_dialog_title">Eliminare <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Questa azione non può essere annullata</string>

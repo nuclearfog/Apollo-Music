@@ -58,8 +58,6 @@
 	<string name="new_playlist">Erreprodukzio-zerrenda berria</string>
 	<string name="save">Gorde</string>
 	<string name="cancel">Utzi</string>
-	<string name="overwrite">Gainidatzi</string>
-	<string name="new_playlist_name_template"><xliff:g id="number">%d</xliff:g> erreprodukzio-zerrenda</string>
 	<string name="create_playlist_prompt">Erreprodukzio-zerrendaren izena</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> ezabatu?</string>
 	<string name="cannot_be_undone">Hau ezin da desegin</string>

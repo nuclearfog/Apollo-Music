@@ -74,8 +74,6 @@
 	<string name="new_playlist">新建播放列表</string>
 	<string name="save">保存</string>
 	<string name="cancel">取消</string>
-	<string name="overwrite">覆盖</string>
-	<string name="new_playlist_name_template">播放列表 <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">播放列表名称</string>
 	<string name="delete_dialog_title">删除 <xliff:g id="item" example="专辑">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">此操作无法撤销</string>
@@ -116,7 +114,6 @@
 	<string name="pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> 已固定到主屏幕</string>
 	<string name="could_not_be_pinned_to_home_screen"><xliff:g id="name">%s</xliff:g> 无法固定到主屏幕</string>
 	<string name="error_add_playlist">无法添加到播放列表！</string>
-	<string name="error_empty_playlistname">播放列表名称为空！</string>
 	<string name="error_duplicate_playlistname">已存在同名播放列表！</string>
 	<string name="set_as_ringtone">‘<xliff:g id="name" example="闹钟铃声">%s</xliff:g>’ 已设置为铃声</string>
 	<string name="theme_set"><xliff:g id="name">%s</xliff:g> 已设置为主题</string>

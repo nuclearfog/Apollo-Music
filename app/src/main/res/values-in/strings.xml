@@ -58,8 +58,6 @@
 	<string name="new_playlist">Daftar putar baru</string>
 	<string name="save">Simpan</string>
 	<string name="cancel">Batal</string>
-	<string name="overwrite">Timpa</string>
-	<string name="new_playlist_name_template">Daftar putar <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Nama daftar putar</string>
 	<string name="delete_dialog_title">Hapus <xliff:g id="item" example="album"> %s </xliff:g>?</string>
 	<string name="cannot_be_undone">Ini tidak dapat dibatalkan</string>

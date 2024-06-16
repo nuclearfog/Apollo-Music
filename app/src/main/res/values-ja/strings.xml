@@ -58,8 +58,6 @@
 	<string name="new_playlist">新しいプレイリスト</string>
 	<string name="save">保存</string>
 	<string name="cancel">キャンセル</string>
-	<string name="overwrite">上書き</string>
-	<string name="new_playlist_name_template">プレイリスト<xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">プレイリスト名</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g>を削除しますか？</string>
 	<string name="cannot_be_undone">この操作は元に戻せません</string>

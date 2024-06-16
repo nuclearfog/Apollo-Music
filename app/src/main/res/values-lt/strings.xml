@@ -58,8 +58,6 @@
 	<string name="new_playlist">Naujas grojaraštis</string>
 	<string name="save">Išsaugoti</string>
 	<string name="cancel">Atšaukti</string>
-	<string name="overwrite">Perrašyti</string>
-	<string name="new_playlist_name_template">Grojaraštis <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Grojaraščio pavadinimas</string>
 	<string name="delete_dialog_title">Ištrinti <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tai negali būti atšaukta</string>

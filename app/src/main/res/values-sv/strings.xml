@@ -58,8 +58,6 @@
 	<string name="new_playlist">Ny spellista</string>
 	<string name="save">Spara</string>
 	<string name="cancel">Avbryt</string>
-	<string name="overwrite">Skriv över</string>
-	<string name="new_playlist_name_template">Spellista <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Namn på spellista</string>
 	<string name="delete_dialog_title">Ta bort <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Detta kan inte ångras</string>

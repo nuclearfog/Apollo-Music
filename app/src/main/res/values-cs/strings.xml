@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nový seznam skladeb</string>
 	<string name="save">Uložit</string>
 	<string name="cancel">Zrušit</string>
-	<string name="overwrite">Přepsat</string>
-	<string name="new_playlist_name_template">Seznam <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Název seznamu skladeb</string>
 	<string name="delete_dialog_title">Smazat <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tuto operaci nelze vrátit</string>

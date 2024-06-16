@@ -425,17 +425,13 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// fall through
 
 			case AudioManager.AUDIOFOCUS_LOSS:
+			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
 				pause(true);
 				break;
 
-			case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-				pause(false);
-				break;
-
 			case AudioManager.AUDIOFOCUS_GAIN:
-				if (!mPlayer.isPlaying() && mPausedByTransientLossOfFocus) {
+				if (!mPlayer.isPlaying())
 					mPausedByTransientLossOfFocus = false;
-				}
 				break;
 		}
 	}
@@ -489,7 +485,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 		} else {
 			pause(true);
-			notifyChange(CHANGED_PLAYSTATE);
 		}
 		return false;
 	}
@@ -665,6 +660,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	synchronized void pause(boolean force) {
 		if (mPlayer.pause(force)) {
+			notifyChange(CHANGED_PLAYSTATE);
 			if (!mPlayer.isContinious()) {
 				shutdownHandler.start();
 			}

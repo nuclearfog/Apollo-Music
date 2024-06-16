@@ -58,8 +58,6 @@
 	<string name="new_playlist">Neue Wiedergabeliste</string>
 	<string name="save">Speichern</string>
 	<string name="cancel">Abbrechen</string>
-	<string name="overwrite">Überschreiben</string>
-	<string name="new_playlist_name_template">Wiedergabeliste <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Name der Wiedergabeliste</string>
 	<string name="delete_dialog_title"><xliff:g id="item">%s</xliff:g> löschen?</string>
 	<string name="cannot_be_undone">Dies kann nicht rückgängig gemacht werden.</string>
@@ -145,7 +143,6 @@
 	<string name="accessibility_album_art">Albumcover</string>
 	<string name="label_reverb">Raumgröße</string>
 	<string name="context_menu_copy_playlist">Kopieren</string>
-	<string name="error_empty_playlistname">Playlistname leer!</string>
 	<string name="error_duplicate_playlistname">Playlistname existiert bereits!</string>
 	<string name="context_menu_hide_album">verstecke Album</string>
 	<string name="context_menu_hide_track">verstecke Track</string>

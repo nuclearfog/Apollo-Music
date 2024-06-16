@@ -58,8 +58,6 @@
 	<string name="new_playlist">Playlist nou</string>
 	<string name="save">Salvare</string>
 	<string name="cancel">Anulare</string>
-	<string name="overwrite">Suprascrie</string>
-	<string name="new_playlist_name_template">Listă de redare <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Numele listei de redare</string>
 	<string name="delete_dialog_title">Șterge <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Această acțiune nu poate fi anulată</string>

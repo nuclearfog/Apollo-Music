@@ -58,8 +58,6 @@
 	<string name="new_playlist">רשימת השמעה חדשה</string>
 	<string name="save">שמור</string>
 	<string name="cancel">בטל</string>
-	<string name="overwrite">לדרוס</string>
-	<string name="new_playlist_name_template">רשימת השמעה <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">שם רשימת ההשמעה</string>
 	<string name="delete_dialog_title">למחוק <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">פעולה זו אינה ניתנת לביטול</string>

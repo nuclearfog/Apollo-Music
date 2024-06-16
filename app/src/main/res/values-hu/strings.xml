@@ -58,8 +58,6 @@
 	<string name="new_playlist">Új lejátszási lista</string>
 	<string name="save">Mentés</string>
 	<string name="cancel">Mégsem</string>
-	<string name="overwrite">Felülír</string>
-	<string name="new_playlist_name_template"><xliff:g id="number">%d</xliff:g>. lejátszási lista</string>
 	<string name="create_playlist_prompt">Lejátszási lista neve</string>
 	<string name="delete_dialog_title">Törli az alábbi albumot? <xliff:g id="item" example="album">%s</xliff:g></string>
 	<string name="cannot_be_undone">Ezt nem lehet visszavonni</string>

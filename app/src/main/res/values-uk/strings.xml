@@ -58,8 +58,6 @@
 	<string name="new_playlist">Новий</string>
 	<string name="save">Зберегти</string>
 	<string name="cancel">Скасувати</string>
-	<string name="overwrite">Перезаписати</string>
-	<string name="new_playlist_name_template">Плейлист <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Назва плейлисту</string>
 	<string name="delete_dialog_title">Видалити <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Це не можна скасувати</string>

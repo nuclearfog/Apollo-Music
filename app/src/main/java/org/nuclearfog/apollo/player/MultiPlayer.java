@@ -247,8 +247,8 @@ public class MultiPlayer {
 	 * Releases mediaplayer
 	 */
 	public void release() {
-		THREAD_POOL.shutdown();
 		stop();
+		THREAD_POOL.shutdown();
 		for (MediaPlayer player : mPlayers) {
 			try {
 				player.release();
@@ -423,7 +423,8 @@ public class MultiPlayer {
 					}
 					break;
 			}
-		} catch (IllegalStateException exception) {
+		} catch (Exception exception) {
+			Log.e(TAG, "onCrossfadeTrack", exception);
 			onError(current, -1, -1);
 		}
 	}

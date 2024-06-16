@@ -58,8 +58,6 @@
 	<string name="new_playlist">Uusi soittolista</string>
 	<string name="save">Tallenna</string>
 	<string name="cancel">Peruuta</string>
-	<string name="overwrite">Korvaa</string>
-	<string name="new_playlist_name_template">Soittolista <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Soittolistan nimi</string>
 	<string name="delete_dialog_title">Poistetaanko <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Tätä ei voi perua</string>

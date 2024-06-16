@@ -58,8 +58,6 @@
 	<string name="new_playlist">Skep speellys</string>
 	<string name="save">Stoor</string>
 	<string name="cancel">Kanselleer</string>
-	<string name="overwrite">Oorskryf</string>
-	<string name="new_playlist_name_template">Speellys <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Speellys naam</string>
 	<string name="delete_dialog_title">Skrap <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Hierdie kan nie ontgedaan gemaak word nie</string>

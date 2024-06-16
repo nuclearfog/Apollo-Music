@@ -58,8 +58,6 @@
 	<string name="new_playlist">নতুন প্লে-তালিকা</string>
 	<string name="save">সংরক্ষণ</string>
 	<string name="cancel">বাতিল</string>
-	<string name="overwrite">পুনর্লিখন</string>
-	<string name="new_playlist_name_template">প্লে-তালিকা <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">প্লে-তালিকার নাম</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> মুছে দিন?</string>
 	<string name="cannot_be_undone">এটি আর পূর্বাবস্থা আনা যাবে না</string>

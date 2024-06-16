@@ -58,8 +58,6 @@
 	<string name="new_playlist">รายการเพลงใหม่</string>
 	<string name="save">บันทึก</string>
 	<string name="cancel">ยกเลิก</string>
-	<string name="overwrite">เขียนทับ</string>
-	<string name="new_playlist_name_template">รายการเพลง <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">ชื่อรายการเพลง</string>
 	<string name="delete_dialog_title">ลบ <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">การกระทำนี้ไม่สามารถยกเลิกได้</string>

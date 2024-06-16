@@ -58,8 +58,6 @@
 	<string name="new_playlist">新增播放清單</string>
 	<string name="save">儲存</string>
 	<string name="cancel">取消</string>
-	<string name="overwrite">覆寫</string>
-	<string name="new_playlist_name_template">播放清單「<xliff:g id="number">%d</xliff:g>」</string>
 	<string name="create_playlist_prompt">播放清單名稱</string>
 	<string name="delete_dialog_title">刪除「<xliff:g id="item" example="album">%s</xliff:g>」？</string>
 	<string name="cannot_be_undone">這個動作無法復原</string>

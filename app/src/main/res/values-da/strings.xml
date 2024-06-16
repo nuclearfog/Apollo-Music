@@ -58,8 +58,6 @@
 	<string name="new_playlist">Ny playliste</string>
 	<string name="save">Gem</string>
 	<string name="cancel">Afbryd</string>
-	<string name="overwrite">Overskriv</string>
-	<string name="new_playlist_name_template">Playliste <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Playlistenavn</string>
 	<string name="delete_dialog_title">Slet <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Dette kan ikke fortrydes</string>

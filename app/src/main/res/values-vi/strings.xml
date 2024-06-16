@@ -58,8 +58,6 @@
 	<string name="new_playlist">Danh sách mới</string>
 	<string name="save">Lưu</string>
 	<string name="cancel">Huỷ</string>
-	<string name="overwrite">Ghi đè</string>
-	<string name="new_playlist_name_template">Danh sách %d</string>
 	<string name="create_playlist_prompt">Tên danh sách</string>
 	<string name="delete_dialog_title">Xoá %s?</string>
 	<string name="cannot_be_undone">Không thể phục hồi điều này</string>

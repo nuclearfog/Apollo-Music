@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nova lista de reprodução</string>
 	<string name="save">Gravar</string>
 	<string name="cancel">Cancelar</string>
-	<string name="overwrite">Sobrescrever</string>
-	<string name="new_playlist_name_template">Lista de Reprodução <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Nome da lista de reprodução</string>
 	<string name="delete_dialog_title">Eliminar <xliff:g id="item" example="album">%s</xliff:g>?</string>
 	<string name="cannot_be_undone">Não pode ser desfeito</string>

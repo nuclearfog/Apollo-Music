@@ -58,8 +58,6 @@
 	<string name="new_playlist">Νέα λίστα αναπαραγωγής</string>
 	<string name="save">Αποθήκευση</string>
 	<string name="cancel">Ακύρωση</string>
-	<string name="overwrite">Αντικατάσταση</string>
-	<string name="new_playlist_name_template">Λίστα αναπαραγωγής <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Όνομα λίστας</string>
 	<string name="delete_dialog_title">Διαγραφή <xliff:g id="item" example="album">%s</xliff:g>;</string>
 	<string name="cannot_be_undone">Αυτή η ενέργεια δεν μπορεί να αναιρεθεί</string>

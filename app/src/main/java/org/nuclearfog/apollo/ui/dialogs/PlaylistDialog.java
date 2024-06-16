@@ -150,6 +150,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 		mPlaylistDialog.show();
 		// confirm button
 		mSaveButton = mPlaylistDialog.getButton(Dialog.BUTTON_POSITIVE);
+		mSaveButton.setEnabled(false);
 		playlistName.addTextChangedListener(this);
 		return mPlaylistDialog;
 	}

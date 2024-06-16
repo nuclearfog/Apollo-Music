@@ -58,8 +58,6 @@
 	<string name="new_playlist">Nei Ofspilllëscht</string>
 	<string name="save">Späicheren</string>
 	<string name="cancel">Ofbriechen</string>
-	<string name="overwrite">Iwwerschreiwen</string>
-	<string name="new_playlist_name_template">Ofspilllëscht <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">Numm vun der Ofspilllëscht</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> läschen?</string>
 	<string name="cannot_be_undone">Dat kann net réckgängeg gemaach ginn</string>

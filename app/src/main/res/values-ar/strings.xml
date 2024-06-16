@@ -58,8 +58,6 @@
 	<string name="new_playlist">قائمة تشغيل جديدة</string>
 	<string name="save">حفظ</string>
 	<string name="cancel">الغاء</string>
-	<string name="overwrite">استبدال</string>
-	<string name="new_playlist_name_template">قائمة التشغيل <xliff:g id="number">%d</xliff:g></string>
 	<string name="create_playlist_prompt">اسم قائمة التشغيل</string>
 	<string name="delete_dialog_title">حذف <xliff:g id="item" example="album">%s</xliff:g>؟</string>
 	<string name="cannot_be_undone">لا يمكن التراجع عن هذا</string>

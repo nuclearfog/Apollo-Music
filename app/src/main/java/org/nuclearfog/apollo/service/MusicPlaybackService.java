@@ -317,12 +317,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
 		saveQueue(true);
-		if (!mPlayList.isEmpty() || !mPlayer.isPlaying()) {
+		if (!mPlayer.isPlaying()) {
 			shutdownHandler.start();
-			return true;
+		} else {
+			stopSelf(mServiceStartId);
 		}
-		stopSelf(mServiceStartId);
-		mNotificationHelper.dismissNotification();
 		return true;
 	}
 
@@ -385,7 +384,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
 			sendBroadcast(intent);
 		}
-		shutdownHandler.start();
 		// Bring the queue back
 		reloadQueue();
 	}
@@ -430,8 +428,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				break;
 
 			case AudioManager.AUDIOFOCUS_GAIN:
-				if (!mPlayer.isPlaying())
-					mPausedByTransientLossOfFocus = false;
+				mPausedByTransientLossOfFocus = false;
 				break;
 		}
 	}
@@ -442,7 +439,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mServiceStartId = startId;
-		int state = START_NOT_STICKY;
 		if (intent != null) {
 			if (intent.hasExtra(EXTRA_FOREGROUND)) {
 				isForeground = intent.getBooleanExtra(EXTRA_FOREGROUND, false);
@@ -452,14 +448,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				}
 			}
 			handleCommandIntent(intent);
-			state = START_STICKY;
+			return START_STICKY;
 		}
 		// Make sure the service will shut down on its own if it was
 		// just started but not bound to and nothing is playing
-		if (state == START_NOT_STICKY) {
-			shutdownHandler.start();
-		}
-		return state;
+		shutdownHandler.start();
+		return START_NOT_STICKY;
 	}
 
 
@@ -566,7 +560,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public void onEject() {
 		saveQueue(true);
 		mQueueIsSaveable = false;
-		stop(true);
+		stop();
 		notifyChange(CHANGED_QUEUE);
 	}
 
@@ -621,7 +615,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Stops playback.
 	 */
 	synchronized void stop() {
-		stop(true);
+		if (mPlayer.initialized()) {
+			mPlayer.stop();
+		}
+		clearCurrentTrackInformation();
+		notifyChange(CHANGED_PLAYSTATE);
 	}
 
 	/**
@@ -644,7 +642,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					}
 					if (mPlayer.play()) {
 						notifyChange(CHANGED_PLAYSTATE);
-						shutdownHandler.stop();
 					}
 				} else if (!mPlayer.busy() && mPlayList.isEmpty()) {
 					setShuffleMode(SHUFFLE_AUTO);
@@ -659,11 +656,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Temporarily pauses playback.
 	 */
 	synchronized void pause(boolean force) {
-		if (mPlayer.pause(force)) {
+		if (mPlayer.pause(force) && force) {
 			notifyChange(CHANGED_PLAYSTATE);
-			if (!mPlayer.isContinious()) {
-				shutdownHandler.start();
-			}
 		}
 	}
 
@@ -671,19 +665,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Changes from the current track to the next track
 	 */
 	synchronized void gotoNext() {
-		if (mPlayList.isEmpty()) {
-			shutdownHandler.start();
-		} else {
-			if (mPlayer.isPlaying() && mPlayer.next()) {
-				if (mNextPlayPos < 0) {
-					shutdownHandler.start();
-				}
-			} else {
+		if (!mPlayList.isEmpty()) {
+			if (!mPlayer.isPlaying() || !mPlayer.next()) {
 				// reload next tracks if an error occured
 				mPlayPos = incrementPosition(mPlayPos, true);
 				openCurrentAndNext();
 				play();
 			}
+		} else if (makeAutoShuffleList()) {
+			doAutoShuffleUpdate();
+			mPlayPos = 0;
+			openCurrentAndNext();
+			play();
 		}
 	}
 
@@ -694,7 +687,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (!mPlayer.busy()) {
 			if (mPlayer.getPosition() < REWIND_INSTEAD_PREVIOUS_THRESHOLD) {
 				mPlayPos = decrementPosition(mPlayPos);
-				stop(false);
+				stop();
 				openCurrentAndNext();
 				play();
 			} else {
@@ -736,7 +729,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				play();
 				setNextTrack(false);
 			} else {
-				stop(true);
+				stop();
 			}
 		}
 		// restore track information after error
@@ -781,6 +774,11 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			case CHANGED_PLAYSTATE:
 				if (isForeground) {
 					mNotificationHelper.updateNotification();
+					if (mPlayer.isPlaying()) {
+						shutdownHandler.stop();
+					} else  {
+						shutdownHandler.start();
+					}
 				} else {
 					mNotificationHelper.dismissNotification();
 				}
@@ -878,7 +876,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * clear the curren queue and stop playback
 	 */
 	synchronized void clearQueue() {
-		stop(true);
+		stop();
 		mPlayPos = -1;
 		mPlayList.clear();
 		clearCurrentTrackInformation();
@@ -903,12 +901,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			else if (mPlayPos == pos) {
 				if (mPlayPos > 0)
 					mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
-				stop(false);
+				stop();
 			}
 			// stop playback if queue is empty
 			if (mPlayList.isEmpty()) {
 				mPlayPos = -1;
-				stop(true);
+				stop();
 			}
 			// notify that queue changed
 			else {
@@ -940,7 +938,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					else if (mPlayPos == pos) {
 						if (mPlayPos > 0)
 							mPlayPos = Math.min(mPlayPos, mPlayList.size() - 1);
-						stop(false);
+						stop();
 					}
 					numremoved++;
 				}
@@ -952,7 +950,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// stop playback if queue is empty
 		if (mPlayList.isEmpty()) {
 			mPlayPos = -1;
-			stop(true);
+			stop();
 		}
 		// notify if any tracks were removed
 		if (numremoved > 0) {
@@ -1080,7 +1078,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			addToPlayList(list, mPlayPos + 1);
 			if (mPlayPos < 0) {
 				mPlayPos = 0;
-				stop(false);
+				stop();
 				openCurrentAndNext();
 				play();
 			}
@@ -1135,24 +1133,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (BuildConfig.DEBUG) {
 				e.printStackTrace();
 			}
-		}
-	}
-
-	/**
-	 * Stops playback
-	 *
-	 * @param goToIdle True to go to the idle state, false otherwise
-	 */
-	private void stop(boolean goToIdle) {
-		if (mPlayer.initialized()) {
-			mPlayer.stop();
-		}
-		clearCurrentTrackInformation();
-		notifyChange(CHANGED_PLAYSTATE);
-		if (goToIdle) {
-			shutdownHandler.start();
-		} else {
-			stopForeground(false);
 		}
 	}
 
@@ -1309,7 +1289,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			return false;
 		}
 		if (mPlayer.isPlaying())
-			stop(false);
+			stop();
 		updateTrackInformation();
 		boolean fileOpened = false;
 		Song song = currentSong;
@@ -1325,7 +1305,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = incrementPosition(mPlayPos, false);
 					// check if the end of the queue is reached
 					if (mPlayPos < 0) {
-						stop(true);
+						stop();
 					}
 					// skip faulty track and try open next track
 					else {
@@ -1341,7 +1321,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (!fileOpened) {
 				Log.w(TAG, "Failed to open file for playback");
 				// give up and prepare shutdown
-				stop(true);
+				stop();
 			}
 		}
 		return fileOpened;
@@ -1538,13 +1518,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	void releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
-			stopForeground(true);
+			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			if (!mServiceInUse) {
 				saveQueue(true);
 				stopSelf(mServiceStartId);
 			}
 		}
-		mNotificationHelper.dismissNotification();
 	}
 
 	/**
@@ -1580,7 +1559,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mPlayer.setDataSource(getApplicationContext(), uri)) {
 			return true;
 		} else {
-			stop(true);
+			stop();
 			return false;
 		}
 	}

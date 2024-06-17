@@ -327,13 +327,6 @@ public class MultiPlayer {
 	}
 
 	/**
-	 * check if next track is set
-	 */
-	public boolean isContinious() {
-		return continious;
-	}
-
-	/**
 	 * create and configure MediaPlayer instance
 	 *
 	 * @return mediaplayer instance

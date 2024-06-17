@@ -3,7 +3,7 @@ package org.nuclearfog.apollo.service;
 import android.os.Handler;
 
 /**
- * Handler used to shutwodn playback service after timeout
+ * Handler used to shutdown (idle) playback service after timeout
  *
  * @author nuclearfog
  */
@@ -17,7 +17,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	private MusicPlaybackService service;
 
 	/**
-	 *
+	 * @param service callback to playback service
 	 */
 	public ShutdownHandler(MusicPlaybackService service) {
 		super(service.getMainLooper());

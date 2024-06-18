@@ -3,6 +3,7 @@ package org.nuclearfog.apollo.async;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +26,8 @@ import java.util.concurrent.TimeUnit;
  * @author nuclearfog
  */
 public abstract class AsyncExecutor<Parameter, Result> {
+
+	private static final String TAG = "AsyncExecutor";
 
 	/**
 	 * maximum task count to run in the background
@@ -55,7 +59,7 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	/**
 	 *
 	 */
-	protected AsyncExecutor(Context context) {
+	protected AsyncExecutor(@Nullable Context context) {
 		mContext = new WeakReference<>(context);
 	}
 
@@ -67,20 +71,27 @@ public abstract class AsyncExecutor<Parameter, Result> {
 	 */
 	public final void execute(final Parameter parameter, @Nullable AsyncCallback<Result> callback) {
 		final WeakReference<AsyncCallback<Result>> callbackReference = new WeakReference<>(callback);
-		Future<?> future = THREAD_POOL.submit(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Result result = doInBackground(parameter);
-					onPostExecute(result, callbackReference);
-				} catch (RuntimeException exception) {
-					if (BuildConfig.DEBUG) {
-						exception.printStackTrace();
+		try {
+			Future<?> future = THREAD_POOL.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Result result = doInBackground(parameter);
+						onPostExecute(result, callbackReference);
+					} catch (RuntimeException exception) {
+						if (BuildConfig.DEBUG) {
+							exception.printStackTrace();
+						}
 					}
 				}
+			});
+			futureTasks.add(future);
+		} catch (RejectedExecutionException exception) {
+			Log.e(TAG, "failed to submit task");
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
 			}
-		});
-		futureTasks.add(future);
+		}
 	}
 
 	/**

@@ -445,6 +445,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				// create player control notification if player is not stopped
 				if (!ACTION_STOP.equals(intent.getAction())) {
 					mNotificationHelper.createNotification();
+					if (isForeground && !isPlaying()) {
+						shutdownHandler.start();
+					}
 				}
 			}
 			handleCommandIntent(intent);
@@ -1064,6 +1067,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	synchronized void stopForeground() {
 		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 		mNotificationHelper.dismissNotification();
+		shutdownHandler.stop();
 		isForeground = false;
 	}
 
@@ -1514,11 +1518,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	}
 
 	/**
-	 *
+	 * releases playback service and removes notification/playback controls
 	 */
 	void releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
+			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse) {
 				saveQueue(true);
 				stopSelf(mServiceStartId);

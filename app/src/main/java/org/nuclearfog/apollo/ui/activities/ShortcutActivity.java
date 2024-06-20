@@ -205,7 +205,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 			// Before running the playlist loader, try to play the
 			// "Favorites" playlist
 			if (isFavorite()) {
-				MusicUtils.playFavorites(ShortcutActivity.this);
+				MusicUtils.playFavorites(this);
 			}
 			// Finish up
 			allDone();
@@ -230,10 +230,10 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		} else {
 			if (album != null) {
 				// Second, try to play an album
-				mList = MusicUtils.getSongListForAlbum(ShortcutActivity.this, id);
+				mList = MusicUtils.getSongListForAlbum(this, id);
 			} else if (artist != null) {
 				// Third, try to play an artist
-				mList = MusicUtils.getSongListForArtist(ShortcutActivity.this, id);
+				mList = MusicUtils.getSongListForArtist(this, id);
 			}
 		}
 		// Finish up

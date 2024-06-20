@@ -1007,7 +1007,7 @@ public final class MusicUtils {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				// get title of the current track
-				String title = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.TITLE));
+				String title = cursor.getString(1);
 				// truncate title
 				if (title.length() > 20)
 					title = title.substring(0, 20) + "...";

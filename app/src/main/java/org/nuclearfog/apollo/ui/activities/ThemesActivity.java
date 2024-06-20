@@ -31,8 +31,15 @@ public class ThemesActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected int getContentView() {
+		return R.layout.activity_base;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void init(Bundle savedInstanceState) {
-		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);

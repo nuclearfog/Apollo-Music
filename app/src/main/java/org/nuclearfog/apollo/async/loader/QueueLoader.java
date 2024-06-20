@@ -18,8 +18,6 @@ import org.nuclearfog.apollo.async.AsyncExecutor;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,14 +42,12 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 		List<Song> result = new LinkedList<>();
 		Context context = getContext();
 		if (context != null) {
-			// Create the Cursor
-			Cursor cursor = CursorFactory.makeNowPlayingCursor(context, param);
-			// Gather the data
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					do {
-						// Copy the song Id
-						long id = cursor.getLong(0);
+			for (long id : param) {
+				// Create the Cursor
+				Cursor cursor = CursorFactory.makeTrackCursor(context, id);
+				// Gather the data
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
 						// Copy the song name
 						String songName = cursor.getString(1);
 						// Copy the artist name
@@ -64,19 +60,10 @@ public class QueueLoader extends AsyncExecutor<List<Long>, List<Song>> {
 						Song song = new Song(id, songName, artist, album, duration);
 						// Add everything up
 						result.add(song);
-					} while (cursor.moveToNext());
+					}
+					cursor.close();
 				}
-				cursor.close();
 			}
-		}
-		// the resulting song list should have the same order than the source song Id list
-		if (!result.isEmpty() && param.size() >= result.size()) {
-			Collections.sort(result, new Comparator<Song>() {
-				@Override
-				public int compare(Song o1, Song o2) {
-					return Long.compare(param.indexOf(o1.getId()), param.indexOf(o2.getId()));
-				}
-			});
 		}
 		return result;
 	}

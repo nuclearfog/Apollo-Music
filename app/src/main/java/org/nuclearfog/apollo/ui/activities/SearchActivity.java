@@ -87,8 +87,15 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected int getContentView() {
+		return R.layout.grid_search;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void init(Bundle savedInstanceState) {
-		setContentView(R.layout.grid_search);
 		// init view
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);

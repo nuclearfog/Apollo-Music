@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore.Audio.AlbumColumns;
-import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Files.FileColumns;
 import android.support.v4.media.MediaMetadataCompat;
@@ -779,7 +778,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mNotificationHelper.updateNotification();
 					if (mPlayer.isPlaying()) {
 						shutdownHandler.stop();
-					} else  {
+					} else {
 						shutdownHandler.start();
 					}
 				} else {
@@ -1184,7 +1183,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Cursor cursor = null;
 		// get information from MediaStore directly
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
-			cursor = CursorFactory.makeTrackCursor(this, uri);
+			cursor = CursorFactory.makeTrackCursor(this, uri, true);
 		}
 		// use audio ID to get information
 		else if (uri.getLastPathSegment() != null && uri.getLastPathSegment().matches("audio:\\d{1,18}")) {
@@ -1195,32 +1194,45 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		else if (uri.getScheme() != null && uri.getScheme().startsWith("file")) {
 			cursor = CursorFactory.makeTrackCursor(this, uri.getPath());
 		}
-		// use file name/relative path to get information
+		// use absolute path
+		else if (uri.getPath() != null && uri.getPath().startsWith("/root/")) {
+			String path = uri.getPath().substring(5);
+			cursor = CursorFactory.makeTrackCursor(this, path);
+		}
+		// fallback, use file name/relative path to get information
 		else {
 			// get file information
-			Cursor searchRes = CursorFactory.makeTrackCursor(this, uri);
+			Cursor fileCursor = CursorFactory.makeTrackCursor(this, uri, false);
 			// search for file in the MediaStore
-			if (searchRes != null && searchRes.moveToFirst()) {
-				// find track by file path
-				int idxName = searchRes.getColumnIndex(FileColumns.DOCUMENT_ID);
-				// if not found, find track by file name (less precise)
-				if (idxName < 0)
-					idxName = searchRes.getColumnIndex(FileColumns.DISPLAY_NAME);
-				// if found, get track information
-				if (idxName >= 0) {
-					String name = searchRes.getString(idxName);
-					if (name != null) {
-						int cut = name.indexOf(":");
-						if (cut > 0 && cut < name.length() + 1) {
-							name = name.substring(cut + 1);
+			if (fileCursor != null) {
+				if (fileCursor.moveToFirst()) {
+					// find track by file path
+					int idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
+					// if not found, find track by file name (less precise)
+					if (idxName < 0)
+						idxName = fileCursor.getColumnIndex(FileColumns.DISPLAY_NAME);
+					// if found, get track information
+					if (idxName >= 0) {
+						String name = fileCursor.getString(idxName);
+						if (name != null) {
+							int cut = name.indexOf(":");
+							if (cut > 0 && cut < name.length() + 1) {
+								name = name.substring(cut + 1);
+							}
+							// set track information
+							cursor = CursorFactory.makeTrackCursor(this, name);
 						}
-						// set track information
-						cursor = CursorFactory.makeTrackCursor(this, name);
 					}
+					fileCursor.close();
 				}
 			}
 		}
-		updateTrackInformation(cursor);
+		if (cursor != null) {
+			updateTrackInformation(cursor);
+		} else {
+			clearCurrentTrackInformation();
+			Log.e(TAG, "failed to open track!");
+		}
 	}
 
 	/**
@@ -1231,37 +1243,41 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void updateTrackInformation(@Nullable Cursor cursor) {
 		Song song = null;
 		Album album = null;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				long songId = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
-				long artistId = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.ARTIST_ID));
-				long albumId = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.ALBUM_ID));
-				String songName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.TITLE));
-				String artistName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.ARTIST));
-				String albumName = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.ALBUM));
-				String path = cursor.getString(cursor.getColumnIndexOrThrow(AudioColumns.DATA));
-				long length = cursor.getLong(cursor.getColumnIndexOrThrow(AudioColumns.DURATION));
-				song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
-			}
-			cursor.close();
-		}
-		if (song != null) {
-			cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
+		try {
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
-					long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
-					String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
-					String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
-					int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
-					String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
-					album = new Album(id, name, artist, count, year, true);
+					long songId = cursor.getLong(0);
+					String songName = cursor.getString(1);
+					String artistName = cursor.getString(2);
+					String albumName = cursor.getString(3);
+					long length = cursor.getLong(4);
+					long artistId = cursor.getLong(5);
+					long albumId = cursor.getLong(6);
+					String path = cursor.getString(7);
+					song = new Song(songId, artistId, albumId, songName, artistName, albumName, length, path);
 				}
 				cursor.close();
 			}
+			if (song != null) {
+				cursor = CursorFactory.makeAlbumCursor(this, song.getAlbumId());
+				if (cursor != null) {
+					if (cursor.moveToFirst()) {
+						long id = cursor.getLong(cursor.getColumnIndexOrThrow(Media._ID));
+						String name = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ALBUM));
+						String artist = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.ARTIST));
+						int count = cursor.getInt(cursor.getColumnIndexOrThrow(AlbumColumns.NUMBER_OF_SONGS));
+						String year = cursor.getString(cursor.getColumnIndexOrThrow(AlbumColumns.FIRST_YEAR));
+						album = new Album(id, name, artist, count, year, true);
+					}
+					cursor.close();
+				}
+			}
+			currentAlbum = album;
+			currentSong = song;
+			notifyChange(CHANGED_META);
+		} catch (Exception exception) {
+			Log.e(TAG, "failed to set track information");
 		}
-		currentAlbum = album;
-		currentSong = song;
-		notifyChange(CHANGED_META);
 	}
 
 

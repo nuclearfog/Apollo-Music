@@ -56,6 +56,7 @@ public class MultiPlayer {
 	private static final long XFADE_DELAY = 1000;
 	/**
 	 * number of player instances used for playback
+	 *
 	 * @see #mPlayers
 	 */
 	private static final int PLAYER_INST = 2;
@@ -199,11 +200,10 @@ public class MultiPlayer {
 				if (player.isPlaying()) {
 					player.pause();
 				}
-				return true;
 			} else if (xfadeMode == NONE) {
 				xfadeMode = FADE_OUT;
-				return true;
 			}
+			return true;
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to pause player");
 			stop();

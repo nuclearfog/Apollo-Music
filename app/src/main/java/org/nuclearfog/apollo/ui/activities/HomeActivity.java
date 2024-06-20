@@ -24,7 +24,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
@@ -46,8 +45,15 @@ public class HomeActivity extends ActivityBase {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected int getContentView() {
+		return R.layout.activity_base;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void init(Bundle savedInstanceState) {
-		setContentView(R.layout.activity_base);
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// init fragment callback
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
@@ -60,7 +66,6 @@ public class HomeActivity extends ActivityBase {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
 		getSupportFragmentManager().beginTransaction().replace(R.id.activity_base_content, MusicBrowserPhoneFragment.class, null).commit();
-		ApolloUtils.openBatteryOptimizationDialog(this);
 	}
 
 	/**

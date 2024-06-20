@@ -110,6 +110,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	@Override
 	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(getContentView());
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the broadcast receiver
@@ -263,6 +264,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 					return;
 				}
 			}
+			ApolloUtils.openBatteryOptimizationDialog(this);
 			init(getIntent().getExtras());
 		}
 	}
@@ -431,6 +433,18 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	}
 
 	/**
+	 * get content view to use
+	 *
+	 * @return layout resource ID
+	 */
+	protected abstract int getContentView();
+
+	/**
+	 * initialize acitivity
+	 */
+	protected abstract void init(Bundle savedInstanceState);
+
+	/**
 	 * notify sub classes to reload information
 	 */
 	protected abstract void onRefresh();
@@ -439,9 +453,4 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * notify sub classes that meta information changed
 	 */
 	protected abstract void onMetaChanged();
-
-	/**
-	 *
-	 */
-	protected abstract void init(Bundle savedInstanceState);
 }

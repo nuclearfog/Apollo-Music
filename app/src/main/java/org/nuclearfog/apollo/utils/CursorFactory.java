@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.BaseColumns;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -20,8 +19,6 @@ import android.provider.MediaStore.MediaColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.List;
 
 /**
  * class to create MediaStore cursor to access all music files
@@ -78,6 +75,8 @@ public class CursorFactory {
 			Media.ARTIST,
 			Media.ALBUM,
 			Media.DURATION,
+			Media.ARTIST_ID,
+			Media.ALBUM_ID,
 			Media.DATA,
 			Media.MIME_TYPE
 	};
@@ -138,18 +137,6 @@ public class CursorFactory {
 			AudioColumns._ID,
 			AudioColumns.DATA,
 			AudioColumns.ALBUM_ID
-	};
-
-	/**
-	 *
-	 */
-	@SuppressLint("InlinedApi")
-	public static final String[] NP_COLUMNS = {
-			AudioColumns._ID,
-			AudioColumns.TITLE,
-			AudioColumns.ARTIST,
-			AudioColumns.ALBUM,
-			AudioColumns.DURATION
 	};
 
 	/**
@@ -282,21 +269,6 @@ public class CursorFactory {
 
 
 	private CursorFactory() {
-	}
-
-
-	/**
-	 * create a cursor to get all songs with fixed column order
-	 * {@link #TRACK_COLUMNS}
-	 *
-	 * @return cursor with song information
-	 */
-	@Nullable
-	public static Cursor makeTrackCursor(Context context) {
-		ContentResolver resolver = context.getContentResolver();
-
-		String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
-		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sort);
 	}
 
 	/**
@@ -616,41 +588,56 @@ public class CursorFactory {
 	 * creates cursor to search for a single track information
 	 *
 	 * @param trackId audio ID
-	 * @return cursor with track information
+	 * @return cursor using this {@link #TRACK_COLUMNS} projection
 	 */
 	@Nullable
 	public static Cursor makeTrackCursor(Context context, long trackId) {
 		String[] args = {Long.toString(trackId)};
 		ContentResolver resolver = context.getContentResolver();
 
-		return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_ID_SELECT, args, null);
+		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_ID_SELECT, args, null);
 	}
 
 	/**
 	 * creates cursor to search for a single track information
 	 *
 	 * @param path path to the audio file
-	 * @return cursor with track information
+	 * @return cursor using this {@link #TRACK_COLUMNS} projection
 	 */
 	@Nullable
 	public static Cursor makeTrackCursor(Context context, String path) {
 		String[] args = {'%' + path + '%'};
 		ContentResolver resolver = context.getContentResolver();
 
-		return resolver.query(Media.EXTERNAL_CONTENT_URI, null, TRACK_PATH_SELECT, args, null);
+		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_PATH_SELECT, args, null);
 	}
 
 	/**
 	 * creates cursor to search for a single track information
 	 *
-	 * @param path path to the audio file
-	 * @return cursor with track information
+	 * @param path         path to the audio file
+	 * @param fixedColumns true to use {@link #TRACK_COLUMNS} order for the results
 	 */
 	@Nullable
-	public static Cursor makeTrackCursor(Context context, Uri path) {
+	public static Cursor makeTrackCursor(Context context, Uri path, boolean fixedColumns) {
+		ContentResolver resolver = context.getContentResolver();
+		if (fixedColumns)
+			return resolver.query(path, TRACK_COLUMNS, null, null, null);
+		return resolver.query(path, null, null, null, null);
+	}
+
+	/**
+	 * create a cursor to get all songs with fixed column order
+	 * {@link #TRACK_COLUMNS}
+	 *
+	 * @return cursor using this {@link #TRACK_COLUMNS} projection
+	 */
+	@Nullable
+	public static Cursor makeTrackCursor(Context context) {
 		ContentResolver resolver = context.getContentResolver();
 
-		return resolver.query(path, null, null, null, null);
+		String sort = PreferenceUtils.getInstance(context).getSongSortOrder();
+		return resolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, TRACK_FILTER_SELECT, null, sort);
 	}
 
 	/**
@@ -673,27 +660,6 @@ public class CursorFactory {
 		selection.append(")");
 		ContentResolver resolver = context.getContentResolver();
 		return resolver.query(Media.EXTERNAL_CONTENT_URI, AUDIO_COLUMNS, selection.toString(), null, null);
-	}
-
-	/**
-	 * creates a cursor to get current track queue with fixed columns
-	 * {@link #NP_COLUMNS}
-	 *
-	 * @param ids query with track IDs
-	 * @return cursor with track information
-	 */
-	@Nullable
-	public static Cursor makeNowPlayingCursor(Context context, List<Long> ids) {
-		StringBuilder selection = new StringBuilder();
-		selection.append(MediaStore.Audio.Media._ID + " IN (");
-		for (int i = 0; i < ids.size(); i++) {
-			selection.append(ids.get(i));
-			if (i < ids.size() - 1) {
-				selection.append(",");
-			}
-		}
-		selection.append(")");
-		return context.getContentResolver().query(Media.EXTERNAL_CONTENT_URI, NP_COLUMNS, selection.toString(), null, Media._ID);
 	}
 
 	/**

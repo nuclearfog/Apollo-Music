@@ -68,7 +68,7 @@ public class MultiPlayer {
 	/**
 	 * thread pool used to periodically poll the current play position for crossfading
 	 */
-	private static final ScheduledExecutorService THREAD_POOL = Executors.newScheduledThreadPool(3);
+	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 
 	private Handler playerHandler, xfadeHandler;
 
@@ -107,6 +107,7 @@ public class MultiPlayer {
 	private float volume = 0f;
 
 	/**
+	 * @param looper   playback service looper used for crossfade/error handler
 	 * @param callback a callback used to inform about playback changes
 	 */
 	public MultiPlayer(Looper looper, OnPlaybackStatusCallback callback) {
@@ -114,7 +115,8 @@ public class MultiPlayer {
 		xfadeHandler = new Handler(looper);
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
-			mPlayers[i] = createPlayer();
+			mPlayers[i] = new MediaPlayer();
+			mPlayers[i].setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mPlayers[i].setAudioSessionId(mPlayers[0].getAudioSessionId());
 			mPlayers[i].setVolume(0f, 0f);
 			mPlayers[i].setOnErrorListener(this::onError);
@@ -222,8 +224,6 @@ public class MultiPlayer {
 			mPlayers[currentPlayer].stop();
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
-			for (MediaPlayer mp : mPlayers)
-				mp.reset();
 			initialized = false;
 		}
 	}
@@ -248,7 +248,7 @@ public class MultiPlayer {
 	 */
 	public void release() {
 		stop();
-		THREAD_POOL.shutdown();
+		threadPool.shutdown();
 		for (MediaPlayer player : mPlayers) {
 			try {
 				player.release();
@@ -324,17 +324,6 @@ public class MultiPlayer {
 	 */
 	public boolean isPlaying() {
 		return isPlaying;
-	}
-
-	/**
-	 * create and configure MediaPlayer instance
-	 *
-	 * @return mediaplayer instance
-	 */
-	private MediaPlayer createPlayer() {
-		MediaPlayer player = new MediaPlayer();
-		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		return player;
 	}
 
 	/**
@@ -431,7 +420,7 @@ public class MultiPlayer {
 		// set new cross fade task
 		if (enable) {
 			if (xfadeTask == null) {
-				xfadeTask = THREAD_POOL.scheduleAtFixedRate(new Runnable() {
+				xfadeTask = threadPool.scheduleAtFixedRate(new Runnable() {
 					@Override
 					public void run() {
 						xfadeHandler.post(new Runnable() {
@@ -476,7 +465,11 @@ public class MultiPlayer {
 			initialized = false;
 			isPlaying = false;
 			xfadeMode = NONE;
-			mp.reset();
+			try {
+				mp.reset();
+			} catch (IllegalStateException e) {
+				// ignore
+			}
 			playerHandler.postDelayed(new Runnable() {
 				@Override
 				public void run() {

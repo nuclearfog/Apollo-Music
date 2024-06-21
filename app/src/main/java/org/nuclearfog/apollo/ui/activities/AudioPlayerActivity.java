@@ -260,6 +260,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mAlbumArtSmall.setOnClickListener(this);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
+		startPlayback();
+	}
 
 	/**
 	 * {@inheritDoc}

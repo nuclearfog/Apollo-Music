@@ -146,7 +146,7 @@ public class RepeatingImageButton extends AppCompatImageButton {
 	/**
 	 * Sets the correct drawable for playback.
 	 */
-	public void updateState() {
+	private void updateState() {
 		if (getId() == R.id.action_button_next) {
 			setImageResource(R.drawable.btn_playback_next);
 		} else if (getId() == R.id.action_button_previous) {
@@ -154,6 +154,9 @@ public class RepeatingImageButton extends AppCompatImageButton {
 		}
 	}
 
+	/**
+	 * Click listener for this button
+	 */
 	public interface RepeatListener {
 
 		/**

@@ -176,11 +176,6 @@ public final class MusicUtils {
 		ServiceBinder mBinder = mConnectionMap.remove(activity);
 		if (mBinder != null) {
 			activity.unbindService(mBinder);
-			if (mConnectionMap.isEmpty()) {
-				if (BuildConfig.DEBUG) {
-					Log.v("MusicUtils", "All connections closed");
-				}
-			}
 		}
 	}
 
@@ -797,25 +792,6 @@ public final class MusicUtils {
 			cursor.close();
 		}
 		return id;
-	}
-
-	/**
-	 *
-	 */
-	public static void makeInsertItems(long[] ids, int offset, int len, int base) {
-		if (offset + len > ids.length) {
-			len = ids.length - offset;
-		}
-		if (mContentValuesCache == null || mContentValuesCache.length != len) {
-			mContentValuesCache = new ContentValues[len];
-		}
-		for (int i = 0; i < len; i++) {
-			if (mContentValuesCache[i] == null) {
-				mContentValuesCache[i] = new ContentValues();
-			}
-			mContentValuesCache[i].put(Playlists.Members.PLAY_ORDER, base + offset + i);
-			mContentValuesCache[i].put(Playlists.Members.AUDIO_ID, ids[offset + i]);
-		}
 	}
 
 	/**
@@ -1563,5 +1539,24 @@ public final class MusicUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 *
+	 */
+	private static void makeInsertItems(long[] ids, int offset, int len, int base) {
+		if (offset + len > ids.length) {
+			len = ids.length - offset;
+		}
+		if (mContentValuesCache == null || mContentValuesCache.length != len) {
+			mContentValuesCache = new ContentValues[len];
+		}
+		for (int i = 0; i < len; i++) {
+			if (mContentValuesCache[i] == null) {
+				mContentValuesCache[i] = new ContentValues();
+			}
+			mContentValuesCache[i].put(Playlists.Members.PLAY_ORDER, base + offset + i);
+			mContentValuesCache[i].put(Playlists.Members.AUDIO_ID, ids[offset + i]);
+		}
 	}
 }

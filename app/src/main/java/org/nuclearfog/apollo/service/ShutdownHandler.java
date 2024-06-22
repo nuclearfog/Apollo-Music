@@ -34,6 +34,7 @@ public class ShutdownHandler extends Handler implements Runnable {
 	 * start scheduled shutdown
 	 */
 	public void start() {
+		removeCallbacks(this);
 		postDelayed(this, IDLE_DELAY);
 	}
 

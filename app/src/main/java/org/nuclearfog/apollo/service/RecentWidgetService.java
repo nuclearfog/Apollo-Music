@@ -73,7 +73,7 @@ public class RecentWidgetService extends RemoteViewsService {
 		 *
 		 * @param context The {@link Context} to use.
 		 */
-		public WidgetRemoteViewsFactory(Context context) {
+		WidgetRemoteViewsFactory(Context context) {
 			// Initialize the image cache
 			mFetcher = ImageFetcher.getInstance(context);
 			mFetcher.setImageCache(ImageCache.getInstance(context));

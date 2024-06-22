@@ -62,25 +62,25 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 * key to define what action should be performed {@link #COPY,#MOVE,#CREATE}
 	 * value type is int
 	 */
-	public static final String PLAYLIST_MODE = "playlist_mode";
+	private static final String PLAYLIST_MODE = "playlist_mode";
 
 	/**
 	 * key to set playlist name
 	 * value type is String
 	 */
-	public static final String PLAYLIST_NAME = "playlist_name";
+	private static final String PLAYLIST_NAME = "playlist_name";
 
 	/**
 	 * key to set an ID of an existing playlist
 	 * value type is long
 	 */
-	public static final String PLAYLIST_ID = "playlist_id";
+	private static final String PLAYLIST_ID = "playlist_id";
 
 	/**
 	 * key used to set song IDs to insert in the playlist
 	 * value type is long[]
 	 */
-	public static final String PLAYLIST_SONGS = "playlist_songs";
+	private static final String PLAYLIST_SONGS = "playlist_songs";
 
 	/**
 	 * The actual dialog
@@ -187,7 +187,10 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 					dismiss();
 				}
 			} else if (which == Dialog.BUTTON_NEGATIVE) {
-				closeKeyboard();
+				InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
+				if (iManager != null) {
+					iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
+				}
 				MusicUtils.refresh(getActivity());
 			}
 		}
@@ -213,16 +216,6 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 */
 	@Override
 	public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
-	}
-
-	/**
-	 * Closes the soft keyboard
-	 */
-	protected void closeKeyboard() {
-		InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
-		if (iManager != null) {
-			iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
-		}
 	}
 
 	/**

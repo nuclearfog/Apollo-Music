@@ -40,7 +40,6 @@ import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.NotificationHelper;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
@@ -316,11 +315,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
 		saveQueue(true);
-		if (!mPlayer.isPlaying()) {
-			shutdownHandler.start();
-		} else {
-			stopSelf(mServiceStartId);
-		}
+		stopSelf(mServiceStartId);
 		return true;
 	}
 

@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo;
+package org.nuclearfog.apollo.service;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -30,9 +30,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
+import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 
@@ -43,7 +44,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class NotificationHelper {
+class NotificationHelper {
 
 	private static final String TAG = "NotificationHelper";
 
@@ -56,7 +57,7 @@ public class NotificationHelper {
 	/**
 	 * Notification channel ID
 	 */
-	public static final String NOTIFICAITON_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
+	private static final String NOTIFICAITON_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".controlpanel";
 
 	/**
 	 * intent used to open audio player after clicking on notification
@@ -100,7 +101,7 @@ public class NotificationHelper {
 	 *
 	 * @param service callback to the service
 	 */
-	public NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
+	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
 		mPreferences = PreferenceUtils.getInstance(service.getApplicationContext());
 		// init notification manager & channel
@@ -157,7 +158,7 @@ public class NotificationHelper {
 	/**
 	 * create a new notification and attach it to the foreground service
 	 */
-	public void createNotification() {
+	void createNotification() {
 		Notification notification = buildNotification();
 		if (VERSION.SDK_INT >= VERSION_CODES.Q) {
 			mService.startForeground(APOLLO_MUSIC_SERVICE, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
@@ -169,14 +170,14 @@ public class NotificationHelper {
 	/**
 	 * update existing notification
 	 */
-	public void updateNotification() {
+	void updateNotification() {
 		postNotification(buildNotification());
 	}
 
 	/**
 	 * dismiss existing notification
 	 */
-	public void dismissNotification() {
+	void dismissNotification() {
 		postNotification(null);
 	}
 

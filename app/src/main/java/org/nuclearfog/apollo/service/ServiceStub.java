@@ -10,8 +10,10 @@ import java.lang.ref.WeakReference;
 
 /**
  * callback used to communicate with activities
+ *
+ * @author nuclearfog
  */
-public class ServiceStub extends IApolloService.Stub {
+class ServiceStub extends IApolloService.Stub {
 
 	private final WeakReference<MusicPlaybackService> mService;
 

@@ -56,7 +56,7 @@ public class RecentWidgetProvider extends AppWidgetBase {
 
 	public static final String CMDAPPWIDGETUPDATE = "app_widget_recents_update";
 
-	public static final String CLICK_ACTION = PACKAGE_NAME + ".recents.appwidget.action.CLICK";
+	private static final String CLICK_ACTION = PACKAGE_NAME + ".recents.appwidget.action.CLICK";
 
 	private static final int REQUEST_RECENT = 0x5103;
 

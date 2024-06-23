@@ -6,18 +6,18 @@ import android.content.Intent;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Custom broadcast listener for unmounting external storage
+ *
+ * @author nuclearfog
  */
 public class UnmountBroadcastReceiver extends BroadcastReceiver {
 
-	private WeakReference<MusicPlaybackService> mReference;
+	private MusicPlaybackService service;
 
 
 	public UnmountBroadcastReceiver(MusicPlaybackService service) {
-		mReference = new WeakReference<>(service);
+		this.service = service;
 	}
 
 	/**
@@ -25,14 +25,11 @@ public class UnmountBroadcastReceiver extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		MusicPlaybackService mService = mReference.get();
 		String action = intent.getAction();
-		if (mService != null && action != null) {
-			if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
-				mService.onEject();
-			} else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
-				mService.onMediaMount();
-			}
+		if (Intent.ACTION_MEDIA_EJECT.equals(action)) {
+			service.onEject();
+		} else if (Intent.ACTION_MEDIA_MOUNTED.equals(action)) {
+			service.onMediaMount();
 		}
 	}
 }

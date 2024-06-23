@@ -12,10 +12,10 @@ import org.nuclearfog.apollo.ui.widgets.AppWidgetLargeAlternate;
 import org.nuclearfog.apollo.ui.widgets.AppWidgetSmall;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
 
-import java.lang.ref.WeakReference;
-
 /**
  * widget Broadcast listener
+ *
+ * @author nuclearfog
  */
 public class WidgetBroadcastReceiver extends BroadcastReceiver {
 
@@ -24,11 +24,11 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 	private AppWidgetBase altWidget = new AppWidgetLargeAlternate();
 	private AppWidgetBase recentWidget = new RecentWidgetProvider();
 
-	private WeakReference<MusicPlaybackService> mReference;
+	private MusicPlaybackService service;
 
 
-	public WidgetBroadcastReceiver(MusicPlaybackService mService) {
-		mReference = new WeakReference<>(mService);
+	public WidgetBroadcastReceiver(MusicPlaybackService service) {
+		this.service = service;
 	}
 
 	/**
@@ -36,22 +36,19 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		MusicPlaybackService mService = mReference.get();
-		if (mService != null) {
-			String command = intent.getStringExtra(MusicPlaybackService.CMDNAME);
-			int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+		String command = intent.getStringExtra(MusicPlaybackService.CMDNAME);
+		int[] small = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
 
-			if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
-				smallWidget.performUpdate(mService, small);
-			} else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
-				largeWidget.performUpdate(mService, small);
-			} else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
-				altWidget.performUpdate(mService, small);
-			} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
-				recentWidget.performUpdate(mService, small);
-			} else {
-				mService.handleCommandIntent(intent);
-			}
+		if (AppWidgetSmall.CMDAPPWIDGETUPDATE.equals(command)) {
+			smallWidget.performUpdate(service, small);
+		} else if (AppWidgetLarge.CMDAPPWIDGETUPDATE.equals(command)) {
+			largeWidget.performUpdate(service, small);
+		} else if (AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE.equals(command)) {
+			altWidget.performUpdate(service, small);
+		} else if (RecentWidgetProvider.CMDAPPWIDGETUPDATE.equals(command)) {
+			recentWidget.performUpdate(service, small);
+		} else {
+			service.handleCommandIntent(intent);
 		}
 	}
 

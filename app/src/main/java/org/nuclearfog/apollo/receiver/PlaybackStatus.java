@@ -6,24 +6,24 @@ import android.content.Intent;
 
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
-import java.lang.ref.WeakReference;
-
 /**
  * this class updates the current play status from {@link MusicPlaybackService} to an activity
+ *
+ * @author nuclearfog
  */
 public class PlaybackStatus extends BroadcastReceiver {
 
 	/**
 	 * callback reference
 	 */
-	private WeakReference<PlayStatusListener> mReference;
+	private PlayStatusListener callback;
 
 
 	/**
 	 * @param callback callback listener to update information
 	 */
 	public PlaybackStatus(PlayStatusListener callback) {
-		mReference = new WeakReference<>(callback);
+		this.callback = callback;
 	}
 
 	/**
@@ -32,9 +32,7 @@ public class PlaybackStatus extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
-		PlayStatusListener callback = mReference.get();
-
-		if (action != null && callback != null) {
+		if (action != null) {
 			switch (action) {
 				case MusicPlaybackService.CHANGED_META:
 					callback.onMetaChange();

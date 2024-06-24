@@ -18,7 +18,6 @@ import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
@@ -173,7 +172,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -189,11 +187,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		// register playstate callback
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
-		} else {
-			registerReceiver(mPlaybackStatus, filter);
-		}
+		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 		updatePlaybackControls();
 	}

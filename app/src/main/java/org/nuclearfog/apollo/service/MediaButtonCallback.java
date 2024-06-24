@@ -1,11 +1,9 @@
 package org.nuclearfog.apollo.service;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.view.KeyEvent;
 
 /**
  * callback class used by media buttons to control playback
@@ -120,25 +118,5 @@ public class MediaButtonCallback extends MediaSessionCompat.Callback {
 				service.setRepeatMode(MusicPlaybackService.REPEAT_ALL);
 				break;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
-		String intentAction = mediaButtonEvent.getAction();
-		if (Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
-			KeyEvent event = mediaButtonEvent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-			if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
-				if (service.isPlaying()) {
-					service.pause(false);
-				} else {
-					service.play();
-				}
-				return true;
-			}
-		}
-		return false;
 	}
 }

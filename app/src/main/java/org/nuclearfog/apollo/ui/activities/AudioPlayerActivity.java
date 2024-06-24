@@ -12,7 +12,6 @@
 package org.nuclearfog.apollo.ui.activities;
 
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ClipData;
@@ -48,6 +47,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
@@ -273,7 +273,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -288,11 +287,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Update a list, probably the playlist fragment's
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		//
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(mPlaybackStatus, filter, RECEIVER_EXPORTED);
-		} else {
-			registerReceiver(mPlaybackStatus, filter);
-		}
+		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		// Refresh the current time
 		long next = refreshCurrentTime();
 		queueNextRefresh(next);

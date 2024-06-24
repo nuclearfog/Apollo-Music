@@ -90,7 +90,6 @@
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<action android:name="android.intent.action.MUSIC_PLAYER" />
-
 				<category android:name="android.intent.category.LAUNCHER" />
 				<category android:name="android.intent.category.APP_MUSIC" />
 				<category android:name="android.intent.category.DEFAULT" />
@@ -110,7 +109,6 @@
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-
 				<data android:scheme="content" />
 				<data android:mimeType="audio/*" />
 				<data android:mimeType="application/ogg" />
@@ -121,7 +119,6 @@
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-
 				<data android:scheme="file" />
 				<data android:mimeType="audio/*" />
 				<data android:mimeType="application/ogg" />
@@ -131,10 +128,8 @@
 
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
-
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.BROWSABLE" />
-
 				<data android:scheme="http" />
 				<data android:mimeType="audio/*" />
 				<data android:mimeType="application/ogg" />
@@ -145,7 +140,6 @@
 			<intent-filter tools:ignore="AppLinkUrlError">
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
-
 				<data android:mimeType="vnd.android.cursor.dir/playlist" />
 				<data android:mimeType="vnd.android.cursor.dir/albums" />
 				<data android:mimeType="vnd.android.cursor.dir/artists" />
@@ -158,10 +152,8 @@
 
 			<intent-filter>
 				<action android:name="android.intent.action.PICK" />
-
 				<category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.OPENABLE" />
-
 				<data android:mimeType="vnd.android.cursor.dir/audio" />
 			</intent-filter>
 		</activity>
@@ -200,7 +192,6 @@
 			<intent-filter>
 				<action android:name="android.intent.action.SEARCH" />
 				<action android:name="android.intent.action.MEDIA_SEARCH" />
-
 				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 
@@ -287,7 +278,6 @@
 
 			<intent-filter>
 				<action android:name="android.intent.action.MEDIA_BUTTON" />
-				<action android:name="android.media.AUDIO_BECOMING_NOISY" />
 			</intent-filter>
 		</receiver>
 

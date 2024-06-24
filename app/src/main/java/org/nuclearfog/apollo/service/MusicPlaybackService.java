@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.service;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,7 +21,6 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.Media;
@@ -31,13 +29,16 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ServiceCompat;
+import androidx.core.content.ContextCompat;
 import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioFocusRequestCompat;
 import androidx.media.AudioManagerCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.model.Album;
@@ -322,7 +323,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressLint("UnspecifiedRegisterReceiverFlag")
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -348,13 +348,12 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		shutdownHandler = new ShutdownHandler(this);
 		getCardId();
 
-		// register external storage listener
+		// init external storage listener
 		IntentFilter filterStorage = new IntentFilter();
 		filterStorage.addAction(Intent.ACTION_MEDIA_EJECT);
 		filterStorage.addAction(Intent.ACTION_MEDIA_MOUNTED);
 		filterStorage.addDataScheme("file");
-
-		// Initialize the intent filter and each action
+		// init the intent filter and each action
 		IntentFilter filterAction = new IntentFilter();
 		filterAction.addAction(SERVICECMD);
 		filterAction.addAction(ACTION_TOGGLEPAUSE);
@@ -363,13 +362,10 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		filterAction.addAction(ACTION_PREVIOUS);
 		filterAction.addAction(ACTION_REPEAT);
 		filterAction.addAction(ACTION_SHUFFLE);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			registerReceiver(mIntentReceiver, filterAction, RECEIVER_EXPORTED);
-			registerReceiver(mUnmountReceiver, filterStorage, RECEIVER_EXPORTED);
-		} else {
-			registerReceiver(mIntentReceiver, filterAction);
-			registerReceiver(mUnmountReceiver, filterStorage);
-		}
+		// register all receiver
+		ContextCompat.registerReceiver(this, mIntentReceiver, filterAction, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mUnmountReceiver, filterStorage, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mIntentReceiver, filterAction, ContextCompat.RECEIVER_EXPORTED);
 
 		// send session ID to external equalizer if set
 		if (settings.isExternalAudioFxPrefered() && !settings.isAudioFxEnabled()) {
@@ -542,6 +538,18 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				setShuffleMode(SHUFFLE_NONE);
 			}
 		}
+		// handle play/pause button
+		else if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
+			KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+			if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE) {
+				if (isPlaying()) {
+					pause(false);
+				} else {
+					play();
+				}
+			}
+		}
+		MediaButtonReceiver.handleIntent(mSession, intent);
 	}
 
 	/**

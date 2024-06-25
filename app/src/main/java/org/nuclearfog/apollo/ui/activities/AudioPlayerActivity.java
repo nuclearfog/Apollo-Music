@@ -266,8 +266,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		setIntent(intent);
-		startPlayback();
+		startPlayback(intent);
 	}
 
 	/**
@@ -436,7 +435,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onServiceConnected() {
 		// Check whether we were asked to start any playback
-		startPlayback();
+		startPlayback(getIntent());
 		// Set the playback drawables
 		updatePlaybackControls();
 		// Current info
@@ -664,23 +663,21 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Checks whether the passed intent contains a playback request,
 	 * and starts playback if that's the case
 	 */
-	private void startPlayback() {
-		Intent intent = getIntent();
+	private void startPlayback(@Nullable Intent intent) {
 		if (intent != null) {
 			Uri uri = intent.getData();
 			String mimeType = intent.getType();
-			boolean handled = false;
 			// open file
 			if (uri != null && !uri.toString().trim().isEmpty()) {
 				MusicUtils.playFile(this, uri);
-				handled = true;
+				refreshQueue();
 			}
 			// open playlist
 			else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "playlistId", "playlist");
 				if (id != -1L) {
 					MusicUtils.playPlaylist(this, id);
-					handled = true;
+					refreshQueue();
 				}
 			}
 			// open album
@@ -689,7 +686,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				if (id != -1L) {
 					int position = intent.getIntExtra("position", 0);
 					MusicUtils.playAlbum(this, id, position);
-					handled = true;
+					refreshQueue();
 				}
 			}
 			// open artist
@@ -698,17 +695,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				if (id != -1L) {
 					int position = intent.getIntExtra("position", 0);
 					MusicUtils.playArtist(this, id, position);
-					handled = true;
+					refreshQueue();
 				}
 			}
-			// clear intent
-			if (handled) {
-				// Make sure to process intent only once
-				setIntent(new Intent());
-				// Refresh the queue
-				refreshQueue();
-			}
 		}
+		// Make sure to process intent only once
+		setIntent(new Intent());
 	}
 
 	/**

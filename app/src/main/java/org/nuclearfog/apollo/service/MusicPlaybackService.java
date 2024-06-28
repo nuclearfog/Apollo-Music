@@ -295,8 +295,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
-		shutdownHandler.stop();
 		mServiceInUse = true;
+		shutdownHandler.stop();
 		return new ServiceStub(this);
 	}
 
@@ -305,8 +305,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 */
 	@Override
 	public void onRebind(Intent intent) {
-		shutdownHandler.stop();
 		mServiceInUse = true;
+		shutdownHandler.stop();
 	}
 
 	/**
@@ -315,9 +315,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	@Override
 	public boolean onUnbind(Intent intent) {
 		mServiceInUse = false;
-		saveQueue(true);
-		stopSelf(mServiceStartId);
-		return true;
+		return releaseServiceUiAndStop();
 	}
 
 	/**
@@ -785,6 +783,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					}
 				} else {
 					mNotificationHelper.dismissNotification();
+					shutdownHandler.stop();
 				}
 				// fall through
 
@@ -1539,16 +1538,20 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 	/**
 	 * releases playback service and removes notification/playback controls
+	 *
+	 * @return true if service remains unchanged
 	 */
-	void releaseServiceUiAndStop() {
+	boolean releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();
 			if (!mServiceInUse) {
 				saveQueue(true);
 				stopSelf(mServiceStartId);
+				return false;
 			}
 		}
+		return true;
 	}
 
 	/**

@@ -7,4 +7,9 @@
 		android:title="@string/menu_save_preset"
 		app:showAsAction="never" />
 
+	<item
+		android:id="@+id/menu_delete_preset"
+		android:title="@string/menu_delete_preset"
+		app:showAsAction="never" />
+
 </menu>

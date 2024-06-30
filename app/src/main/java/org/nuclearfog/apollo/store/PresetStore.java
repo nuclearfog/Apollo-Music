@@ -38,6 +38,11 @@ public class PresetStore extends AppStore {
 	};
 
 	/**
+	 * preset selection query
+	 */
+	private static final String PRESET_SELECT = PresetColumns.NAME + "=?";
+
+	/**
 	 * default sort order
 	 */
 	private static final String SORT = PresetColumns.TIME + " DESC";
@@ -72,6 +77,8 @@ public class PresetStore extends AppStore {
 
 	/**
 	 * called to save custom audio preset
+	 *
+	 * @param preset preset to save
 	 */
 	public synchronized void savePreset(AudioPreset preset) {
 		SQLiteDatabase db = getWritableDatabase();
@@ -89,6 +96,17 @@ public class PresetStore extends AppStore {
 		}
 		column.put(PresetColumns.EQUALIZER, buf.toString());
 		db.insertWithOnConflict(PresetColumns.TABLE, "", column, SQLiteDatabase.CONFLICT_REPLACE);
+		commit();
+	}
+
+	/**
+	 * delete existing preset
+	 *
+	 * @param preset preset to remove
+	 */
+	public synchronized void deletePreset(AudioPreset preset) {
+		SQLiteDatabase db = getWritableDatabase();
+		db.delete(PresetColumns.TABLE, PRESET_SELECT, new String[]{preset.getName()});
 		commit();
 	}
 

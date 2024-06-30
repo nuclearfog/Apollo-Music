@@ -168,4 +168,6 @@
 	<string name="copy_playlist">Playlist kopieren</string>
 	<string name="error_create_playlist">Playlist konnte nicht erstellt werden!</string>
 	<string name="error_rename_playlist">Playlist konnte nicht umbenannt werden!</string>
+	<string name="menu_save_preset">Voreinstellung speichern</string>
+	<string name="menu_delete_preset">Voreinstellung löschen</string>
 </resources>

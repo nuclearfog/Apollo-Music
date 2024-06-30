@@ -81,11 +81,6 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 * value type is long[]
 	 */
 	private static final String PLAYLIST_SONGS = "playlist_songs";
-
-	/**
-	 * The actual dialog
-	 */
-	private AlertDialog mPlaylistDialog;
 	/**
 	 * Used to make new playlist names
 	 */
@@ -108,7 +103,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Initialize the alert dialog
-		mPlaylistDialog = new AlertDialog.Builder(requireContext()).create();
+		AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 		// Initialize the edit text
 		playlistName = new EditText(requireContext());
 		playlistName.setSingleLine(true);
@@ -118,11 +113,11 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 		playlistName.setPadding(padding, padding, padding, padding);
 		playlistName.setInputType(playlistName.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		// set dialog view
-		mPlaylistDialog.setView(playlistName);
+		builder.setView(playlistName);
 		// Set the save button action
-		mPlaylistDialog.setButton(Dialog.BUTTON_POSITIVE, getString(R.string.save), this);
+		builder.setPositiveButton(getString(R.string.save), this);
 		// Set the cancel button action
-		mPlaylistDialog.setButton(Dialog.BUTTON_NEGATIVE, getString(R.string.cancel), this);
+		builder.setNegativeButton(getString(R.string.cancel), this);
 
 		if (savedInstanceState == null) {
 			savedInstanceState = getArguments();
@@ -135,24 +130,24 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 				songIds = savedInstanceState.getLongArray(PLAYLIST_SONGS);
 			switch (mode) {
 				case CREATE:
-					mPlaylistDialog.setTitle(R.string.new_playlist);
+					builder.setTitle(R.string.new_playlist);
 					break;
 
 				case MOVE:
-					mPlaylistDialog.setTitle(R.string.rename_playlist);
+					builder.setTitle(R.string.rename_playlist);
 					break;
 
 				case COPY:
-					mPlaylistDialog.setTitle(R.string.copy_playlist);
+					builder.setTitle(R.string.copy_playlist);
 					break;
 			}
 		}
-		mPlaylistDialog.show();
+		AlertDialog dialog = builder.show();
 		// confirm button
-		mSaveButton = mPlaylistDialog.getButton(Dialog.BUTTON_POSITIVE);
+		mSaveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
 		mSaveButton.setEnabled(false);
 		playlistName.addTextChangedListener(this);
-		return mPlaylistDialog;
+		return dialog;
 	}
 
 	/**
@@ -160,39 +155,37 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 */
 	@Override
 	public final void onClick(DialogInterface dialog, int which) {
-		if (dialog == mPlaylistDialog) {
-			if (which == Dialog.BUTTON_POSITIVE) {
-				String name = playlistName.getText().toString();
-				if (!name.trim().isEmpty()) {
-					switch (mode) {
-						case MOVE:
-							MusicUtils.renamePlaylist(requireActivity(), playlistId, name);
-							break;
+		if (which == Dialog.BUTTON_POSITIVE) {
+			String name = playlistName.getText().toString();
+			if (!name.trim().isEmpty()) {
+				switch (mode) {
+					case MOVE:
+						MusicUtils.renamePlaylist(requireActivity(), playlistId, name);
+						break;
 
-						case COPY:
-							songIds = MusicUtils.getSongListForPlaylist(requireContext(), playlistId);
-							// fall through
+					case COPY:
+						songIds = MusicUtils.getSongListForPlaylist(requireContext(), playlistId);
+						// fall through
 
-						case CREATE:
-							// create new playlist
-							playlistId = MusicUtils.createPlaylist(requireActivity(), name);
-							if (playlistId != -1) {
-								MusicUtils.addToPlaylist(requireActivity(), songIds, playlistId);
-							} else {
-								AppMsg.makeText(requireActivity(), R.string.error_duplicate_playlistname, AppMsg.STYLE_ALERT).show();
-							}
-							break;
-					}
-					MusicUtils.refresh(getActivity());
-					dismiss();
-				}
-			} else if (which == Dialog.BUTTON_NEGATIVE) {
-				InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
-				if (iManager != null) {
-					iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
+					case CREATE:
+						// create new playlist
+						playlistId = MusicUtils.createPlaylist(requireActivity(), name);
+						if (playlistId != -1) {
+							MusicUtils.addToPlaylist(requireActivity(), songIds, playlistId);
+						} else {
+							AppMsg.makeText(requireActivity(), R.string.error_duplicate_playlistname, AppMsg.STYLE_ALERT).show();
+						}
+						break;
 				}
 				MusicUtils.refresh(getActivity());
+				dismiss();
 			}
+		} else if (which == Dialog.BUTTON_NEGATIVE) {
+			InputMethodManager iManager = (InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE);
+			if (iManager != null) {
+				iManager.hideSoftInputFromWindow(playlistName.getWindowToken(), 0);
+			}
+			MusicUtils.refresh(getActivity());
 		}
 	}
 

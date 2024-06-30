@@ -120,7 +120,8 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			finish();
 			return;
 		}
-		presetLoader.execute(null, this);
+		PresetLoader.Param param = new PresetLoader.Param(PresetLoader.Param.LOAD, null);
+		presetLoader.execute(param, this);
 
 		enableFx.setOnCheckedChangeListener(this);
 		bassBoost.setOnSeekBarChangeListener(this);
@@ -148,6 +149,12 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 			AudioPreset preset = audioEffects.getPreset();
 			PresetDialog presetDialog = PresetDialog.newInstance(preset);
 			presetDialog.show(getSupportFragmentManager(), PresetDialog.TAG + ":" + preset.getName());
+		} else if (item.getItemId() == R.id.menu_delete_preset) {
+			Object selectedItem = presetSelector.getSelectedItem();
+			if (selectedItem instanceof AudioPreset) {
+				PresetLoader.Param param = new PresetLoader.Param(PresetLoader.Param.DEL, (AudioPreset) selectedItem);
+				presetLoader.execute(param, this);
+			}
 		} else if (item.getItemId() == android.R.id.home) {
 			finish();
 		}
@@ -225,8 +232,9 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 
 	@Override
 	public void onPresetSave(AudioPreset preset) {
+		PresetLoader.Param param = new PresetLoader.Param(PresetLoader.Param.SAVE, preset);
+		presetLoader.execute(param, this);
 		audioEffects.setPreset(preset);
-		presetLoader.execute(preset, this);
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package org.nuclearfog.apollo.ui.dialogs;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -9,10 +8,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.nuclearfog.apollo.R;
@@ -33,28 +34,36 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 	private AudioPreset preset;
 
 	private EditText text;
+	private Button mSaveButton;
+
 
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-		if (savedInstanceState != null)
-			preset = (AudioPreset) savedInstanceState.getSerializable(KEY_PRESET);
-		else if (getArguments() != null)
-			preset = (AudioPreset) getArguments().getSerializable(KEY_PRESET);
 		text = new EditText(getContext());
+		AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+		builder.setPositiveButton(R.string.save, this);
+		builder.setNegativeButton(R.string.cancel, this);
+		builder.setTitle(R.string.dialog_save_preset_title);
+		builder.setView(text);
+		AlertDialog dialog = builder.show();
+		mSaveButton = dialog.getButton(Dialog.BUTTON_POSITIVE);
+
+		if (savedInstanceState != null) {
+			preset = (AudioPreset) savedInstanceState.getSerializable(KEY_PRESET);
+		} else if (getArguments() != null) {
+			preset = (AudioPreset) getArguments().getSerializable(KEY_PRESET);
+		}
 		text.setLines(1);
 		text.setBackgroundColor(0);
 		text.setInputType(EditorInfo.TYPE_CLASS_TEXT);
 		text.setPadding(30, 0, 0, 30);
 		text.append(preset.getName());
 		text.setHint(R.string.preset_name_hint);
+		mSaveButton.setEnabled(!preset.getName().trim().isEmpty());
+
 		text.addTextChangedListener(this);
-		return new AlertDialog.Builder(requireContext())
-				.setPositiveButton(R.string.save, this)
-				.setNegativeButton(R.string.cancel, this)
-				.setTitle(R.string.dialog_save_preset_title)
-				.setView(text)
-				.create();
+		return dialog;
 	}
 
 
@@ -95,6 +104,7 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 
 	@Override
 	public void afterTextChanged(Editable s) {
+		mSaveButton.setEnabled(!s.toString().trim().isEmpty());
 		preset.setName(s.toString());
 	}
 

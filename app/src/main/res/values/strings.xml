@@ -36,6 +36,7 @@
 	<string name="menu_clear_queue">Clear queue</string>
 	<string name="menu_save_queue">Save queue</string>
 	<string name="menu_save_preset">Save preset</string>
+	<string name="menu_delete_preset">Delete preset</string>
 	<string name="menu_share">Share</string>
 	<string name="menu_add_to_homescreen">Pin to home screen</string>
 	<string name="menu_equalizer">Equalizer</string>

@@ -643,8 +643,8 @@ public final class MusicUtils {
 		if (list.length > 0 && service != null) {
 			try {
 				if (forceShuffle) {
-					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NORMAL);
-					service.open(list, 0);
+					service.setShuffleMode(MusicPlaybackService.SHUFFLE_AUTO);
+					service.open(list, -1);
 				} else {
 					service.setShuffleMode(MusicPlaybackService.SHUFFLE_NONE);
 					service.open(list, position);
@@ -694,8 +694,7 @@ public final class MusicUtils {
 					cursor.moveToNext();
 				}
 				if (mTrackList.length > 0) {
-					int pos = random.nextInt(mTrackList.length - 1);
-					playAll(activity, mTrackList, pos, true);
+					playAll(activity, mTrackList, -1, true);
 				}
 			}
 			cursor.close();

@@ -175,8 +175,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	private long mStartSeekPos = 0L;
 	private long mLastSeekEventTime;
 	private long mLastShortSeekEventTime;
-	private boolean mIsPaused = false;
 	private boolean mFromTouch = false;
+	private boolean intentHandled = false;
 
 	/**
 	 * {@inheritDoc}
@@ -227,6 +227,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		if (actionBar != null) {
 			mResources.themeActionBar(actionBar, R.string.app_name);
 			actionBar.setDisplayHomeAsUpEnabled(true);
+		}
+		if (savedInstanceState != null) {
+			intentHandled = true;
 		}
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// View pager
@@ -322,7 +325,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	protected void onDestroy() {
-		mIsPaused = false;
 		mTimeHandler.removeMessages(MSG_ID);
 		MusicUtils.unbindFromService(this);
 		super.onDestroy();
@@ -563,7 +565,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			int mode = MusicUtils.cycleShuffle(this);
 			mShuffleButton.updateShuffleState(mode);
 		}
-		// play button clicked
+		// play/pause button clicked
 		else if (v.getId() == R.id.action_button_play) {
 			MusicUtils.togglePlayPause(this);
 		}
@@ -664,7 +666,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * and starts playback if that's the case
 	 */
 	private void startPlayback(@Nullable Intent intent) {
-		if (intent != null) {
+		if (intent != null && !intentHandled) {
+			intentHandled = true;
 			Uri uri = intent.getData();
 			String mimeType = intent.getType();
 			// open file
@@ -699,8 +702,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				}
 			}
 		}
-		// Make sure to process intent only once
-		setIntent(new Intent());
 	}
 
 	/**
@@ -726,11 +727,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * @param delay When to update
 	 */
 	private void queueNextRefresh(long delay) {
-		if (!mIsPaused) {
-			Message message = mTimeHandler.obtainMessage(MSG_ID);
-			mTimeHandler.removeMessages(MSG_ID);
-			mTimeHandler.sendMessageDelayed(message, delay);
-		}
+		Message message = mTimeHandler.obtainMessage(MSG_ID);
+		mTimeHandler.removeMessages(MSG_ID);
+		mTimeHandler.sendMessageDelayed(message, delay);
 	}
 
 	/**

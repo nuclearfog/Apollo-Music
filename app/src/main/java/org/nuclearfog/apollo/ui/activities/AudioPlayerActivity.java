@@ -467,7 +467,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			} else if (now - mLastShortSeekEventTime > 5L) {
 				mLastShortSeekEventTime = now;
 				mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
-				refreshCurrentTimeText(mPosOverride);
+				mCurrentTime.setText(StringUtils.makeTimeString(this, mPosOverride));
 			}
 		}
 	}
@@ -583,9 +583,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onRepeat(@NonNull View v, long howlong, int repcnt) {
 		if (v.getId() == R.id.action_button_previous) {
-			scanBackward(repcnt, howlong);
+			scan(repcnt, howlong, false);
 		} else if (v.getId() == R.id.action_button_next) {
-			scanForward(repcnt, howlong);
+			scan(repcnt, howlong, true);
 		}
 	}
 
@@ -735,14 +735,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * Used to scan backwards in time through the curren track
 	 *
-	 * @param repcnt The repeat count
-	 * @param delta  The long press duration
+	 * @param repcnt  The repeat count
+	 * @param delta   The long press duration
+	 * @param forward true to scan forward
 	 */
-	private void scanBackward(int repcnt, long delta) {
+	private void scan(int repcnt, long delta, boolean forward) {
 		if (repcnt == 0) {
 			mStartSeekPos = MusicUtils.getPositionMillis(this);
 			mLastSeekEventTime = 0L;
 		} else {
+			long newpos;
+			long duration = MusicUtils.getDurationMillis(this);
 			if (delta < 5000) {
 				// seek at 10x speed for the first 5 seconds
 				delta = delta * 10L;
@@ -750,48 +753,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 				// seek at 40x after that
 				delta = 50000L + (delta - 5000L) * 40L;
 			}
-			long newpos = mStartSeekPos - delta;
+			if (forward) {
+				newpos = mStartSeekPos + delta;
+			} else {
+				newpos = mStartSeekPos - delta;
+			}
 			if (newpos < 0) {
 				// move to previous track
 				MusicUtils.previous(this);
-				long duration = MusicUtils.getDurationMillis(this);
 				mStartSeekPos += duration;
 				newpos += duration;
-			}
-			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
-				MusicUtils.seek(this, newpos);
-				mLastSeekEventTime = delta;
-			}
-			if (repcnt >= 0) {
-				mPosOverride = newpos;
-			} else {
-				mPosOverride = -1L;
-			}
-			refreshCurrentTime();
-		}
-	}
-
-	/**
-	 * Used to scan forwards in time through the curren track
-	 *
-	 * @param repcnt The repeat count
-	 * @param delta  The long press duration
-	 */
-	private void scanForward(int repcnt, long delta) {
-		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.getPositionMillis(this);
-			mLastSeekEventTime = 0L;
-		} else {
-			if (delta < 5000) {
-				// seek at 10x speed for the first 5 seconds
-				delta = delta * 10;
-			} else {
-				// seek at 40x after that
-				delta = 50000 + (delta - 5000) * 40;
-			}
-			long newpos = mStartSeekPos + delta;
-			long duration = MusicUtils.getDurationMillis(this);
-			if (newpos >= duration) {
+			} else if (newpos >= duration) {
 				// move to next track
 				MusicUtils.next(this);
 				mStartSeekPos -= duration; // is OK to go negative
@@ -811,20 +783,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	}
 
 	/**
-	 *
-	 */
-	private void refreshCurrentTimeText(long pos) {
-		mCurrentTime.setText(StringUtils.makeTimeString(this, pos));
-	}
-
-	/**
 	 * Used to update the current time string
 	 */
 	private long refreshCurrentTime() {
 		try {
 			long pos = mPosOverride < 0 ? MusicUtils.getPositionMillis(this) : mPosOverride;
 			if (pos >= 0 && MusicUtils.getDurationMillis(this) > 0) {
-				refreshCurrentTimeText(pos);
+				mCurrentTime.setText(StringUtils.makeTimeString(this, pos));
 				int progress = (int) (1000 * pos / MusicUtils.getDurationMillis(this));
 				mProgress.setProgress(progress);
 				if (mFromTouch) {

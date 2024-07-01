@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.views;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -23,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.animation.AnimationUtils;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 
@@ -31,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.utils.AnimatorUtils;
 
 /**
  * A custom {@link HorizontalScrollView} that displays up to two "tabs" in the
@@ -307,11 +306,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void restoreYCoordinate(int duration, int tabIndex) {
 		float storedYCoordinate = getStoredYCoordinateForTab(tabIndex);
-		ObjectAnimator tabCarouselAnimator = ObjectAnimator.ofFloat(this, "y", storedYCoordinate);
-		tabCarouselAnimator.addListener(mTabCarouselAnimatorListener);
-		tabCarouselAnimator.setInterpolator(AnimationUtils.loadInterpolator(getContext(), android.R.anim.accelerate_decelerate_interpolator));
-		tabCarouselAnimator.setDuration(duration);
-		tabCarouselAnimator.start();
+		AnimatorUtils.translate(this, storedYCoordinate, duration, mTabCarouselAnimatorListener);
 	}
 
 	/**

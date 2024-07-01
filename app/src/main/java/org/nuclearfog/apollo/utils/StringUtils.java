@@ -7,8 +7,10 @@ import org.nuclearfog.apollo.R;
 
 /**
  * This class contains utils for strings
+ *
+ * @author nuclearfog
  */
-public class StringUtils {
+public final class StringUtils {
 
 	/* This class is never initiated */
 	private StringUtils() {

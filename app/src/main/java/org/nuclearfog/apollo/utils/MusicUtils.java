@@ -64,7 +64,6 @@ import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.WeakHashMap;
 
 /**
@@ -136,13 +135,7 @@ public final class MusicUtils {
 	 */
 	private static ContentValues[] mContentValuesCache;
 
-	/**
-	 * random initialization for shuffle
-	 */
-	private static Random random = new Random();
-
 	private static int foregroundActivities = 0;
-
 	private static int markedTracks = 0;
 
 
@@ -203,6 +196,17 @@ public final class MusicUtils {
 			}
 		}
 	}
+
+	/**
+	 * check if current activity is connected with the playback service
+	 *
+	 * @param activity Activity to check
+	 * @return true if service is connected to activity
+	 */
+	public static boolean isConnected(Activity activity) {
+		return getService(activity) != null;
+	}
+
 
 	/**
 	 * switch to next track

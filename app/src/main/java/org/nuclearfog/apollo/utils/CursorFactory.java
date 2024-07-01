@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
  *
  * @author nuclearfog
  */
-public class CursorFactory {
+public final class CursorFactory {
 
 	/**
 	 * default sort order
@@ -267,7 +267,7 @@ public class CursorFactory {
 	 */
 	private static final Uri CARD_URI = Uri.parse("content://media/external/fs_id");
 
-
+	/* This class is never initiated */
 	private CursorFactory() {
 	}
 

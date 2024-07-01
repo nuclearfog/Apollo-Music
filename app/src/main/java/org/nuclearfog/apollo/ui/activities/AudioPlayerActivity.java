@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ClipData;
@@ -23,9 +22,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.provider.MediaStore.Audio.Albums;
 import android.provider.MediaStore.Audio.Artists;
 import android.provider.MediaStore.Audio.Playlists;
@@ -34,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -68,6 +63,7 @@ import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
+import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -79,6 +75,9 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Apollo's "now playing" interface.
@@ -87,11 +86,6 @@ import java.lang.ref.WeakReference;
  */
 public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnSeekBarChangeListener,
 		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
-
-	/**
-	 * Message to refresh the time
-	 */
-	private static final int MSG_ID = 0x65059CC4;
 
 	/**
 	 * MIME type for sharing songs
@@ -151,9 +145,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private PlaybackStatus mPlaybackStatus;
 	/**
-	 * Handler used to update the current time
+	 * thread pool used to run a task to periodically update seekbar and time
 	 */
-	private TimeHandler mTimeHandler;
+	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 	/**
 	 * ViewPager
 	 */
@@ -171,11 +165,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 	private FragmentViewModel viewModel;
 
-	private long mPosOverride = -1L;
-	private long mStartSeekPos = 0L;
-	private long mLastSeekEventTime;
-	private long mLastShortSeekEventTime;
-	private boolean mFromTouch = false;
 	private boolean intentHandled = false;
 
 	/**
@@ -218,8 +207,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the image fetcher/cache
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
-		// Initialize the handler used to update the current time
-		mTimeHandler = new TimeHandler(this);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
 		// Theme the action bar
@@ -290,14 +277,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		filter.addAction(MusicPlaybackService.ACTION_REFRESH);
 		//
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
-		// Refresh the current time
-		long next = refreshCurrentTime();
-		queueNextRefresh(next);
 		// bind activity to service
 		MusicUtils.notifyForegroundStateChanged(this, true);
 		// update playback control after resume
-		updatePlaybackControls();
-		updateNowPlayingInfo();
+		if (MusicUtils.isConnected(this)) {
+			updatePlaybackControls();
+			updateNowPlayingInfo();
+			updateTime();
+		}
 	}
 
 	/**
@@ -325,7 +312,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	protected void onDestroy() {
-		mTimeHandler.removeMessages(MSG_ID);
+		threadPool.shutdown();
 		MusicUtils.unbindFromService(this);
 		super.onDestroy();
 	}
@@ -446,6 +433,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		invalidateOptionsMenu();
 		// refresh queue after connected
 		refreshQueue();
+		// update time and seekbar
+		updateTime();
+		// init time/seekbar updater
+		threadPool.scheduleAtFixedRate(new TimeHandler(this), TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
+		// enable enimation
+		AnimatorUtils.pulse(mCurrentTime, !MusicUtils.isPlaying(this));
 	}
 
 	/**
@@ -453,22 +446,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+		long mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
+		mCurrentTime.setText(StringUtils.makeTimeString(this, mPosOverride));
 		if (fromuser) {
-			long now = SystemClock.elapsedRealtime();
-			if (now - mLastSeekEventTime > 250L) {
-				mLastSeekEventTime = now;
-				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
-				MusicUtils.seek(this, mPosOverride);
-				if (!mFromTouch) {
-					// refreshCurrentTime();
-					mPosOverride = -1L;
-				}
-			} else if (now - mLastShortSeekEventTime > 5L) {
-				mLastShortSeekEventTime = now;
-				mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
-				mCurrentTime.setText(StringUtils.makeTimeString(this, mPosOverride));
-			}
+			MusicUtils.seek(this, mPosOverride);
 		}
 	}
 
@@ -477,8 +458,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	public void onStartTrackingTouch(SeekBar bar) {
-		mLastSeekEventTime = 0L;
-		mFromTouch = true;
+		// set blinking time indicator permanently visible
 		mCurrentTime.setVisibility(View.VISIBLE);
 	}
 
@@ -486,15 +466,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onStopTrackingTouch(SeekBar bar) {
-		if (mPosOverride != -1L) {
-			MusicUtils.seek(this, mPosOverride);
-		}
-		mPosOverride = -1L;
-		mFromTouch = false;
+	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -503,7 +480,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onQueryTextSubmit(String query) {
 		// Open the search activity
@@ -535,10 +514,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			mQueueSwitch.setVisibility(View.INVISIBLE);
 			// Fade out the artwork
 			if (albumArtBorder1 != null)
-				fade(albumArtBorder1, false);
+				AnimatorUtils.fade(albumArtBorder1, false);
 			if (albumArtBorder2 != null)
-				fade(albumArtBorder2, false);
-			fade(mAlbumArt, false);
+				AnimatorUtils.fade(albumArtBorder2, false);
+			AnimatorUtils.fade(mAlbumArt, false);
 			// Scroll to the current track
 			setQueueTrack();
 		}
@@ -550,10 +529,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			mAlbumArtSmall.setVisibility(View.INVISIBLE);
 			// Fade in the album art
 			if (albumArtBorder1 != null)
-				fade(albumArtBorder1, true);
+				AnimatorUtils.fade(albumArtBorder1, true);
 			if (albumArtBorder2 != null)
-				fade(albumArtBorder2, true);
-			fade(mAlbumArt, true);
+				AnimatorUtils.fade(albumArtBorder2, true);
+			AnimatorUtils.fade(mAlbumArt, true);
 		}
 		// repeat button clicked
 		else if (v.getId() == R.id.action_button_repeat) {
@@ -581,11 +560,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 
 	@Override
-	public void onRepeat(@NonNull View v, long howlong, int repcnt) {
+	public void onRepeat(@NonNull View v, int repcnt) {
 		if (v.getId() == R.id.action_button_previous) {
-			scan(repcnt, howlong, false);
+			if (repcnt > 0)
+				scan(false);
 		} else if (v.getId() == R.id.action_button_next) {
-			scan(repcnt, howlong, true);
+			if (repcnt > 0)
+				scan(true);
 		}
 	}
 
@@ -604,7 +585,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onStateChange() {
 		// Set the play and pause image
-		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
+		boolean playing = MusicUtils.isPlaying(this);
+		mPlayPauseButton.updateState(playing);
+		AnimatorUtils.pulse(mCurrentTime, !playing);
 	}
 
 
@@ -638,8 +621,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			mImageFetcher.loadAlbumImage(album, mAlbumArt);
 			// Set the small artwork
 			mImageFetcher.loadAlbumImage(album, mAlbumArtSmall);
-			// Update the current time
-			queueNextRefresh(1);
 		}
 	}
 
@@ -724,124 +705,21 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	}
 
 	/**
-	 * @param delay When to update
-	 */
-	private void queueNextRefresh(long delay) {
-		Message message = mTimeHandler.obtainMessage(MSG_ID);
-		mTimeHandler.removeMessages(MSG_ID);
-		mTimeHandler.sendMessageDelayed(message, delay);
-	}
-
-	/**
 	 * Used to scan backwards in time through the curren track
 	 *
-	 * @param repcnt  The repeat count
-	 * @param delta   The long press duration
 	 * @param forward true to scan forward
 	 */
-	private void scan(int repcnt, long delta, boolean forward) {
-		if (repcnt == 0) {
-			mStartSeekPos = MusicUtils.getPositionMillis(this);
-			mLastSeekEventTime = 0L;
+	private void scan(boolean forward) {
+		long duration = MusicUtils.getDurationMillis(this);
+		long position = MusicUtils.getPositionMillis(this);
+		if (forward) {
+			position = Math.min(duration, position + duration / 32L);
 		} else {
-			long newpos;
-			long duration = MusicUtils.getDurationMillis(this);
-			if (delta < 5000) {
-				// seek at 10x speed for the first 5 seconds
-				delta = delta * 10L;
-			} else {
-				// seek at 40x after that
-				delta = 50000L + (delta - 5000L) * 40L;
-			}
-			if (forward) {
-				newpos = mStartSeekPos + delta;
-			} else {
-				newpos = mStartSeekPos - delta;
-			}
-			if (newpos < 0) {
-				// move to previous track
-				MusicUtils.previous(this);
-				mStartSeekPos += duration;
-				newpos += duration;
-			} else if (newpos >= duration) {
-				// move to next track
-				MusicUtils.next(this);
-				mStartSeekPos -= duration; // is OK to go negative
-				newpos -= duration;
-			}
-			if (delta - mLastSeekEventTime > 250L || repcnt < 0) {
-				MusicUtils.seek(this, newpos);
-				mLastSeekEventTime = delta;
-			}
-			if (repcnt >= 0) {
-				mPosOverride = newpos;
-			} else {
-				mPosOverride = -1L;
-			}
-			refreshCurrentTime();
+			position = Math.max(0, position - duration / 32L);
 		}
-	}
-
-	/**
-	 * Used to update the current time string
-	 */
-	private long refreshCurrentTime() {
-		try {
-			long pos = mPosOverride < 0 ? MusicUtils.getPositionMillis(this) : mPosOverride;
-			if (pos >= 0 && MusicUtils.getDurationMillis(this) > 0) {
-				mCurrentTime.setText(StringUtils.makeTimeString(this, pos));
-				int progress = (int) (1000 * pos / MusicUtils.getDurationMillis(this));
-				mProgress.setProgress(progress);
-				if (mFromTouch) {
-					return 500;
-				} else if (MusicUtils.isPlaying(this)) {
-					mCurrentTime.setVisibility(View.VISIBLE);
-				} else {
-					// blink the counter
-					int vis = mCurrentTime.getVisibility();
-					mCurrentTime.setVisibility(vis == View.INVISIBLE ? View.VISIBLE : View.INVISIBLE);
-					return 500;
-				}
-			} else {
-				mCurrentTime.setText("--:--");
-				mProgress.setProgress(1000);
-			}
-			// calculate the number of milliseconds until the next full second,
-			// so
-			// the counter can be updated at just the right time
-			long remaining = 1000 - pos % 1000;
-			// approximate how often we would need to refresh the slider to
-			// move it smoothly
-			int width = mProgress.getWidth();
-			if (width == 0) {
-				width = 320;
-			}
-			long smoothrefreshtime = MusicUtils.getDurationMillis(this) / width;
-			if (smoothrefreshtime > remaining) {
-				return remaining;
-			}
-			if (smoothrefreshtime < 20) {
-				return 20;
-			}
-			return smoothrefreshtime;
-		} catch (Exception e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
-		}
-		return 500;
-	}
-
-	/**
-	 * @param v       The view to animate
-	 * @param visible true to fade in
-	 */
-	private void fade(View v, boolean visible) {
-		float alpha = visible ? 1.0f : 0.0f;
-		ObjectAnimator fade = ObjectAnimator.ofFloat(v, "alpha", alpha);
-		fade.setInterpolator(AnimationUtils.loadInterpolator(getApplicationContext(), android.R.anim.accelerate_decelerate_interpolator));
-		fade.setDuration(400);
-		fade.start();
+		MusicUtils.seek(this, position);
+		int progress = (int) (position * 1000L / duration);
+		mProgress.setProgress(progress);
 	}
 
 	/**
@@ -853,7 +731,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			try {
 				File file = new File(path);
 				Uri fileUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, file);
-
 				Intent shareIntent = new Intent();
 				shareIntent.setAction(Intent.ACTION_SEND);
 				shareIntent.setDataAndType(fileUri, MIME_AUDIO);
@@ -885,15 +762,32 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	}
 
 	/**
+	 * update current track progress
+	 */
+	private void updateTime() {
+		long pos = MusicUtils.getPositionMillis(this);
+		if (pos >= 0 && pos <= MusicUtils.getDurationMillis(this)) {
+			int progress = (int) (1000 * pos / MusicUtils.getDurationMillis(this));
+			mProgress.setProgress(progress);
+			if (MusicUtils.isPlaying(this)) {
+				mCurrentTime.setVisibility(View.VISIBLE);
+			}
+		} else {
+			mCurrentTime.setText("--:--");
+			mProgress.setProgress(0);
+		}
+	}
+
+	/**
 	 * Used to update the current time string
 	 */
-	private static final class TimeHandler extends Handler {
+	private static final class TimeHandler implements Runnable {
+
+		public static final int CYCLE_MS = 500;
 
 		private WeakReference<AudioPlayerActivity> mAudioPlayer;
 
-		/**
-		 * Constructor of <code>TimeHandler</code>
-		 */
+
 		public TimeHandler(AudioPlayerActivity player) {
 			super();
 			mAudioPlayer = new WeakReference<>(player);
@@ -901,11 +795,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 
 		@Override
-		public void handleMessage(@NonNull Message msg) {
+		public void run() {
 			AudioPlayerActivity activity = mAudioPlayer.get();
-			if (msg.what == MSG_ID && activity != null) {
-				long next = activity.refreshCurrentTime();
-				activity.queueNextRefresh(next);
+			if (activity != null) {
+				try {
+					activity.updateTime();
+				} catch (Exception exception) {
+					// ignore
+				}
 			}
 		}
 	}

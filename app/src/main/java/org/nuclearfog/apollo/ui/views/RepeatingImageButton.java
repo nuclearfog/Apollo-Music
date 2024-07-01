@@ -38,7 +38,6 @@ public class RepeatingImageButton extends AppCompatImageButton {
 	private RepeatListener mListener;
 	private Repeater repeater;
 
-	private long mStartTime;
 	private int mRepeatCount;
 
 	/**
@@ -63,7 +62,6 @@ public class RepeatingImageButton extends AppCompatImageButton {
 		if (mListener == null) {
 			ApolloUtils.showCheatSheet(this);
 		}
-		mStartTime = SystemClock.elapsedRealtime();
 		mRepeatCount = 0;
 		post(repeater);
 		return true;
@@ -78,10 +76,7 @@ public class RepeatingImageButton extends AppCompatImageButton {
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			/* Remove the repeater, but call the hook one more time */
 			removeCallbacks(repeater);
-			if (mStartTime != 0) {
-				doRepeat(true);
-				mStartTime = 0;
-			}
+			doRepeat(true);
 		}
 		return super.onTouchEvent(event);
 	}
@@ -114,10 +109,7 @@ public class RepeatingImageButton extends AppCompatImageButton {
 			case KeyEvent.KEYCODE_ENTER:
 				/* Remove the repeater, but call the hook one more time */
 				removeCallbacks(repeater);
-				if (mStartTime != 0) {
-					doRepeat(true);
-					mStartTime = 0;
-				}
+				doRepeat(true);
 		}
 		return super.onKeyUp(keyCode, event);
 	}
@@ -137,9 +129,8 @@ public class RepeatingImageButton extends AppCompatImageButton {
 	 *                     incrementally add the repeat count
 	 */
 	private void doRepeat(boolean shouldRepeat) {
-		long now = SystemClock.elapsedRealtime();
 		if (mListener != null) {
-			mListener.onRepeat(this, now - mStartTime, shouldRepeat ? -1 : mRepeatCount++);
+			mListener.onRepeat(this, shouldRepeat ? -1 : mRepeatCount++);
 		}
 	}
 
@@ -161,10 +152,9 @@ public class RepeatingImageButton extends AppCompatImageButton {
 
 		/**
 		 * @param v           View to be set
-		 * @param duration    Duration of the long press
 		 * @param repeatcount The number of repeat counts
 		 */
-		void onRepeat(View v, long duration, int repeatcount);
+		void onRepeat(View v, int repeatcount);
 	}
 
 	/**

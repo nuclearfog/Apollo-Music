@@ -19,7 +19,8 @@ public final class AnimatorUtils {
 	private static ObjectAnimator pulse;
 
 	/* This class is never initiated */
-	private AnimatorUtils() {}
+	private AnimatorUtils() {
+	}
 
 	/**
 	 * fade view in or out

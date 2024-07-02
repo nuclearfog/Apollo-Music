@@ -54,7 +54,7 @@
 		<EditTextPreference
 			android:key="api_key"
 			android:selectAllOnFocus="true"
-			android:singleLine="true"
+			android:lines="1"
 			android:title="@string/lastfm_api_key" />
 	</PreferenceCategory>
 

@@ -53,7 +53,7 @@
 		<item name="android:textColor">@android:color/white</item>
 		<item name="android:ellipsize">end</item>
 		<item name="android:fadingEdge">horizontal</item>
-		<item name="android:singleLine">true</item>
+		<item name="android:lines">1</item>
 	</style>
 
 	<!-- Notification bar actions -->
@@ -93,7 +93,7 @@
 		<item name="android:ellipsize">end</item>
 		<item name="android:paddingLeft">5dp</item>
 		<item name="android:gravity">top|left|center</item>
-		<item name="android:singleLine">true</item>
+		<item name="android:lines">1</item>
 		<item name="textAllCaps">true</item>
 		<item name="android:textSize">@dimen/text_size_extra_micro</item>
 	</style>

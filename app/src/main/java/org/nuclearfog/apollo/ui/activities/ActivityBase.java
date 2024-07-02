@@ -189,7 +189,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// register playstate callback
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		MusicUtils.notifyForegroundStateChanged(this, true);
-		updatePlaybackControls();
+		if (MusicUtils.isConnected(this)) {
+			updatePlaybackControls();
+		}
 	}
 
 	/**

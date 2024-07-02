@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;

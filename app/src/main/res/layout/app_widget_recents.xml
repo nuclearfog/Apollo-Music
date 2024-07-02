@@ -48,7 +48,7 @@
 			android:layout_toRightOf="@+id/app_widget_recents_icon"
 			android:layout_toLeftOf="@id/app_widget_recents_previous"
 			android:layout_toStartOf="@id/app_widget_recents_previous"
-			android:singleLine="true"
+			android:lines="1"
 			android:text="@string/page_recent"
 			android:textColor="@color/white"
 			android:textSize="@dimen/text_size_medium" />

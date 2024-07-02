@@ -57,7 +57,7 @@
 		android:paddingLeft="@dimen/grid_item_text_padding"
 		android:paddingBottom="@dimen/grid_item_text_padding"
 		android:paddingRight="@dimen/grid_item_text_padding"
-		android:singleLine="true"
+		android:lines="1"
 		android:textColor="@color/transparent_white"
 		android:textSize="@dimen/text_size_small"
 		app:layout_constraintStart_toStartOf="@id/image"

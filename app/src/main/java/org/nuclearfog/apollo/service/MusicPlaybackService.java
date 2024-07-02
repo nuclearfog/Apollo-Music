@@ -475,7 +475,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * used by widgets or other intents to change playback state
 	 */
-	public void handleCommandIntent(Intent intent) {
+	public synchronized void handleCommandIntent(Intent intent) {
 		String action = intent.getAction();
 		// next track
 		if (ACTION_NEXT.equals(action)) {
@@ -548,7 +548,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * called if multimediacard is rejected by user
 	 */
-	public void onEject() {
+	public synchronized void onEject() {
 		saveQueue(true);
 		mQueueIsSaveable = false;
 		stop();
@@ -558,7 +558,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * called if multimedia card was mounted
 	 */
-	public void onMediaMount() {
+	public synchronized void onMediaMount() {
 		getCardId();
 		reloadQueue();
 		mQueueIsSaveable = true;
@@ -1068,7 +1068,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 *
 	 * @return true if service remains unchanged
 	 */
-	boolean releaseServiceUiAndStop() {
+	synchronized boolean releaseServiceUiAndStop() {
 		if (!isPlaying() && !mPausedByTransientLossOfFocus) {
 			ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 			mNotificationHelper.dismissNotification();

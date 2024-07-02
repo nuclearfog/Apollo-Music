@@ -78,7 +78,7 @@
 		android:paddingBottom="@dimen/list_item_detailed_padding"
 		android:paddingRight="@dimen/list_item_detailed_padding"
 		android:paddingEnd="@dimen/list_item_detailed_padding"
-		android:singleLine="true"
+		android:lines="1"
 		android:textColor="@color/transparent_white"
 		android:textSize="@dimen/text_size_small"
 		app:layout_constraintStart_toEndOf="@id/image"

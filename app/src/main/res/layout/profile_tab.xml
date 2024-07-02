@@ -67,7 +67,7 @@
 			android:paddingLeft="@dimen/profile_label_padding"
 			android:paddingRight="@dimen/profile_label_padding"
 			android:gravity="left|center_vertical"
-			android:singleLine="true"
+			android:lines="1"
 			android:textColor="@color/white"
 			android:textSize="@dimen/text_size_large"
 			app:layout_constraintStart_toStartOf="parent"

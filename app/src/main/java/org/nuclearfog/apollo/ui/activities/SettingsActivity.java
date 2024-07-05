@@ -11,6 +11,7 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.CheckBoxPreference;
@@ -33,9 +33,10 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
- * Settings.
+ * Apollo settings activity
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class SettingsActivity extends AppCompatActivity {
 
@@ -98,11 +99,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 		private static final String DOWNLOAD_WIFI = "only_on_wifi";
 
-		/**
-		 * dialogs to ask the user for actions
-		 */
-		private AlertDialog licenseDialog, cacheClearDialog, colorPicker;
-
 		@Nullable
 		private CheckBoxPreference downloadImages;
 		@Nullable
@@ -110,8 +106,9 @@ public class SettingsActivity extends AppCompatActivity {
 		@Nullable
 		private CheckBoxPreference downloadWifi;
 
+
 		@Override
-		public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+		public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
 			addPreferencesFromResource(R.xml.settings);
 			Preference mOpenSourceLicenses = findPreference(LICENSE);
 			Preference deleteCache = findPreference(DEL_CACHE);
@@ -151,9 +148,6 @@ public class SettingsActivity extends AppCompatActivity {
 			if (oldNotification != null) {
 				oldNotification.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
 			}
-			licenseDialog = ApolloUtils.createOpenSourceDialog(requireContext());
-			cacheClearDialog = ApolloUtils.createCacheClearDialog(requireContext());
-			colorPicker = ApolloUtils.showColorPicker(requireActivity());
 		}
 
 
@@ -161,18 +155,27 @@ public class SettingsActivity extends AppCompatActivity {
 		public boolean onPreferenceClick(@NonNull Preference preference) {
 			switch (preference.getKey()) {
 				case LICENSE:
-					if (licenseDialog != null && !licenseDialog.isShowing())
-						licenseDialog.show();
+					if (getContext() != null) {
+						Dialog licenseDialog = ApolloUtils.createOpenSourceDialog(getContext());
+						if (!licenseDialog.isShowing())
+							licenseDialog.show();
+					}
 					return true;
 
 				case DEL_CACHE:
-					if (cacheClearDialog != null && !cacheClearDialog.isShowing())
-						cacheClearDialog.show();
+					if (getContext() != null) {
+						Dialog cacheClearDialog = ApolloUtils.createCacheClearDialog(getContext());
+						if (!cacheClearDialog.isShowing())
+							cacheClearDialog.show();
+					}
 					return true;
 
 				case COLOR_SEL:
-					if (colorPicker != null && !colorPicker.isShowing())
-						colorPicker.show();
+					if (getActivity() != null) {
+						Dialog colorPicker = ApolloUtils.showColorPicker(getActivity());
+						if (!colorPicker.isShowing())
+							colorPicker.show();
+					}
 					return true;
 
 				case THEME_SEL:

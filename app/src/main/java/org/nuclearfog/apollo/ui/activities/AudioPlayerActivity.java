@@ -165,8 +165,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 	private FragmentViewModel viewModel;
 
-	private boolean intentHandled = false;
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -214,9 +212,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		if (actionBar != null) {
 			mResources.themeActionBar(actionBar, R.string.app_name);
 			actionBar.setDisplayHomeAsUpEnabled(true);
-		}
-		if (savedInstanceState != null) {
-			intentHandled = true;
 		}
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// View pager
@@ -647,10 +642,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * and starts playback if that's the case
 	 */
 	private void startPlayback(@Nullable Intent intent) {
-		if (intent != null && !intentHandled) {
-			intentHandled = true;
+		if (intent != null) {
 			Uri uri = intent.getData();
 			String mimeType = intent.getType();
+			setIntent(new Intent());
 			// open file
 			if (uri != null && !uri.toString().trim().isEmpty()) {
 				MusicUtils.playFile(this, uri);
@@ -783,6 +778,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private static final class TimeHandler implements Runnable {
 
+		/**
+		 * time to refresh seekbar/position
+		 */
 		public static final int CYCLE_MS = 500;
 
 		private WeakReference<AudioPlayerActivity> mAudioPlayer;

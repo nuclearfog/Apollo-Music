@@ -84,8 +84,10 @@
 		<!-- Main activity -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.HomeActivity"
-			android:windowSoftInputMode="adjustPan"
 			android:exported="true"
+			android:launchMode="singleTask"
+			android:clearTaskOnLaunch="false"
+			android:windowSoftInputMode="adjustPan"
 			android:configChanges="orientation|keyboardHidden">
 
 			<intent-filter>
@@ -101,9 +103,9 @@
 		<!-- Now playing -->
 		<activity
 			android:name="org.nuclearfog.apollo.ui.activities.AudioPlayerActivity"
-			android:clearTaskOnLaunch="true"
 			android:exported="true"
 			android:launchMode="singleTask"
+			android:clearTaskOnLaunch="false"
 			android:windowSoftInputMode="adjustPan"
 			android:configChanges="orientation|keyboardHidden">
 

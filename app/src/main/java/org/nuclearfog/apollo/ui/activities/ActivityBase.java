@@ -190,19 +190,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		ContextCompat.registerReceiver(this, mPlaybackStatus, filter, ContextCompat.RECEIVER_EXPORTED);
 		MusicUtils.notifyForegroundStateChanged(this, true);
 		if (MusicUtils.isConnected(this)) {
+			// update playback control after resuming
 			updatePlaybackControls();
+			updateBottomActionBarInfo();
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onPostResume() {
-		super.onPostResume();
-		// update playback control after resuming
-		updatePlaybackControls();
-		updateBottomActionBarInfo();
 	}
 
 	/**

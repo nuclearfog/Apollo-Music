@@ -196,12 +196,12 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			if (force) {
-				xfadeMode = NONE;
-				isPlaying = false;
-				setCrossfadeTask(false);
 				if (player.isPlaying()) {
 					player.pause();
 				}
+				setCrossfadeTask(false);
+				xfadeMode = NONE;
+				isPlaying = false;
 			} else if (xfadeMode == NONE) {
 				xfadeMode = FADE_OUT;
 			}
@@ -217,11 +217,11 @@ public class MultiPlayer {
 	 * stops playback
 	 */
 	public void stop() {
-		xfadeMode = NONE;
-		isPlaying = false;
-		setCrossfadeTask(false);
 		try {
 			mPlayers[currentPlayer].stop();
+			setCrossfadeTask(false);
+			xfadeMode = NONE;
+			isPlaying = false;
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to stop player");
 			initialized = false;

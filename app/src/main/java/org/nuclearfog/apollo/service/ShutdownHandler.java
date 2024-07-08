@@ -10,9 +10,9 @@ import android.os.Handler;
 public class ShutdownHandler extends Handler implements Runnable {
 
 	/**
-	 * Idle time before stopping the foreground notfication (1 minute)
+	 * Idle time before stopping the foreground notfication
 	 */
-	private static final int IDLE_DELAY = 60000;
+	private static final int IDLE_DELAY = 30000;
 
 	private MusicPlaybackService service;
 

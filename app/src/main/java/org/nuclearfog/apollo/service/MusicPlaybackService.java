@@ -1553,7 +1553,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			}
 			if (mPlayer.initialized()) {
 				long seekpos = settings.getSeekPosition();
-				seekTo(seekpos >= 0 && seekpos < mPlayer.getDuration() ? seekpos : 0);
+				seekTo(seekpos >= 0 && seekpos <= mPlayer.getDuration() ? seekpos : 0);
 			}
 			//
 			mRepeatMode = settings.getRepeatMode();

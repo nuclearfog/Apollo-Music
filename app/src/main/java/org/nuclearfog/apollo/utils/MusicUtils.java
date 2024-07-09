@@ -760,7 +760,7 @@ public final class MusicUtils {
 				List<Long> ids = new LinkedList<>();
 				int idxName = folder.length() + 1;
 				do {
-					String filename = cursor.getString(5);
+					String filename = cursor.getString(7);
 					// filter sub folders from results
 					if (filename.indexOf('/', idxName) < 0) {
 						ids.add(cursor.getLong(0));

@@ -37,7 +37,7 @@ public class FolderSongLoader extends AsyncExecutor<String, List<Song>> {
 					if (cursor.moveToFirst()) {
 						int idxName = param.length() + 1;
 						do {
-							String filename = cursor.getString(5);
+							String filename = cursor.getString(7);
 							// fetch only music files from the current folder
 							// sub folders will be skipped
 							if (filename.indexOf('/', idxName) < 0) {

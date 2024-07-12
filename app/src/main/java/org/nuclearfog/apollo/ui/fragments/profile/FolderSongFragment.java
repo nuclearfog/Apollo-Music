@@ -12,6 +12,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.FolderSongLoader;
@@ -64,7 +65,7 @@ public class FolderSongFragment extends ProfileFragment implements AsyncCallback
 		setHasOptionsMenu(true);
 		// init loader
 		if (param != null) {
-			foldername = param.getString("folder_path", "");
+			foldername = param.getString(Config.FOLDER, "");
 			mLoader.execute(foldername, this);
 		}
 	}

@@ -19,7 +19,7 @@ public class Folder extends Music implements Comparable<Folder> {
 		super(0L, "", visible);
 		int end = path.lastIndexOf("/");
 		if (end > 1) {
-			this.path = path.substring(0, end);
+			this.path = path.substring(0, end + 1);
 			int start = path.lastIndexOf("/", end - 1);
 			if (start >= 0) {
 				name = path.substring(start + 1, end);

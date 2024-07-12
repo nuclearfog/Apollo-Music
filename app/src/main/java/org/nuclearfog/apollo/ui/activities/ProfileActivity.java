@@ -709,7 +709,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	/**
 	 * Searches Google for the artist or album
 	 */
-	public void googleSearch() {
+	public void searchWeb() {
 		String query;
 		if (type == Type.ARTIST) {
 			query = mArtistName;
@@ -718,10 +718,10 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		} else {
 			query = mProfileName;
 		}
-		Intent googleSearch = new Intent(Intent.ACTION_WEB_SEARCH);
-		googleSearch.putExtra(SearchManager.QUERY, query);
+		Intent webSearch = new Intent(Intent.ACTION_WEB_SEARCH);
+		webSearch.putExtra(SearchManager.QUERY, query);
 		try {
-			startActivity(googleSearch);
+			startActivity(webSearch);
 		} catch (ActivityNotFoundException e) {
 			if (BuildConfig.DEBUG) {
 				e.printStackTrace();

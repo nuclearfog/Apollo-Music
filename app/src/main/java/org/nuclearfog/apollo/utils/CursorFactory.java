@@ -415,8 +415,9 @@ public final class CursorFactory {
 	public static Cursor makeFolderSongCursor(Context context, String folderName) {
 		ContentResolver contentResolver = context.getContentResolver();
 
-		String[] args = {folderName + "%"};// todo filter subfolders from results, return only tracks from current folder
-		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, FOLDER_TRACKS_ORDER);
+		String[] args = {folderName + "%"};
+		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
+		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, sortOrder);
 	}
 
 	/**

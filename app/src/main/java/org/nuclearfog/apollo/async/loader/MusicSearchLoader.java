@@ -71,7 +71,7 @@ public class MusicSearchLoader extends AsyncExecutor<String, List<Music>> {
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
 						do {
-							String mime = cursor.getString(6);
+							String mime = cursor.getString(8);
 							if (mime.startsWith("audio/") || mime.equals("application/ogg")
 									|| mime.equals("application/x-ogg")) {
 								long id = cursor.getLong(0);

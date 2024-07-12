@@ -132,7 +132,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				activity.fetchAlbumArt();
 				break;
 			case IDX_SEARCH:
-				activity.googleSearch();
+				activity.searchWeb();
 				break;
 		}
 	}

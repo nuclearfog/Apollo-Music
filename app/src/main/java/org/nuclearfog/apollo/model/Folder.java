@@ -38,9 +38,9 @@ public class Folder extends Music implements Comparable<Folder> {
 
 	@Override
 	public int compareTo(Folder folder) {
-		if (folder.getName().equals(getName()))
-			return folder.getPath().compareToIgnoreCase(getPath());
-		return folder.getName().compareToIgnoreCase(getName());
+		if (getName().equals(folder.getName()))
+			return getPath().compareToIgnoreCase(folder.getPath());
+		return getName().compareToIgnoreCase(folder.getName());
 	}
 
 	/**

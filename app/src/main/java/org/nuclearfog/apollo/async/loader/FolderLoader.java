@@ -11,6 +11,7 @@ import org.nuclearfog.apollo.store.ExcludeStore.Type;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,16 +47,13 @@ public class FolderLoader extends AsyncExecutor<Void, List<Folder>> {
 				if (cursor != null) {
 					if (cursor.moveToFirst()) {
 						do {
-							String path = cursor.getString(0);
+							String song = cursor.getString(0);
 							long songId = cursor.getLong(1);
 							boolean visible = !excludedIds.contains(songId);
-							Folder folder = new Folder(path, visible);
-
-							Folder entry = folderMap.get(folder.getName());
-							if (entry != null && entry.isVisible() && !folder.isVisible()) {
-								folderMap.remove(folder.getName());
+							Folder folder = new Folder(song, visible);
+							if (visible || !folderMap.containsKey(folder.getName())) {
+								folderMap.put(folder.getPath(), folder);
 							}
-							folderMap.put(folder.getName(), folder);
 						} while (cursor.moveToNext());
 					}
 					cursor.close();
@@ -64,6 +62,8 @@ public class FolderLoader extends AsyncExecutor<Void, List<Folder>> {
 				Log.e(TAG, "error loading music folder", exception);
 			}
 		}
-		return new ArrayList<>(folderMap.values());
+		List<Folder> result = new ArrayList<>(folderMap.values());
+		Collections.sort(result);
+		return result;
 	}
 }

@@ -153,7 +153,7 @@
 	<string name="context_menu_unhide_track">zeige Track</string>
 	<string name="context_menu_unhide_genre">zeige Genre</string>
 	<string name="context_menu_unhide_artist">zeige Künstler</string>
-	<string name="context_menu_unhide_folder">zeige folder</string>
+	<string name="context_menu_unhide_folder">zeige Ordner</string>
 	<string name="menu_show_hidden">zeige versteckte Tracks</string>
 	<string name="dialog_disable_bat_opt_title">Deaktiviere Akku-Optimierungen</string>
 	<string name="dialog_disable_bat_opt_message">Um eine reibungslose Wiedergabe zu gewährleisten, sollte die Akku-Optimierung deaktiviert werden</string>

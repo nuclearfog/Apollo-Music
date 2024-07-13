@@ -1200,7 +1200,9 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (fileCursor != null) {
 				if (fileCursor.moveToFirst()) {
 					// find track by file path
-					int idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
+					int idxName = fileCursor.getColumnIndex(FileColumns.DATA);
+					if (idxName < 0)
+						idxName = fileCursor.getColumnIndex(FileColumns.DOCUMENT_ID);
 					// if not found, find track by file name (less precise)
 					if (idxName < 0)
 						idxName = fileCursor.getColumnIndex(FileColumns.DISPLAY_NAME);

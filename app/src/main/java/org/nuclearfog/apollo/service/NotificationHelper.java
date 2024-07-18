@@ -83,8 +83,6 @@ class NotificationHelper {
 	 */
 	private NotificationCompat.Builder notificationBuilder;
 
-	private PreferenceUtils mPreferences;
-
 	/**
 	 * notification views
 	 */
@@ -95,14 +93,17 @@ class NotificationHelper {
 	 */
 	private PendingIntent callbackPlayPause, callbackNext, callbackPrevious, callbackStop;
 
+	private boolean legacyLayout;
+
 	/**
-	 * Constructor of <code>NotificationHelper</code>
-	 *
-	 * @param service callback to the service
+	 * @param service  callback to the service
+	 * @param mSession media session of the current playback
 	 */
 	NotificationHelper(MusicPlaybackService service, MediaSessionCompat mSession) {
 		mService = service;
-		mPreferences = PreferenceUtils.getInstance(service.getApplicationContext());
+		PreferenceUtils mPreferences = PreferenceUtils.getInstance(service);
+		legacyLayout = mPreferences.oldNotificationLayoutEnabled();
+
 		// init notification manager & channel
 		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
 				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
@@ -129,7 +130,7 @@ class NotificationHelper {
 				.setWhen(System.currentTimeMillis());
 
 		// use embedded media control notification of Android
-		if (!mPreferences.oldNotificationLayoutEnabled()) {
+		if (!legacyLayout) {
 			MediaStyle mediaStyle = new MediaStyle();
 			mediaStyle.setMediaSession(mSession.getSessionToken());
 			notificationBuilder.setStyle(mediaStyle);
@@ -188,7 +189,7 @@ class NotificationHelper {
 		if (album != null && song != null) {
 			Bitmap albumArt = BitmapUtils.getAlbumArt(mService, album);
 			// build integrated media control
-			if (!mPreferences.oldNotificationLayoutEnabled()) {
+			if (!legacyLayout) {
 				// set track information to notification directly
 				notificationBuilder.setContentTitle(song.getName());
 				notificationBuilder.setContentText(song.getArtist());

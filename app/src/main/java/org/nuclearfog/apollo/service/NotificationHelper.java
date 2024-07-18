@@ -17,7 +17,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -105,7 +104,7 @@ class NotificationHelper {
 		mService = service;
 		mPreferences = PreferenceUtils.getInstance(service.getApplicationContext());
 		// init notification manager & channel
-		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
+		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
 				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
 		notificationManager = NotificationManagerCompat.from(service);
 		notificationManager.createNotificationChannel(notificationChannel);
@@ -115,23 +114,22 @@ class NotificationHelper {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		// initialize callbacks
-		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
-		callbackPlayPause = PendingIntent.getService(mService, 1, new Intent(MusicPlaybackService.ACTION_TOGGLEPAUSE).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
-		callbackNext = PendingIntent.getService(mService, 2, new Intent(MusicPlaybackService.ACTION_NEXT).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
-		callbackPrevious = PendingIntent.getService(mService, 3, new Intent(MusicPlaybackService.ACTION_PREVIOUS).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
-		callbackStop = PendingIntent.getService(mService, 4, new Intent(MusicPlaybackService.ACTION_STOP).setComponent(serviceName), PendingIntent.FLAG_MUTABLE);
+		callbackPlayPause = createIntent(MusicPlaybackService.ACTION_TOGGLEPAUSE);
+		callbackNext =  createIntent(MusicPlaybackService.ACTION_NEXT);
+		callbackPrevious =  createIntent(MusicPlaybackService.ACTION_PREVIOUS);
+		callbackStop =  createIntent(MusicPlaybackService.ACTION_STOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
 		// create notification builder
 		notificationBuilder = new NotificationCompat.Builder(mService, NOTIFICAITON_CHANNEL_ID)
 				.setSmallIcon(R.drawable.stat_notify_music)
 				.setContentIntent(contentIntent)
-				.setDefaults(NotificationCompat.DEFAULT_ALL)
-				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC).
-				setWhen(System.currentTimeMillis());
+				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+				.setWhen(System.currentTimeMillis());
 
 		// use embedded media control notification of Android
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
+		if (!mPreferences.oldNotificationLayoutEnabled()) {
 			MediaStyle mediaStyle = new MediaStyle();
 			mediaStyle.setMediaSession(mSession.getSessionToken());
 			notificationBuilder.setStyle(mediaStyle);
@@ -151,7 +149,7 @@ class NotificationHelper {
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbackStop);
 			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent)
-					.setPriority(NotificationCompat.PRIORITY_LOW).setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
+					.setPriority(NotificationCompat.PRIORITY_DEFAULT).setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
 		}
 	}
 
@@ -190,7 +188,7 @@ class NotificationHelper {
 		if (album != null && song != null) {
 			Bitmap albumArt = BitmapUtils.getAlbumArt(mService, album);
 			// build integrated media control
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPreferences.oldNotificationLayoutEnabled()) {
+			if (!mPreferences.oldNotificationLayoutEnabled()) {
 				// set track information to notification directly
 				notificationBuilder.setContentTitle(song.getName());
 				notificationBuilder.setContentText(song.getArtist());
@@ -242,5 +240,16 @@ class NotificationHelper {
 		} catch (SecurityException exception) {
 			Log.e(TAG, "error while updating notification");
 		}
+	}
+
+	/**
+	 * create playbackservice intent
+	 *
+	 * @param action action send to playback service
+	 */
+	private PendingIntent createIntent(String action) {
+		ComponentName serviceName = new ComponentName(mService, MusicPlaybackService.class);
+		Intent intent = new Intent(action).setComponent(serviceName);
+		return PendingIntent.getService(mService, 0, intent, PendingIntent.FLAG_MUTABLE);
 	}
 }

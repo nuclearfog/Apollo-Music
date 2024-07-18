@@ -89,7 +89,7 @@ public final class PreferenceUtils {
 	private static final String ID_CARD = "cardid";
 	private static final String PACKAGE_INDEX = "theme_index";
 	private static final String BAT_OPTIMIZATION = "ignore_bat_opt";
-	private static final String NOTIFICATION_LAYOUT = "prefer_old_notification_layout";
+	private static final String NOTIFICATION_LAYOUT = "old_notification_layout";
 	private static final String LASTFM_API_KEY = "api_key";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
 

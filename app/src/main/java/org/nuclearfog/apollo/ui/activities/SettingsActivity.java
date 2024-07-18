@@ -80,24 +80,15 @@ public class SettingsActivity extends AppCompatActivity {
 	public static class AppPreference extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 
 		private static final String LICENSE = "open_source";
-
 		private static final String DEL_CACHE = "delete_cache";
-
 		private static final String THEME_SEL = "theme_chooser";
-
 		private static final String COLOR_SEL = "color_scheme";
-
 		private static final String VERSION = "version";
-
 		private static final String BAT_OPT = "disable_battery_opt";
-
-		private static final String OLD_NOTIFICATION = "old_notification_layout";
-
 		private static final String DOWNLOAD_IMAGES = "download_missing_artist_images";
-
 		private static final String DOWNLOAD_ARTWORK = "download_missing_artwork";
-
 		private static final String DOWNLOAD_WIFI = "only_on_wifi";
+
 
 		@Nullable
 		private CheckBoxPreference downloadImages;
@@ -115,7 +106,6 @@ public class SettingsActivity extends AppCompatActivity {
 			Preference themeChooser = findPreference(THEME_SEL);
 			Preference colorScheme = findPreference(COLOR_SEL);
 			Preference batteryOpt = findPreference(BAT_OPT);
-			Preference oldNotification = findPreference(OLD_NOTIFICATION);
 			downloadImages = findPreference(DOWNLOAD_IMAGES);
 			downloadArtwork = findPreference(DOWNLOAD_ARTWORK);
 			downloadWifi = findPreference(DOWNLOAD_WIFI);
@@ -144,9 +134,6 @@ public class SettingsActivity extends AppCompatActivity {
 				} else {
 					batteryOpt.setOnPreferenceClickListener(this);
 				}
-			}
-			if (oldNotification != null) {
-				oldNotification.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q);
 			}
 		}
 

@@ -823,10 +823,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			else if (shufflemode == SHUFFLE_NORMAL) {
 				if (makeShuffleList(false)) {
 					mShuffleMode = SHUFFLE_NORMAL;
-					mPlayPos = 0;
 					mShufflePos = 0;
-					openCurrentAndNext();
-					play();
+					setNextTrack(false);
 				}
 			}
 			// reset shuffle mode
@@ -1444,6 +1442,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Creates a shuffled playlist used for party mode
 	 *
 	 * @param partyShuffle true to create a party shuffle list with all available tracks
+	 *                     false to shuffle current queue
 	 */
 	private boolean makeShuffleList(boolean partyShuffle) {
 		try {

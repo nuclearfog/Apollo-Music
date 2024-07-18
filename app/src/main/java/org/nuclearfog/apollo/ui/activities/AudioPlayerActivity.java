@@ -278,6 +278,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		if (MusicUtils.isConnected(this)) {
 			updatePlaybackControls();
 			updateNowPlayingInfo();
+			refreshQueue();
 			updateTime();
 		}
 	}

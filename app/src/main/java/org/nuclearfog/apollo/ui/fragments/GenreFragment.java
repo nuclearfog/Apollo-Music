@@ -37,7 +37,9 @@ import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.GenreLoader;
+import org.nuclearfog.apollo.async.loader.GenreSongLoader;
 import org.nuclearfog.apollo.model.Genre;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -72,6 +74,9 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 *
 	 */
 	public static final String REFRESH = TAG + ".REFRESH";
+
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 
 	/**
 	 * The adapter for the list
@@ -175,13 +180,15 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		if (item.getGroupId() == GROUP_ID && selection != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					long[] selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
-					MusicUtils.playAll(requireActivity(), selectedGenreSongs, 0, false);
+					String genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
+					GenreSongLoader loader = new GenreSongLoader(requireContext());
+					loader.execute(genreIds, onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					selectedGenreSongs = MusicUtils.getSongListForGenres(requireContext(), selection.getGenreIds());
-					MusicUtils.addToQueue(requireActivity(), selectedGenreSongs);
+					genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
+					loader = new GenreSongLoader(requireContext());
+					loader.execute(genreIds, onAddToQueue);
 					return true;
 
 				case ContextMenuItems.HIDE_GENRE:
@@ -238,5 +245,22 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 				mLoader.execute(null, this);
 				break;
 		}
+	}
+
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(requireActivity(), ids);
 	}
 }

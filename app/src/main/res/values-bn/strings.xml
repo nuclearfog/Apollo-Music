@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">গানের সংখ্যা</string>
 	<string name="sort_order_entry_number_of_albums">অ্যালবামের সংখ্যা</string>
 	<string name="sort_order_entry_filename">ফাইলের নাম</string>
-	<string name="playlist_favorite">প্রিয়</string>
 	<string name="playlist_favorites">পছন্দসমূহ</string>
 	<string name="playlist_last_added">সর্বশেষ যোগ</string>
 	<string name="new_playlist">নতুন প্লে-তালিকা</string>

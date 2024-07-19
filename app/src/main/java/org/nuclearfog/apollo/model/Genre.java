@@ -23,6 +23,8 @@ import java.util.Arrays;
  */
 public class Genre extends Music implements Comparable<Genre> {
 
+	private static final long serialVersionUID = 4073965515512657827L;
+
 	/**
 	 * IDs of a genre
 	 */

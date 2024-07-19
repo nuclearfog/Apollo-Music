@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">ගීත ගණන</string>
 	<string name="sort_order_entry_number_of_albums">ඇල්බම ගණන</string>
 	<string name="sort_order_entry_filename">ගොනුවේ නම</string>
-	<string name="playlist_favorite">ප්‍රියතමය</string>
 	<string name="playlist_favorites">ප්‍රියතමයන්</string>
 	<string name="playlist_last_added">අන්තිමට එක් කල</string>
 	<string name="new_playlist">අලුත් වාදනලැයිස්තුවක්</string>

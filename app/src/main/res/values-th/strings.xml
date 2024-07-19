@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">หมายเลขเพลง</string>
 	<string name="sort_order_entry_number_of_albums">หมายเลขอัลบั้ม</string>
 	<string name="sort_order_entry_filename">ชื่อไฟล์</string>
-	<string name="playlist_favorite">รายการโปรด</string>
 	<string name="playlist_favorites">รายการโปรด</string>
 	<string name="playlist_last_added">เพิ่มครั้งล่าสุด</string>
 	<string name="new_playlist">รายการเพลงใหม่</string>

@@ -108,6 +108,7 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 		playlistName = new EditText(requireContext());
 		playlistName.setLines(1);
 		playlistName.setBackgroundColor(0);
+		playlistName.setInputType(InputType.TYPE_CLASS_TEXT);
 		playlistName.setHint(R.string.create_playlist_prompt);
 		int padding = getResources().getDimensionPixelSize(R.dimen.list_preferred_item_padding);
 		playlistName.setPadding(padding, padding, padding, padding);

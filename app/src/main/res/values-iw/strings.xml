@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">מספר שירים</string>
 	<string name="sort_order_entry_number_of_albums">מספר האלבומים</string>
 	<string name="sort_order_entry_filename">שם קובץ</string>
-	<string name="playlist_favorite">מועדף</string>
 	<string name="playlist_favorites">מועדפים</string>
 	<string name="playlist_last_added">הוספו לאחרונה</string>
 	<string name="new_playlist">רשימת השמעה חדשה</string>

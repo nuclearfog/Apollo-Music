@@ -36,8 +36,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.async.loader.RecentLoader;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -86,6 +88,12 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	 */
 	private static final int ONE = 1, TWO = 2, FOUR = 4;
 
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
+	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
+	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
+	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+
 	/**
 	 * The adapter for the grid
 	 */
@@ -113,6 +121,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	 */
 	@Nullable
 	private Album selectedAlbum = null;
+	private long selectedPlaylistId = -1;
 
 	/**
 	 * {@inheritDoc}
@@ -210,19 +219,18 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					// Create a list of the album's songs
-					long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-					MusicUtils.playAll(requireActivity(), mAlbumList, 0, false);
+					AlbumSongLoader loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-					MusicUtils.addToQueue(requireActivity(), mAlbumList);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, mAlbumList, null);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onAddToNewPlaylist);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -230,11 +238,9 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", -1L);
-					if (id != -1L) {
-						mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-						MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
-					}
+					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.REMOVE_FROM_RECENT:
@@ -243,8 +249,8 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 					return true;
 
 				case ContextMenuItems.DELETE:
-					mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
-					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onSongsDelete);
 					return true;
 			}
 		}
@@ -363,5 +369,41 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 		}
 		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(requireActivity(), ids);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToNewPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
+	}
+
+
+	private void onAddToExistingPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToPlaylist(requireActivity(), ids, selectedPlaylistId);
+	}
+
+	private void onSongsDelete(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
+		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
 	}
 }

@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Abesti kopurua</string>
 	<string name="sort_order_entry_number_of_albums">Album kopurua</string>
 	<string name="sort_order_entry_filename">Fitxategi izena</string>
-	<string name="playlist_favorite">Gogokoa</string>
 	<string name="playlist_favorites">Gogokoak</string>
 	<string name="playlist_last_added">Berriki gehituak</string>
 	<string name="new_playlist">Erreprodukzio-zerrenda berria</string>

@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Број песама</string>
 	<string name="sort_order_entry_number_of_albums">Број албума</string>
 	<string name="sort_order_entry_filename">Име фајла</string>
-	<string name="playlist_favorite">Омиљена</string>
 	<string name="playlist_favorites">Омиљене</string>
 	<string name="playlist_last_added">Последње додате</string>
 	<string name="new_playlist">Нова плејлиста</string>

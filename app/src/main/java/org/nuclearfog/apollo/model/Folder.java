@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
  */
 public class Folder extends Music implements Comparable<Folder> {
 
+	private static final long serialVersionUID = 4294127962238183176L;
+
 	private String name = "";
 	private String path = "";
 

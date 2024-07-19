@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Dainų skaičių</string>
 	<string name="sort_order_entry_number_of_albums">Albumų skaičių</string>
 	<string name="sort_order_entry_filename">Failo pavadinimą</string>
-	<string name="playlist_favorite">Mėgstamas</string>
 	<string name="playlist_favorites">Mėgstami</string>
 	<string name="playlist_last_added">Neseniai pridėta</string>
 	<string name="new_playlist">Naujas grojaraštis</string>

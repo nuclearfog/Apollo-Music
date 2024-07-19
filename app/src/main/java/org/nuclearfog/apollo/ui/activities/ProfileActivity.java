@@ -347,6 +347,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			// screen. Definitely one of my favorite features.
 			if (type == Type.ARTIST) {
 				ApolloUtils.createShortcutIntent(mArtistName, mArtistName, mType, this, ids);
+			} else if (type == Type.FOLDER) {
+				ApolloUtils.createShortcutIntent(folderPath, mArtistName, mType, this, ids);
 			} else {
 				ApolloUtils.createShortcutIntent(mProfileName, mArtistName, mType, this, ids);
 			}

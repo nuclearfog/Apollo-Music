@@ -37,7 +37,9 @@ import androidx.lifecycle.ViewModelProvider;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumLoader;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
@@ -84,6 +86,12 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 */
 	private static final int ONE = 1, TWO = 2, FOUR = 4;
 
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
+	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
+	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
+	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+
 	/**
 	 * app settings
 	 */
@@ -109,6 +117,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	 */
 	@Nullable
 	private Album selectedAlbum = null;
+	private long selectedPlaylistId = -1;
 
 	private AlbumLoader mLoader;
 
@@ -202,18 +211,20 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		// Avoid leaking context menu selections
 		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
-			long[] mAlbumList = MusicUtils.getSongListForAlbum(requireContext(), selectedAlbum.getId());
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					MusicUtils.playAll(requireActivity(), mAlbumList, 0, false);
+					AlbumSongLoader loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					MusicUtils.addToQueue(requireActivity(), mAlbumList);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, mAlbumList, null);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onAddToNewPlaylist);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -221,12 +232,14 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long id = item.getIntent().getLongExtra("playlist", -1L);
-					MusicUtils.addToPlaylist(requireActivity(), mAlbumList, id);
+					loader = new AlbumSongLoader(requireContext());
+					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					loader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.DELETE:
-					MusicUtils.openDeleteDialog(requireActivity(), selectedAlbum.getName(), mAlbumList);
+					loader = new AlbumSongLoader(requireContext());
+					loader.execute(selectedAlbum.getId(), onSongsDelete);
 					return true;
 
 				case ContextMenuItems.HIDE_ALBUM:
@@ -259,8 +272,8 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
-			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(requireActivity(), list, 0, false);
+			AlbumSongLoader loader = new AlbumSongLoader(requireContext());
+			loader.execute(id, onPlaySongs);
 		} else {
 			Album selectedAlbum = mAdapter.getItem(position);
 			if (selectedAlbum != null) {
@@ -357,5 +370,41 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		}
 		// set adapter and empty view for the list
 		mList.setAdapter(mAdapter);
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(requireActivity(), ids);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToNewPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
+	}
+
+
+	private void onAddToExistingPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToPlaylist(requireActivity(), ids, selectedPlaylistId);
+	}
+
+	private void onSongsDelete(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
+		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
 	}
 }

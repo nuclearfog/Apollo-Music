@@ -57,7 +57,7 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
-import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
+import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
@@ -1394,8 +1394,8 @@ public final class MusicUtils {
 			// Use system Dialog to delete media files
 			deleteTracks(activity, ids);
 		} else {
-			DeleteDialog dialog = DeleteDialog.newInstance(title, ids, null);
-			dialog.show(activity.getSupportFragmentManager(), DeleteDialog.NAME);
+			DeleteTracksDialog dialog = DeleteTracksDialog.newInstance(title, ids, null);
+			dialog.show(activity.getSupportFragmentManager(), DeleteTracksDialog.NAME);
 		}
 	}
 
@@ -1528,6 +1528,17 @@ public final class MusicUtils {
 		} else {
 			exclude.removeIds(Type.SONG, songs);
 		}
+	}
+
+	/**
+	 * create an array of track ids from a song list
+	 */
+	public static long[] getIDsFromSongList(List<Song> songs) {
+		long[] ids = new long[songs.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = songs.get(i).getId();
+		}
+		return ids;
 	}
 
 	/**

@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Dziesmu daudzums</string>
 	<string name="sort_order_entry_number_of_albums">Albumu daudzums</string>
 	<string name="sort_order_entry_filename">Nosaukums</string>
-	<string name="playlist_favorite">Izlase</string>
 	<string name="playlist_favorites">Izlase</string>
 	<string name="playlist_last_added">Pēdējie pievienotie</string>
 	<string name="new_playlist">Jauns atskaņošanas saraksts</string>

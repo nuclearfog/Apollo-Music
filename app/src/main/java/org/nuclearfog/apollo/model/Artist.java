@@ -19,6 +19,8 @@ package org.nuclearfog.apollo.model;
  */
 public class Artist extends Music {
 
+	private static final long serialVersionUID = -5566436937675713728L;
+
 	/**
 	 * The number of albums for the artist
 	 */

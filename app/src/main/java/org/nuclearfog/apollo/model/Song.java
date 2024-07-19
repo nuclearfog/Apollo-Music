@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
  */
 public class Song extends Music implements Parcelable, Comparable<Song> {
 
+	private static final long serialVersionUID = -771576794613524452L;
 
 	public static final Creator<? extends Song> CREATOR = new Creator<Song>() {
 
@@ -44,6 +45,7 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 			return new Song[size];
 		}
 	};
+
 	/**
 	 * The song artist
 	 */

@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Кількість пісень</string>
 	<string name="sort_order_entry_number_of_albums">Кількість альбомів</string>
 	<string name="sort_order_entry_filename">Імені файлу</string>
-	<string name="playlist_favorite">Вибране</string>
 	<string name="playlist_favorites">Улюблені</string>
 	<string name="playlist_last_added">Востаннє додано</string>
 	<string name="new_playlist">Новий</string>

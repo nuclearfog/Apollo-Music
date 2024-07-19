@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Số của bài hát</string>
 	<string name="sort_order_entry_number_of_albums">Số của album</string>
 	<string name="sort_order_entry_filename">Tên tập tin</string>
-	<string name="playlist_favorite">Yêu thích</string>
 	<string name="playlist_favorites">Yêu thích</string>
 	<string name="playlist_last_added">Vừa thêm</string>
 	<string name="new_playlist">Danh sách mới</string>

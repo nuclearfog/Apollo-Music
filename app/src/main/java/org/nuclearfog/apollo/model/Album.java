@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
  */
 public class Album extends Music implements Parcelable {
 
+	private static final long serialVersionUID = 4612921914269834447L;
 
 	public static final Creator<? extends Album> CREATOR = new Creator<Album>() {
 

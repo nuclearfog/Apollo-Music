@@ -19,6 +19,8 @@ package org.nuclearfog.apollo.model;
  */
 public class Playlist extends Music {
 
+	private static final long serialVersionUID = -7247188259770481366L;
+
 	/**
 	 * unique ID to define this playlist as favorite list
 	 */

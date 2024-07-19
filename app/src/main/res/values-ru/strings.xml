@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Количеству треков</string>
 	<string name="sort_order_entry_number_of_albums">Количеству альбомов</string>
 	<string name="sort_order_entry_filename">Имени файла</string>
-	<string name="playlist_favorite">Избранное</string>
 	<string name="playlist_favorites">Избранное</string>
 	<string name="playlist_last_added">Недавно добавленные</string>
 	<string name="new_playlist">Новый плейлист</string>

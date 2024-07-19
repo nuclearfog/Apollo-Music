@@ -47,7 +47,6 @@
 	<string name="sort_order_entry_number_of_songs">Mahnı sayı</string>
 	<string name="sort_order_entry_number_of_albums">Albom sayı</string>
 	<string name="sort_order_entry_filename">Fayl adı</string>
-	<string name="playlist_favorite">Seçilmiş</string>
 	<string name="playlist_favorites">Seçilmişlər</string>
 	<string name="playlist_last_added">Ən son əlavə olunan</string>
 	<string name="save">Saxla</string>

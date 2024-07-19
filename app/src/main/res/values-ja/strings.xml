@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">曲数</string>
 	<string name="sort_order_entry_number_of_albums">アルバム数</string>
 	<string name="sort_order_entry_filename">ファイル名</string>
-	<string name="playlist_favorite">お気に入り</string>
 	<string name="playlist_favorites">お気に入り</string>
 	<string name="playlist_last_added">最近追加した曲</string>
 	<string name="new_playlist">新しいプレイリスト</string>

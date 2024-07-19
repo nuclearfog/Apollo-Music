@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Numărul de melodii</string>
 	<string name="sort_order_entry_number_of_albums">Numărul de albume</string>
 	<string name="sort_order_entry_filename">Nume fișier</string>
-	<string name="playlist_favorite">Favorit</string>
 	<string name="playlist_favorites">Favorite</string>
 	<string name="playlist_last_added">Ultimele adăugate</string>
 	<string name="new_playlist">Playlist nou</string>

@@ -32,7 +32,7 @@ import org.nuclearfog.apollo.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class DeleteDialog extends DialogFragment implements OnClickListener {
+public class DeleteTracksDialog extends DialogFragment implements OnClickListener {
 
 	public static final String NAME = "DeleteDialog";
 
@@ -57,7 +57,7 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	/**
 	 *
 	 */
-	public DeleteDialog() {
+	public DeleteTracksDialog() {
 	}
 
 	/**
@@ -66,8 +66,8 @@ public class DeleteDialog extends DialogFragment implements OnClickListener {
 	 * @param key   The key used to remove items from the cache.
 	 * @return A new instance of the dialog
 	 */
-	public static DeleteDialog newInstance(String title, long[] items, String key) {
-		DeleteDialog dialog = new DeleteDialog();
+	public static DeleteTracksDialog newInstance(String title, long[] items, String key) {
+		DeleteTracksDialog dialog = new DeleteTracksDialog();
 		Bundle args = new Bundle();
 		args.putString(KEY_TITLE, title);
 		args.putString(KEY_IMAGEKEY, key);

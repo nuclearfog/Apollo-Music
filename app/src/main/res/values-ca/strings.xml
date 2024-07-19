@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Nombre de cançons</string>
 	<string name="sort_order_entry_number_of_albums">Nombre d\'àlbums</string>
 	<string name="sort_order_entry_filename">Nom del fitxer</string>
-	<string name="playlist_favorite">Preferit</string>
 	<string name="playlist_favorites">Preferits</string>
 	<string name="playlist_last_added">Darrer afegit</string>
 	<string name="new_playlist">Nova llista de reproducció</string>

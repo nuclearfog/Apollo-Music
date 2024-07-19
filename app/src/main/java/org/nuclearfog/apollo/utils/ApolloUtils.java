@@ -53,7 +53,7 @@ import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
 import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
-import org.nuclearfog.apollo.ui.dialogs.DeleteDialog;
+import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.ui.views.ColorPickerView;
 
 import java.io.File;
@@ -410,7 +410,7 @@ public final class ApolloUtils {
 			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
 				BatteryOptDialog dialog = BatteryOptDialog.newInstance();
-				dialog.show(activity.getSupportFragmentManager(), DeleteDialog.NAME);
+				dialog.show(activity.getSupportFragmentManager(), DeleteTracksDialog.NAME);
 			}
 		}
 	}

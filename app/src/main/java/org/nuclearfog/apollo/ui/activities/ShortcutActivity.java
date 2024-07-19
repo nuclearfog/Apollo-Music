@@ -16,15 +16,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.Config;
-import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
+import org.nuclearfog.apollo.async.loader.FavoritesLoader;
+import org.nuclearfog.apollo.async.loader.FolderSongLoader;
+import org.nuclearfog.apollo.async.loader.GenreSongLoader;
+import org.nuclearfog.apollo.async.loader.LastAddedLoader;
+import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongsLoader;
 import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 import org.nuclearfog.apollo.utils.StringUtils;
@@ -40,7 +45,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class ShortcutActivity extends AppCompatActivity implements ServiceBinderCallback, AsyncCallback<List<Song>> {
+public class ShortcutActivity extends AppCompatActivity implements ServiceBinderCallback {
 
 	/**
 	 * Play from search intent
@@ -60,17 +65,16 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 
 	private SearchLoader mLoader;
 	/**
-	 * The list of songs to play
-	 */
-	private long[] mList = {};
-	/**
 	 * Used to shuffle the tracks or play them in order
 	 */
 	private boolean mShouldShuffle;
+	private boolean shouldOpenAudioPlayer;
 	/**
 	 * Search query from a voice action
 	 */
 	private String mVoiceQuery;
+
+	private AsyncCallback<List<Song>> onSongsLoaded = this::onSongsLoaded;
 
 	/**
 	 * {@inheritDoc}
@@ -81,6 +85,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		// Initialize the intent
 		mIntent = getIntent();
 		mLoader = new SearchLoader(this);
+		shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
 		MusicUtils.bindToService(this, this);
 	}
@@ -121,7 +126,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 	public void onServiceConnected() {
 		// Check for a voice query
 		if (mIntent.getAction() != null && mIntent.getAction().equals(PLAY_FROM_SEARCH)) {
-			mLoader.execute(mVoiceQuery, this);
+			mLoader.execute(mVoiceQuery, onSongsLoaded);
 		} else {
 			//sHandler.post(new AsyncHandler(this));
 			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
@@ -134,129 +139,82 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					// Shuffle the artist track list
 					mShouldShuffle = true;
 					// Get the artist song list
-					mList = MusicUtils.getSongListForArtist(getApplicationContext(), id);
+					ArtistSongLoader artistSongLoader = new ArtistSongLoader(this);
+					artistSongLoader.execute(id, onSongsLoaded);
 					break;
 
 				case MediaStore.Audio.Albums.CONTENT_TYPE:
 					// Shuffle the album track list
 					mShouldShuffle = true;
 					// Get the album song list
-					mList = MusicUtils.getSongListForAlbum(getApplicationContext(), id);
+					AlbumSongLoader albumSongLoader = new AlbumSongLoader(this);
+					albumSongLoader.execute(id, onSongsLoaded);
 					break;
 
 				case MediaStore.Audio.Genres.CONTENT_TYPE:
 					// Shuffle the genre track list
 					mShouldShuffle = true;
 					// Get the genre song list
-					long[] ids = ApolloUtils.readSerializedIDs(mIntent.getStringExtra(Config.IDS));
-					mList = MusicUtils.getSongListForGenres(getApplicationContext(), ids);
+					String ids = mIntent.getStringExtra(Config.IDS);
+					GenreSongLoader genreSongLoader = new GenreSongLoader(this);
+					genreSongLoader.execute(ids, onSongsLoaded);
 					break;
 
 				case MediaStore.Audio.Playlists.CONTENT_TYPE:
 					// Don't shuffle the playlist track list
 					mShouldShuffle = false;
 					// Get the playlist song list
-					mList = MusicUtils.getSongListForPlaylist(getApplicationContext(), id);
+					PlaylistSongLoader playlistLoader = new PlaylistSongLoader(this);
+					playlistLoader.execute(id, onSongsLoaded);
 					break;
 
 				case ProfileActivity.PAGE_FAVORIT:
 					// Don't shuffle the Favorites track list
 					mShouldShuffle = false;
 					// Get the Favorites song list
-					mList = MusicUtils.getSongListForFavorites(getApplicationContext());
+					FavoritesLoader favoriteLoader = new FavoritesLoader(this);
+					favoriteLoader.execute(null, onSongsLoaded);
 					break;
 
 				case ProfileActivity.PAGE_MOST_PLAYED:
 					// Don't shuffle the popular track list
 					mShouldShuffle = false;
 					// Get the popular song list
-					mList = MusicUtils.getPopularSongList(getApplicationContext());
+					PopularSongsLoader popularLoader = new PopularSongsLoader(this);
+					popularLoader.execute(null, onSongsLoaded);
 					break;
 
 				case ProfileActivity.PAGE_FOLDERS:
 					// Don't shuffle the folders track list
 					mShouldShuffle = false;
 					// get folder path
-					String folder = "%" + mIntent.getStringExtra(Config.NAME);
+					String folder = mIntent.getStringExtra(Config.NAME);
 					// Get folder song list
-					mList = MusicUtils.getSongListForFolder(getApplicationContext(), folder);
+					FolderSongLoader folderSongLoader = new FolderSongLoader(this);
+					folderSongLoader.execute(folder, onSongsLoaded);
 					break;
 
 				case ProfileActivity.PAGE_LAST_ADDED:
 					// Don't shuffle the last added track list
 					mShouldShuffle = false;
 					// Get the Last added song list
-					mList = MusicUtils.getSongListForLastAdded(getApplicationContext());
+					LastAddedLoader lastAddedLoader = new LastAddedLoader(this);
+					lastAddedLoader.execute(null, onSongsLoaded);
 					break;
 			}
-			// Finish up
-			allDone();
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * set song ID list after loading asyncronously
+	 *
+	 * @param items list of songs
 	 */
-	@Override
-	public void onResult(@NonNull List<Song> songs) {
-		// If the user searched for a playlist or genre, this list will
-		// return empty
-		if (songs.isEmpty()) {
-			// Before running the playlist loader, try to play the
-			// "Favorites" playlist
-			if (isFavorite()) {
-				MusicUtils.playFavorites(this);
-			}
-			// Finish up
-			allDone();
-			return;
+	private void onSongsLoaded(List<Song> items) {
+		long[] mList = new long[items.size()];
+		for (int i = 0; i < mList.length; i++) {
+			mList[i] = items.get(i).getId();
 		}
-		// What's about to happen is similar to the above process. Apollo
-		// runs a
-		// series of checks to see if anything comes up. When it does, it
-		// assumes (pretty accurately) that it should begin to play that
-		// thing.
-		// The fancy search query used in {@link SearchLoader} is the key to
-		// this. It allows the user to perform very specific queries. i.e.
-		// "Listen to Ethio
-		String song = songs.get(0).getName();
-		String album = songs.get(0).getAlbum();
-		String artist = songs.get(0).getArtist();
-		// This tripes as the song, album, and artist Id
-		long id = songs.get(0).getId();
-		// First, try to play a song
-		if (song != null) {
-			mList = new long[]{id};
-		} else {
-			if (album != null) {
-				// Second, try to play an album
-				mList = MusicUtils.getSongListForAlbum(this, id);
-			} else if (artist != null) {
-				// Third, try to play an artist
-				mList = MusicUtils.getSongListForArtist(this, id);
-			}
-		}
-		// Finish up
-		allDone();
-	}
-
-	/**
-	 * @return True if the user searched for the favorites playlist
-	 */
-	private boolean isFavorite() {
-		if (ProfileActivity.PAGE_FAVORIT.equals(mVoiceQuery)) {
-			return true;
-		}
-		// Check to see if the user spoke the word "Favorite"
-		String favorite = getString(R.string.playlist_favorite);
-		return favorite.equals(mVoiceQuery);
-	}
-
-	/**
-	 * Starts playback, open {@link AudioPlayerActivity} and finishes this one
-	 */
-	private void allDone() {
-		boolean shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		// Play the list
 		if (mList.length > 0) {
 			MusicUtils.playAll(this, mList, 0, mShouldShuffle);

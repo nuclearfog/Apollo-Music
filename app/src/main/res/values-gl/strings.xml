@@ -39,7 +39,6 @@
 	<string name="sort_order_entry_track_list">Lista de cancións</string>
 	<string name="sort_order_entry_number_of_songs">Número de cancións</string>
 	<string name="sort_order_entry_number_of_albums">Número de álbumes</string>
-	<string name="playlist_favorite">Favorito</string>
 	<string name="playlist_favorites">Favoritos</string>
 	<string name="save">Gardar</string>
 	<string name="cancel">Cancelar</string>

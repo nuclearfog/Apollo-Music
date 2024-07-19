@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Število skladb</string>
 	<string name="sort_order_entry_number_of_albums">Število albumov</string>
 	<string name="sort_order_entry_filename">Ime datoteke</string>
-	<string name="playlist_favorite">Priljubljeni</string>
 	<string name="playlist_favorites">Priljubljene</string>
 	<string name="playlist_last_added">Nazadnje dodano</string>
 	<string name="new_playlist">Nov seznam predvajanja</string>

@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">عدد من الأغاني</string>
 	<string name="sort_order_entry_number_of_albums">عدد الألبومات</string>
 	<string name="sort_order_entry_filename">اختر ملف</string>
-	<string name="playlist_favorite">المفضلة</string>
 	<string name="playlist_favorites">المفضلة</string>
 	<string name="playlist_last_added">أخر ما .أضاف</string>
 	<string name="new_playlist">قائمة تشغيل جديدة</string>

@@ -30,7 +30,9 @@ import androidx.lifecycle.ViewModelProvider;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.FolderLoader;
+import org.nuclearfog.apollo.async.loader.FolderSongLoader;
 import org.nuclearfog.apollo.model.Folder;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
@@ -53,6 +55,9 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	 * context menu group ID
 	 */
 	private static final int GROUP_ID = 0x1E42C9C7;
+
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 
 	/**
 	 * listview adapter for music folder view
@@ -148,13 +153,13 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		if (item.getGroupId() == GROUP_ID && selectedFolder != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_FOLDER:
-					long[] selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getPath());
-					MusicUtils.playAll(requireActivity(), selectedFolderSongs, 0, false);
+					FolderSongLoader loader = new FolderSongLoader(requireContext());
+					loader.execute(selectedFolder.getPath(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_FOLDER_QUEUE:
-					selectedFolderSongs = MusicUtils.getSongListForFolder(requireContext(), selectedFolder.getPath());
-					MusicUtils.addToQueue(requireActivity(), selectedFolderSongs);
+					loader = new FolderSongLoader(requireContext());
+					loader.execute(selectedFolder.getPath(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.HIDE_FOLDER:
@@ -207,5 +212,21 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
 			mLoader.execute(null, this);
 		}
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(requireActivity(), ids);
 	}
 }

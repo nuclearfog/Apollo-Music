@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Antal låtar</string>
 	<string name="sort_order_entry_number_of_albums">Antal album</string>
 	<string name="sort_order_entry_filename">Filnamn</string>
-	<string name="playlist_favorite">Favorit</string>
 	<string name="playlist_favorites">Favoriter</string>
 	<string name="playlist_last_added">Senast tillagda</string>
 	<string name="new_playlist">Ny spellista</string>

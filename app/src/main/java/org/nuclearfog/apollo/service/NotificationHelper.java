@@ -116,9 +116,9 @@ class NotificationHelper {
 
 		// initialize callbacks
 		callbackPlayPause = createIntent(MusicPlaybackService.ACTION_TOGGLEPAUSE);
-		callbackNext =  createIntent(MusicPlaybackService.ACTION_NEXT);
-		callbackPrevious =  createIntent(MusicPlaybackService.ACTION_PREVIOUS);
-		callbackStop =  createIntent(MusicPlaybackService.ACTION_STOP);
+		callbackNext = createIntent(MusicPlaybackService.ACTION_NEXT);
+		callbackPrevious = createIntent(MusicPlaybackService.ACTION_PREVIOUS);
+		callbackStop = createIntent(MusicPlaybackService.ACTION_STOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mService, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
 		// create notification builder

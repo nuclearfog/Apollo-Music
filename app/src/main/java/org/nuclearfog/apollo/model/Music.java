@@ -2,10 +2,16 @@ package org.nuclearfog.apollo.model;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * item super class for music information
+ *
+ * @author nuclearfog
  */
-public abstract class Music {
+public abstract class Music implements Serializable {
+
+	private static final long serialVersionUID = 6323387337236255570L;
 
 	/**
 	 * ID of the element

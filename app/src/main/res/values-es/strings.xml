@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Número de canciones</string>
 	<string name="sort_order_entry_number_of_albums">Número de álbumes</string>
 	<string name="sort_order_entry_filename">Nombre de archivo</string>
-	<string name="playlist_favorite">Favorito</string>
 	<string name="playlist_favorites">Favoritos</string>
 	<string name="playlist_last_added">Recientes</string>
 	<string name="new_playlist">Nueva lista</string>

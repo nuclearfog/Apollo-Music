@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Lugude arv</string>
 	<string name="sort_order_entry_number_of_albums">Albumite arv</string>
 	<string name="sort_order_entry_filename">Faili nimi</string>
-	<string name="playlist_favorite">Lemmik</string>
 	<string name="playlist_favorites">Lemmikud</string>
 	<string name="playlist_last_added">Viimati lisatud</string>
 	<string name="new_playlist">Uus esitusloend</string>

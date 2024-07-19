@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">Jumlah lagu</string>
 	<string name="sort_order_entry_number_of_albums">Jumlah album</string>
 	<string name="sort_order_entry_filename">Nama file</string>
-	<string name="playlist_favorite">Favorit</string>
 	<string name="playlist_favorites">Favorit</string>
 	<string name="playlist_last_added">Terakhir ditambahkan</string>
 	<string name="new_playlist">Daftar putar baru</string>

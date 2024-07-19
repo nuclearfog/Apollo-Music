@@ -65,7 +65,6 @@
 
 	<!-- 默认播放列表名称 -->
 	<!-- 仅在语音搜索处理中使用 -->
-	<string name="playlist_favorite">收藏夹</string>
 	<string name="playlist_favorites">收藏夹</string>
 	<string name="playlist_last_added">最近添加</string>
 	<string name="playlist_most_played">热门</string>

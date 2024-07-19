@@ -15,11 +15,7 @@ import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FAVORIT;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_LAST_ADDED;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_MOST_PLAYED;
 
-import android.content.ContentUris;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Audio.Playlists;
 import android.view.ContextMenu;
@@ -36,8 +32,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -45,11 +39,17 @@ import androidx.lifecycle.ViewModelProvider;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.FavoritesLoader;
+import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistLoader;
+import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongsLoader;
 import org.nuclearfog.apollo.model.Playlist;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.PlaylistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.dialogs.DeletePlaylistDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -65,6 +65,8 @@ import java.util.List;
  * @author nuclearfog
  */
 public class PlaylistFragment extends Fragment implements AsyncCallback<List<Playlist>>, OnItemClickListener, Observer<String> {
+
+	private static final String TAG = "PlaylistFragment";
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -86,8 +88,10 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	/**
 	 * context menu selection
 	 */
-	@Nullable
 	private Playlist selectedPlaylist;
+
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -170,37 +174,49 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		if (item.getGroupId() == GROUP_ID && selectedPlaylist != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
+					// play favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						// play favorite playlist
-						MusicUtils.playFavorites(requireActivity());
-					} else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
-						// play last added playlist
-						MusicUtils.playLastAdded(requireActivity());
-					} else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						// play popular playlist
-						MusicUtils.playPopular(requireActivity());
-					} else {
-						// play custom playlist
-						MusicUtils.playPlaylist(requireActivity(), selectedPlaylist.getId());
+						FavoritesLoader loader = new FavoritesLoader(requireContext());
+						loader.execute(null, onPlaySongs);
+					}
+					// play last added playlist
+					else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+						LastAddedLoader loader = new LastAddedLoader(requireContext());
+						loader.execute(null, onPlaySongs);
+					}
+					// play popular playlist
+					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
+						PopularSongsLoader loader = new PopularSongsLoader(requireContext());
+						loader.execute(null, onPlaySongs);
+					}
+					// play custom playlist
+					else {
+						PlaylistSongLoader loader = new PlaylistSongLoader(requireContext());
+						loader.execute(selectedPlaylist.getId(), onPlaySongs);
 					}
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					long[] list;
+					// add favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						// add favorite playlist
-						list = MusicUtils.getSongListForFavorites(requireContext());
-					} else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
-						// add last added playlist
-						list = MusicUtils.getSongListForLastAdded(requireContext());
-					} else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						// add popular playlist
-						list = MusicUtils.getPopularSongList(requireContext());
-					} else {
-						// add custom playlist to queue
-						list = MusicUtils.getSongListForPlaylist(requireContext(), selectedPlaylist.getId());
+						FavoritesLoader loader = new FavoritesLoader(requireContext());
+						loader.execute(null, onAddToQueue);
 					}
-					MusicUtils.addToQueue(requireActivity(), list);
+					// add last added playlist
+					else if (selectedPlaylist.getId() == Playlist.LAST_ADDED_ID) {
+						LastAddedLoader loader = new LastAddedLoader(requireContext());
+						loader.execute(null, onAddToQueue);
+					}
+					// add popular playlist
+					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
+						PopularSongsLoader loader = new PopularSongsLoader(requireContext());
+						loader.execute(null, onAddToQueue);
+					}
+					// add custom playlist to queue
+					else {
+						PlaylistSongLoader loader = new PlaylistSongLoader(requireContext());
+						loader.execute(selectedPlaylist.getId(), onAddToQueue);
+					}
 					return true;
 
 				case ContextMenuItems.RENAME_PLAYLIST:
@@ -212,22 +228,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					break;
 
 				case ContextMenuItems.DELETE:
-					String name = selectedPlaylist.getName();
-					new AlertDialog.Builder(requireContext())
-							.setTitle(getString(R.string.delete_dialog_title, name))
-							.setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									Uri mUri = ContentUris.withAppendedId(Playlists.EXTERNAL_CONTENT_URI, selectedPlaylist.getId());
-									requireActivity().getContentResolver().delete(mUri, null, null);
-									MusicUtils.refresh(requireActivity());
-								}
-							}).setNegativeButton(R.string.cancel, new OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									dialog.dismiss();
-								}
-							}).setMessage(R.string.cannot_be_undone).show();
+					DeletePlaylistDialog.newInstance(selectedPlaylist).show(getParentFragmentManager(), TAG);
 					return true;
 			}
 		}
@@ -294,5 +295,21 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 			// Refresh the list when a playlist is deleted or renamed
 			mLoader.execute(null, this);
 		}
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(requireActivity(), ids);
 	}
 }

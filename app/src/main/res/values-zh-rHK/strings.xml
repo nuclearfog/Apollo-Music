@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">歌曲數量</string>
 	<string name="sort_order_entry_number_of_albums">專輯數量</string>
 	<string name="sort_order_entry_filename">檔案名稱</string>
-	<string name="playlist_favorite">最愛收藏</string>
 	<string name="playlist_favorites">最愛收藏</string>
 	<string name="playlist_last_added">最後新增</string>
 	<string name="new_playlist">新的播放清單</string>

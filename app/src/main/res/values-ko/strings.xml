@@ -52,7 +52,6 @@
 	<string name="sort_order_entry_number_of_songs">노래 수</string>
 	<string name="sort_order_entry_number_of_albums">앨범 수</string>
 	<string name="sort_order_entry_filename">파일명</string>
-	<string name="playlist_favorite">즐겨찾기</string>
 	<string name="playlist_favorites">즐겨찾기</string>
 	<string name="playlist_last_added">최근에 추가한 곡</string>
 	<string name="new_playlist">새 재생목록</string>

@@ -112,7 +112,8 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	 */
 	private FragmentViewModel viewModel;
 
-	private ArtistLoader mLoader;
+	private ArtistLoader artistLoader;
+	private ArtistSongLoader artistSongLoader;
 
 	/**
 	 * Represents an artist
@@ -137,7 +138,8 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		mList = mRootView.findViewById(R.id.grid_base);
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		preference = PreferenceUtils.getInstance(requireContext());
-		mLoader = new ArtistLoader(requireContext());
+		artistLoader = new ArtistLoader(requireContext());
+		artistSongLoader = new ArtistSongLoader(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// init list
@@ -151,7 +153,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		mList.setOnScrollListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Start the loader
-		mLoader.execute(null, this);
+		artistLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -170,7 +172,8 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		artistLoader.cancel();
+		artistSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -217,23 +220,19 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 			// Create a list of the artist's songs
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					ArtistSongLoader loader = new ArtistSongLoader(requireContext());
-					loader.execute(selectedArtist.getId(), onPlaySongs);
+					artistSongLoader.execute(selectedArtist.getId(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					loader = new ArtistSongLoader(requireContext());
-					loader.execute(selectedArtist.getId(), onAddToQueue);
+					artistSongLoader.execute(selectedArtist.getId(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					loader = new ArtistSongLoader(requireContext());
-					loader.execute(selectedArtist.getId(), onAddToNewPlaylist);
+					artistSongLoader.execute(selectedArtist.getId(), onAddToNewPlaylist);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					loader = new ArtistSongLoader(requireContext());
-					loader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
+					artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
 					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
 					return true;
 
@@ -243,8 +242,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 					return true;
 
 				case ContextMenuItems.DELETE:
-					loader = new ArtistSongLoader(requireContext());
-					loader.execute(selectedArtist.getId(), onSongsDelete);
+					artistSongLoader.execute(selectedArtist.getId(), onSongsDelete);
 					return true;
 			}
 		}
@@ -271,8 +269,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	@Override
 	public void onItemClick(AdapterView<?> parent, @NonNull View view, int position, long id) {
 		if (view.getId() == R.id.image) {
-			ArtistSongLoader loader = new ArtistSongLoader(requireContext());
-			loader.execute(id, onPlaySongs);
+			artistSongLoader.execute(id, onPlaySongs);
 		} else {
 			Artist selectedArtist = mAdapter.getItem(position);
 			if (selectedArtist != null) {
@@ -308,7 +305,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 				initList();
 
 			case MusicBrowserPhoneFragment.REFRESH:
-				mLoader.execute(null, this);
+				artistLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
@@ -391,19 +388,24 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	}
 
 	/**
-	 * add loaded songs to queue
+	 * create a new playlist with the loaded songs
 	 */
 	private void onAddToNewPlaylist(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
 	}
 
-
+	/**
+	 * save the loaded songs into an existing playlist
+	 */
 	private void onAddToExistingPlaylist(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.addToPlaylist(requireActivity(), ids, selectedPlaylistId);
 	}
 
+	/**
+	 * delete the loaded songs
+	 */
 	private void onSongsDelete(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedArtist != null ? selectedArtist.getName() : "";

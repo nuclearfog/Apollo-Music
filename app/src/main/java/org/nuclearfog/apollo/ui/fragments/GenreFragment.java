@@ -93,7 +93,8 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 */
 	private PreferenceUtils preference;
 
-	private GenreLoader mLoader;
+	private GenreLoader genreLoader;
+	private GenreSongLoader genreSongLoader;
 
 	/**
 	 * context menus selection
@@ -120,7 +121,8 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		preference = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mAdapter = new GenreAdapter(requireContext());
-		mLoader = new GenreLoader(requireContext());
+		genreLoader = new GenreLoader(requireContext());
+		genreSongLoader = new GenreSongLoader(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		mList.setEmptyView(emptyHolder);
@@ -130,7 +132,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		mList.setOnItemClickListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// start loader
-		mLoader.execute(null, this);
+		genreLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -140,7 +142,8 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		genreLoader.cancel();
+		genreSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -181,14 +184,12 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
 					String genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
-					GenreSongLoader loader = new GenreSongLoader(requireContext());
-					loader.execute(genreIds, onPlaySongs);
+					genreSongLoader.execute(genreIds, onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
 					genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
-					loader = new GenreSongLoader(requireContext());
-					loader.execute(genreIds, onAddToQueue);
+					genreSongLoader.execute(genreIds, onAddToQueue);
 					return true;
 
 				case ContextMenuItems.HIDE_GENRE:
@@ -242,11 +243,10 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		switch (action) {
 			case REFRESH:
 			case MusicBrowserPhoneFragment.REFRESH:
-				mLoader.execute(null, this);
+				genreLoader.execute(null, this);
 				break;
 		}
 	}
-
 
 	/**
 	 * play loaded songs

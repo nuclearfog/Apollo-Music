@@ -97,7 +97,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 	 */
 	private PreferenceUtils preference;
 
-	private SongLoader mLoader;
+	private SongLoader songLoader;
 
 	/**
 	 * context menu selection
@@ -125,7 +125,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 		mAdapter = new SongAdapter(requireContext(), false);
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
-		mLoader = new SongLoader(requireContext());
+		songLoader = new SongLoader(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// setup the list view
@@ -135,7 +135,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
 		// start loader
-		mLoader.execute(null, this);
+		songLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -145,7 +145,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		songLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -193,18 +193,20 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
 		if (item.getGroupId() == GROUP_ID && selectedSong != null) {
-			long[] trackIds = {selectedSong.getId()};
 
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
+					long[] trackIds = {selectedSong.getId()};
 					MusicUtils.playAll(requireActivity(), trackIds, 0, false);
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
+					trackIds = new long[]{selectedSong.getId()};
 					MusicUtils.playNext(requireActivity(), trackIds);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
+					trackIds = new long[]{selectedSong.getId()};
 					MusicUtils.addToQueue(requireActivity(), trackIds);
 					return true;
 
@@ -213,12 +215,14 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
+					trackIds = new long[]{selectedSong.getId()};
 					PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, trackIds, null);
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
 					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
 					if (mPlaylistId != -1L) {
+						trackIds = new long[]{selectedSong.getId()};
 						MusicUtils.addToPlaylist(requireActivity(), trackIds, mPlaylistId);
 					}
 					return true;
@@ -237,6 +241,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 					return true;
 
 				case ContextMenuItems.DELETE:
+					trackIds = new long[]{selectedSong.getId()};
 					MusicUtils.openDeleteDialog(requireActivity(), selectedSong.getName(), trackIds);
 					return true;
 			}
@@ -277,7 +282,7 @@ public class SongFragment extends Fragment implements AsyncCallback<List<Song>>,
 		switch (action) {
 			case REFRESH:
 			case MusicBrowserPhoneFragment.REFRESH:
-				mLoader.execute(null, this);
+				songLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:

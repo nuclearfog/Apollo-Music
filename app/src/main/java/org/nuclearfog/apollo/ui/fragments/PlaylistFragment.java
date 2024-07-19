@@ -83,7 +83,8 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	 */
 	private FragmentViewModel viewModel;
 
-	private PlaylistLoader mLoader;
+	private PlaylistLoader playlistLoader;
+	private PlaylistSongLoader playlistSongLoader;
 
 	/**
 	 * context menu selection
@@ -111,7 +112,8 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		//
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		mAdapter = new PlaylistAdapter(requireContext());
-		mLoader = new PlaylistLoader(requireContext());
+		playlistLoader = new PlaylistLoader(requireContext());
+		playlistSongLoader = new PlaylistSongLoader(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// setup list view
@@ -122,7 +124,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 		mList.setOnItemClickListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Start the loader
-		mLoader.execute(null, this);
+		playlistLoader.execute(null, this);
 		return rootView;
 	}
 
@@ -132,7 +134,8 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		playlistLoader.cancel();
+		playlistSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -191,8 +194,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					}
 					// play custom playlist
 					else {
-						PlaylistSongLoader loader = new PlaylistSongLoader(requireContext());
-						loader.execute(selectedPlaylist.getId(), onPlaySongs);
+						playlistSongLoader.execute(selectedPlaylist.getId(), onPlaySongs);
 					}
 					return true;
 
@@ -214,8 +216,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					}
 					// add custom playlist to queue
 					else {
-						PlaylistSongLoader loader = new PlaylistSongLoader(requireContext());
-						loader.execute(selectedPlaylist.getId(), onAddToQueue);
+						playlistSongLoader.execute(selectedPlaylist.getId(), onAddToQueue);
 					}
 					return true;
 
@@ -293,7 +294,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 	public void onChanged(String action) {
 		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
 			// Refresh the list when a playlist is deleted or renamed
-			mLoader.execute(null, this);
+			playlistLoader.execute(null, this);
 		}
 	}
 

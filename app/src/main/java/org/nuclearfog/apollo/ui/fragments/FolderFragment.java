@@ -79,7 +79,8 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	 */
 	@Nullable
 	private Folder selectedFolder;
-	private FolderLoader mLoader;
+	private FolderLoader folderLoader;
+	private FolderSongLoader folderSongLoader;
 
 	/**
 	 * {@inheritDoc}
@@ -94,7 +95,8 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		preference = PreferenceUtils.getInstance(requireContext());
 		mAdapter = new FolderAdapter(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		mLoader = new FolderLoader(requireContext());
+		folderLoader = new FolderLoader(requireContext());
+		folderSongLoader = new FolderSongLoader(requireContext());
 		//
 		setHasOptionsMenu(true);
 		// set listview
@@ -105,7 +107,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		mList.setOnItemClickListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// start loader
-		mLoader.execute(null, this);
+		folderLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -116,7 +118,8 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		folderLoader.cancel();
+		folderSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -153,13 +156,11 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		if (item.getGroupId() == GROUP_ID && selectedFolder != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_FOLDER:
-					FolderSongLoader loader = new FolderSongLoader(requireContext());
-					loader.execute(selectedFolder.getPath(), onPlaySongs);
+					folderSongLoader.execute(selectedFolder.getPath(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_FOLDER_QUEUE:
-					loader = new FolderSongLoader(requireContext());
-					loader.execute(selectedFolder.getPath(), onAddToQueue);
+					folderSongLoader.execute(selectedFolder.getPath(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.HIDE_FOLDER:
@@ -210,7 +211,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	@Override
 	public void onChanged(String action) {
 		if (action.equals(MusicBrowserPhoneFragment.REFRESH)) {
-			mLoader.execute(null, this);
+			folderLoader.execute(null, this);
 		}
 	}
 

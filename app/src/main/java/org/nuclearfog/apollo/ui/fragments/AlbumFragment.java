@@ -119,7 +119,8 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	private Album selectedAlbum = null;
 	private long selectedPlaylistId = -1;
 
-	private AlbumLoader mLoader;
+	private AlbumLoader albumLoader;
+	private AlbumSongLoader albumSongLoader;
 
 	/**
 	 * {@inheritDoc}
@@ -133,7 +134,8 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		//
 		preference = PreferenceUtils.getInstance(requireContext());
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
-		mLoader = new AlbumLoader(requireContext());
+		albumLoader = new AlbumLoader(requireContext());
+		albumSongLoader = new AlbumSongLoader(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// init list
@@ -145,7 +147,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		mList.setOnScrollListener(this);
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		// Start the loader
-		mLoader.execute(null, this);
+		albumLoader.execute(null, this);
 		return mRootView;
 	}
 
@@ -164,7 +166,8 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	@Override
 	public void onDestroyView() {
 		viewModel.getSelectedItem().removeObserver(this);
-		mLoader.cancel();
+		albumLoader.cancel();
+		albumSongLoader.cancel();
 		super.onDestroyView();
 	}
 
@@ -213,18 +216,15 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		if (item.getGroupId() == GROUP_ID && selectedAlbum != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					AlbumSongLoader loader = new AlbumSongLoader(requireContext());
-					loader.execute(selectedAlbum.getId(), onPlaySongs);
+					albumSongLoader.execute(selectedAlbum.getId(), onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					loader = new AlbumSongLoader(requireContext());
-					loader.execute(selectedAlbum.getId(), onAddToQueue);
+					albumSongLoader.execute(selectedAlbum.getId(), onAddToQueue);
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					loader = new AlbumSongLoader(requireContext());
-					loader.execute(selectedAlbum.getId(), onAddToNewPlaylist);
+					albumSongLoader.execute(selectedAlbum.getId(), onAddToNewPlaylist);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -232,14 +232,12 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					loader = new AlbumSongLoader(requireContext());
 					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					loader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
+					albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.DELETE:
-					loader = new AlbumSongLoader(requireContext());
-					loader.execute(selectedAlbum.getId(), onSongsDelete);
+					albumSongLoader.execute(selectedAlbum.getId(), onSongsDelete);
 					return true;
 
 				case ContextMenuItems.HIDE_ALBUM:
@@ -272,8 +270,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
-			AlbumSongLoader loader = new AlbumSongLoader(requireContext());
-			loader.execute(id, onPlaySongs);
+			albumSongLoader.execute(id, onPlaySongs);
 		} else {
 			Album selectedAlbum = mAdapter.getItem(position);
 			if (selectedAlbum != null) {
@@ -306,7 +303,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 				initList();
 
 			case MusicBrowserPhoneFragment.REFRESH:
-				mLoader.execute(null, this);
+				albumLoader.execute(null, this);
 				break;
 
 			case MusicBrowserPhoneFragment.META_CHANGED:
@@ -389,19 +386,24 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	}
 
 	/**
-	 * add loaded songs to queue
+	 * create a new playlist with the loaded songs
 	 */
 	private void onAddToNewPlaylist(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		PlaylistDialog.show(getParentFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
 	}
 
-
+	/**
+	 * save the loaded songs into an existing playlist
+	 */
 	private void onAddToExistingPlaylist(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.addToPlaylist(requireActivity(), ids, selectedPlaylistId);
 	}
 
+	/**
+	 * delete the loaded songs
+	 */
 	private void onSongsDelete(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedAlbum != null ? selectedAlbum.getName() : "";

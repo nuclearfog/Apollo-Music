@@ -16,7 +16,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,12 +26,13 @@ import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 /**
- * This {@link ArrayAdapter} is used to display all of the genres on a user's
+ * This adapter is used to display all of the genres on a user's
  * device for {@link org.nuclearfog.apollo.ui.fragments.GenreFragment} .
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class GenreAdapter extends ArrayAdapter<Genre> {
+public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 
 	/**
 	 * item layout reource

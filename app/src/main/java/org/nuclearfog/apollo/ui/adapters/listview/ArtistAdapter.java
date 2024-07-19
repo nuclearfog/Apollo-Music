@@ -15,7 +15,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
@@ -28,9 +27,12 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
+ * This adapter is used to display all artists to {@link org.nuclearfog.apollo.ui.fragments.ArtistFragment}
+ *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistAdapter extends ArrayAdapter<Artist> {
+public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 
 	/**
 	 * The resource Id of the layout to inflate
@@ -53,8 +55,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 	 * @param context  The {@link Context} to use.
 	 * @param layoutId The resource Id of the view to inflate.
 	 */
-	public ArtistAdapter(Context context, int layoutId) {
-		super(context, 0);
+	public ArtistAdapter(Context context, int columns, int layoutId) {
+		super(context, columns, 0);
 		// Get the layout Id
 		mLayoutId = layoutId;
 		// Initialize the cache & image fetcher

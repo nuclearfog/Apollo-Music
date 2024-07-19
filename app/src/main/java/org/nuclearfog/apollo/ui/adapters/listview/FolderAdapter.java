@@ -7,7 +7,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,11 +17,11 @@ import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 /**
- * decompiled from Apollo.APK version 1.6
- * <p>
- * this adapter creates views with music folder information
+ * This adapter displays all folder containing music files to {@link org.nuclearfog.apollo.ui.fragments.FolderFragment}
+ *
+ * @author nuclearfog
  */
-public class FolderAdapter extends ArrayAdapter<Folder> {
+public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 
 	/**
 	 * item layout reource

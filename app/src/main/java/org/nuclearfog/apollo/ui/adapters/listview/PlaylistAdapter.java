@@ -16,7 +16,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
@@ -25,12 +24,13 @@ import org.nuclearfog.apollo.model.Playlist;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 
 /**
- * This {@link ArrayAdapter} is used to display all of the playlists on a user's
+ * This adapter is used to display all of the playlists on a user's
  * device for {@link org.nuclearfog.apollo.ui.fragments.PlaylistFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class PlaylistAdapter extends ArrayAdapter<Playlist> {
+public class PlaylistAdapter extends AlphabeticalAdapter<Playlist> {
 
 	/**
 	 * item layout reource

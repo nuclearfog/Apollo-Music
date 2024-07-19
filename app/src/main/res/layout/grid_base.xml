@@ -39,6 +39,7 @@
 		android:horizontalSpacing="@dimen/grid_item_spacing"
 		android:scrollbarThumbVertical="@color/scrollbar_thumb_color"
 		android:scrollbars="none"
+		android:fastScrollEnabled="true"
 		android:verticalSpacing="@dimen/grid_item_spacing" />
 
 </FrameLayout>

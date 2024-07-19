@@ -15,7 +15,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,15 +25,16 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
- * This {@link ArrayAdapter} is used to display the songs for a particular
+ * This adapter is used to display the songs for a particular
  * artist, album, playlist, or genre for {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistSongFragment},
  * {@link org.nuclearfog.apollo.ui.fragments.profile.AlbumSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.PlaylistSongFragment},
  * {@link org.nuclearfog.apollo.ui.fragments.profile.GenreSongFragment},{@link org.nuclearfog.apollo.ui.fragments.profile.FavoriteSongFragment},
  * {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ProfileSongAdapter extends ArrayAdapter<Song> {
+public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 
 	/**
 	 * Default display setting: title/album

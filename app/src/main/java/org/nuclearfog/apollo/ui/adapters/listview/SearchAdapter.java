@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,9 +24,11 @@ import org.nuclearfog.apollo.utils.StringUtils;
 import java.util.Locale;
 
 /**
- * Used to populate the list view with the search results.
+ * Used to populate the list view with the search results to {@link org.nuclearfog.apollo.ui.activities.SearchActivity}
+ *
+ * @author nuclearfog
  */
-public class SearchAdapter extends ArrayAdapter<Music> {
+public class SearchAdapter extends AlphabeticalAdapter<Music> {
 
 	/**
 	 * layout resource file

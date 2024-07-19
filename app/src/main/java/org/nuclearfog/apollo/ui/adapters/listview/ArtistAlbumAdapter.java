@@ -15,7 +15,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,12 +27,13 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
- * This {@link ArrayAdapter} is used to display the albums for a particular
+ * This adapter is used to display the albums for a particular
  * artist for {@link org.nuclearfog.apollo.ui.fragments.profile.ArtistAlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class ArtistAlbumAdapter extends ArrayAdapter<Album> {
+public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 
 	/**
 	 * The header view

@@ -15,7 +15,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -25,18 +24,20 @@ import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
+import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
- * This {@link ArrayAdapter} is used to display all of the albums on a user's
+ * This adapter is used to display all of the albums on a user's
  * device for {@link org.nuclearfog.apollo.ui.fragments.RecentFragment}
  * and {@link org.nuclearfog.apollo.ui.fragments.AlbumFragment}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class AlbumAdapter extends ArrayAdapter<Album> {
+public class AlbumAdapter extends AlphabeticalAdapter<Album> {
 
 	/**
 	 * Image cache and image fetcher
@@ -58,8 +59,8 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
 	 *
 	 * @param context The {@link Context} to use.
 	 */
-	public AlbumAdapter(Context context, @LayoutRes int mLayoutId) {
-		super(context, mLayoutId);
+	public AlbumAdapter(Context context, int columns, @LayoutRes int mLayoutId) {
+		super(context, columns, mLayoutId);
 		this.mLayoutId = mLayoutId;
 		// Initialize the cache & image fetcher
 		mImageFetcher = ApolloUtils.getImageFetcher(context);
@@ -114,9 +115,9 @@ public class AlbumAdapter extends ArrayAdapter<Album> {
 	 */
 	@Override
 	public long getItemId(int position) {
-		Album album = getItem(position);
-		if (album != null)
-			return album.getId();
+		Music item = getItem(position);
+		if (item != null)
+			return item.getId();
 		return super.getItemId(position);
 	}
 

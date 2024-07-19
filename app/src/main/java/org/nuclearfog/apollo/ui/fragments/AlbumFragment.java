@@ -330,25 +330,27 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	private void initList() {
 		switch (preference.getAlbumLayout()) {
 			case PreferenceUtils.LAYOUT_SIMPLE:
-				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_normal);
+				mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_normal);
 				mList.setNumColumns(ONE);
 				break;
 
 			case PreferenceUtils.LAYOUT_DETAILED:
-				mAdapter = new AlbumAdapter(requireActivity(), R.layout.list_item_detailed);
-				mAdapter.setLoadExtraData();
 				if (ApolloUtils.isLandscape(requireContext())) {
+					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.list_item_detailed);
 					mList.setNumColumns(TWO);
 				} else {
+					mAdapter = new AlbumAdapter(requireActivity(), 1, R.layout.list_item_detailed);
 					mList.setNumColumns(ONE);
 				}
+				mAdapter.setLoadExtraData();
 				break;
 
 			default:
-				mAdapter = new AlbumAdapter(requireActivity(), R.layout.grid_item_normal);
 				if (ApolloUtils.isLandscape(requireContext())) {
+					mAdapter = new AlbumAdapter(requireActivity(), 4, R.layout.grid_item_normal);
 					mList.setNumColumns(FOUR);
 				} else {
+					mAdapter = new AlbumAdapter(requireActivity(), 2, R.layout.grid_item_normal);
 					mList.setNumColumns(TWO);
 				}
 				break;

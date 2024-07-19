@@ -19,6 +19,11 @@ package org.nuclearfog.apollo;
 public final class Config {
 
 	/**
+	 * link to the source code repository
+	 */
+	public static final String SOURCE_URL = "https://github.com/nuclearfog/Apollo-Music";
+
+	/**
 	 * The ID of an artist, album, genre, or playlist passed to the profile activity
 	 */
 	public static final String ID = "id";

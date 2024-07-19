@@ -126,7 +126,6 @@
 	<string name="settings_other">其他设置</string>
 	<string name="settings_data_category">数据</string>
 	<string name="settings_author_title">作者</string>
-	<string name="settings_remastered_title">由以下作者进一步开发</string>
 	<string name="settings_about_apollo">关于 Apollo</string>
 	<string name="settings_special_thanks">特别鸣谢</string>
 	<string name="settings_lopez_summary">图标和 Play Store 横幅设计</string>

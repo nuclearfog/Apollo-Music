@@ -253,11 +253,6 @@ public final class CursorFactory {
 	private static final String GENRE_ORDER = Genres.DEFAULT_SORT_ORDER;
 
 	/**
-	 * sort folder tracks
-	 */
-	private static final String FOLDER_TRACKS_ORDER = Media.TRACK + "," + Media.TITLE;
-
-	/**
 	 * default order to sort last added tracks
 	 */
 	public static final String ORDER_TIME = Media.DATE_ADDED + DEF_SORT;

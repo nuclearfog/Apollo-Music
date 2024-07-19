@@ -130,7 +130,6 @@
 	<string name="playlist_most_played">Beliebt</string>
 	<string name="remove_from_popular">Aus \"Beliebt\" entfernen</string>
 	<string name="error_add_playlist">konnte Tracks nicht zur Playlist hinzufügen!</string>
-	<string name="settings_remastered_title">Weiterentwickelt von</string>
 	<string name="explain_permission_write_settings">Diese Berechtigung wird ausschließlich verwendet um den Klingelton einzustellen</string>
 	<string name="error_audioeffects_not_supported">Audioeffekte werden nicht unterstützt!</string>
 	<string name="title_audio_effects">Audioeffekte</string>
@@ -170,4 +169,6 @@
 	<string name="error_rename_playlist">Playlist konnte nicht umbenannt werden!</string>
 	<string name="menu_save_preset">Voreinstellung speichern</string>
 	<string name="menu_delete_preset">Voreinstellung löschen</string>
+	<string name="settings_source_code">Quellcode</string>
+	<string name="settings_source_code_descr">Im Browser öffnen</string>
 </resources>

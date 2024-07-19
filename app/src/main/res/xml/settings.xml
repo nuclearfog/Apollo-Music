@@ -97,8 +97,9 @@
 			android:summary="@string/settings_self_title"
 			android:title="@string/settings_author_title" />
 		<Preference
-			android:summary="@string/settings_nuclearfog_title"
-			android:title="@string/settings_remastered_title" />
+			android:key="source_code"
+			android:title="@string/settings_source_code"
+			android:summary="@string/settings_source_code_descr" />
 		<Preference
 			android:key="version"
 			android:title="@string/settings_version_title" />

@@ -246,8 +246,10 @@ public final class MusicUtils {
 
 	/**
 	 * toggle playstate
+	 *
+	 * @return true if succeed, false if queue is empty or if an error occured
 	 */
-	public static void togglePlayPause(Activity activity) {
+	public static boolean togglePlayPause(Activity activity) {
 		IApolloService service = getService(activity);
 		if (service != null) {
 			try {
@@ -258,14 +260,16 @@ public final class MusicUtils {
 					int sessionId = service.getAudioSessionId();
 					AudioEffects.getInstance(activity, sessionId);
 				} else {
-					shuffleAll(activity);
+					return false;
 				}
+				return true;
 			} catch (Exception err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
 				}
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -529,97 +533,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param context The {@link Context} to use.
-	 * @param id      The ID of the artist.
-	 * @return The song list for an artist.
-	 */
-	@NonNull
-	public static long[] getSongListForArtist(Context context, long id) {
-		Cursor cursor = CursorFactory.makeArtistSongCursor(context, id);
-		long[] mList = EMPTY_LIST;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				mList = new long[cursor.getCount()];
-				for (int i = 0; i < mList.length; i++) {
-					mList[i] = cursor.getLong(0);
-					cursor.moveToNext();
-				}
-			}
-			cursor.close();
-		}
-		return mList;
-	}
-
-	/**
-	 * @param context The {@link Context} to use.
-	 * @param id      The ID of the album.
-	 * @return The song list for an album.
-	 */
-	@NonNull
-	public static long[] getSongListForAlbum(Context context, long id) {
-		Cursor cursor = CursorFactory.makeAlbumSongCursor(context, id);
-		long[] result = EMPTY_LIST;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				int index = 0;
-				result = new long[cursor.getCount()];
-				do {
-					result[index++] = cursor.getLong(0);
-				} while (cursor.moveToNext());
-			}
-			cursor.close();
-		}
-		return result;
-	}
-
-	/**
-	 * @param context The {@link Context} to use.
-	 * @param id      The ID of the genre.
-	 * @return The song list for an genre.
-	 */
-	@NonNull
-	public static long[] getSongListForGenre(Context context, long id) {
-		Cursor cursor = CursorFactory.makeGenreSongCursor(context, id);
-		long[] ids = EMPTY_LIST;
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				ids = new long[cursor.getCount()];
-				for (int i = 0; i < ids.length; i++) {
-					ids[i] = cursor.getLong(0);
-					cursor.moveToNext();
-				}
-			}
-			cursor.close();
-		}
-		return ids;
-	}
-
-	/**
-	 * get list of songs from multiple genre IDs
-	 *
-	 * @param context The {@link Context} to use.
-	 * @param ids     list of genre IDs
-	 * @return song IDs from genres
-	 */
-	@NonNull
-	public static long[] getSongListForGenres(Context context, long[] ids) {
-		int size = 0;
-		long[][] data = new long[ids.length][];
-		for (int i = 0; i < ids.length; i++) {
-			data[i] = getSongListForGenre(context, ids[i]);
-			size += data[i].length;
-		}
-		int index = 0;
-		long[] result = new long[size];
-		for (long[] array : data) {
-			for (long element : array) {
-				result[index++] = element;
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * @param uri The source of the file
 	 */
 	public static void playFile(Activity activity, Uri uri) {
@@ -682,26 +595,6 @@ public final class MusicUtils {
 			}
 			// play whole ID list
 			playAll(activity, list, position, false);
-		}
-	}
-
-	/**
-	 * shuffle all available songs
-	 */
-	public static void shuffleAll(Activity activity) {
-		Cursor cursor = CursorFactory.makeTrackCursor(activity.getApplicationContext());
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				long[] mTrackList = new long[cursor.getCount()];
-				for (int i = 0; i < mTrackList.length; i++) {
-					mTrackList[i] = cursor.getLong(0);
-					cursor.moveToNext();
-				}
-				if (mTrackList.length > 0) {
-					playAll(activity, mTrackList, -1, true);
-				}
-			}
-			cursor.close();
 		}
 	}
 
@@ -1063,55 +956,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * @param context The {@link Context} to use
-	 * @return The song list from our favorites database
-	 */
-	@NonNull
-	public static long[] getSongListForFavorites(Context context) {
-		List<Song> favorits = FavoritesStore.getInstance(context).getFavorites();
-		long[] ids = new long[favorits.size()];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = favorits.get(i).getId();
-		}
-		return ids;
-	}
-
-	/**
-	 * @param context The {@link Context} to use
-	 * @return The song list for the last added playlist
-	 */
-	@NonNull
-	public static long[] getSongListForLastAdded(Context context) {
-		Cursor cursor = CursorFactory.makeLastAddedCursor(context);
-		long[] list = EMPTY_LIST;
-		if (cursor != null) {
-			list = new long[cursor.getCount()];
-			for (int i = 0; i < list.length; i++) {
-				cursor.moveToNext();
-				list[i] = cursor.getLong(0);
-			}
-			cursor.close();
-		}
-		return list;
-	}
-
-	/**
-	 * create an ID list of popular tracks
-	 *
-	 * @param context The {@link Context} to use
-	 * @return The song list for the last added playlist
-	 */
-	@NonNull
-	public static long[] getPopularSongList(Context context) {
-		List<Song> songs = PopularStore.getInstance(context).getSongs();
-		long[] ids = new long[songs.size()];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = songs.get(i).getId();
-		}
-		return ids;
-	}
-
-	/**
 	 * @param list The list to enqueue.
 	 */
 	public static void playNext(Activity activity, long[] list) {
@@ -1125,62 +969,6 @@ public final class MusicUtils {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Plays songs by an artist.
-	 *
-	 * @param artistId The artist Id.
-	 * @param position Specify where to start.
-	 */
-	public static void playArtist(Activity activity, long artistId, int position) {
-		long[] artistList = getSongListForArtist(activity, artistId);
-		if (artistList.length > position) {
-			playAll(activity, artistList, position, false);
-		}
-	}
-
-	/**
-	 * Plays songs from an album.
-	 *
-	 * @param albumId  The album Id.
-	 * @param position Specify where to start.
-	 */
-	public static void playAlbum(Activity activity, long albumId, int position) {
-		long[] albumList = getSongListForAlbum(activity, albumId);
-		if (albumList.length > 0) {
-			playAll(activity, albumList, position, false);
-		}
-	}
-
-	/**
-	 * Plays a user created playlist.
-	 *
-	 * @param playlistId The playlist Id.
-	 */
-	public static void playPlaylist(Activity activity, long playlistId) {
-		playAll(activity, getSongListForPlaylist(activity, playlistId), 0, false);
-	}
-
-	/**
-	 * Plays the last added songs from the past two weeks.
-	 */
-	public static void playLastAdded(Activity activity) {
-		playAll(activity, getSongListForLastAdded(activity), 0, false);
-	}
-
-	/**
-	 * Plays popular tracks starting with the most listened tracks
-	 */
-	public static void playPopular(Activity activity) {
-		playAll(activity, getPopularSongList(activity), 0, false);
-	}
-
-	/**
-	 * Play the songs that have been marked as favorites.
-	 */
-	public static void playFavorites(Activity activity) {
-		playAll(activity, getSongListForFavorites(activity), 0, false);
 	}
 
 	/**

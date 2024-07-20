@@ -49,6 +49,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
+import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
+import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
@@ -75,6 +80,7 @@ import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -83,6 +89,7 @@ import java.util.concurrent.TimeUnit;
  * Apollo's "now playing" interface.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnSeekBarChangeListener,
 		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
@@ -91,6 +98,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * MIME type for sharing songs
 	 */
 	private static final String MIME_AUDIO = "audio/*";
+
+	private AsyncCallback<List<Song>> onSongsPlay = this::onSongPlay;
 	/**
 	 * Play and pause button
 	 */
@@ -165,6 +174,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 	private FragmentViewModel viewModel;
 
+	private PlaylistSongLoader playlistSongLoader;
+	private ArtistSongLoader artistSongLoader;
+	private AlbumSongLoader albumSongLoader;
+	private SongLoader songLoader;
+
+	private int playPos = 0;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -197,6 +213,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			setSupportActionBar(toolbar);
 		// Initialze the theme resources
 		mResources = new ThemeUtils(this);
+		playlistSongLoader = new PlaylistSongLoader(this);
+		artistSongLoader = new ArtistSongLoader(this);
+		albumSongLoader = new AlbumSongLoader(this);
+		songLoader = new SongLoader(this);
 		// app preferences
 		mPrefs = PreferenceUtils.getInstance(this);
 		// Set the overflow style
@@ -309,6 +329,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	protected void onDestroy() {
 		threadPool.shutdown();
+		songLoader.cancel();
+		albumSongLoader.cancel();
+		artistSongLoader.cancel();
+		playlistSongLoader.cancel();
 		MusicUtils.unbindFromService(this);
 		super.onDestroy();
 	}
@@ -366,9 +390,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			NavUtils.goHome(this);
 		} else if (vId == R.id.menu_shuffle) {
 			// Shuffle all the songs
-			MusicUtils.shuffleAll(this);
-			// Refresh the queue
-			refreshQueue();
+			songLoader.execute(null, onSongsPlay);
 		} else if (vId == R.id.menu_favorite) {
 			// Toggle the current track as a favorite and update the menu item
 			Song song = MusicUtils.getCurrentTrack(this);
@@ -542,7 +564,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// play/pause button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			MusicUtils.togglePlayPause(this);
+			boolean succeed = MusicUtils.togglePlayPause(this);
+			if (!succeed) {
+				songLoader.execute(null, onSongsPlay);
+			}
 		}
 		// go to previous track
 		else if (v.getId() == R.id.action_button_previous) {
@@ -656,26 +681,23 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "playlistId", "playlist");
 				if (id != -1L) {
-					MusicUtils.playPlaylist(this, id);
-					refreshQueue();
+					playlistSongLoader.execute(id, onSongsPlay);
 				}
 			}
 			// open album
 			else if (Albums.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "albumId", "album");
 				if (id != -1L) {
-					int position = intent.getIntExtra("position", 0);
-					MusicUtils.playAlbum(this, id, position);
-					refreshQueue();
+					playPos = intent.getIntExtra("position", 0);
+					albumSongLoader.execute(id, onSongsPlay);
 				}
 			}
 			// open artist
 			else if (Artists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "artistId", "artist");
 				if (id != -1L) {
-					int position = intent.getIntExtra("position", 0);
-					MusicUtils.playArtist(this, id, position);
-					refreshQueue();
+					playPos = intent.getIntExtra("position", 0);
+					artistSongLoader.execute(id, onSongsPlay);
 				}
 			}
 		}
@@ -772,6 +794,16 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			mCurrentTime.setText("--:--");
 			mProgress.setProgress(0);
 		}
+	}
+
+	/**
+	 * called after songs loaded asynchronously to play
+	 */
+	private void onSongPlay(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(this, ids, playPos, false);
+		refreshQueue();
+		playPos = 0;
 	}
 
 	/**

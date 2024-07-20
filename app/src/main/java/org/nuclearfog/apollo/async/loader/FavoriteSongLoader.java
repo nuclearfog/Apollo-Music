@@ -25,12 +25,12 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class FavoritesLoader extends AsyncExecutor<Void, List<Song>> {
+public class FavoriteSongLoader extends AsyncExecutor<Void, List<Song>> {
 
 	private FavoritesStore favoriteStore;
 
 
-	public FavoritesLoader(Context context) {
+	public FavoriteSongLoader(Context context) {
 		super(context);
 		favoriteStore = FavoritesStore.getInstance(context);
 	}

@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.FavoritesLoader;
+import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
@@ -55,7 +55,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 	 * The adapter for the list
 	 */
 	private ProfileSongAdapter mAdapter;
-	private FavoritesLoader mLoader;
+	private FavoriteSongLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -67,7 +67,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 	@Override
 	protected void init(Bundle param) {
 		// init loader
-		mLoader = new FavoritesLoader(requireContext());
+		mLoader = new FavoriteSongLoader(requireContext());
 		// init adapter
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
 		// set adapter

@@ -44,7 +44,17 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
+import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
+import org.nuclearfog.apollo.async.loader.FolderSongLoader;
+import org.nuclearfog.apollo.async.loader.GenreSongLoader;
+import org.nuclearfog.apollo.async.loader.LastAddedLoader;
+import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
@@ -60,7 +70,7 @@ import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
-import java.util.Random;
+import java.util.List;
 
 /**
  * The {@link AppCompatActivity} is used to display the data for specific
@@ -96,6 +106,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 *
 	 */
 	private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
+
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 
 	/**
 	 * View pager
@@ -143,14 +155,17 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	private String folderPath = "";
 
 	/**
-	 * random generator for folder shuffle
-	 */
-	private Random random = new Random();
-
-	/**
 	 * Image cache
 	 */
 	private ImageFetcher mImageFetcher;
+	private ArtistSongLoader artistSongLoader;
+	private AlbumSongLoader albumSongLoader;
+	private GenreSongLoader genreSongLoader;
+	private PlaylistSongLoader playlistSongLoader;
+	private FavoriteSongLoader favoriteSongLoader;
+	private LastAddedLoader lastAddedLoader;
+	private PopularSongLoader popularSongLoader;
+	private FolderSongLoader folderSongLoader;
 
 	private PreferenceUtils mPreferences;
 
@@ -188,6 +203,14 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		mPreferences = PreferenceUtils.getInstance(this);
 		// Initialze the image fetcher
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
+		artistSongLoader = new ArtistSongLoader(this);
+		albumSongLoader = new AlbumSongLoader(this);
+		genreSongLoader = new GenreSongLoader(this);
+		playlistSongLoader = new PlaylistSongLoader(this);
+		favoriteSongLoader = new FavoriteSongLoader(this);
+		lastAddedLoader = new LastAddedLoader(this);
+		popularSongLoader = new PopularSongLoader(this);
+		folderSongLoader = new FolderSongLoader(this);
 		// Initialize the Bundle
 		Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
 		// Get the MIME type
@@ -290,6 +313,22 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void onDestroy() {
+		artistSongLoader.cancel();
+		albumSongLoader.cancel();
+		genreSongLoader.cancel();
+		playlistSongLoader.cancel();
+		favoriteSongLoader.cancel();
+		lastAddedLoader.cancel();
+		popularSongLoader.cancel();
+		folderSongLoader.cancel();
+		super.onDestroy();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// Theme the add to home screen icon
 		MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
@@ -338,7 +377,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				finish();
 			} else {
 				// Otherwise just go back
-				goBack();
+				finish();
 			}
 		}
 		// add item to home screen
@@ -357,43 +396,36 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		else if (item.getItemId() == R.id.menu_shuffle) {
 			switch (type) {
 				case ARTIST:
-					long[] list = MusicUtils.getSongListForArtist(this, ids[0]);
-					MusicUtils.playAll(this, list, 0, true);
+					artistSongLoader.execute(ids[0], onPlaySongs);
 					break;
 
 				case ALBUM:
-					list = MusicUtils.getSongListForAlbum(this, ids[0]);
-					MusicUtils.playAll(this, list, 0, true);
+					albumSongLoader.execute(ids[0], onPlaySongs);
 					break;
 
 				case GENRE:
-					list = MusicUtils.getSongListForGenres(this, ids);
-					MusicUtils.playAll(this, list, 0, true);
+					String genreIds = ApolloUtils.serializeIDs(ids);
+					genreSongLoader.execute(genreIds, onPlaySongs);
 					break;
 
 				case PLAYLIST:
-					MusicUtils.playPlaylist(this, ids[0]);
+					playlistSongLoader.execute(ids[0], onPlaySongs);
 					break;
 
 				case FAVORITE:
-					MusicUtils.playFavorites(this);
+					favoriteSongLoader.execute(null, onPlaySongs);
 					break;
 
 				case LAST_ADDED:
-					MusicUtils.playLastAdded(this);
+					lastAddedLoader.execute(null, onPlaySongs);
 					break;
 
 				case POPULAR:
-					MusicUtils.playPopular(this);
+					popularSongLoader.execute(null, onPlaySongs);
 					break;
 
 				case FOLDER:
-					list = MusicUtils.getSongListForFolder(this, folderPath);
-					if (list.length > 0) {
-						// play list at random position
-						int position = random.nextInt(list.length - 1);
-						MusicUtils.playAll(this, list, position, true);
-					}
+					folderSongLoader.execute(folderPath, onPlaySongs);
 					break;
 			}
 		}
@@ -747,10 +779,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	}
 
 	/**
-	 * Finishes the activity and overrides the default animation.
+	 * called to play asynchronously loaded songs
 	 */
-	private void goBack() {
-		finish();
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(this, ids, 0, true);
 	}
 
 	/**

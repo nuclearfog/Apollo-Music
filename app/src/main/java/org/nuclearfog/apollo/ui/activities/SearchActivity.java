@@ -35,6 +35,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
 import org.nuclearfog.apollo.async.loader.MusicSearchLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Artist;
@@ -68,6 +70,12 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	 */
 	private static final int GROUP_ID = 0xC1A35EE4;
 
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
+	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
+	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
+	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+
 	/**
 	 * The query
 	 */
@@ -79,9 +87,12 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	private SearchAdapter mAdapter;
 
 	private MusicSearchLoader mLoader;
+	private AlbumSongLoader albumSongLoader;
+	private ArtistSongLoader artistSongLoader;
 
 	@Nullable
 	private Music selection;
+	private long selectedPlaylistId;
 
 	/**
 	 * {@inheritDoc}
@@ -117,6 +128,8 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		mResources.setSubtitle("\"" + mFilterString + "\"");
 		// Initialize the adapter
 		mAdapter = new SearchAdapter(this);
+		albumSongLoader = new AlbumSongLoader(this);
+		artistSongLoader = new ArtistSongLoader(this);
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
 		// Bind the data
@@ -138,6 +151,16 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		// or start a new one.
 		mLoader = new MusicSearchLoader(this);
 		mLoader.execute(mFilterString, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void onDestroy() {
+		albumSongLoader.cancel();
+		artistSongLoader.cancel();
+		super.onDestroy();
 	}
 
 	/**
@@ -187,85 +210,65 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		if (item.getGroupId() == GROUP_ID && selection != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					if (selection instanceof Album) {
-						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
-						MusicUtils.playAll(this, ids, 0, false);
-					} else if (selection instanceof Artist) {
-						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
-						MusicUtils.playAll(this, ids, 0, false);
-					} else if (selection instanceof Song) {
-						long[] ids = new long[]{selection.getId()};
-						MusicUtils.playAll(this, ids, 0, false);
-					}
+					if (selection instanceof Album)
+						albumSongLoader.execute(selection.getId(), onPlaySongs);
+					else if (selection instanceof Artist)
+						artistSongLoader.execute(selection.getId(), onPlaySongs);
+					else if (selection instanceof Song)
+						MusicUtils.playAll(this, new long[]{selection.getId()}, 0, false);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					if (selection instanceof Album) {
-						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
-						MusicUtils.addToQueue(this, ids);
-					} else if (selection instanceof Artist) {
-						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
-						MusicUtils.addToQueue(this, ids);
-					} else if (selection instanceof Song) {
-						long[] ids = new long[]{selection.getId()};
-						MusicUtils.addToQueue(this, ids);
-					}
+					if (selection instanceof Album)
+						albumSongLoader.execute(selection.getId(), onAddToQueue);
+					else if (selection instanceof Artist)
+						artistSongLoader.execute(selection.getId(), onAddToQueue);
+					else if (selection instanceof Song)
+						MusicUtils.addToQueue(this, new long[]{selection.getId()});
 					return true;
 
 				case ContextMenuItems.DELETE:
 					String artist = selection.getName();
-					if (selection instanceof Album) {
-						long[] ids = MusicUtils.getSongListForAlbum(this, selection.getId());
-						MusicUtils.openDeleteDialog(this, artist, ids);
-					} else if (selection instanceof Artist) {
-						long[] ids = MusicUtils.getSongListForArtist(this, selection.getId());
-						MusicUtils.openDeleteDialog(this, artist, ids);
-					} else if (selection instanceof Song) {
-						long[] ids = new long[]{selection.getId()};
-						MusicUtils.openDeleteDialog(this, artist, ids);
-					}
+					if (selection instanceof Album)
+						albumSongLoader.execute(selection.getId(), onSongsDelete);
+					else if (selection instanceof Artist)
+						artistSongLoader.execute(selection.getId(), onSongsDelete);
+					else if (selection instanceof Song)
+						MusicUtils.openDeleteDialog(this, artist, new long[]{selection.getId()});
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
 					if (selection instanceof Album)
 						NavUtils.openArtistProfile(this, ((Album) selection).getArtist());
+					else if (selection instanceof Artist)
+						NavUtils.openArtistProfile(this, ((Artist) selection).getName());
 					else if (selection instanceof Song)
 						NavUtils.openArtistProfile(this, ((Song) selection).getArtist());
 					return true;
 
 				case ContextMenuItems.PLAY_NEXT:
-					if (selection instanceof Song) {
-						long[] ids = new long[]{selection.getId()};
-						MusicUtils.playNext(this, ids);
-					}
+					if (selection instanceof Song)
+						MusicUtils.playNext(this, new long[]{selection.getId()});
 					return true;
 
 				case ContextMenuItems.NEW_PLAYLIST:
-					if (selection instanceof Album) {
-						long[] ids = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
-						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
-					} else if (selection instanceof Artist) {
-						long[] ids = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
-						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
-					} else if (selection instanceof Song) {
-						long[] ids = new long[]{selection.getId()};
-						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, "");
-					}
+					if (selection instanceof Album)
+						albumSongLoader.execute(selection.getId(), onAddToNewPlaylist);
+					else if (selection instanceof Artist)
+						artistSongLoader.execute(selection.getId(), onAddToNewPlaylist);
+					else if (selection instanceof Song)
+						PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, new long[]{selection.getId()}, "");
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (mPlaylistId != -1L) {
-						if (selection instanceof Album) {
-							long[] albumSongIds = MusicUtils.getSongListForAlbum(getApplicationContext(), selection.getId());
-							MusicUtils.addToPlaylist(this, albumSongIds, mPlaylistId);
-						} else if (selection instanceof Artist) {
-							long[] artistSongIds = MusicUtils.getSongListForArtist(getApplicationContext(), selection.getId());
-							MusicUtils.addToPlaylist(this, artistSongIds, mPlaylistId);
-						} else if (selection instanceof Song) {
-							long[] ids = new long[]{selection.getId()};
-							MusicUtils.addToPlaylist(this, ids, mPlaylistId);
-						}
+					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					if (selectedPlaylistId != -1L) {
+						if (selection instanceof Album)
+							albumSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
+						else if (selection instanceof Artist)
+							artistSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
+						else if (selection instanceof Song)
+							MusicUtils.addToPlaylist(this, new long[]{selection.getId()}, selectedPlaylistId);
 					}
 					return true;
 
@@ -380,5 +383,46 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 	@Override
 	protected void onRefresh() {
 		// not used
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(this, ids, 0, false);
+	}
+
+	/**
+	 * add loaded songs to queue
+	 */
+	private void onAddToQueue(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToQueue(this, ids);
+	}
+
+	/**
+	 * create a new playlist with the loaded songs
+	 */
+	private void onAddToNewPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		PlaylistDialog.show(getSupportFragmentManager(), PlaylistDialog.CREATE, 0, ids, null);
+	}
+
+	/**
+	 * save the loaded songs into an existing playlist
+	 */
+	private void onAddToExistingPlaylist(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.addToPlaylist(this, ids, selectedPlaylistId);
+	}
+
+	/**
+	 * delete the loaded songs
+	 */
+	private void onSongsDelete(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		String name = selection != null ? selection.getName() : "";
+		MusicUtils.openDeleteDialog(this, name, ids);
 	}
 }

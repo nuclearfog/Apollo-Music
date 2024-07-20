@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.PopularSongsLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
@@ -44,7 +44,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	 */
 	private ProfileSongAdapter mAdapter;
 
-	private PopularSongsLoader mLoader;
+	private PopularSongLoader mLoader;
 
 	/**
 	 * context menu selection
@@ -57,7 +57,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	 */
 	@Override
 	protected void init(Bundle param) {
-		mLoader = new PopularSongsLoader(requireContext());
+		mLoader = new PopularSongLoader(requireContext());
 		// sets empty list text
 		mAdapter = new ProfileSongAdapter(requireContext(), DISPLAY_PLAYLIST_SETTING, false);
 		setAdapter(mAdapter);

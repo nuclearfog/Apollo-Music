@@ -275,8 +275,7 @@ public class RecentFragment extends Fragment implements AsyncCallback<List<Album
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		if (view.getId() == R.id.image) {
-			long[] list = MusicUtils.getSongListForAlbum(getContext(), id);
-			MusicUtils.playAll(requireActivity(), list, 0, false);
+			albumSongLoader.execute(id, onPlaySongs);
 		} else {
 			Album selection = mAdapter.getItem(position);
 			if (selection != null) {

@@ -13,11 +13,11 @@ import java.util.List;
  *
  * @author nuclearfog
  */
-public class PopularSongsLoader extends AsyncExecutor<Void, List<Song>> {
+public class PopularSongLoader extends AsyncExecutor<Void, List<Song>> {
 
 	private PopularStore popularStore;
 
-	public PopularSongsLoader(Context context) {
+	public PopularSongLoader(Context context) {
 		super(context);
 		popularStore = PopularStore.getInstance(context);
 	}

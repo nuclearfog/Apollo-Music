@@ -42,6 +42,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.receiver.PlaybackStatus;
@@ -55,6 +57,8 @@ import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
+
+import java.util.List;
 
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and
@@ -71,6 +75,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 * request code for permission result
 	 */
 	private static final int REQ_CHECK_PERM = 0x1139398F;
+
+	private AsyncCallback<List<Song>> onSongsShuffle = this::onSongsShuffle;
 
 	/**
 	 * Play and pause button (BAB)
@@ -103,6 +109,8 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	private PlaybackStatus mPlaybackStatus;
 
+	private SongLoader songLoader;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -114,6 +122,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatus(this);
+		songLoader = new SongLoader(this);
 
 		init(savedInstanceState);
 		// Play and pause button
@@ -214,6 +223,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	protected void onDestroy() {
 		// Unbind from the service
 		MusicUtils.unbindFromService(this);
+		songLoader.cancel();
 		super.onDestroy();
 	}
 
@@ -298,7 +308,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			if (album != null) {
 				NavUtils.openAlbumProfile(this, album);
 			} else {
-				MusicUtils.shuffleAll(this);
+				songLoader.execute(null, onSongsShuffle);
 			}
 		}
 		// background clicked
@@ -310,8 +320,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 			}
 			// shuffle all track if queue is empty
 			else {
-				MusicUtils.shuffleAll(this);
-				updatePlaybackControls();
+				songLoader.execute(null, onSongsShuffle);
 			}
 		}
 		// repeat button clicked
@@ -326,7 +335,10 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		}
 		// play button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			MusicUtils.togglePlayPause(this);
+			boolean succed = MusicUtils.togglePlayPause(this);
+			if (!succed) {
+				songLoader.execute(null, onSongsShuffle);
+			}
 		}
 		// go to previous track
 		else if (v.getId() == R.id.action_button_previous) {
@@ -417,6 +429,15 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
 		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+	}
+
+	/**
+	 * called after songs loaded asynchronously to shuffle all tracks
+	 */
+	private void onSongsShuffle(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(this, ids, -1, true);
+		updatePlaybackControls();
 	}
 
 	/**

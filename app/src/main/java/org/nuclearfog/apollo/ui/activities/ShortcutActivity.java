@@ -22,12 +22,12 @@ import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
-import org.nuclearfog.apollo.async.loader.FavoritesLoader;
+import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
 import org.nuclearfog.apollo.async.loader.FolderSongLoader;
 import org.nuclearfog.apollo.async.loader.GenreSongLoader;
 import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
-import org.nuclearfog.apollo.async.loader.PopularSongsLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -172,7 +172,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					// Don't shuffle the Favorites track list
 					mShouldShuffle = false;
 					// Get the Favorites song list
-					FavoritesLoader favoriteLoader = new FavoritesLoader(this);
+					FavoriteSongLoader favoriteLoader = new FavoriteSongLoader(this);
 					favoriteLoader.execute(null, onSongsLoaded);
 					break;
 
@@ -180,7 +180,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					// Don't shuffle the popular track list
 					mShouldShuffle = false;
 					// Get the popular song list
-					PopularSongsLoader popularLoader = new PopularSongsLoader(this);
+					PopularSongLoader popularLoader = new PopularSongLoader(this);
 					popularLoader.execute(null, onSongsLoaded);
 					break;
 

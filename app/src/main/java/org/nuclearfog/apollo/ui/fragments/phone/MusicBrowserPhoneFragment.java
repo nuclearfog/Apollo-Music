@@ -27,6 +27,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.MusicBrowserAdapter;
@@ -41,6 +43,8 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.SortOrder;
 import org.nuclearfog.apollo.utils.ThemeUtils;
+
+import java.util.List;
 
 /**
  * This class is used to hold the {@link ViewPager} used for swiping between the
@@ -73,6 +77,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 */
 	public static final String META_CHANGED = TAG + ".meta_changed";
 
+	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
+
 	/**
 	 * Pager
 	 */
@@ -92,6 +98,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	 * viewmodel used to communicate with sub fragments
 	 */
 	private FragmentViewModel viewModel;
+
+	private SongLoader songLoader;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -115,6 +123,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		// Initialze the theme resources
 		mResources = new ThemeUtils(requireContext());
+		songLoader = new SongLoader(requireContext());
 		// Attach the adapter
 		mViewPager.setAdapter(adapter);
 		// Offscreen pager loading limit
@@ -143,6 +152,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public void onDestroy() {
 		// Save the last page the use was on
 		mPreferences.setStartPage(mViewPager.getCurrentItem());
+		songLoader.cancel();
 		super.onDestroy();
 	}
 
@@ -211,7 +221,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		// Shuffle all the songs
 		if (item.getItemId() == R.id.menu_shuffle) {
-			MusicUtils.shuffleAll(requireActivity());
+			songLoader.execute(null, onPlaySongs);
 		}
 		// Toggle the current track as a favorite and update the menu item
 		else if (item.getItemId() == R.id.menu_favorite) {
@@ -378,5 +388,13 @@ public class MusicBrowserPhoneFragment extends Fragment implements OnCenterItemC
 				viewModel.notify(RecentFragment.SCROLL_TOP);
 				break;
 		}
+	}
+
+	/**
+	 * play loaded songs
+	 */
+	private void onPlaySongs(List<Song> songs) {
+		long[] ids = MusicUtils.getIDsFromSongList(songs);
+		MusicUtils.playAll(requireActivity(), ids, 0, false);
 	}
 }

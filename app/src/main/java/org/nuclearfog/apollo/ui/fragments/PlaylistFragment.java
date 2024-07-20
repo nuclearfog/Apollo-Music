@@ -39,11 +39,11 @@ import androidx.lifecycle.ViewModelProvider;
 import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
-import org.nuclearfog.apollo.async.loader.FavoritesLoader;
+import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
 import org.nuclearfog.apollo.async.loader.LastAddedLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistLoader;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
-import org.nuclearfog.apollo.async.loader.PopularSongsLoader;
+import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.model.Playlist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -179,7 +179,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 				case ContextMenuItems.PLAY_SELECTION:
 					// play favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						FavoritesLoader loader = new FavoritesLoader(requireContext());
+						FavoriteSongLoader loader = new FavoriteSongLoader(requireContext());
 						loader.execute(null, onPlaySongs);
 					}
 					// play last added playlist
@@ -189,7 +189,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					}
 					// play popular playlist
 					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						PopularSongsLoader loader = new PopularSongsLoader(requireContext());
+						PopularSongLoader loader = new PopularSongLoader(requireContext());
 						loader.execute(null, onPlaySongs);
 					}
 					// play custom playlist
@@ -201,7 +201,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 				case ContextMenuItems.ADD_TO_QUEUE:
 					// add favorite playlist
 					if (selectedPlaylist.getId() == Playlist.FAVORITE_ID) {
-						FavoritesLoader loader = new FavoritesLoader(requireContext());
+						FavoriteSongLoader loader = new FavoriteSongLoader(requireContext());
 						loader.execute(null, onAddToQueue);
 					}
 					// add last added playlist
@@ -211,7 +211,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					}
 					// add popular playlist
 					else if (selectedPlaylist.getId() == Playlist.POPULAR_ID) {
-						PopularSongsLoader loader = new PopularSongsLoader(requireContext());
+						PopularSongLoader loader = new PopularSongLoader(requireContext());
 						loader.execute(null, onAddToQueue);
 					}
 					// add custom playlist to queue

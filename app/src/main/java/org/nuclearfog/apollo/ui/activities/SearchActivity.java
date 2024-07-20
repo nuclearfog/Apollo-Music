@@ -241,7 +241,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 					if (selection instanceof Album)
 						NavUtils.openArtistProfile(this, ((Album) selection).getArtist());
 					else if (selection instanceof Artist)
-						NavUtils.openArtistProfile(this, ((Artist) selection).getName());
+						NavUtils.openArtistProfile(this, selection.getName());
 					else if (selection instanceof Song)
 						NavUtils.openArtistProfile(this, ((Song) selection).getArtist());
 					return true;

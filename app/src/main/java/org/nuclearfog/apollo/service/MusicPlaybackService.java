@@ -1548,10 +1548,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (pos >= 0 && pos < mPlayList.size()) {
 				mPlayPos = pos;
 			}
-			synchronized (this) {
-				clearCurrentTrackInformation();
-				openCurrentAndNext();
-			}
+			clearCurrentTrackInformation();
+			openCurrentAndNext();
 			if (mPlayer.initialized()) {
 				long seekpos = settings.getSeekPosition();
 				seekTo(seekpos >= 0 && seekpos <= mPlayer.getDuration() ? seekpos : 0);

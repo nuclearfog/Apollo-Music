@@ -11,10 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import static android.Manifest.permission.POST_NOTIFICATIONS;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.READ_MEDIA_AUDIO;
-import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -24,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,8 +34,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.SongLoader;
@@ -118,13 +115,6 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(getContentView());
-		// Control the media volume
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Initialize the broadcast receiver
-		mPlaybackStatus = new PlaybackStatus(this);
-		songLoader = new SongLoader(this);
-
-		init(savedInstanceState);
 		// Play and pause button
 		mPlayPauseButton = findViewById(R.id.action_button_play);
 		// Shuffle button
@@ -145,13 +135,15 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View nextButton = findViewById(R.id.action_button_next);
 		// background of bottom action bar
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
+		// Control the media volume
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		// Initialize the broadcast receiver
+		mPlaybackStatus = new PlaybackStatus(this);
+		songLoader = new SongLoader(this);
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));
 		// hide player controls
 		controls.setVisibility(View.INVISIBLE);
-
-		// Bind Apollo's service
-		MusicUtils.bindToService(this, this);
 
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);
@@ -162,20 +154,16 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mAlbumArt.setOnClickListener(this);
 
 		// check permissions before initialization
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			String[] permissions;
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-				permissions = new String[]{READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
-			} else {
-				permissions = new String[]{READ_EXTERNAL_STORAGE};
-			}
-			for (String permission : permissions) {
-				if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-					requestPermissions(permissions, REQ_CHECK_PERM);
-					return;
-				}
+		for (String permission : Config.PERMISSIONS) {
+			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(this, Config.PERMISSIONS, REQ_CHECK_PERM);
+				return;
 			}
 		}
+		// initialize sub-class
+		init(savedInstanceState);
+		// Bind Apollo's service
+		MusicUtils.bindToService(this, this);
 	}
 
 	/**
@@ -261,8 +249,12 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 					return;
 				}
 			}
+			// show battery optimization dialog
 			ApolloUtils.openBatteryOptimizationDialog(this);
+			// initialize subclass
 			init(getIntent().getExtras());
+			// Bind Apollo's service
+			MusicUtils.bindToService(this, this);
 		}
 	}
 

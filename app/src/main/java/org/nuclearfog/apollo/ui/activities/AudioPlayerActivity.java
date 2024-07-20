@@ -17,6 +17,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -48,6 +49,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
+import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -248,6 +250,13 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		controls.setVisibility(View.INVISIBLE);
+		// go to home activity if there is any missing permission
+		for (String permission : Config.PERMISSIONS) {
+			if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+				NavUtils.goHome(this);
+				return;
+			}
+		}
 		// Bind Apollo's service
 		MusicUtils.bindToService(this, this);
 

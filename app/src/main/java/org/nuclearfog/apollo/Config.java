@@ -11,6 +11,13 @@
 
 package org.nuclearfog.apollo;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_MEDIA_AUDIO;
+import static android.Manifest.permission.READ_MEDIA_IMAGES;
+
+import android.os.Build;
+
 /**
  * App-wide constants.
  *
@@ -57,6 +64,19 @@ public final class Config {
 	public static final float DRAG_DROP_MAX_SPEED = 3.0f;
 
 	public static final float OPACITY_HIDDEN = 0.4f;
+
+	/**
+	 * permissions used for Android 6+
+	 */
+	public static final String[] PERMISSIONS;
+
+	static {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			PERMISSIONS = new String[]{READ_MEDIA_AUDIO, READ_MEDIA_IMAGES, POST_NOTIFICATIONS};
+		} else {
+			PERMISSIONS = new String[]{READ_EXTERNAL_STORAGE};
+		}
+	}
 
 	/* This class is never initiated. */
 	private Config() {

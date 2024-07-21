@@ -53,7 +53,6 @@
 	<string name="cancel">İmtina</string>
 	<string name="delete_dialog_title"><xliff:g id="item" example="album">%s</xliff:g> silinsin?</string>
 	<string name="new_photo">Qalereyadan fotoşəkil seç</string>
-	<string name="google_search">Google-da axtar</string>
 	<string name="old_photo">Köhnə fotoşəkildən istifadə et</string>
 	<string name="context_menu_more_by_artist">Sənətçidən daha çox</string>
 	<string name="context_menu_rename_playlist">Yenidən adlandır</string>

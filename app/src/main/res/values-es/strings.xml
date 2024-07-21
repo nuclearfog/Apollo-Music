@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Esta operación no se puede deshacer</string>
 	<string name="delete_warning">Esta operación borrará todas las imágenes almacenadas en caché</string>
 	<string name="new_photo">Elegir imagen de la Galería</string>
-	<string name="google_search">Buscar en Google</string>
 	<string name="use_default">Usar imagen por defecto</string>
 	<string name="old_photo">Usar imagen previa</string>
 	<string name="context_menu_play_selection">Reproducir</string>

@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Não pode ser desfeito</string>
 	<string name="delete_warning">Isto irá eliminar permanentemente as entradas de imagem em cache</string>
 	<string name="new_photo">Escolher foto da Galeria</string>
-	<string name="google_search">Pesquisa Google</string>
 	<string name="use_default">Usar foto padrão</string>
 	<string name="old_photo">Usar foto antiga</string>
 	<string name="context_menu_play_selection">Reproduzir</string>

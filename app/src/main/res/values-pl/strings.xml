@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Operacja nie może zostać cofnięta</string>
 	<string name="delete_warning">Grafiki z pamięci podręcznej zostaną trwale usunięte</string>
 	<string name="new_photo">Użyj zdjęcia z galerii</string>
-	<string name="google_search">Wyszukiwarka Google</string>
 	<string name="use_default">Użyj domyślnego zdjęcia</string>
 	<string name="old_photo">Użyj starego zdjęcia</string>
 	<string name="context_menu_play_selection">Odtwórz</string>

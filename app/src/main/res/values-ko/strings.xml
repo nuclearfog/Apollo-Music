@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">이 작업은 되돌릴 수 없습니다</string>
 	<string name="delete_warning">임시 저장된 이미지들을 영구적으로 제거합니다</string>
 	<string name="new_photo">갤러리에서 사진 선택</string>
-	<string name="google_search">Google 검색</string>
 	<string name="use_default">기본 사진 사용</string>
 	<string name="old_photo">이전 사진 사용</string>
 	<string name="context_menu_play_selection">재생</string>

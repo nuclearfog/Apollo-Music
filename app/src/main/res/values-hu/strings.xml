@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Ezt nem lehet visszavonni</string>
 	<string name="delete_warning">Ezzel végleg törli a gyorsítótárazott képeket</string>
 	<string name="new_photo">Kép kiválasztása a Galériából</string>
-	<string name="google_search">Google keresés</string>
 	<string name="use_default">Alapértelmezett kép használata</string>
 	<string name="old_photo">Régi kép használata</string>
 	<string name="context_menu_play_selection">Lejátszás</string>

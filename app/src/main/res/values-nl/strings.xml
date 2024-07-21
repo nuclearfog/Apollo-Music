@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Dit kan niet ongedaan worden gemaakt</string>
 	<string name="delete_warning">Hiermee worden alle opgeslagen afbeeldingen permanent verwijderd</string>
 	<string name="new_photo">Afbeelding selecteren uit Galerij</string>
-	<string name="google_search">Google Zoeken</string>
 	<string name="use_default">Standaardafbeelding</string>
 	<string name="old_photo">Oude afbeelding</string>
 	<string name="context_menu_play_selection">Afspelen</string>

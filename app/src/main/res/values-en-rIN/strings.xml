@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">This cannot be undone</string>
 	<string name="delete_warning">This will permanently delete the cached image entries</string>
 	<string name="new_photo">Choose photo from Gallery</string>
-	<string name="google_search">Google search</string>
 	<string name="use_default">Use default photo</string>
 	<string name="old_photo">Use old photo</string>
 	<string name="context_menu_play_selection">Play</string>

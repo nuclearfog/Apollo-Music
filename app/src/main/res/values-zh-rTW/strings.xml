@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">這個動作無法復原</string>
 	<string name="delete_warning">這將永久刪除已快取的影像</string>
 	<string name="new_photo">選擇來自圖片庫的相片</string>
-	<string name="google_search">Google 搜尋</string>
 	<string name="use_default">使用預設相片</string>
 	<string name="old_photo">使用舊相片</string>
 	<string name="context_menu_play_selection">播放</string>

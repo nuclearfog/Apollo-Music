@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Ovo se ne može poništiti</string>
 	<string name="delete_warning">Ovo će trajno izbrisati podatke spremljenih slika</string>
 	<string name="new_photo">Odaberi sliku iz galerije</string>
-	<string name="google_search">Google pretraga</string>
 	<string name="use_default">Koristi zadanu sliku</string>
 	<string name="old_photo">Koristi staru sliku</string>
 	<string name="context_menu_play_selection">Sviraj</string>

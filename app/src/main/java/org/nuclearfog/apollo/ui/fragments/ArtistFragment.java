@@ -38,10 +38,12 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.ArtistLoader;
 import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
+import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -91,6 +93,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
 	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
 	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+	private AsyncCallback<Boolean> onArtistHide = this::onArtistHiden;
 
 	/**
 	 * The adapter for the grid
@@ -114,6 +117,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 
 	private ArtistLoader artistLoader;
 	private ArtistSongLoader artistSongLoader;
+	private ExcludeMusicWorker excludeMusicWorker;
 
 	/**
 	 * Represents an artist
@@ -140,6 +144,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		preference = PreferenceUtils.getInstance(requireContext());
 		artistLoader = new ArtistLoader(requireContext());
 		artistSongLoader = new ArtistSongLoader(requireContext());
+		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// init list
@@ -174,6 +179,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		viewModel.getSelectedItem().removeObserver(this);
 		artistLoader.cancel();
 		artistSongLoader.cancel();
+		excludeMusicWorker.cancel();
 		super.onDestroyView();
 	}
 
@@ -237,8 +243,7 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 					return true;
 
 				case ContextMenuItems.HIDE_ARTIST:
-					MusicUtils.excludeArtist(requireContext(), selectedArtist);
-					MusicUtils.refresh(requireActivity());
+					excludeMusicWorker.execute(selectedArtist, onArtistHide);
 					return true;
 
 				case ContextMenuItems.DELETE:
@@ -410,5 +415,17 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedArtist != null ? selectedArtist.getName() : "";
 		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
+	}
+
+	/**
+	 * called after an entry was hidden
+	 */
+	private void onArtistHiden(Boolean hidden) {
+		if (getActivity() != null && selectedArtist != null) {
+			if (hidden) {
+				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+			}
+			MusicUtils.refresh(requireActivity());
+		}
 	}
 }

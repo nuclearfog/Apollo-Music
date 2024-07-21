@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Toto nie je možné vrátiť späť</string>
 	<string name="delete_warning">Obrázky vo vyrovnávacej pamäti budú natrvalo odstránené</string>
 	<string name="new_photo">Vybrať fotografiu z Galérie</string>
-	<string name="google_search">Vyhľadať pomocou Google</string>
 	<string name="use_default">Použiť predvolenú fotografiu</string>
 	<string name="old_photo">Použiť pôvodnú fotografiu</string>
 	<string name="context_menu_play_selection">Prehrať</string>

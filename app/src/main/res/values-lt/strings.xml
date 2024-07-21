@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Tai negali būti atšaukta</string>
 	<string name="delete_warning">Visam laikui bus ištrinti talpyklos vaizdo įrašai</string>
 	<string name="new_photo">Pasirinkite nuotrauką iš galerijos</string>
-	<string name="google_search">„Google“ paieška</string>
 	<string name="use_default">Naudoti numatytąją nuotrauką</string>
 	<string name="old_photo">Naudoti seną nuotrauką</string>
 	<string name="context_menu_play_selection">Paleisti</string>

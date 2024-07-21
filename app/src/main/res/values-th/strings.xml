@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">การกระทำนี้ไม่สามารถยกเลิกได้</string>
 	<string name="delete_warning">การกระทำนี้จะลบรูปภาพที่แคชอย่างถาวร</string>
 	<string name="new_photo">เลือกรูปจากแกลอรี</string>
-	<string name="google_search">ค้นหาด้วย Google</string>
 	<string name="use_default">เลือกรูปเริ่มต้น</string>
 	<string name="old_photo">ใช้รูปเก่า</string>
 	<string name="context_menu_play_selection">เล่น</string>

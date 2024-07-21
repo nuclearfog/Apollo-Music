@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Seda ei saa tagasi võtta</string>
 	<string name="delete_warning">See toiming kustutab puhverdatud pildid alatiseks</string>
 	<string name="new_photo">Vali foto galeriist</string>
-	<string name="google_search">Google\'i otsing</string>
 	<string name="use_default">Kasuta vaikimisi pilti</string>
 	<string name="old_photo">Kasuta vana pilti</string>
 	<string name="context_menu_play_selection">Esita</string>

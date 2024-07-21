@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">لا يمكن التراجع عن هذا</string>
 	<string name="delete_warning">سيؤدي هذا إلى حذف إدخالات الصورة المخزنة مؤقتاً بشكل دائم</string>
 	<string name="new_photo">اختيار صورة من معرض الصور</string>
-	<string name="google_search">بحث جوجل</string>
 	<string name="use_default">استخدام الصورة الافتراضية</string>
 	<string name="old_photo">استخدام الصور القديمة</string>
 	<string name="context_menu_play_selection">تشغيل</string>

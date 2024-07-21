@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Această acțiune nu poate fi anulată</string>
 	<string name="delete_warning">Aceasta va șterge permanent imaginile păstrate în cache</string>
 	<string name="new_photo">Alege poza din Galerie</string>
-	<string name="google_search">Căutare pe Google</string>
 	<string name="use_default">Utilizare foto implicită</string>
 	<string name="old_photo">Utilizare foto veche</string>
 	<string name="context_menu_play_selection">Redare</string>

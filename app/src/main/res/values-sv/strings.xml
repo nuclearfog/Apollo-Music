@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Detta kan inte ångras</string>
 	<string name="delete_warning">Detta kommer ta bort cacheade bilder permanent</string>
 	<string name="new_photo">Välj foto från Galleri</string>
-	<string name="google_search">Sök på Google</string>
 	<string name="use_default">Använd standardfoto</string>
 	<string name="old_photo">Använd gammalt foto</string>
 	<string name="context_menu_play_selection">Spela</string>

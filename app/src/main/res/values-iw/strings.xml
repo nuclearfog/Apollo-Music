@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">פעולה זו אינה ניתנת לביטול</string>
 	<string name="delete_warning">פעולה זו תמחוק לתמיד את התמונות שבמטמון</string>
 	<string name="new_photo">בחר תמונה מגלריה</string>
-	<string name="google_search">חיפוש גוגל</string>
 	<string name="use_default">השתמש בתמונת ברירת מחדל</string>
 	<string name="old_photo">השתמש בתמונה הישנה</string>
 	<string name="context_menu_play_selection">נגן</string>

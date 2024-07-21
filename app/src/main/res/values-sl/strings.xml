@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Tega ni mogoče razveljaviti</string>
 	<string name="delete_warning">To bo trajno izbrisalo vnose predpomnjenih slik</string>
 	<string name="new_photo">Izberite fotografijo iz galerije</string>
-	<string name="google_search">Iskanje Google</string>
 	<string name="use_default">Uporabi privzeto fotografijo</string>
 	<string name="old_photo">Uporabi staro fotografijo</string>
 	<string name="context_menu_play_selection">Predvajaj</string>

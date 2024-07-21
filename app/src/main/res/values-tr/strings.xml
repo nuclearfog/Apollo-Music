@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Bu geri alınamaz</string>
 	<string name="delete_warning">Bu işlem önbellekteki resimleri kalıcı olarak silecek</string>
 	<string name="new_photo">Galeri\'den fotoğraf seç</string>
-	<string name="google_search">Google araması</string>
 	<string name="use_default">Varsayılan fotoğrafı kullan</string>
 	<string name="old_photo">Eski fotoğrafı kullan</string>
 	<string name="context_menu_play_selection">Oynat</string>

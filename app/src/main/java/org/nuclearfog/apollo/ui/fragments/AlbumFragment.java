@@ -38,10 +38,12 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumLoader;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
+import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.AlbumAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -91,6 +93,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 	private AsyncCallback<List<Song>> onAddToNewPlaylist = this::onAddToNewPlaylist;
 	private AsyncCallback<List<Song>> onAddToExistingPlaylist = this::onAddToExistingPlaylist;
 	private AsyncCallback<List<Song>> onSongsDelete = this::onSongsDelete;
+	private AsyncCallback<Boolean> onAlbumHide = this::onAlbumHide;
 
 	/**
 	 * app settings
@@ -121,6 +124,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 
 	private AlbumLoader albumLoader;
 	private AlbumSongLoader albumSongLoader;
+	private ExcludeMusicWorker excludeMusicWorker;
 
 	/**
 	 * {@inheritDoc}
@@ -136,6 +140,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		albumLoader = new AlbumLoader(requireContext());
 		albumSongLoader = new AlbumSongLoader(requireContext());
+		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		// init list
@@ -168,6 +173,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		viewModel.getSelectedItem().removeObserver(this);
 		albumLoader.cancel();
 		albumSongLoader.cancel();
+		excludeMusicWorker.cancel();
 		super.onDestroyView();
 	}
 
@@ -241,8 +247,7 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 					return true;
 
 				case ContextMenuItems.HIDE_ALBUM:
-					MusicUtils.excludeAlbum(requireContext(), selectedAlbum);
-					MusicUtils.refresh(requireActivity());
+					excludeMusicWorker.execute(selectedAlbum, onAlbumHide);
 					return true;
 			}
 		}
@@ -408,5 +413,17 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		String name = selectedAlbum != null ? selectedAlbum.getName() : "";
 		MusicUtils.openDeleteDialog(requireActivity(), name, ids);
+	}
+
+	/**
+	 * called after selected album was hidden
+	 */
+	private void onAlbumHide(Boolean hidden) {
+		if (getActivity() != null && selectedAlbum != null) {
+			if (hidden) {
+				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+			}
+			MusicUtils.refresh(requireActivity());
+		}
 	}
 }

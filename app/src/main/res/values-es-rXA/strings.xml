@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Esta operación nun pue desfacese</string>
 	<string name="delete_warning">Esta operación va desaniciar toles imáxenes almacenaes na caché</string>
 	<string name="new_photo">Esbillar imaxe de la Galería</string>
-	<string name="google_search">Guetar en Google</string>
 	<string name="use_default">Usar imaxe por defeutu</string>
 	<string name="old_photo">Usar imaxe previa</string>
 	<string name="context_menu_play_selection">Reproducir</string>

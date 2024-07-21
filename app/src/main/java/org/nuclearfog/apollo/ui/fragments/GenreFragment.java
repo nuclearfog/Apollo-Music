@@ -38,11 +38,13 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.GenreLoader;
 import org.nuclearfog.apollo.async.loader.GenreSongLoader;
+import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.GenreAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
@@ -77,6 +79,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
+	private AsyncCallback<Boolean> onGenreHidden = this::onGenreHidden;
 
 	/**
 	 * The adapter for the list
@@ -95,12 +98,13 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 
 	private GenreLoader genreLoader;
 	private GenreSongLoader genreSongLoader;
+	private ExcludeMusicWorker excludeMusicWorker;
 
 	/**
 	 * context menus selection
 	 */
 	@Nullable
-	private Genre selection;
+	private Genre selectedGenre;
 
 	/**
 	 * Empty constructor as per the {@link Fragment} documentation
@@ -123,6 +127,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		mAdapter = new GenreAdapter(requireContext());
 		genreLoader = new GenreLoader(requireContext());
 		genreSongLoader = new GenreSongLoader(requireContext());
+		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
 		// Enable the options menu
 		setHasOptionsMenu(true);
 		mList.setEmptyView(emptyHolder);
@@ -144,6 +149,7 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		viewModel.getSelectedItem().removeObserver(this);
 		genreLoader.cancel();
 		genreSongLoader.cancel();
+		excludeMusicWorker.cancel();
 		super.onDestroyView();
 	}
 
@@ -157,21 +163,21 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		if (menuInfo instanceof AdapterContextMenuInfo) {
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			// Create a new genre
-			selection = mAdapter.getItem(info.position);
-			if (selection != null) {
+			selectedGenre = mAdapter.getItem(info.position);
+			if (selectedGenre != null) {
 				// Play the genre
 				menu.add(GROUP_ID, ContextMenuItems.PLAY_SELECTION, Menu.NONE, R.string.context_menu_play_selection);
 				// Add the genre to the queue
 				menu.add(GROUP_ID, ContextMenuItems.ADD_TO_QUEUE, Menu.NONE, R.string.add_to_queue);
 				// hide genre from list
-				if (selection.isVisible()) {
+				if (selectedGenre.isVisible()) {
 					menu.add(GROUP_ID, ContextMenuItems.HIDE_GENRE, Menu.NONE, R.string.context_menu_hide_genre);
 				} else {
 					menu.add(GROUP_ID, ContextMenuItems.HIDE_GENRE, Menu.NONE, R.string.context_menu_unhide_genre);
 				}
 			}
 		} else {
-			selection = null;
+			selectedGenre = null;
 		}
 	}
 
@@ -180,21 +186,20 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	 */
 	@Override
 	public boolean onContextItemSelected(@NonNull MenuItem item) {
-		if (item.getGroupId() == GROUP_ID && selection != null) {
+		if (item.getGroupId() == GROUP_ID && selectedGenre != null) {
 			switch (item.getItemId()) {
 				case ContextMenuItems.PLAY_SELECTION:
-					String genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
+					String genreIds = ApolloUtils.serializeIDs(selectedGenre.getGenreIds());
 					genreSongLoader.execute(genreIds, onPlaySongs);
 					return true;
 
 				case ContextMenuItems.ADD_TO_QUEUE:
-					genreIds = ApolloUtils.serializeIDs(selection.getGenreIds());
+					genreIds = ApolloUtils.serializeIDs(selectedGenre.getGenreIds());
 					genreSongLoader.execute(genreIds, onAddToQueue);
 					return true;
 
 				case ContextMenuItems.HIDE_GENRE:
-					MusicUtils.excludeGenre(requireContext(), selection);
-					MusicUtils.refresh(requireActivity());
+					excludeMusicWorker.execute(selectedGenre, onGenreHidden);
 					return true;
 			}
 		}
@@ -262,5 +267,17 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 	private void onAddToQueue(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.addToQueue(requireActivity(), ids);
+	}
+
+	/**
+	 * called after a genre was hidden
+	 */
+	private void onGenreHidden(Boolean hidden) {
+		if (getActivity() != null && selectedGenre != null) {
+			if (hidden) {
+				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+			}
+			MusicUtils.refresh(requireActivity());
+		}
 	}
 }

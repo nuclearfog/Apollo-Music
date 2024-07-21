@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Αυτή η ενέργεια δεν μπορεί να αναιρεθεί</string>
 	<string name="delete_warning">Θα διαγραφούνε μόνιμα οι προσωρινά αποθηκευμένες εικόνες</string>
 	<string name="new_photo">Επιλέξτε φωτογραφία από τη Συλλογή</string>
-	<string name="google_search">Αναζήτηση Google</string>
 	<string name="use_default">Χρήση προεπιλεγμένης φωτογραφίας</string>
 	<string name="old_photo">Χρήση παλιάς φωτογραφίας</string>
 	<string name="context_menu_play_selection">Αναπαραγωγή</string>

@@ -31,11 +31,13 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.FolderLoader;
 import org.nuclearfog.apollo.async.loader.FolderSongLoader;
+import org.nuclearfog.apollo.async.worker.ExcludeMusicWorker;
 import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.adapters.listview.FolderAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -58,6 +60,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 
 	private AsyncCallback<List<Song>> onPlaySongs = this::onPlaySongs;
 	private AsyncCallback<List<Song>> onAddToQueue = this::onAddToQueue;
+	private AsyncCallback<Boolean> onExcludeFolder = this::onExcludeFolder;
 
 	/**
 	 * listview adapter for music folder view
@@ -81,6 +84,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	private Folder selectedFolder;
 	private FolderLoader folderLoader;
 	private FolderSongLoader folderSongLoader;
+	private ExcludeMusicWorker excludeMusicWorker;
 
 	/**
 	 * {@inheritDoc}
@@ -97,6 +101,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		viewModel = new ViewModelProvider(requireActivity()).get(FragmentViewModel.class);
 		folderLoader = new FolderLoader(requireContext());
 		folderSongLoader = new FolderSongLoader(requireContext());
+		excludeMusicWorker = new ExcludeMusicWorker(requireContext());
 		//
 		setHasOptionsMenu(true);
 		// set listview
@@ -120,6 +125,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 		viewModel.getSelectedItem().removeObserver(this);
 		folderLoader.cancel();
 		folderSongLoader.cancel();
+		excludeMusicWorker.cancel();
 		super.onDestroyView();
 	}
 
@@ -164,8 +170,7 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 					return true;
 
 				case ContextMenuItems.HIDE_FOLDER:
-					MusicUtils.excludeFolder(requireContext(), selectedFolder);
-					MusicUtils.refresh(requireActivity());
+					excludeMusicWorker.execute(selectedFolder, onExcludeFolder);
 					return true;
 			}
 		}
@@ -229,5 +234,17 @@ public class FolderFragment extends Fragment implements AsyncCallback<List<Folde
 	private void onAddToQueue(List<Song> songs) {
 		long[] ids = MusicUtils.getIDsFromSongList(songs);
 		MusicUtils.addToQueue(requireActivity(), ids);
+	}
+
+	/**
+	 * add songs of a folder to exlude list
+	 */
+	private void onExcludeFolder(Boolean hidden) {
+		if (getActivity() != null && selectedFolder != null) {
+			if (hidden) {
+				AppMsg.makeText(requireActivity(), R.string.item_hidden, AppMsg.STYLE_CONFIRM).show();
+			}
+			MusicUtils.refresh(requireActivity());
+		}
 	}
 }

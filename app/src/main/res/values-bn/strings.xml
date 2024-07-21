@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">এটি আর পূর্বাবস্থা আনা যাবে না</string>
 	<string name="delete_warning">এটি স্থায়ীভাবে সব ক্যাশ ছবি মুছে দেবে</string>
 	<string name="new_photo">গ্যালারী থেকে ফটো পছন্দ করুন</string>
-	<string name="google_search">গুগল অনুসন্ধান</string>
 	<string name="use_default">পূর্ব-নির্ধারিত চিত্র ব্যবহার করুন</string>
 	<string name="old_photo">পুরনো ছবি ব্যবহার করুন</string>
 	<string name="context_menu_play_selection">প্লে</string>

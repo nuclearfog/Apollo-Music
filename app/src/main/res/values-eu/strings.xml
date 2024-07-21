@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Hau ezin da desegin</string>
 	<string name="delete_warning">Honek katxean gordetako irudi guztiak ezabatuko ditu</string>
 	<string name="new_photo">Hautatu galeriako argazkia</string>
-	<string name="google_search">Google bilaketa</string>
 	<string name="use_default">Erabili argazki lehenetsia</string>
 	<string name="old_photo">Erabili aurreko irudia</string>
 	<string name="context_menu_play_selection">Erreproduzitu</string>

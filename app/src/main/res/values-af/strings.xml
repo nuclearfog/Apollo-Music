@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Hierdie kan nie ontgedaan gemaak word nie</string>
 	<string name="delete_warning">Items sal permanent verwyder word</string>
 	<string name="new_photo">Kies foto vanaf Gallery</string>
-	<string name="google_search">Google soektog</string>
 	<string name="use_default">Gebruik verstekfoto</string>
 	<string name="old_photo">Gebruik ou foto</string>
 	<string name="context_menu_play_selection">Speel</string>

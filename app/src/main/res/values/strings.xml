@@ -90,9 +90,10 @@
 	<string name="dialog_disable_bat_opt_ignore">ignore</string>
 	<string name="delete_warning">This will permanently delete the cached image entries</string>
 	<string name="new_photo">Choose photo from Gallery</string>
-	<string name="google_search">Google search</string>
 	<string name="use_default">Use default photo</string>
 	<string name="old_photo">Use old photo</string>
+	<string name="item_hidden">entry hidden successfully</string>
+	<string name="web_search">Websearch</string>
 
 	<!-- Context menu items -->
 	<string name="context_menu_play_selection">Play</string>

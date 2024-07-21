@@ -84,7 +84,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 					// Option to fetch the old artist image
 					mChoices.add(IDX_OLD, getString(R.string.context_menu_fetch_artist_image));
 					// Search Google for the artist name
-					mChoices.add(IDX_SEARCH, getString(R.string.google_search));
+					mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 				}
 				break;
 
@@ -95,7 +95,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				mChoices.add(IDX_OLD, getString(R.string.old_photo));
 				if (ApolloUtils.isOnline(requireContext())) {
 					// Search Google for the album name
-					mChoices.add(IDX_SEARCH, getString(R.string.google_search));
+					mChoices.add(IDX_SEARCH, getString(R.string.web_search));
 					// Option to fetch the album image
 					mChoices.add(IDX_FETCH, getString(R.string.context_menu_fetch_album_art));
 				}

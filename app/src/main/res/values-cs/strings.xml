@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Tuto operaci nelze vrátit</string>
 	<string name="delete_warning">Tímto trvale odstraníte stáhnuté obrázky</string>
 	<string name="new_photo">Zvolte fotografii z Galerie</string>
-	<string name="google_search">Vyhledávání Google</string>
 	<string name="use_default">Použít výchozí fotku</string>
 	<string name="old_photo">Použít starou fotku</string>
 	<string name="context_menu_play_selection">Přehrát</string>

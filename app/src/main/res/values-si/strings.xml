@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">මෙය ආපසු කළ නොහැක</string>
 	<string name="delete_warning">මෙමගින් හැඹිලිගත පින්තූර සටහන් ස්ථිරවම මකා දැමෙනු ඇත</string>
 	<string name="new_photo">සේයාව ගැලරියෙන් තෝරන්න</string>
-	<string name="google_search">ගූගල් සෙවීම</string>
 	<string name="use_default">පෙරනිමි සේයාව භාවිතාකරන්න</string>
 	<string name="old_photo">පැරණි සේයාව භාවිතාකරන්න</string>
 	<string name="context_menu_play_selection">ධාවනය</string>

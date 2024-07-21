@@ -78,7 +78,6 @@
 	<string name="cannot_be_undone">此操作无法撤销</string>
 	<string name="delete_warning">这将永久删除缓存的图像</string>
 	<string name="new_photo">从相册选择照片</string>
-	<string name="google_search">谷歌搜索</string>
 	<string name="use_default">使用默认照片</string>
 	<string name="old_photo">使用旧照片</string>
 

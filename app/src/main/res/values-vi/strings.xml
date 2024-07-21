@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Không thể phục hồi điều này</string>
 	<string name="delete_warning">Điều này sẽ xoá vĩnh viên ảnh đã lưu trong bộ đệm</string>
 	<string name="new_photo">Chọn ảnh từ Thư viện</string>
-	<string name="google_search">Tìm bằng Google</string>
 	<string name="use_default">Dùng ảnh mặc định</string>
 	<string name="old_photo">Dùng ảnh cũ</string>
 	<string name="context_menu_play_selection">Phát</string>

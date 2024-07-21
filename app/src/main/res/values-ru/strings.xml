@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Это действие не может быть отменено.</string>
 	<string name="delete_warning">Загруженные изображения будут удалены</string>
 	<string name="new_photo">Выбрать из Галереи</string>
-	<string name="google_search">Найти в Google</string>
 	<string name="use_default">Изображение по умолчанию</string>
 	<string name="old_photo">Исходное изображение</string>
 	<string name="context_menu_play_selection">Воспроизвести</string>

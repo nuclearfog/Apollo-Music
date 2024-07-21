@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Ова акција не може бити поништена</string>
 	<string name="delete_warning">Ова акција ће трајно уклонити кеширане слике</string>
 	<string name="new_photo">Изабери слику из галерије</string>
-	<string name="google_search">Google претрага</string>
 	<string name="use_default">Користи подразумевану слику</string>
 	<string name="old_photo">Користи стару слику</string>
 	<string name="context_menu_play_selection">Пусти</string>

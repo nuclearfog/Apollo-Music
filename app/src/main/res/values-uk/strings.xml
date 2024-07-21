@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Це не можна скасувати</string>
 	<string name="delete_warning">Це видалить кешовані зображення</string>
 	<string name="new_photo">Вибрати фото з галереї</string>
-	<string name="google_search">Пошук Google</string>
 	<string name="use_default">Використовувати типове</string>
 	<string name="old_photo">Використовувати старе</string>
 	<string name="context_menu_play_selection">Грати</string>

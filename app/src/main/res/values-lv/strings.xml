@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Darbību nav iespējams ataukt</string>
 	<string name="delete_warning">Tiks neatgriezeniski dzēstas visas kešatmiņas bildes</string>
 	<string name="new_photo">Izvēlēties foto no galerijas</string>
-	<string name="google_search">Google meklēšana</string>
 	<string name="use_default">Izmantot noklusēto foto</string>
 	<string name="old_photo">Izmantot agrāko foto</string>
 	<string name="context_menu_play_selection">Atskaņot</string>

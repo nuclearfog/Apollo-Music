@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Questa azione non può essere annullata</string>
 	<string name="delete_warning">Eliminare definitivamente le immagini memorizzate nella cache?</string>
 	<string name="new_photo">Scegli foto dalla Galleria</string>
-	<string name="google_search">Google search</string>
 	<string name="use_default">Usa foto predefinita</string>
 	<string name="old_photo">Usa foto vecchia</string>
 	<string name="context_menu_play_selection">Riproduci</string>

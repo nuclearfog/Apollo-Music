@@ -62,7 +62,6 @@
 	<string name="cannot_be_undone">Dies kann nicht rückgängig gemacht werden.</string>
 	<string name="delete_warning">Alle zwischengespeicherten Bilder werden dauerhaft gelöscht.</string>
 	<string name="new_photo">Foto aus Galerie auswählen</string>
-	<string name="google_search">Google-Suche</string>
 	<string name="use_default">Standardfoto verwenden</string>
 	<string name="old_photo">Altes Foto verwenden</string>
 	<string name="context_menu_play_selection">Wiedergeben</string>
@@ -170,4 +169,5 @@
 	<string name="menu_delete_preset">Voreinstellung löschen</string>
 	<string name="settings_source_code">Quellcode</string>
 	<string name="settings_source_code_descr">Im Browser öffnen</string>
+	<string name="item_hidden">Eintrag erfolgreich versteckt</string>
 </resources>

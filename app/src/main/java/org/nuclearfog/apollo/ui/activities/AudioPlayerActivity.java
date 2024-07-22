@@ -503,7 +503,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
-			MusicUtils.onPostDelete(this);
+			MusicUtils.refresh(this);
 		}
 	}
 

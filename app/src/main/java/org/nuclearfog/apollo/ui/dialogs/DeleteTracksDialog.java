@@ -14,6 +14,7 @@ package org.nuclearfog.apollo.ui.dialogs;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,37 +22,39 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.cache.ImageFetcher;
+import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
+import org.nuclearfog.apollo.async.worker.TrackDeleteWorker;
+import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * Alert dialog used to delete tracks.
- * <p>
- * TODO: Remove albums from the recents list upon deletion.
+ * used for Android versions without scoped storage
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public class DeleteTracksDialog extends DialogFragment implements OnClickListener {
+public class DeleteTracksDialog extends DialogFragment implements OnClickListener, AsyncCallback<Integer> {
 
 	public static final String NAME = "DeleteDialog";
 
+	/**
+	 * key to set the dialog title message
+	 * value type is String
+	 */
 	private static final String KEY_TITLE = NAME + "_title";
 
-	private static final String KEY_IMAGEKEY = NAME + "_key";
-
+	/**
+	 * key to add a long array of track IDs
+	 * value type is long[]
+	 */
 	private static final String KEY_ITEMS = NAME + "_items";
 
-	/**
-	 * The item(s) to delete
-	 */
-	private long[] mItemList = {};
-	/**
-	 * The image cache
-	 */
-	private ImageFetcher mFetcher;
+	private TrackDeleteWorker trackDeleteWorker;
 
-	private String key = "";
+	private long[] mItemList = {};
 	private String title = "";
 
 	/**
@@ -63,14 +66,12 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	/**
 	 * @param title The title of the artist, album, or song to delete
 	 * @param items The item(s) to delete
-	 * @param key   The key used to remove items from the cache.
 	 * @return A new instance of the dialog
 	 */
-	public static DeleteTracksDialog newInstance(String title, long[] items, String key) {
+	public static DeleteTracksDialog newInstance(String title, long[] items) {
 		DeleteTracksDialog dialog = new DeleteTracksDialog();
 		Bundle args = new Bundle();
 		args.putString(KEY_TITLE, title);
-		args.putString(KEY_IMAGEKEY, key);
 		args.putLongArray(KEY_ITEMS, items);
 		dialog.setArguments(args);
 		return dialog;
@@ -84,7 +85,6 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		if (getArguments() != null) {
 			title = getArguments().getString(KEY_TITLE, "");
-			key = getArguments().getString(KEY_IMAGEKEY, "");
 			long[] mItemList = getArguments().getLongArray(KEY_ITEMS);
 			if (mItemList != null) {
 				this.mItemList = mItemList;
@@ -94,7 +94,7 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 		// Get the image cache key
 		String dialogTitle = getString(R.string.delete_dialog_title, title);
 		// Initialize the image cache
-		mFetcher = ApolloUtils.getImageFetcher(requireActivity());
+		trackDeleteWorker = new TrackDeleteWorker(requireContext());
 		// Build the dialog
 		return new AlertDialog.Builder(requireContext()).setTitle(dialogTitle)
 				.setMessage(R.string.cannot_be_undone)
@@ -103,17 +103,45 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 				.create();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onDestroyView() {
+		trackDeleteWorker.cancel();
+		super.onDestroyView();
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
-			// Remove the items from the image cache
-			mFetcher.removeFromCache(key);
 			// Delete the selected item(s)
-			MusicUtils.deleteTracks(requireActivity(), mItemList);
-			dialog.dismiss();
+			trackDeleteWorker.execute(ApolloUtils.toLongArray(mItemList), this);
+			// prevent dialog to be dismissed after this method
+			if (dialog instanceof AlertDialog)
+				((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
-			dialog.dismiss();
+			dismiss();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onResult(@NonNull Integer count) {
+		if (getActivity() != null) {
+			String message = StringUtils.makeLabel(getActivity(), R.plurals.NNNtracksdeleted, count);
+			AppMsg.makeText(getActivity(), message, AppMsg.STYLE_CONFIRM).show();
+			// We deleted a number of tracks, which could affect any number of
+			// things in the media content domain, so update everything.
+			getActivity().getContentResolver().notifyChange(Uri.parse("content://media"), null);
+			// Notify the lists to update
+			MusicUtils.refresh(getActivity());
+			dismiss();
 		}
 	}
 }

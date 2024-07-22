@@ -63,7 +63,7 @@ public class ExcludeMusicWorker extends AsyncExecutor<Music, Boolean> {
 				}
 			} else if (param instanceof Album) {
 				type = Type.ALBUM;
-			}else if (param instanceof Artist) {
+			} else if (param instanceof Artist) {
 				type = Type.ARTIST;
 			} else if (param instanceof Genre) {
 				type = Type.GENRE;

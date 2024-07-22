@@ -91,7 +91,7 @@ public class HomeActivity extends ActivityBase {
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
-			MusicUtils.onPostDelete(this);
+			MusicUtils.refresh(this);
 		}
 	}
 }

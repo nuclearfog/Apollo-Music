@@ -30,7 +30,6 @@ import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.Menu;
 import android.view.SubMenu;
 import android.widget.ArrayAdapter;
@@ -49,15 +48,12 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
-import org.nuclearfog.apollo.store.PopularStore;
-import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
 
-import java.io.File;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -105,11 +101,6 @@ public final class MusicUtils {
 	private static final String PLAYLIST_REMOVE_TRACK = Playlists.Members.AUDIO_ID + "=?";
 
 	/**
-	 * selection to remove track from database
-	 */
-	private static final String DATABASE_REMOVE_TRACK = AudioColumns._ID + "=?";
-
-	/**
 	 * code to request file deleting
 	 * only for scoped storage
 	 */
@@ -131,7 +122,6 @@ public final class MusicUtils {
 	private static ContentValues[] mContentValuesCache;
 
 	private static int foregroundActivities = 0;
-	private static int markedTracks = 0;
 
 
 	/* This class is never initiated */
@@ -1082,56 +1072,6 @@ public final class MusicUtils {
 	}
 
 	/**
-	 * Perminately deletes item(s) from the user's device
-	 *
-	 * @param activity Activity used to access scoped storage. on old android version
-	 *                 otherwise its a context
-	 * @param list     The item(s) to delete.
-	 */
-	public static void deleteTracks(Activity activity, long[] list) {
-		markedTracks = list.length;
-		ContentResolver resolver = activity.getContentResolver();
-		String[] paths = removeTracksFromDatabase(activity, list);
-
-		// Use Scoped storage and build in dialog
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			try {
-				List<Uri> uris = new LinkedList<>();
-				for (long id : list) {
-					uris.add(Media.getContentUri(MediaStore.VOLUME_EXTERNAL, id));
-				}
-				PendingIntent requestRemove = MediaStore.createDeleteRequest(resolver, uris);
-				activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
-			} catch (Exception err) {
-				// thrown when no audio file were found
-				if (BuildConfig.DEBUG) {
-					err.printStackTrace();
-				}
-			}
-		}
-		// remove tracks directly from storage
-		else {
-			for (String filename : paths) {
-				try {
-					File file = new File(filename);
-					// File.delete can throw a security exception
-					if (!file.delete()) {
-						if (BuildConfig.DEBUG) {
-							Log.e("MusicUtils", "Failed to delete file " + filename);
-						}
-					}
-				} catch (Exception ex) {
-					// catch exception if file was not found
-					if (BuildConfig.DEBUG) {
-						ex.printStackTrace();
-					}
-				}
-			}
-			onPostDelete(activity);
-		}
-	}
-
-	/**
 	 * open delete dialog for tracks
 	 *
 	 * @param activity activity
@@ -1141,80 +1081,22 @@ public final class MusicUtils {
 	public static void openDeleteDialog(FragmentActivity activity, String title, long[] ids) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 			// Use system Dialog to delete media files
-			deleteTracks(activity, ids);
+			try {
+				List<Uri> uris = new ArrayList<>(ids.length);
+				for (long id : ids)
+					uris.add(Media.getContentUri(MediaStore.VOLUME_EXTERNAL, id));
+				PendingIntent requestRemove = MediaStore.createDeleteRequest(activity.getContentResolver(), uris);
+				activity.startIntentSenderForResult(requestRemove.getIntentSender(), REQUEST_DELETE_FILES, null, 0, 0, 0);
+			} catch (Exception err) {
+				// thrown when no audio file were found
+				if (BuildConfig.DEBUG) {
+					err.printStackTrace();
+				}
+			}
 		} else {
-			DeleteTracksDialog dialog = DeleteTracksDialog.newInstance(title, ids, null);
+			DeleteTracksDialog dialog = DeleteTracksDialog.newInstance(title, ids);
 			dialog.show(activity.getSupportFragmentManager(), DeleteTracksDialog.NAME);
 		}
-	}
-
-	/**
-	 * Action to take after tracks are removed
-	 *
-	 * @param activity activity context
-	 */
-	public static void onPostDelete(Activity activity) {
-		String message = StringUtils.makeLabel(activity, R.plurals.NNNtracksdeleted, markedTracks);
-		AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
-		// We deleted a number of tracks, which could affect any number of
-		// things in the media content domain, so update everything.
-		activity.getContentResolver().notifyChange(Uri.parse("content://media"), null);
-		// Notify the lists to update
-		refresh(activity);
-	}
-
-	/**
-	 * remove tracks from media database
-	 *
-	 * @param ids list of track IDs
-	 * @return path to removed entries
-	 */
-	private static String[] removeTracksFromDatabase(Activity activity, long[] ids) {
-		String[] result = {};
-		// get cursor to fetch track information
-		Cursor cursor = CursorFactory.makeTrackListCursor(activity, ids);
-		IApolloService service = getService(activity);
-		// Step 1: Remove selected tracks from the current playlist, as well
-		// as from the album art cache
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				result = new String[cursor.getCount()];
-				FavoritesStore favStore = FavoritesStore.getInstance(activity);
-				RecentStore recents = RecentStore.getInstance(activity);
-				PopularStore popular = PopularStore.getInstance(activity);
-				ContentResolver resolver = activity.getContentResolver();
-				for (int i = 0; i < ids.length; i++) {
-					// Remove from current playlist
-					long trackId = cursor.getLong(0);
-					result[i] = cursor.getString(1);
-					long albumId = cursor.getLong(2);
-					String[] idStr = {Long.toString(trackId)};
-					// Remove from the favorites playlist
-					favStore.removeFavorite(trackId);
-					// Remove any items in the recents database
-					recents.removeAlbum(albumId);
-					// remove track from most played list
-					popular.removeItem(trackId);
-					// remove track from database
-					resolver.delete(Media.EXTERNAL_CONTENT_URI, DATABASE_REMOVE_TRACK, idStr);
-					// move to next track
-					cursor.moveToNext();
-				}
-			}
-			cursor.close();
-		}
-		// remove tracks from queue
-		if (service != null) {
-			try {
-				service.removeTracks(ids);
-			} catch (RemoteException exception) {
-				if (BuildConfig.DEBUG) {
-					exception.printStackTrace();
-				}
-			}
-		}
-		// return path to the files
-		return result;
 	}
 
 	/**

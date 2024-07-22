@@ -431,4 +431,27 @@ public final class ApolloUtils {
 			}
 		}
 	}
+
+	/**
+	 * convert long array
+	 */
+	public static long[] toLongArray(Long[] array) {
+		long[] result = new long[array.length];
+		for (int i = 0; i < result.length; i++) {
+			if (array[i] != null)
+				result[i] = array[i];
+		}
+		return result;
+	}
+
+	/**
+	 * convert long array
+	 */
+	public static Long[] toLongArray(long[] array) {
+		Long[] result = new Long[array.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = array[i];
+		}
+		return result;
+	}
 }

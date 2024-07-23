@@ -47,6 +47,7 @@ import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -238,8 +239,9 @@ public class AlbumFragment extends Fragment implements OnScrollListener, OnItemC
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
+					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (selectedPlaylistId != -1)
+						albumSongLoader.execute(selectedAlbum.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.DELETE:

@@ -18,13 +18,13 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.store.RecentStore;
 import org.nuclearfog.apollo.ui.widgets.RecentWidgetProvider;
+import org.nuclearfog.apollo.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,14 +117,14 @@ public class RecentWidgetService extends RemoteViewsService {
 			}
 			// Open the profile of the touched album
 			Intent profileIntent = new Intent();
-			profileIntent.putExtra(Config.ID, album.getId());
-			profileIntent.putExtra(Config.NAME, album.getName());
-			profileIntent.putExtra(Config.ARTIST_NAME, album.getArtist());
+			profileIntent.putExtra(Constants.ID, album.getId());
+			profileIntent.putExtra(Constants.NAME, album.getName());
+			profileIntent.putExtra(Constants.ARTIST_NAME, album.getArtist());
 			profileIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.OPEN_PROFILE);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_items, profileIntent);
 			// Play the album when the artwork is touched
 			Intent playAlbumIntent = new Intent();
-			playAlbumIntent.putExtra(Config.ID, album.getId());
+			playAlbumIntent.putExtra(Constants.ID, album.getId());
 			playAlbumIntent.putExtra(RecentWidgetProvider.SET_ACTION, RecentWidgetProvider.PLAY_ALBUM);
 			mViews.setOnClickFillInIntent(R.id.app_widget_recents_base_image, playAlbumIntent);
 			return mViews;

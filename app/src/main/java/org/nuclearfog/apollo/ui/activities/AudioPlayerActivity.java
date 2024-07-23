@@ -49,7 +49,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -72,6 +71,7 @@ import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -251,7 +251,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		controls.setVisibility(View.INVISIBLE);
 		// go to home activity if there is any missing permission
-		for (String permission : Config.PERMISSIONS) {
+		for (String permission : Constants.PERMISSIONS) {
 			if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
 				NavUtils.goHome(this);
 				return;

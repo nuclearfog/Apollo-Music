@@ -46,6 +46,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.SearchAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -261,8 +262,8 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (selectedPlaylistId != -1L) {
+					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (selectedPlaylistId != -1) {
 						if (selection instanceof Album)
 							albumSongLoader.execute(selection.getId(), onAddToExistingPlaylist);
 						else if (selection instanceof Artist)

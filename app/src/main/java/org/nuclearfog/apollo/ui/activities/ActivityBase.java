@@ -37,7 +37,6 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.SongLoader;
@@ -51,6 +50,7 @@ import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
@@ -154,9 +154,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mAlbumArt.setOnClickListener(this);
 
 		// check permissions before initialization
-		for (String permission : Config.PERMISSIONS) {
+		for (String permission : Constants.PERMISSIONS) {
 			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(this, Config.PERMISSIONS, REQ_CHECK_PERM);
+				ActivityCompat.requestPermissions(this, Constants.PERMISSIONS, REQ_CHECK_PERM);
 				return;
 			}
 		}

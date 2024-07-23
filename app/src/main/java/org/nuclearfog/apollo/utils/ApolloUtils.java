@@ -44,7 +44,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
@@ -240,10 +239,10 @@ public final class ApolloUtils {
 			shortcutIntent.setAction(Intent.ACTION_VIEW);
 			shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			shortcutIntent.putExtra(Config.ID, ids[0]);
-			shortcutIntent.putExtra(Config.IDS, ApolloUtils.serializeIDs(ids));
-			shortcutIntent.putExtra(Config.NAME, displayName);
-			shortcutIntent.putExtra(Config.MIME_TYPE, mimeType);
+			shortcutIntent.putExtra(Constants.ID, ids[0]);
+			shortcutIntent.putExtra(Constants.IDS, ApolloUtils.serializeIDs(ids));
+			shortcutIntent.putExtra(Constants.NAME, displayName);
+			shortcutIntent.putExtra(Constants.MIME_TYPE, mimeType);
 			// check if displayname is a path
 			if (displayName.startsWith("/")) {
 				File file = new File(displayName);

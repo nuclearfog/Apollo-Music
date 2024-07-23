@@ -30,9 +30,9 @@ import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
@@ -189,7 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
 					return true;
 
 				case SOURCECODE:
-					String url = Config.SOURCE_URL;
+					String url = Constants.SOURCE_URL;
 					Intent intent = new Intent(Intent.ACTION_VIEW);
 					intent.setData(Uri.parse(url));
 					try {

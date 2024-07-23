@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo;
+package org.nuclearfog.apollo.utils;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -22,8 +22,9 @@ import android.os.Build;
  * App-wide constants.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
-public final class Config {
+public final class Constants {
 
 	/**
 	 * link to the source code repository
@@ -59,6 +60,10 @@ public final class Config {
 	 */
 	public static final String FOLDER = "folder_path";
 	/**
+	 * key used for contextmenu to add IDs to playlist entries
+	 */
+	public static final String PLAYLIST_ID = "context_playlist_id";
+	/**
 	 * maximal scroll speed when dragging a list element
 	 */
 	public static final float DRAG_DROP_MAX_SPEED = 3.0f;
@@ -79,6 +84,6 @@ public final class Config {
 	}
 
 	/* This class is never initiated. */
-	private Config() {
+	private Constants() {
 	}
 }

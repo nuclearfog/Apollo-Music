@@ -47,6 +47,7 @@ import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -238,8 +239,9 @@ public class ArtistFragment extends Fragment implements AsyncCallback<List<Artis
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
-					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
+					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (selectedPlaylistId != -1)
+						artistSongLoader.execute(selectedArtist.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.HIDE_ARTIST:

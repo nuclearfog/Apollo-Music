@@ -26,7 +26,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
@@ -36,6 +35,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -90,7 +90,7 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 		setEmptyText(R.string.empty_playlist);
 		// Start the loader
 		if (bundle != null) {
-			mPlaylistId = bundle.getLong(Config.ID);
+			mPlaylistId = bundle.getLong(Constants.ID);
 			mLoader.execute(mPlaylistId, this);
 		}
 	}
@@ -172,8 +172,8 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long playlistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (playlistId != -1L) {
+					long playlistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (playlistId != -1) {
 						MusicUtils.addToPlaylist(requireActivity(), trackId, playlistId);
 						// reload if track was added to this playlist
 						if (mPlaylistId == playlistId)

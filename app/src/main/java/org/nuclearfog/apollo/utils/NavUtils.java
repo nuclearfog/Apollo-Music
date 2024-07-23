@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
@@ -45,9 +44,9 @@ public final class NavUtils {
 	public static void openArtistProfile(Activity activity, String artistName) {
 		// Create a new bundle to transfer the artist info
 		Bundle bundle = new Bundle();
-		bundle.putLong(Config.ID, MusicUtils.getIdForArtist(activity, artistName));
-		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
-		bundle.putString(Config.ARTIST_NAME, artistName);
+		bundle.putLong(Constants.ID, MusicUtils.getIdForArtist(activity, artistName));
+		bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Artists.CONTENT_TYPE);
+		bundle.putString(Constants.ARTIST_NAME, artistName);
 		// Create the intent to launch the profile activity
 		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);
@@ -63,11 +62,11 @@ public final class NavUtils {
 	public static void openAlbumProfile(Activity activity, Album album) {
 		// Create a new bundle to transfer the album info
 		Bundle bundle = new Bundle();
-		bundle.putString(Config.ALBUM_YEAR, album.getRelease());
-		bundle.putString(Config.ARTIST_NAME, album.getArtist());
-		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
-		bundle.putLong(Config.ID, album.getId());
-		bundle.putString(Config.NAME, album.getName());
+		bundle.putString(Constants.ALBUM_YEAR, album.getRelease());
+		bundle.putString(Constants.ARTIST_NAME, album.getArtist());
+		bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
+		bundle.putLong(Constants.ID, album.getId());
+		bundle.putString(Constants.NAME, album.getName());
 		// Create the intent to launch the profile activity
 		Intent intent = new Intent(activity, ProfileActivity.class);
 		intent.putExtras(bundle);

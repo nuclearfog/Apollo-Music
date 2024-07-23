@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
@@ -28,6 +27,7 @@ import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfil
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 
 /**
@@ -181,7 +181,7 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 	 */
 	@Override
 	public float getSpeed(float w) {
-		return Config.DRAG_DROP_MAX_SPEED * w;
+		return Constants.DRAG_DROP_MAX_SPEED * w;
 	}
 
 	/**

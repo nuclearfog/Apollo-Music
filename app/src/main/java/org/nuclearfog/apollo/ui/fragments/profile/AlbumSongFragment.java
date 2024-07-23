@@ -26,7 +26,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -34,6 +33,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
@@ -82,7 +82,7 @@ public class AlbumSongFragment extends ProfileFragment implements AsyncCallback<
 		setAdapter(mAdapter);
 		// Start the loader
 		if (args != null) {
-			albumId = args.getLong(Config.ID);
+			albumId = args.getLong(Constants.ID);
 			mLoader.execute(albumId, this);
 		}
 	}
@@ -158,10 +158,9 @@ public class AlbumSongFragment extends ProfileFragment implements AsyncCallback<
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (mPlaylistId != -1L) {
+					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (mPlaylistId != -1)
 						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
-					}
 					return true;
 
 				case ContextMenuItems.USE_AS_RINGTONE:

@@ -21,6 +21,7 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -146,8 +147,9 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
+					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (mPlaylistId != -1)
+						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:

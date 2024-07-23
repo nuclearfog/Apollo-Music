@@ -18,12 +18,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Artist;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
@@ -104,7 +104,7 @@ public class ArtistAdapter extends AlphabeticalAdapter<Artist> {
 			if (artist.isVisible()) {
 				convertView.setAlpha(1.0f);
 			} else {
-				convertView.setAlpha(Config.OPACITY_HIDDEN);
+				convertView.setAlpha(Constants.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

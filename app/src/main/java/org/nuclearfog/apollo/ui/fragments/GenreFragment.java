@@ -33,7 +33,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.GenreLoader;
@@ -47,6 +46,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -214,9 +214,9 @@ public class GenreFragment extends Fragment implements OnItemClickListener, Asyn
 		Genre mGenre = mAdapter.getItem(position);
 		// Create a new bundle to transfer the artist info
 		Bundle bundle = new Bundle();
-		bundle.putString(Config.IDS, ApolloUtils.serializeIDs(mGenre.getGenreIds()));
-		bundle.putString(Config.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
-		bundle.putString(Config.NAME, mGenre.getName());
+		bundle.putString(Constants.IDS, ApolloUtils.serializeIDs(mGenre.getGenreIds()));
+		bundle.putString(Constants.MIME_TYPE, MediaStore.Audio.Genres.CONTENT_TYPE);
+		bundle.putString(Constants.NAME, mGenre.getName());
 		// Create the intent to launch the profile activity
 		Intent intent = new Intent(requireActivity(), ProfileActivity.class);
 		intent.putExtras(bundle);

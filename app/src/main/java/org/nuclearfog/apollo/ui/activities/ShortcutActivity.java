@@ -21,7 +21,6 @@ import android.provider.MediaStore;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
 import org.nuclearfog.apollo.async.loader.ArtistSongLoader;
@@ -33,6 +32,7 @@ import org.nuclearfog.apollo.async.loader.PlaylistSongLoader;
 import org.nuclearfog.apollo.async.loader.PopularSongLoader;
 import org.nuclearfog.apollo.async.loader.SearchLoader;
 import org.nuclearfog.apollo.model.Song;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
@@ -92,7 +92,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 		shouldOpenAudioPlayer = mIntent.getBooleanExtra(OPEN_AUDIO_PLAYER, true);
 		mVoiceQuery = StringUtils.capitalize(mIntent.getStringExtra(SearchManager.QUERY));
 		// go to home activity if there is any missing permission
-		for (String permission : Config.PERMISSIONS) {
+		for (String permission : Constants.PERMISSIONS) {
 			if (ContextCompat.checkSelfPermission(this, permission) != PERMISSION_GRANTED) {
 				NavUtils.goHome(this);
 				return;
@@ -140,8 +140,8 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 			mLoader.execute(mVoiceQuery, onSongsLoaded);
 		} else {
 			//sHandler.post(new AsyncHandler(this));
-			String requestedMimeType = mIntent.getStringExtra(Config.MIME_TYPE);
-			long id = mIntent.getLongExtra(Config.ID, -1L);
+			String requestedMimeType = mIntent.getStringExtra(Constants.MIME_TYPE);
+			long id = mIntent.getLongExtra(Constants.ID, -1L);
 			if (requestedMimeType == null) {
 				return;
 			}
@@ -166,7 +166,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					// Shuffle the genre track list
 					mShouldShuffle = true;
 					// Get the genre song list
-					String ids = mIntent.getStringExtra(Config.IDS);
+					String ids = mIntent.getStringExtra(Constants.IDS);
 					GenreSongLoader genreSongLoader = new GenreSongLoader(this);
 					genreSongLoader.execute(ids, onSongsLoaded);
 					break;
@@ -199,7 +199,7 @@ public class ShortcutActivity extends AppCompatActivity implements ServiceBinder
 					// Don't shuffle the folders track list
 					mShouldShuffle = false;
 					// get folder path
-					String folder = mIntent.getStringExtra(Config.NAME);
+					String folder = mIntent.getStringExtra(Constants.NAME);
 					// Get folder song list
 					FolderSongLoader folderSongLoader = new FolderSongLoader(this);
 					folderSongLoader.execute(folder, onSongsLoaded);

@@ -20,10 +20,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
@@ -117,7 +117,7 @@ public class SongAdapter extends AlphabeticalAdapter<Song> {
 			if (song.isVisible()) {
 				convertView.setAlpha(1.0f);
 			} else {
-				convertView.setAlpha(Config.OPACITY_HIDDEN);
+				convertView.setAlpha(Constants.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

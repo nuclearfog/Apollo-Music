@@ -25,7 +25,6 @@ import android.provider.MediaStore;
 import android.widget.RemoteViews;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.service.RecentWidgetService;
@@ -33,6 +32,7 @@ import org.nuclearfog.apollo.ui.activities.AudioPlayerActivity;
 import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 
 import java.lang.ref.WeakReference;
@@ -117,14 +117,14 @@ public class RecentWidgetProvider extends AppWidgetBase {
 		super.onReceive(context, intent);
 		context = context.getApplicationContext();
 		if (CLICK_ACTION.equals(intent.getAction())) {
-			long albumId = intent.getLongExtra(Config.ID, -1L);
+			long albumId = intent.getLongExtra(Constants.ID, -1L);
 			String action = intent.getStringExtra(SET_ACTION);
 			if (PLAY_ALBUM.equals(action)) {
 				// Play the selected album
 				Intent shortcutIntent = new Intent(context, ShortcutActivity.class);
 				shortcutIntent.setAction(Intent.ACTION_VIEW);
-				shortcutIntent.putExtra(Config.ID, albumId);
-				shortcutIntent.putExtra(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
+				shortcutIntent.putExtra(Constants.ID, albumId);
+				shortcutIntent.putExtra(Constants.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
 				shortcutIntent.putExtra(ShortcutActivity.OPEN_AUDIO_PLAYER, false);
 				shortcutIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(shortcutIntent);
@@ -132,11 +132,11 @@ public class RecentWidgetProvider extends AppWidgetBase {
 				// Transfer the album name and MIME type
 				// Open the album profile
 				Intent profileIntent = new Intent(context, ProfileActivity.class);
-				profileIntent.putExtra(Config.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
-				profileIntent.putExtra(Config.NAME, intent.getStringExtra(Config.NAME));
-				profileIntent.putExtra(Config.ARTIST_NAME, intent.getStringExtra(Config.ARTIST_NAME));
-				profileIntent.putExtra(Config.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
-				profileIntent.putExtra(Config.ID, albumId);
+				profileIntent.putExtra(Constants.MIME_TYPE, MediaStore.Audio.Albums.CONTENT_TYPE);
+				profileIntent.putExtra(Constants.NAME, intent.getStringExtra(Constants.NAME));
+				profileIntent.putExtra(Constants.ARTIST_NAME, intent.getStringExtra(Constants.ARTIST_NAME));
+				profileIntent.putExtra(Constants.ALBUM_YEAR, MusicUtils.getReleaseDateForAlbum(context, albumId));
+				profileIntent.putExtra(Constants.ID, albumId);
 				profileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(profileIntent);
 			}

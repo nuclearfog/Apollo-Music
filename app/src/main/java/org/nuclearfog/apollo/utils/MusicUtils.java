@@ -685,31 +685,29 @@ public final class MusicUtils {
 	 */
 	@SuppressLint("InlinedApi")
 	public static void addToPlaylist(Activity activity, long[] ids, long playlistid) {
-		int size = ids.length;
-		ContentResolver resolver = activity.getContentResolver();
-		Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistid);
-		Cursor cursor = CursorFactory.makePlaylistCursor(resolver, uri);
-		if (cursor != null) {
-			try {
+		try {
+			Uri uri = Playlists.Members.getContentUri(MediaStore.VOLUME_EXTERNAL, playlistid);
+			Cursor cursor = CursorFactory.makePlaylistCursor(activity.getContentResolver(), uri);
+			if (cursor != null) {
 				if (cursor.moveToFirst()) {
 					int base = cursor.getInt(0);
 					int numinserted = 0;
-					for (int offSet = 0; offSet < size; offSet += 1000) {
+					for (int offSet = 0; offSet < ids.length; offSet += 1000) {
 						makeInsertItems(ids, offSet, 1000, base);
-						numinserted += resolver.bulkInsert(uri, mContentValuesCache);
+						numinserted += activity.getContentResolver().bulkInsert(uri, mContentValuesCache);
 					}
 					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
 					AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 				}
-			} catch (Exception exception) {
-				// thrown when the app does not own the playlist
-				String message = activity.getString(R.string.error_add_playlist);
-				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
-				if (BuildConfig.DEBUG) {
-					exception.printStackTrace();
-				}
+				cursor.close();
 			}
-			cursor.close();
+		} catch (Exception exception) {
+			// thrown when the app does not own the playlist
+			String message = activity.getString(R.string.error_add_playlist);
+			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
 	}
 
@@ -934,23 +932,29 @@ public final class MusicUtils {
 	 */
 	public static void makePlaylistMenu(Context context, int groupId, SubMenu subMenu, boolean showFavorites) {
 		subMenu.clear();
-		if (showFavorites) {
+		if (showFavorites)
 			subMenu.add(groupId, ContextMenuItems.ADD_TO_FAVORITES, Menu.NONE, R.string.add_to_favorites);
-		}
 		subMenu.add(groupId, ContextMenuItems.NEW_PLAYLIST, Menu.NONE, R.string.new_playlist);
-		Cursor cursor = CursorFactory.makePlaylistCursor(context);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					String name = cursor.getString(1);
-					if (name != null) {
-						Intent intent = new Intent();
-						intent.putExtra("playlist", getIdForPlaylist(context, name));
-						subMenu.add(groupId, ContextMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
-					}
-				} while (cursor.moveToNext());
+		try {
+			Cursor cursor = CursorFactory.makePlaylistCursor(context);
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					do {
+						long id = cursor.getLong(0);
+						String name = cursor.getString(1);
+						if (name != null) {
+							Intent intent = new Intent();
+							intent.putExtra(Constants.PLAYLIST_ID, id);
+							subMenu.add(groupId, ContextMenuItems.PLAYLIST_SELECTED, Menu.NONE, name).setIntent(intent);
+						}
+					} while (cursor.moveToNext());
+				}
+				cursor.close();
 			}
-			cursor.close();
+		} catch (Exception exception) {
+			if (BuildConfig.DEBUG) {
+				exception.printStackTrace();
+			}
 		}
 	}
 

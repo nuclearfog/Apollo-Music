@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Folder;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.utils.Constants;
 
 /**
  * This adapter displays all folder containing music files to {@link org.nuclearfog.apollo.ui.fragments.FolderFragment}
@@ -73,7 +73,7 @@ public class FolderAdapter extends AlphabeticalAdapter<Folder> {
 			if (folder.isVisible()) {
 				convertView.setAlpha(1.0f);
 			} else {
-				convertView.setAlpha(Config.OPACITY_HIDDEN);
+				convertView.setAlpha(Constants.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

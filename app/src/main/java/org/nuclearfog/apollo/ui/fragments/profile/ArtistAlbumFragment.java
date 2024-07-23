@@ -24,7 +24,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -34,6 +33,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAlbumAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -90,7 +90,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 		setAdapter(mAdapter);
 		// Start the loader
 		if (param != null) {
-			artistId = param.getLong(Config.ID);
+			artistId = param.getLong(Constants.ID);
 			artistAlbumLoader.execute(artistId, this);
 		}
 	}
@@ -180,8 +180,9 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					selectedPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					albumSongLoader.execute(mAlbum.getId(), onAddToExistingPlaylist);
+					selectedPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (selectedPlaylistId != -1)
+						albumSongLoader.execute(mAlbum.getId(), onAddToExistingPlaylist);
 					return true;
 
 				case ContextMenuItems.DELETE:

@@ -36,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.FavoriteSongLoader;
@@ -52,6 +51,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.DeletePlaylistDialog;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -246,24 +246,24 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 			Bundle bundle = new Bundle();
 			// Favorites list
 			if (selected.getId() == Playlist.FAVORITE_ID) {
-				bundle.putString(Config.NAME, getString(R.string.playlist_favorites));
-				bundle.putString(Config.MIME_TYPE, PAGE_FAVORIT);
+				bundle.putString(Constants.NAME, getString(R.string.playlist_favorites));
+				bundle.putString(Constants.MIME_TYPE, PAGE_FAVORIT);
 			}
 			// Last added
 			else if (selected.getId() == Playlist.LAST_ADDED_ID) {
-				bundle.putString(Config.NAME, getString(R.string.playlist_last_added));
-				bundle.putString(Config.MIME_TYPE, PAGE_LAST_ADDED);
+				bundle.putString(Constants.NAME, getString(R.string.playlist_last_added));
+				bundle.putString(Constants.MIME_TYPE, PAGE_LAST_ADDED);
 			}
 			// most played track
 			else if (selected.getId() == Playlist.POPULAR_ID) {
-				bundle.putString(Config.NAME, getString(R.string.playlist_most_played));
-				bundle.putString(Config.MIME_TYPE, PAGE_MOST_PLAYED);
+				bundle.putString(Constants.NAME, getString(R.string.playlist_most_played));
+				bundle.putString(Constants.MIME_TYPE, PAGE_MOST_PLAYED);
 			}
 			// User created playlist
 			else {
-				bundle.putString(Config.MIME_TYPE, Playlists.CONTENT_TYPE);
-				bundle.putString(Config.NAME, selected.getName());
-				bundle.putLong(Config.ID, selected.getId());
+				bundle.putString(Constants.MIME_TYPE, Playlists.CONTENT_TYPE);
+				bundle.putString(Constants.NAME, selected.getName());
+				bundle.putLong(Constants.ID, selected.getId());
 			}
 			// Create the intent to launch the profile activity
 			Intent intent = new Intent(requireActivity(), ProfileActivity.class);

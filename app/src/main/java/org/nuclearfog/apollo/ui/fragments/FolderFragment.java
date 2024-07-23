@@ -1,10 +1,10 @@
 package org.nuclearfog.apollo.ui.fragments;
 
-import static org.nuclearfog.apollo.Config.FOLDER;
-import static org.nuclearfog.apollo.Config.ID;
-import static org.nuclearfog.apollo.Config.MIME_TYPE;
-import static org.nuclearfog.apollo.Config.NAME;
 import static org.nuclearfog.apollo.ui.activities.ProfileActivity.PAGE_FOLDERS;
+import static org.nuclearfog.apollo.utils.Constants.FOLDER;
+import static org.nuclearfog.apollo.utils.Constants.ID;
+import static org.nuclearfog.apollo.utils.Constants.MIME_TYPE;
+import static org.nuclearfog.apollo.utils.Constants.NAME;
 
 import android.content.Intent;
 import android.os.Bundle;

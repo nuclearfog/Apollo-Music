@@ -31,7 +31,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.QueueLoader;
@@ -44,6 +43,7 @@ import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -228,10 +228,9 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (mPlaylistId != -1L) {
+					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (mPlaylistId != -1)
 						MusicUtils.addToPlaylist(requireActivity(), trackId, mPlaylistId);
-					}
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:
@@ -283,7 +282,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	 */
 	@Override
 	public float getSpeed(float w) {
-		return Config.DRAG_DROP_MAX_SPEED * w;
+		return Constants.DRAG_DROP_MAX_SPEED * w;
 	}
 
 	/**

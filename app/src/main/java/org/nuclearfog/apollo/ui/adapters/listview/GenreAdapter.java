@@ -20,10 +20,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Genre;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.utils.Constants;
 
 /**
  * This adapter is used to display all of the genres on a user's
@@ -82,7 +82,7 @@ public class GenreAdapter extends AlphabeticalAdapter<Genre> {
 			if (genre.isVisible()) {
 				convertView.setAlpha(1.0f);
 			} else {
-				convertView.setAlpha(Config.OPACITY_HIDDEN);
+				convertView.setAlpha(Constants.OPACITY_HIDDEN);
 			}
 		}
 		return convertView;

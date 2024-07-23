@@ -42,7 +42,6 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.nuclearfog.apollo.BuildConfig;
-import org.nuclearfog.apollo.Config;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.AlbumSongLoader;
@@ -63,6 +62,7 @@ import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
@@ -216,21 +216,21 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// Get the MIME type
 		if (mArguments != null) {
 			// get mime type
-			mType = mArguments.getString(Config.MIME_TYPE, "");
+			mType = mArguments.getString(Constants.MIME_TYPE, "");
 			// Get the profile title
-			mProfileName = mArguments.getString(Config.NAME, "");
+			mProfileName = mArguments.getString(Constants.NAME, "");
 			// Get the artist name
-			mArtistName = mArguments.getString(Config.ARTIST_NAME, "");
+			mArtistName = mArguments.getString(Constants.ARTIST_NAME, "");
 			// Get the ID
-			if (mArguments.containsKey(Config.IDS)) {
-				ids = ApolloUtils.readSerializedIDs(mArguments.getString(Config.IDS, ""));
+			if (mArguments.containsKey(Constants.IDS)) {
+				ids = ApolloUtils.readSerializedIDs(mArguments.getString(Constants.IDS, ""));
 			} else {
-				ids = new long[]{mArguments.getLong(Config.ID)};
+				ids = new long[]{mArguments.getLong(Constants.ID)};
 			}
 			// get album yeas
-			year = mArguments.getString(Config.ALBUM_YEAR, "");
+			year = mArguments.getString(Constants.ALBUM_YEAR, "");
 			// get folder name if defined
-			folderPath = mArguments.getString(Config.FOLDER, "");
+			folderPath = mArguments.getString(Constants.FOLDER, "");
 		}
 		type = Type.getEnum(mType);
 		// Initialize the pager adapter

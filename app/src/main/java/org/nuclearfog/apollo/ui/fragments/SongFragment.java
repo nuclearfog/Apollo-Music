@@ -43,6 +43,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.fragments.phone.MusicBrowserPhoneFragment;
+import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -228,11 +229,9 @@ public class SongFragment extends Fragment implements OnItemClickListener, Obser
 					return true;
 
 				case ContextMenuItems.PLAYLIST_SELECTED:
-					long mPlaylistId = item.getIntent().getLongExtra("playlist", -1L);
-					if (mPlaylistId != -1L) {
-						trackIds = new long[]{selectedSong.getId()};
-						MusicUtils.addToPlaylist(requireActivity(), trackIds, mPlaylistId);
-					}
+					long mPlaylistId = item.getIntent().getLongExtra(Constants.PLAYLIST_ID, -1L);
+					if (mPlaylistId != -1)
+						MusicUtils.addToPlaylist(requireActivity(), new long[]{selectedSong.getId()}, mPlaylistId);
 					return true;
 
 				case ContextMenuItems.MORE_BY_ARTIST:

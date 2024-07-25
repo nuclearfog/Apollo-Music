@@ -27,7 +27,6 @@ import org.nuclearfog.apollo.async.worker.TrackDeleteWorker;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
-import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * Alert dialog used to delete tracks.
@@ -134,8 +133,7 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	@Override
 	public void onResult(@NonNull Integer count) {
 		if (getActivity() != null) {
-			String message = StringUtils.makeLabel(getActivity(), R.plurals.NNNtracksdeleted, count);
-			AppMsg.makeText(getActivity(), message, AppMsg.STYLE_CONFIRM).show();
+			AppMsg.makeText(getActivity(), R.plurals.NNNtracksdeleted, count, AppMsg.STYLE_CONFIRM).show();
 			// We deleted a number of tracks, which could affect any number of
 			// things in the media content domain, so update everything.
 			getActivity().getContentResolver().notifyChange(Uri.parse("content://media"), null);

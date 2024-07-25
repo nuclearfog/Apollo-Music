@@ -116,11 +116,6 @@ public final class MusicUtils {
 	 */
 	private static WeakHashMap<Activity, ServiceBinder> mConnectionMap = new WeakHashMap<>(32);
 
-	/**
-	 *
-	 */
-	private static ContentValues[] mContentValuesCache;
-
 	private static int foregroundActivities = 0;
 
 
@@ -669,8 +664,7 @@ public final class MusicUtils {
 			}
 		} catch (Exception exception) {
 			// thrown when the app does not own the playlist
-			String message = activity.getString(R.string.error_create_playlist);
-			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			AppMsg.makeText(activity, R.string.error_create_playlist, AppMsg.STYLE_CONFIRM).show();
 			if (BuildConfig.DEBUG) {
 				exception.printStackTrace();
 			}
@@ -692,8 +686,17 @@ public final class MusicUtils {
 				if (cursor.moveToFirst()) {
 					int base = cursor.getInt(0);
 					int numinserted = 0;
-					for (int offSet = 0; offSet < ids.length; offSet += 1000) {
-						makeInsertItems(ids, offSet, 1000, base);
+					for (int offset = 0; offset < ids.length; offset += 1000) {
+						int len = ids.length;
+						if (offset + len > ids.length) {
+							len = ids.length - offset;
+						}
+						ContentValues[] mContentValuesCache = new ContentValues[len];
+						for (int i = 0; i < len; i++) {
+							mContentValuesCache[i] = new ContentValues();
+							mContentValuesCache[i].put(Playlists.Members.PLAY_ORDER, base + offset + i);
+							mContentValuesCache[i].put(Playlists.Members.AUDIO_ID, ids[offset + i]);
+						}
 						numinserted += activity.getContentResolver().bulkInsert(uri, mContentValuesCache);
 					}
 					String message = activity.getResources().getQuantityString(R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
@@ -703,8 +706,7 @@ public final class MusicUtils {
 			}
 		} catch (Exception exception) {
 			// thrown when the app does not own the playlist
-			String message = activity.getString(R.string.error_add_playlist);
-			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			AppMsg.makeText(activity, R.string.error_add_playlist, AppMsg.STYLE_CONFIRM).show();
 			if (BuildConfig.DEBUG) {
 				exception.printStackTrace();
 			}
@@ -728,8 +730,7 @@ public final class MusicUtils {
 			resolver.update(uri, values, null, null);
 		} catch (Exception exception) {
 			// thrown when the app does not own the playlist
-			String message = activity.getString(R.string.error_rename_playlist);
-			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+			AppMsg.makeText(activity, R.string.error_rename_playlist, AppMsg.STYLE_CONFIRM).show();
 			if (BuildConfig.DEBUG) {
 				exception.printStackTrace();
 			}
@@ -778,8 +779,7 @@ public final class MusicUtils {
 		if (service != null) {
 			try {
 				service.enqueue(list, MusicPlaybackService.MOVE_LAST);
-				String message = StringUtils.makeLabel(activity, R.plurals.NNNtrackstoqueue, list.length);
-				AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
+				AppMsg.makeText(activity, R.plurals.NNNtrackstoqueue, list.length, AppMsg.STYLE_CONFIRM).show();
 			} catch (RemoteException err) {
 				if (BuildConfig.DEBUG) {
 					err.printStackTrace();
@@ -1126,24 +1126,5 @@ public final class MusicUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 *
-	 */
-	private static void makeInsertItems(long[] ids, int offset, int len, int base) {
-		if (offset + len > ids.length) {
-			len = ids.length - offset;
-		}
-		if (mContentValuesCache == null || mContentValuesCache.length != len) {
-			mContentValuesCache = new ContentValues[len];
-		}
-		for (int i = 0; i < len; i++) {
-			if (mContentValuesCache[i] == null) {
-				mContentValuesCache[i] = new ContentValues();
-			}
-			mContentValuesCache[i].put(Playlists.Members.PLAY_ORDER, base + offset + i);
-			mContentValuesCache[i].put(Playlists.Members.AUDIO_ID, ids[offset + i]);
-		}
 	}
 }

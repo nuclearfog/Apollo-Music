@@ -86,7 +86,7 @@ public final class NavUtils {
 			try {
 				activity.startActivity(effects);
 			} catch (ActivityNotFoundException exception) {
-				AppMsg.makeText(activity, activity.getString(R.string.no_effects_for_you), AppMsg.STYLE_ALERT);
+				AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);
 				if (BuildConfig.DEBUG) {
 					exception.printStackTrace();
 				}

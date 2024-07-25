@@ -22,10 +22,12 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
+import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
  * In-layout notifications. Based on {@link android.widget.Toast} notifications
@@ -64,19 +66,27 @@ public class AppMsg {
 	private int mDuration = LENGTH_SHORT;
 
 	/**
-	 * Construct an empty AppMsg object.
 	 *
-	 * @param activity The context to use. Usually your {@link AppCompatActivity} object.
 	 */
-	public AppMsg(Activity activity) {
+	private AppMsg(Activity activity) {
 		this.activity = activity;
 	}
 
 	/**
 	 * Make a {@link AppMsg} that just contains a text view.
 	 *
-	 * @param activity The context to use. Usually your {@link AppCompatActivity} object.
-	 * @param id       ID of the strign resource
+	 * @param count number used for plurals
+	 * @param id    ID of the plural resource
+	 */
+	public static AppMsg makeText(Activity activity, @PluralsRes int id, @IntRange(from = 0) int count, Style style) {
+		String text = StringUtils.makeLabel(activity, id, count);
+		return makeText(activity, text, style);
+	}
+
+	/**
+	 * Make a {@link AppMsg} that just contains a text view.
+	 *
+	 * @param id ID of the string resource
 	 */
 	public static AppMsg makeText(Activity activity, @StringRes int id, Style style) {
 		String text = activity.getString(id);
@@ -86,8 +96,7 @@ public class AppMsg {
 	/**
 	 * Make a {@link AppMsg} that just contains a text view.
 	 *
-	 * @param activity The context to use. Usually your {@link AppCompatActivity} object.
-	 * @param text     The text to show. Can be formatted text.
+	 * @param text The text to show. Can be formatted text.
 	 */
 	public static AppMsg makeText(Activity activity, CharSequence text, Style style) {
 		AppMsg result = new AppMsg(activity);
@@ -172,7 +181,7 @@ public class AppMsg {
 		 *                 {@link #LENGTH_SHORT} or {@link #LENGTH_LONG}
 		 * @param resId    resource for AppMsg background
 		 */
-		public Style(int duration, int resId) {
+		private Style(int duration, int resId) {
 			this.duration = duration;
 			this.background = resId;
 		}

@@ -609,7 +609,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		if (mPlayer.initialized()) {
 			mPlayer.stop();
 		}
-		clearCurrentTrackInformation();
 		notifyChange(CHANGED_PLAYSTATE);
 	}
 
@@ -816,7 +815,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 					mPlayPos = 0;
 					mShufflePos = 0;
 					openCurrentAndNext();
-					play();
 				}
 			}
 			// setup queue shuffle
@@ -1158,7 +1156,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	private void updateTrackInformation() {
 		if (mPlayPos >= 0 && mPlayPos < mPlayList.size()) {
 			long trackId = mPlayList.get(mPlayPos);
-			clearCurrentTrackInformation();
 			Cursor cursor = CursorFactory.makeTrackCursor(this, trackId);
 			updateTrackInformation(cursor);
 		}
@@ -1170,7 +1167,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @param uri uri of the audio track
 	 */
 	private void updateTrackInformation(Uri uri) {
-		clearCurrentTrackInformation();
 		Cursor cursor = null;
 		// get information from MediaStore directly
 		if (uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
@@ -1273,9 +1269,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		}
 	}
 
-
 	/**
-	 *
+	 * clear information about the current selected track
 	 */
 	private void clearCurrentTrackInformation() {
 		currentAlbum = null;
@@ -1295,6 +1290,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * prepare current track of the queue for playback and update track information
 	 * if an error occurs try the next tracks
+	 *
+	 * @return true if track was opened successfully
 	 */
 	private boolean openCurrentTrack() {
 		if (mPlayList.isEmpty() || mPlayPos < 0) {
@@ -1548,7 +1545,6 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			if (pos >= 0 && pos < mPlayList.size()) {
 				mPlayPos = pos;
 			}
-			clearCurrentTrackInformation();
 			openCurrentAndNext();
 			if (mPlayer.initialized()) {
 				long seekpos = settings.getSeekPosition();

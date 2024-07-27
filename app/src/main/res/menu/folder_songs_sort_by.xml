@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:title="@string/menu_sort_by"
+		app:showAsAction="never">
+		<menu>
+			<item
+				android:id="@+id/menu_sort_by_az"
+				android:title="@string/sort_order_entry_az" />
+			<item
+				android:id="@+id/menu_sort_by_za"
+				android:title="@string/sort_order_entry_za" />
+			<item
+				android:id="@+id/menu_sort_by_duration"
+				android:title="@string/sort_order_entry_duration" />
+			<item
+				android:id="@+id/menu_sort_by_track_list"
+				android:title="@string/sort_order_entry_track_list" />
+			<item
+				android:id="@+id/menu_sort_by_filename"
+				android:title="@string/sort_order_entry_filename" />
+		</menu>
+	</item>
+</menu>

@@ -52,6 +52,8 @@ public final class PreferenceUtils {
 	public static final String ALBUM_SORT_ORDER = "album_sort_order";
 	// Sort order for the album song list
 	public static final String ALBUM_SONG_SORT_ORDER = "album_song_sort_order";
+	// Sort order for the album song list
+	public static final String FOLDER_SONG_SORT_ORDER = "folder_song_sort_order";
 	// Sort order for the song list
 	public static final String SONG_SORT_ORDER = "song_sort_order";
 	// Sets the type of layout to use for the artist list
@@ -289,6 +291,23 @@ public final class PreferenceUtils {
 	 */
 	public void setAlbumSongSortOrder(String value) {
 		setSortOrder(ALBUM_SONG_SORT_ORDER, value);
+	}
+
+	/**
+	 * @return The sort order used for the folder song in
+	 * {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
+	 */
+	public String getFolderSongSortOrder() {
+		return defaultPref.getString(FOLDER_SONG_SORT_ORDER, SortOrder.FolderSongSortOrder.SONG_TRACK_LIST);
+	}
+
+	/**
+	 * Sets the sort order for the folder song list.
+	 *
+	 * @param value The new sort order
+	 */
+	public void setFolderSongSortOrder(String value) {
+		setSortOrder(FOLDER_SONG_SORT_ORDER, value);
 	}
 
 	/**

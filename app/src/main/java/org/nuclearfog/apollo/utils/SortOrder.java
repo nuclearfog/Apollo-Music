@@ -86,7 +86,7 @@ public final class SortOrder {
 		String SONG_YEAR = MediaStore.Audio.Media.YEAR + " DESC";
 
 		/* Song sort order duration */
-		String SONG_DURATION = "duration"/*MediaStore.Audio.Media.DURATION*/ + " DESC";
+		String SONG_DURATION = MediaStore.Audio.Media.DURATION + " DESC";
 
 		/* Song sort order filename */
 		String SONG_FILENAME = MediaStore.Audio.Media.DATA;
@@ -137,6 +137,9 @@ public final class SortOrder {
 
 		/* Artist song sort order filename */
 		String SONG_FILENAME = SongSortOrder.SONG_FILENAME;
+	}
+
+	public interface FolderSongSortOrder extends AlbumSongSortOrder {
 	}
 
 	/**

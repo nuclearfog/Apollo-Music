@@ -67,13 +67,14 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 		mLoader.execute(null, this);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onDestroy() {
 		mLoader.cancel();
 		super.onDestroy();
 	}
-
 
 	/**
 	 * {@inheritDoc}

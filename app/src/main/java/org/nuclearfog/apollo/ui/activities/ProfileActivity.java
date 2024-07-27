@@ -332,7 +332,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// Theme the add to home screen icon
 		MenuItem shuffle = menu.findItem(R.id.menu_shuffle);
-		if (type == Type.FAVORITE || type == Type.LAST_ADDED || type == Type.PLAYLIST || type == Type.POPULAR) {
+		if (type == Type.FAVORITE || type == Type.LAST_ADDED || type == Type.PLAYLIST || type == Type.POPULAR || type == Type.FOLDER) {
 			shuffle.setTitle(R.string.menu_play_all);
 		} else {
 			shuffle.setTitle(R.string.menu_shuffle);
@@ -360,6 +360,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			getMenuInflater().inflate(R.menu.album_song_sort_by, menu);
 		} else if (type == Type.POPULAR) {
 			getMenuInflater().inflate(R.menu.popular_songs_clear, menu);
+		} else if (type == Type.FOLDER) {
+			getMenuInflater().inflate(R.menu.folder_songs_sort_by, menu);
 		}
 		return true;
 	}
@@ -441,6 +443,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_A_Z);
 				}
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_A_Z);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
@@ -456,6 +460,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_Z_A);
 				}
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_Z_A);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
@@ -487,6 +493,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_DURATION);
 				}
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_DURATION);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
@@ -499,7 +507,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		}
 		// sort by default order
 		else if (item.getItemId() == R.id.menu_sort_by_track_list) {
-			mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
+			if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_TRACK_LIST);
+			} else {
+				mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_TRACK_LIST);
+			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}
 		// sort by file name
@@ -512,6 +524,8 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				if (mViewPager.getCurrentItem() == ProfileAdapter.IDX_ALBUM_SONG) {
 					mPreferences.setAlbumSongSortOrder(SortOrder.AlbumSongSortOrder.SONG_FILENAME);
 				}
+			} else if (type == Type.FOLDER) {
+				mPreferences.setFolderSongSortOrder(SortOrder.FolderSongSortOrder.SONG_FILENAME);
 			}
 			viewModel.notify(ProfileFragment.REFRESH);
 		}

@@ -215,7 +215,7 @@ public final class CursorFactory {
 	/**
 	 * select specific artist matching name
 	 */
-	private static final String ARTIST_SELECT = Artists.ARTIST + "=?";
+	private static final String ARTIST_SELECT = Artists.ARTIST + " LIKE ?";
 
 	/**
 	 * select specific artist matching name
@@ -411,7 +411,7 @@ public final class CursorFactory {
 		ContentResolver contentResolver = context.getContentResolver();
 
 		String[] args = {folderName + "%"};
-		String sortOrder = PreferenceUtils.getInstance(context).getSongSortOrder();
+		String sortOrder = PreferenceUtils.getInstance(context).getFolderSongSortOrder();
 		return contentResolver.query(Media.EXTERNAL_CONTENT_URI, TRACK_COLUMNS, FOLDER_TRACK_SELECT, args, sortOrder);
 	}
 
@@ -454,7 +454,7 @@ public final class CursorFactory {
 	public static Cursor makeArtistCursor(Context context, @NonNull String artistName) {
 		ContentResolver resolver = context.getContentResolver();
 
-		String[] args = {artistName};
+		String[] args = {"%" + artistName + "%"};
 		return resolver.query(Artists.EXTERNAL_CONTENT_URI, ARTIST_COLUMNS, ARTIST_SELECT, args, null);
 	}
 

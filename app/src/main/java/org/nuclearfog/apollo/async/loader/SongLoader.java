@@ -67,10 +67,12 @@ public class SongLoader extends AsyncExecutor<Void, List<Song>> {
 							String album = mCursor.getString(3);
 							// Copy the duration
 							long duration = mCursor.getLong(4);
+							// copy file path
+							String path = mCursor.getString(7);
 							// set visibility
 							boolean visible = !excludedIds.contains(id);
 							// Create a new song
-							Song song = new Song(id, songName, artist, album, duration, visible);
+							Song song = new Song(id, songName, artist, album, path, duration, visible);
 							// Add everything up
 							result.add(song);
 						} while (mCursor.moveToNext());

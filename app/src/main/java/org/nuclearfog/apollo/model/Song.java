@@ -34,9 +34,10 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 			String name = source.readString();
 			String artist = source.readString();
 			String album = source.readString();
+			String path = source.readString();
 			long duration = source.readLong();
 			boolean visible = source.readInt() == 1;
-			return new Song(id, name, artist, album, duration, visible);
+			return new Song(id, name, artist, album, path, duration, visible);
 		}
 
 
@@ -103,7 +104,7 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 *
 	 */
 	public Song(long song_id, String song_name, String artist_name, String album_name, long length) {
-		this(song_id, song_name, artist_name, album_name, length, true);
+		this(song_id, song_name, artist_name, album_name, "", length, true);
 	}
 
 	/**
@@ -113,10 +114,11 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 	 * @param song_name   The song_name of the song
 	 * @param artist_name The song artist
 	 * @param album_name  The song album
-	 * @param length      The duration of a song in milliseconds
+	 * @param path        path to the music file
+	 * @param duration    The duration of a song in milliseconds
 	 * @param visibility  Visibility of the track
 	 */
-	public Song(long song_id, String song_name, String artist_name, String album_name, long length, boolean visibility) {
+	public Song(long song_id, String song_name, String artist_name, String album_name, String path, long duration, boolean visibility) {
 		super(song_id, song_name, visibility);
 		if (artist_name != null) {
 			this.artist_name = artist_name;
@@ -124,9 +126,34 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 		if (album_name != null) {
 			this.album_name = album_name;
 		}
-		if (length > 0) {
-			duration = length;
+		if (duration > 0) {
+			this.duration = duration;
 		}
+		if (path != null) {
+			this.path = path;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
+		dest.writeLong(getId());
+		dest.writeString(getName());
+		dest.writeString(getArtist());
+		dest.writeString(getAlbum());
+		dest.writeString(getPath());
+		dest.writeLong(getDuration());
+		dest.writeInt(isVisible() ? 1 : 0);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 
 	/**
@@ -234,21 +261,5 @@ public class Song extends Music implements Parcelable, Comparable<Song> {
 					getName().equals(other.getName()) && duration == other.duration && other.playlist_index == playlist_index;
 		}
 		return false;
-	}
-
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(@NonNull Parcel dest, int flags) {
-		dest.writeLong(getId());
-		dest.writeString(getName());
-		dest.writeString(getArtist());
-		dest.writeString(getAlbum());
-		dest.writeLong(getDuration());
-		dest.writeInt(isVisible() ? 1 : 0);
 	}
 }

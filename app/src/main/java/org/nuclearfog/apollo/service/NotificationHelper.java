@@ -105,10 +105,10 @@ class NotificationHelper {
 		legacyLayout = mPreferences.oldNotificationLayoutEnabled();
 
 		// init notification manager & channel
-		NotificationChannelCompat notificationChannel = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
-				.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null).build();
+		NotificationChannelCompat.Builder channelBuilder = new NotificationChannelCompat.Builder(NOTIFICAITON_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT);
+		channelBuilder.setName(NOTFICIATION_NAME).setLightsEnabled(false).setVibrationEnabled(false).setSound(null, null);
 		notificationManager = NotificationManagerCompat.from(service);
-		notificationManager.createNotificationChannel(notificationChannel);
+		notificationManager.createNotificationChannel(channelBuilder.build());
 
 		// initialize player activity callback
 		Intent intent = new Intent(INTENT_AUDIO_PLAYER);
@@ -127,7 +127,13 @@ class NotificationHelper {
 				.setContentIntent(contentIntent)
 				.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 				.setPriority(NotificationCompat.PRIORITY_DEFAULT)
-				.setWhen(System.currentTimeMillis());
+				.setCategory(NotificationCompat.CATEGORY_PROGRESS)
+				.setWhen(System.currentTimeMillis())
+				.setProgress(0, 0, true)
+				.setAutoCancel(false)
+				.setShowWhen(false)
+				.setOngoing(true)
+				.setSilent(true);
 
 		// use embedded media control notification of Android
 		if (!legacyLayout) {
@@ -149,8 +155,7 @@ class NotificationHelper {
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_next, callbackNext);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, callbackPrevious);
 			mExpandedView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, callbackStop);
-			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent)
-					.setPriority(NotificationCompat.PRIORITY_DEFAULT).setOnlyAlertOnce(true).setOngoing(true).setAutoCancel(false).setSilent(true);
+			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
 		}
 	}
 

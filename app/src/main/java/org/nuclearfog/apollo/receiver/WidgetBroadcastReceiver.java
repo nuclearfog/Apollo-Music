@@ -26,7 +26,9 @@ public class WidgetBroadcastReceiver extends BroadcastReceiver {
 
 	private MusicPlaybackService service;
 
-
+	/**
+	 * @param service callback to playback service
+	 */
 	public WidgetBroadcastReceiver(MusicPlaybackService service) {
 		this.service = service;
 	}

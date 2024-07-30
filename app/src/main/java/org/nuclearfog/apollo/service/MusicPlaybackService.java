@@ -46,6 +46,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.player.AudioEffects;
 import org.nuclearfog.apollo.player.MultiPlayer;
 import org.nuclearfog.apollo.player.MultiPlayer.OnPlaybackStatusCallback;
+import org.nuclearfog.apollo.receiver.HeadsetStatusReceiver;
 import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.store.PopularStore;
@@ -217,6 +218,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * broadcast listener for unmounting external storage
 	 */
 	private BroadcastReceiver mUnmountReceiver;
+	private BroadcastReceiver headsetReceiver;
 	/**
 	 * handler used to shutdown service after idle
 	 */
@@ -319,6 +321,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// initialize broadcast receiver
 		mIntentReceiver = new WidgetBroadcastReceiver(this);
 		mUnmountReceiver = new UnmountBroadcastReceiver(this);
+		headsetReceiver = new HeadsetStatusReceiver(this);
 		//
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		// Initialize the media player
@@ -336,22 +339,26 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		getCardId();
 
 		// init external storage listener
-		IntentFilter filterStorage = new IntentFilter();
-		filterStorage.addAction(Intent.ACTION_MEDIA_EJECT);
-		filterStorage.addAction(Intent.ACTION_MEDIA_MOUNTED);
-		filterStorage.addDataScheme("file");
+		IntentFilter storageIntent = new IntentFilter();
+		storageIntent.addAction(Intent.ACTION_MEDIA_EJECT);
+		storageIntent.addAction(Intent.ACTION_MEDIA_MOUNTED);
+		storageIntent.addDataScheme("file");
+		// init headset listener
+		IntentFilter headsetIntent = new IntentFilter();
+		headsetIntent.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 		// init the intent filter and each action
-		IntentFilter filterAction = new IntentFilter();
-		filterAction.addAction(SERVICECMD);
-		filterAction.addAction(ACTION_TOGGLEPAUSE);
-		filterAction.addAction(ACTION_STOP);
-		filterAction.addAction(ACTION_NEXT);
-		filterAction.addAction(ACTION_PREVIOUS);
-		filterAction.addAction(ACTION_REPEAT);
-		filterAction.addAction(ACTION_SHUFFLE);
+		IntentFilter playerIntent = new IntentFilter();
+		playerIntent.addAction(SERVICECMD);
+		playerIntent.addAction(ACTION_TOGGLEPAUSE);
+		playerIntent.addAction(ACTION_STOP);
+		playerIntent.addAction(ACTION_NEXT);
+		playerIntent.addAction(ACTION_PREVIOUS);
+		playerIntent.addAction(ACTION_REPEAT);
+		playerIntent.addAction(ACTION_SHUFFLE);
 		// register all receiver
-		ContextCompat.registerReceiver(this, mIntentReceiver, filterAction, ContextCompat.RECEIVER_EXPORTED);
-		ContextCompat.registerReceiver(this, mUnmountReceiver, filterStorage, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mIntentReceiver, playerIntent, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, mUnmountReceiver, storageIntent, ContextCompat.RECEIVER_EXPORTED);
+		ContextCompat.registerReceiver(this, headsetReceiver, headsetIntent, ContextCompat.RECEIVER_EXPORTED);
 
 		// send session ID to external equalizer if set
 		if (settings.isExternalAudioFxPrefered() && !settings.isAudioFxEnabled()) {
@@ -382,6 +389,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		// Unregister the mount listener
 		unregisterReceiver(mUnmountReceiver);
 		unregisterReceiver(mIntentReceiver);
+		unregisterReceiver(headsetReceiver);
 		// remove notification
 		mNotificationHelper.dismissNotification();
 		super.onDestroy();
@@ -623,6 +631,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 			AudioFocusRequestCompat.Builder request = new AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN);
 			request.setAudioAttributes(attrCompat.build());
 			request.setOnAudioFocusChangeListener(this);
+
 			int returnCode = AudioManagerCompat.requestAudioFocus(mAudio, request.build());
 			if (returnCode == AudioManager.AUDIOFOCUS_GAIN) {
 				if (mPlayer.initialized()) {
@@ -645,7 +654,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	/**
 	 * Temporarily pauses playback.
 	 */
-	synchronized void pause(boolean force) {
+	public synchronized void pause(boolean force) {
 		if (mPlayer.pause(force) && force) {
 			notifyChange(CHANGED_PLAYSTATE);
 		}

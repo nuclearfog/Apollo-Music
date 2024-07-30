@@ -202,6 +202,7 @@ public class MultiPlayer {
 				setCrossfadeTask(false);
 				xfadeMode = NONE;
 				isPlaying = false;
+				volume = 0.0f;
 			} else if (xfadeMode == NONE) {
 				xfadeMode = FADE_OUT;
 			}

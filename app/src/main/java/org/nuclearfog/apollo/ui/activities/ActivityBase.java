@@ -42,8 +42,8 @@ import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
 import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.PlaybackStatus;
-import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
+import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
+import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
@@ -104,7 +104,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	/**
 	 * Broadcast receiver
 	 */
-	private PlaybackStatus mPlaybackStatus;
+	private PlaybackStatusReceiver mPlaybackStatus;
 
 	private SongLoader songLoader;
 
@@ -138,7 +138,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the broadcast receiver
-		mPlaybackStatus = new PlaybackStatus(this);
+		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		songLoader = new SongLoader(this);
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));

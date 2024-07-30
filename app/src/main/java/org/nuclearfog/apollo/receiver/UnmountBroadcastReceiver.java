@@ -7,7 +7,7 @@ import android.content.Intent;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 
 /**
- * Custom broadcast listener for unmounting external storage
+ * Broadcast listener used to detect unmounting external storages
  *
  * @author nuclearfog
  */
@@ -15,7 +15,9 @@ public class UnmountBroadcastReceiver extends BroadcastReceiver {
 
 	private MusicPlaybackService service;
 
-
+	/**
+	 * @param service callback to playback service
+	 */
 	public UnmountBroadcastReceiver(MusicPlaybackService service) {
 		this.service = service;
 	}

@@ -58,8 +58,8 @@ import org.nuclearfog.apollo.async.loader.SongLoader;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
-import org.nuclearfog.apollo.receiver.PlaybackStatus;
-import org.nuclearfog.apollo.receiver.PlaybackStatus.PlayStatusListener;
+import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
+import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
@@ -154,7 +154,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	/**
 	 * Broadcast receiver
 	 */
-	private PlaybackStatus mPlaybackStatus;
+	private PlaybackStatusReceiver mPlaybackStatus;
 	/**
 	 * thread pool used to run a task to periodically update seekbar and time
 	 */
@@ -228,7 +228,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Initialize the image fetcher/cache
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
 		// Initialize the broadcast receiver
-		mPlaybackStatus = new PlaybackStatus(this);
+		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		// Theme the action bar
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {

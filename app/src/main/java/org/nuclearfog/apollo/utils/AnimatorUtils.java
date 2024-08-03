@@ -44,11 +44,13 @@ public final class AnimatorUtils {
 	 */
 	public static void pulse(View view, boolean enable) {
 		if (enable) {
-			pulse = ObjectAnimator.ofPropertyValuesHolder(view, FADE_IN, FADE_OUT);
-			pulse.setRepeatCount(ObjectAnimator.INFINITE);
-			pulse.setRepeatMode(ObjectAnimator.REVERSE);
-			pulse.setDuration(500);
-			pulse.start();
+			if (pulse == null) {
+				pulse = ObjectAnimator.ofPropertyValuesHolder(view, FADE_IN, FADE_OUT);
+				pulse.setRepeatCount(ObjectAnimator.INFINITE);
+				pulse.setRepeatMode(ObjectAnimator.REVERSE);
+				pulse.setDuration(500);
+				pulse.start();
+			}
 		} else if (pulse != null) {
 			pulse.cancel();
 			pulse = null;

@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -32,8 +31,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -65,6 +62,8 @@ import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
+import org.nuclearfog.apollo.ui.views.PlayerSeekbar;
+import org.nuclearfog.apollo.ui.views.PlayerSeekbar.OnPlayerSeekListener;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton;
 import org.nuclearfog.apollo.ui.views.RepeatingImageButton.RepeatListener;
@@ -77,15 +76,10 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
-import org.nuclearfog.apollo.utils.StringUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Apollo's "now playing" interface.
@@ -93,7 +87,7 @@ import java.util.concurrent.TimeUnit;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnSeekBarChangeListener,
+public class AudioPlayerActivity extends AppCompatActivity implements ServiceBinderCallback, OnPlayerSeekListener,
 		OnQueryTextListener, OnClickListener, RepeatListener, PlayStatusListener {
 
 	/**
@@ -136,29 +130,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private ImageView mAlbumArtSmall;
 	/**
-	 * Current time
-	 */
-	private TextView mCurrentTime;
-	/**
-	 * Total time
-	 */
-	private TextView mTotalTime;
-	/**
 	 * Queue switch
 	 */
 	private ImageView mQueueSwitch;
 	/**
 	 * Progess
 	 */
-	private SeekBar mProgress;
+	private PlayerSeekbar playerSeekbar;
 	/**
 	 * Broadcast receiver
 	 */
 	private PlaybackStatusReceiver mPlaybackStatus;
-	/**
-	 * thread pool used to run a task to periodically update seekbar and time
-	 */
-	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 	/**
 	 * ViewPager
 	 */
@@ -203,11 +185,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		albumArtBorder1 = findViewById(R.id.audio_player_album_border);
 		albumArtBorder2 = findViewById(R.id.audio_player_album_border_bottom);
 		mAlbumArtSmall = findViewById(R.id.audio_player_switch_album_art);
-		mCurrentTime = findViewById(R.id.audio_player_current_time);
-		mTotalTime = findViewById(R.id.audio_player_total_time);
 		mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
 		mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);
-		mProgress = findViewById(R.id.player_progress);
+		playerSeekbar = findViewById(R.id.player_progress);
 
 		// set toolbar
 		Toolbar toolbar = findViewById(R.id.player_toolbar);
@@ -247,8 +227,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		int themeColor = mPrefs.getDefaultThemeColor();
 		mShuffleButton.setColor(themeColor);
 		mRepeatButton.setColor(themeColor);
-		mProgress.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
-		mProgress.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		controls.setVisibility(View.INVISIBLE);
 		// go to home activity if there is any missing permission
 		for (String permission : Constants.PERMISSIONS) {
@@ -267,7 +245,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mShuffleButton.setOnClickListener(this);
 		mRepeatButton.setOnClickListener(this);
 		mPlayPauseButton.setOnClickListener(this);
-		mProgress.setOnSeekBarChangeListener(this);
+		playerSeekbar.setOnPlayerSeekListener(this);
 		mTrackName.setOnClickListener(this);
 		mArtistName.setOnClickListener(this);
 		mQueueSwitch.setOnClickListener(this);
@@ -308,7 +286,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			updatePlaybackControls();
 			updateNowPlayingInfo();
 			refreshQueue();
-			updateTime();
 		}
 	}
 
@@ -337,7 +314,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	@Override
 	protected void onDestroy() {
-		threadPool.shutdown();
+		playerSeekbar.release();
 		songLoader.cancel();
 		albumSongLoader.cancel();
 		artistSongLoader.cancel();
@@ -460,40 +437,14 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		invalidateOptionsMenu();
 		// refresh queue after connected
 		refreshQueue();
-		// update time and seekbar
-		updateTime();
-		// init time/seekbar updater
-		threadPool.scheduleAtFixedRate(new TimeHandler(this), TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
 		// enable enimation
-		AnimatorUtils.pulse(mCurrentTime, !MusicUtils.isPlaying(this));
+		playerSeekbar.setPlayStatus(MusicUtils.isPlaying(this));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-		long mPosOverride = MusicUtils.getDurationMillis(this) * progress / 1000L;
-		mCurrentTime.setText(StringUtils.makeTimeString(this, mPosOverride));
-		if (fromuser) {
-			MusicUtils.seek(this, mPosOverride);
-		}
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void onStartTrackingTouch(SeekBar bar) {
-		// set blinking time indicator permanently visible
-		mCurrentTime.setVisibility(View.VISIBLE);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {
+	public void onSeek(long position) {
+		MusicUtils.seek(this, position);
 	}
 
 	/**
@@ -573,8 +524,11 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// play/pause button clicked
 		else if (v.getId() == R.id.action_button_play) {
-			boolean succeed = MusicUtils.togglePlayPause(this);
-			if (!succeed) {
+			boolean isPlaying = MusicUtils.isPlaying(this);
+			if (MusicUtils.togglePlayPause(this)) {
+				playerSeekbar.setPlayStatus(!isPlaying);
+				playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
+			} else {
 				songLoader.execute(null, onSongsPlay);
 			}
 		}
@@ -617,7 +571,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// Set the play and pause image
 		boolean playing = MusicUtils.isPlaying(this);
 		mPlayPauseButton.updateState(playing);
-		AnimatorUtils.pulse(mCurrentTime, !playing);
+		playerSeekbar.setPlayStatus(playing);
 	}
 
 
@@ -646,7 +600,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			// Set the artist name
 			mArtistName.setText(song.getArtist());
 			// Set the total time
-			mTotalTime.setText(StringUtils.makeTimeString(this, MusicUtils.getDurationMillis(this)));
+			playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
+			playerSeekbar.setTotalTime(MusicUtils.getDurationMillis(this));
+			playerSeekbar.setPlayStatus(MusicUtils.isPlaying(this));
 			// Set the album art
 			mImageFetcher.loadAlbumImage(album, mAlbumArt);
 			// Set the small artwork
@@ -729,6 +685,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
 		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
+		playerSeekbar.setTotalTime(MusicUtils.getDurationMillis(this));
+		playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
 	}
 
 	/**
@@ -745,8 +703,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			position = Math.max(0, position - duration / 32L);
 		}
 		MusicUtils.seek(this, position);
-		int progress = (int) (position * 1000L / duration);
-		mProgress.setProgress(progress);
+		playerSeekbar.seek(position);
 	}
 
 	/**
@@ -789,23 +746,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	}
 
 	/**
-	 * update current track progress
-	 */
-	private void updateTime() {
-		long pos = MusicUtils.getPositionMillis(this);
-		if (pos >= 0 && pos <= MusicUtils.getDurationMillis(this)) {
-			int progress = (int) (1000 * pos / MusicUtils.getDurationMillis(this));
-			mProgress.setProgress(progress);
-			if (MusicUtils.isPlaying(this)) {
-				mCurrentTime.setVisibility(View.VISIBLE);
-			}
-		} else {
-			mCurrentTime.setText("--:--");
-			mProgress.setProgress(0);
-		}
-	}
-
-	/**
 	 * called after songs loaded asynchronously to play
 	 */
 	private void onSongPlay(List<Song> songs) {
@@ -813,37 +753,5 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		MusicUtils.playAll(this, ids, playPos, false);
 		refreshQueue();
 		playPos = 0;
-	}
-
-	/**
-	 * Used to update the current time string
-	 */
-	private static final class TimeHandler implements Runnable {
-
-		/**
-		 * time to refresh seekbar/position
-		 */
-		public static final int CYCLE_MS = 500;
-
-		private WeakReference<AudioPlayerActivity> mAudioPlayer;
-
-
-		public TimeHandler(AudioPlayerActivity player) {
-			super();
-			mAudioPlayer = new WeakReference<>(player);
-		}
-
-
-		@Override
-		public void run() {
-			AudioPlayerActivity activity = mAudioPlayer.get();
-			if (activity != null) {
-				try {
-					activity.updateTime();
-				} catch (Exception exception) {
-					// ignore
-				}
-			}
-		}
 	}
 }

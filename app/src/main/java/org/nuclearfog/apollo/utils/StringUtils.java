@@ -64,10 +64,6 @@ public final class StringUtils {
 			// invalid time
 			return "--:--";
 		}
-		if (duration <= 500) {
-			// no need to calculate
-			return "0:00";
-		}
 		long sec = duration / 1000;
 		long min = sec / 60;
 		long hour = min / 60;

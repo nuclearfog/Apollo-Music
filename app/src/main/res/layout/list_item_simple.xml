@@ -21,7 +21,9 @@
 	android:paddingLeft="@dimen/list_preferred_item_padding"
 	android:paddingRight="@dimen/list_preferred_item_padding"
 	android:gravity="center_vertical"
-	android:minHeight="@dimen/item_normal_height">
+	android:minHeight="@dimen/item_normal_height"
+	android:paddingEnd="@dimen/list_preferred_item_padding"
+	android:paddingStart="@dimen/list_preferred_item_padding">
 
 	<ImageView
 		android:id="@+id/edit_track_list_item_handle"
@@ -43,7 +45,7 @@
 		android:id="@+id/list_item_text_barrier"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		app:barrierDirection="right" />
+		app:barrierDirection="end" />
 
 	<TextView
 		android:id="@+id/line_one"

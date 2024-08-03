@@ -26,7 +26,9 @@
 		android:layout_width="@dimen/notification_expanded_height"
 		android:layout_height="@dimen/notification_expanded_height"
 		android:paddingLeft="@dimen/notification_expanded_button_padding"
+		android:paddingStart="@dimen/notification_expanded_button_padding"
 		android:paddingRight="@dimen/notification_expanded_button_padding"
+		android:paddingEnd="@dimen/notification_expanded_button_padding"
 		android:src="@drawable/default_artwork" />
 
 	<LinearLayout

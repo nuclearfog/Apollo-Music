@@ -65,7 +65,7 @@
 		android:id="@+id/player_base_barrier"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		app:barrierDirection="left"
+		app:barrierDirection="start"
 		app:constraint_referenced_ids="audio_player_informations,audio_player_controls" />
 
 	<include

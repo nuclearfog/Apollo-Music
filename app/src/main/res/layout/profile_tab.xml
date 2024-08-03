@@ -65,15 +65,16 @@
 			android:layout_height="@dimen/profile_carousel_label_height"
 			android:background="@color/carousell_text_background"
 			android:paddingLeft="@dimen/profile_label_padding"
+			android:paddingStart="@dimen/profile_label_padding"
 			android:paddingRight="@dimen/profile_label_padding"
-			android:gravity="left|center_vertical"
+			android:paddingEnd="@dimen/profile_label_padding"
+			android:gravity="left|start|center_vertical"
 			android:lines="1"
 			android:textColor="@color/white"
 			android:textSize="@dimen/text_size_large"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			tools:ignore="RtlHardcoded" />
+			app:layout_constraintEnd_toEndOf="parent" />
 
 		<org.nuclearfog.apollo.ui.views.theme.Colorstrip
 			android:id="@+id/profile_tab_colorstrip"

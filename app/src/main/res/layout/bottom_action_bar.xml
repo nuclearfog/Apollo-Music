@@ -20,8 +20,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="@dimen/bottom_action_bar_height"
 	android:background="@color/action_bar_color"
-	android:layout_gravity="bottom"
-	tools:ignore="ContentDescription,RtlHardcoded,RtlSymmetry">
+	android:layout_gravity="bottom">
 
 	<ImageView
 		android:id="@+id/bottom_action_bar_background"
@@ -30,7 +29,8 @@
 		app:layout_constraintStart_toEndOf="@id/bottom_action_bar_album_art"
 		app:layout_constraintTop_toBottomOf="@id/colorstrip"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent" />
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:ignore="ContentDescription" />
 
 	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
 		android:id="@+id/colorstrip"
@@ -45,6 +45,7 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:src="@drawable/default_artwork"
+		android:contentDescription="@string/accessibility_album_art"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/colorstrip"
 		app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +92,9 @@
 			android:id="@+id/action_controls"
 			android:orientation="horizontal"
 			android:layout_width="wrap_content"
-			android:layout_height="match_parent">
+			android:layout_height="match_parent"
+			android:layoutDirection="ltr"
+			tools:ignore="UnusedAttribute">
 
 			<org.nuclearfog.apollo.ui.views.RepeatingImageButton
 				android:id="@+id/action_button_previous"

@@ -70,7 +70,11 @@ public class MultiPlayer {
 	 */
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
 
+	private MediaMetadataRetriever retriever;
+
 	private Handler playerHandler, xfadeHandler;
+
+	private OnPlaybackStatusCallback callback;
 
 	@Nullable
 	private Future<?> xfadeTask;
@@ -98,8 +102,6 @@ public class MultiPlayer {
 	 * current fade in/out status {@link #NONE,#FADE_IN,#FADE_OUT,#XFADE}
 	 */
 	private volatile int xfadeMode = NONE;
-
-	private OnPlaybackStatusCallback callback;
 	/**
 	 * volume of the current selected media player
 	 */
@@ -113,6 +115,7 @@ public class MultiPlayer {
 	public MultiPlayer(Looper looper, OnPlaybackStatusCallback callback) {
 		playerHandler = new Handler(looper);
 		xfadeHandler = new Handler(looper);
+		retriever = new MediaMetadataRetriever();
 		this.callback = callback;
 		for (int i = 0; i < mPlayers.length; i++) {
 			mPlayers[i] = new MediaPlayer();
@@ -335,7 +338,6 @@ public class MultiPlayer {
 	private boolean setDataSourceImpl(MediaPlayer player, Context context, @NonNull Uri uri) {
 		try {
 			// check file if valid
-			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 			retriever.setDataSource(context, uri);
 			String hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO);
 			if (hasAudio == null || !hasAudio.equals("yes")) {

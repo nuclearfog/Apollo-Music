@@ -92,7 +92,8 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:ellipsize">end</item>
 		<item name="android:paddingLeft">5dp</item>
-		<item name="android:gravity">top|left|center</item>
+		<item name="android:paddingStart">5dp</item>
+		<item name="android:gravity">top|left|start|center</item>
 		<item name="android:lines">1</item>
 		<item name="textAllCaps">true</item>
 		<item name="android:textSize">@dimen/text_size_extra_micro</item>
@@ -111,7 +112,9 @@
 		<item name="android:layout_height">match_parent</item>
 		<item name="android:gravity">center|right</item>
 		<item name="android:paddingLeft">@dimen/bottom_action_bar_item_padding_left</item>
+		<item name="android:paddingStart">@dimen/bottom_action_bar_item_padding_left</item>
 		<item name="android:paddingRight">@dimen/bottom_action_bar_item_padding_right</item>
+		<item name="android:paddingEnd">@dimen/bottom_action_bar_item_padding_right</item>
 		<item name="android:scaleType">centerInside</item>
 	</style>
 

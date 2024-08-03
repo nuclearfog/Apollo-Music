@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AlphaAnimation;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,7 +101,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	private ImageView mAlbumArt;
 
-	private View controls;
+	private HorizontalScrollView playbackControls;
 	/**
 	 * Broadcast receiver
 	 */
@@ -128,7 +129,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// Album art
 		mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
 		// media controls
-		controls = findViewById(R.id.action_controls);
+		playbackControls = findViewById(R.id.bottom_action_bar_scrollview);
 		// next track button
 		View previousButton = findViewById(R.id.action_button_previous);
 		// previous track button
@@ -143,7 +144,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));
 		// hide player controls
-		controls.setVisibility(View.INVISIBLE);
+		playbackControls.setVisibility(View.INVISIBLE);
 
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);
@@ -220,11 +221,13 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	 */
 	@Override
 	public void onServiceConnected() {
-		if (controls.getVisibility() != View.VISIBLE) {
+		// fade in playback controls
+		if (playbackControls.getVisibility() != View.VISIBLE) {
 			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
 			anim.setDuration(250);
-			controls.startAnimation(anim);
-			controls.setVisibility(View.VISIBLE);
+			playbackControls.startAnimation(anim);
+			playbackControls.setVisibility(View.VISIBLE);
+			playbackControls.scrollTo(0, 0);
 		}
 		// Set the playback drawables
 		updatePlaybackControls();

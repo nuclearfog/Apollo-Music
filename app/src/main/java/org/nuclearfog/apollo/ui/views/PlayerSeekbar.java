@@ -46,9 +46,9 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	private long duration;
 
 	/**
-	 * playback status
+	 * set to true to enable automatic seekbar updates
 	 */
-	private boolean isPlaying;
+	private boolean updateSeekbar;
 
 	/**
 	 * thread pool used to run a task to periodically update seekbar and time
@@ -103,7 +103,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (listener != null && fromUser) {
 			position = (duration * progress) / 1000L;
-			setCurrentTime(position);
+			setCurrentTimeText(position);
 			listener.onSeek(position);
 		}
 	}
@@ -111,11 +111,13 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
+		updateSeekbar = false;
 	}
 
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
+		updateSeekbar = true;
 	}
 
 	/**
@@ -131,13 +133,13 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * @param time time in milliseconds
 	 */
 	public void setCurrentTime(long time) {
-		if (time >= 0 && time <= duration) {
+		if (time >= 0 && time <= duration && duration > 0) {
 			position = time;
-			int progress = (int) (1000 * time / duration);
-			seekbar.setProgress(progress);
-			times[0].setText(StringUtils.makeTimeString(getContext(), time));
+			setCurrentTimeText(time);
+			seekbar.setProgress((int) (1000 * time / duration));
 		} else {
-			times[0].setText("--:--");
+			position = 0;
+			setCurrentTimeText(0);
 			seekbar.setProgress(0);
 		}
 	}
@@ -174,7 +176,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * @param isPlaying true to move the seekbar automatically
 	 */
 	public void setPlayStatus(boolean isPlaying) {
-		this.isPlaying = isPlaying;
+		updateSeekbar = isPlaying;
 		AnimatorUtils.pulse(times[0], !isPlaying);
 	}
 
@@ -186,12 +188,23 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	}
 
 	/**
+	 * print current time value of the position
+	 */
+	private void setCurrentTimeText(long time) {
+		if (time > 0) {
+			times[0].setText(StringUtils.makeTimeString(getContext(), time));
+		} else {
+			times[0].setText("--:--");
+		}
+	}
+
+	/**
 	 * called periodically by {@link TimeHandler} to update the seekbar positioin
 	 */
 	private void update() {
-		if (isPlaying) {
+		if (updateSeekbar) {
 			position += TimeHandler.CYCLE_MS;
-			setCurrentTime(position);
+			setCurrentTimeText(position);
 			seek(position);
 		}
 	}

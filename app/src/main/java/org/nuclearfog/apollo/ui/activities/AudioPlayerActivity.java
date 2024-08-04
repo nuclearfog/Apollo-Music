@@ -284,7 +284,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		// update playback control after resume
 		if (MusicUtils.isConnected(this)) {
 			updatePlaybackControls();
-			updateNowPlayingInfo();
 			refreshQueue();
 		}
 	}
@@ -431,14 +430,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		startPlayback(getIntent());
 		// Set the playback drawables
 		updatePlaybackControls();
-		// Current info
-		updateNowPlayingInfo();
 		// Update the favorites icon
 		invalidateOptionsMenu();
 		// refresh queue after connected
 		refreshQueue();
-		// enable enimation
-		playerSeekbar.setPlayStatus(MusicUtils.isPlaying(this));
 	}
 
 
@@ -558,7 +553,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	public void onMetaChange() {
 		// Current info
-		updateNowPlayingInfo();
+		updatePlaybackControls();
 		// Update the favorites icon
 		invalidateOptionsMenu();
 		// jumpt to current track
@@ -586,28 +581,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 
 	@Override
 	public void refresh() {
-	}
-
-	/**
-	 * Sets the track name, album name, and album art.
-	 */
-	private void updateNowPlayingInfo() {
-		Song song = MusicUtils.getCurrentTrack(this);
-		Album album = MusicUtils.getCurrentAlbum(this);
-		if (song != null && album != null) {
-			// Set the track name
-			mTrackName.setText(song.getName());
-			// Set the artist name
-			mArtistName.setText(song.getArtist());
-			// Set the total time
-			playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
-			playerSeekbar.setTotalTime(MusicUtils.getDurationMillis(this));
-			playerSeekbar.setPlayStatus(MusicUtils.isPlaying(this));
-			// Set the album art
-			mImageFetcher.loadAlbumImage(album, mAlbumArt);
-			// Set the small artwork
-			mImageFetcher.loadAlbumImage(album, mAlbumArtSmall);
-		}
 	}
 
 	/**
@@ -646,6 +619,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			else if (Playlists.CONTENT_TYPE.equals(mimeType)) {
 				long id = parseIdFromIntent(intent, "playlistId", "playlist");
 				if (id != -1L) {
+					playPos = 0;
 					playlistSongLoader.execute(id, onSongsPlay);
 				}
 			}
@@ -672,6 +646,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Sets the correct drawable states for the playback controls.
 	 */
 	private void updatePlaybackControls() {
+		Song song = MusicUtils.getCurrentTrack(this);
+		Album album = MusicUtils.getCurrentAlbum(this);
+		boolean isPlaying = MusicUtils.isPlaying(this);
 		// fade in player control after initialization
 		if (controls.getVisibility() != View.VISIBLE && controls.getAnimation() == null) {
 			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -680,13 +657,25 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 			controls.startAnimation(anim);
 		}
 		// Set the play and pause image
-		mPlayPauseButton.updateState(MusicUtils.isPlaying(this));
+		mPlayPauseButton.updateState(isPlaying);
 		// Set the shuffle image
 		mShuffleButton.updateShuffleState(MusicUtils.getShuffleMode(this));
 		// Set the repeat image
 		mRepeatButton.updateRepeatState(MusicUtils.getRepeatMode(this));
 		playerSeekbar.setTotalTime(MusicUtils.getDurationMillis(this));
 		playerSeekbar.setCurrentTime(MusicUtils.getPositionMillis(this));
+		playerSeekbar.setPlayStatus(isPlaying);
+		// update track information
+		if (song != null && album != null) {
+			// Set the track name
+			mTrackName.setText(song.getName());
+			// Set the artist name
+			mArtistName.setText(song.getArtist());
+			// Set the album art
+			mImageFetcher.loadAlbumImage(album, mAlbumArt);
+			// Set the small artwork
+			mImageFetcher.loadAlbumImage(album, mAlbumArtSmall);
+		}
 	}
 
 	/**

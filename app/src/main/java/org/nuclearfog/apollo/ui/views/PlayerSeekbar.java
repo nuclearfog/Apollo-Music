@@ -132,6 +132,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 */
 	public void setCurrentTime(long time) {
 		if (time >= 0 && time <= duration) {
+			position = time;
 			int progress = (int) (1000 * time / duration);
 			seekbar.setProgress(progress);
 			times[0].setText(StringUtils.makeTimeString(getContext(), time));

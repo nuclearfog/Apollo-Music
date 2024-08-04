@@ -18,6 +18,7 @@ import android.graphics.Paint;
 
 import androidx.annotation.NonNull;
 
+import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 
@@ -306,6 +307,7 @@ public final class BitmapUtils {
 	 */
 	public static Bitmap getAlbumArt(Context context, @NonNull Album album) {
 		ImageFetcher mImageFetcher = ImageFetcher.getInstance(context);
+		mImageFetcher.setImageCache(ImageCache.getInstance(context));
 		return mImageFetcher.getArtwork(album);
 	}
 }

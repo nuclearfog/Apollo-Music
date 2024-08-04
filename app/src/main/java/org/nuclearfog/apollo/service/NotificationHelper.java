@@ -141,6 +141,7 @@ class NotificationHelper {
 			mediaStyle.setMediaSession(mSession.getSessionToken());
 			mediaStyle.setCancelButtonIntent(callbackStop);
 			mediaStyle.setShowCancelButton(true);
+			mediaStyle.setShowActionsInCompactView(0, 1, 2);
 			notificationBuilder.setStyle(mediaStyle);
 		}
 		// use custom notification layout for old Android version

@@ -11,6 +11,7 @@
 
 package org.nuclearfog.apollo.ui.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -115,13 +116,19 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onDismiss(@NonNull DialogInterface dialog) {
+		// prevent dialog to be dismissed automatically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
 			// Delete the selected item(s)
 			trackDeleteWorker.execute(ApolloUtils.toLongArray(mItemList), this);
 			// prevent dialog to be dismissed after this method
-			if (dialog instanceof AlertDialog)
-				((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 		} else if (which == DialogInterface.BUTTON_NEGATIVE) {
 			dismiss();
 		}
@@ -132,13 +139,14 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	 */
 	@Override
 	public void onResult(@NonNull Integer count) {
-		if (getActivity() != null) {
-			AppMsg.makeText(getActivity(), R.plurals.NNNtracksdeleted, count, AppMsg.STYLE_CONFIRM).show();
+		Activity activity = getActivity();
+		if (activity != null) {
+			AppMsg.makeText(activity, R.plurals.NNNtracksdeleted, count, AppMsg.STYLE_CONFIRM).show();
 			// We deleted a number of tracks, which could affect any number of
 			// things in the media content domain, so update everything.
-			getActivity().getContentResolver().notifyChange(Uri.parse("content://media"), null);
+			activity.getContentResolver().notifyChange(Uri.parse("content://media"), null);
 			// Notify the lists to update
-			MusicUtils.refresh(getActivity());
+			MusicUtils.refresh(activity);
 			dismiss();
 		}
 	}

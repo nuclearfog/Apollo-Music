@@ -164,9 +164,11 @@ public final class MusicUtils {
 		}
 		// start foreground service if application is in background
 		if (foregroundActivities == 0) {
-			Intent intent = new Intent(activity, MusicPlaybackService.class);
-			intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
-			ContextCompat.startForegroundService(activity, intent);
+			if (isPlaying(activity)) {
+				Intent intent = new Intent(activity, MusicPlaybackService.class);
+				intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
+				ContextCompat.startForegroundService(activity, intent);
+			}
 		}
 		// stop foreground activity of the playback service
 		else {

@@ -438,6 +438,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param data Unique identifier for which item to get
 	 * @return The {@link Bitmap} if found in cache, null otherwise
 	 */
+	@Nullable
 	public Bitmap getCachedBitmap(String data) {
 		if (data == null) {
 			return null;
@@ -459,6 +460,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * @param id      The ID of the album to find artwork for
 	 * @return The artwork for an album
 	 */
+	@Nullable
 	public Bitmap getCachedArtwork(Context context, String data, long id) {
 		if (context == null || data == null) {
 			return null;
@@ -478,18 +480,15 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * Used to fetch the artwork for an album locally from the user's device
 	 *
 	 * @param context The {@link Context} to use
+	 * @param albumId ID of the album to get the artwork from
 	 * @return The artwork for an album
 	 */
 	@Nullable
 	public Bitmap getArtworkFromFile(Context context, long albumId) {
-		if (albumId < 0) {
-			return null;
-		}
 		Bitmap artwork = null;
 		waitUntilUnpaused();
 		try {
 			Uri uri = ContentUris.withAppendedId(mArtworkUri, albumId);
-
 			ParcelFileDescriptor fileDescr = context.getContentResolver().openFileDescriptor(uri, "r");
 			if (fileDescr != null) {
 				FileDescriptor fileDescriptor = fileDescr.getFileDescriptor();
@@ -499,11 +498,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 		} catch (OutOfMemoryError e) {
 			evictAll();
 		} catch (FileNotFoundException e) {
-			// ignore
+			// caught if no album art was found
 		} catch (Exception e) {
-			if (BuildConfig.DEBUG) {
-				e.printStackTrace();
-			}
+			Log.w(TAG, "error while loading album art", e);
 		}
 		return artwork;
 	}
@@ -546,10 +543,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 						mDiskCache = null;
 					}
 				} catch (IOException e) {
-					if (BuildConfig.DEBUG) {
-						e.printStackTrace();
-						Log.e(TAG, "clearCaches - " + e);
-					}
+					Log.e(TAG, "error cleaning disk cache" + e);
 				}
 				// Clear the memory cache
 				evictAll();
@@ -562,10 +556,10 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 * now would be a good time to garbage collect
 	 */
 	public void evictAll() {
+		Log.d(TAG, "cleaning image cache");
 		if (mLruCache != null) {
 			mLruCache.evictAll();
 		}
-		System.gc();
 	}
 
 	/**

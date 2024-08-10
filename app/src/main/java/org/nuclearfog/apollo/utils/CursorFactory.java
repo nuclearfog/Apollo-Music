@@ -48,8 +48,7 @@ public final class CursorFactory {
 			Albums.ARTIST,
 			Albums.NUMBER_OF_SONGS,
 			Albums.FIRST_YEAR,
-			Albums.ARTIST_ID,
-			Albums.ALBUM_ART
+			Albums.ARTIST_ID
 	};
 
 	/**

@@ -16,7 +16,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
-import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -194,43 +193,46 @@ class NotificationHelper {
 	private Notification buildNotification() {
 		Album album = mService.getCurrentAlbum();
 		Song song = mService.getCurrentSong();
-		if (album != null && song != null) {
-			Bitmap albumArt = BitmapUtils.getAlbumArt(mService, album);
-			// build integrated media control
-			if (!legacyLayout) {
-				// set track information to notification directly
+		// build integrated media control
+		if (!legacyLayout) {
+			if (song != null && album != null) {
 				notificationBuilder.setContentTitle(song.getName());
 				notificationBuilder.setContentText(song.getArtist());
-				notificationBuilder.setLargeIcon(albumArt);
-				// init media control (fallback if not supported by MediaStyle)
-				notificationBuilder.clearActions();
-				notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
-				if (mService.isPlaying()) {
-					notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
-				} else {
-					notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
-				}
-				notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
-				notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
+				notificationBuilder.setLargeIcon(BitmapUtils.getAlbumArt(mService, album));
 			}
-			// build legacy notification
-			else {
-				int iconRes = mService.isPlaying() ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play;
-				// update small notification view
+			// init media control (fallback if not supported by MediaStyle)
+			notificationBuilder.clearActions();
+			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
+			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
+			if (mService.isPlaying()) {
+				notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
+			} else {
+				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
+			}
+		}
+		// build legacy notification
+		else {
+			if (album != null && song != null) {
 				mSmallContent.setTextViewText(R.id.notification_base_line_one, song.getName());
 				mSmallContent.setTextViewText(R.id.notification_base_line_two, song.getArtist());
-				mSmallContent.setImageViewBitmap(R.id.notification_base_image, albumArt);
-				mSmallContent.setImageViewResource(R.id.notification_base_play, iconRes);
-				// update expanded notification view
+				mSmallContent.setImageViewBitmap(R.id.notification_base_image, BitmapUtils.getAlbumArt(mService, album));
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_one, song.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_two, album.getName());
 				mExpandedView.setTextViewText(R.id.notification_expanded_base_line_three, song.getArtist());
-				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, albumArt);
-				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, iconRes);
-				// add view to notification
-				notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
+				mExpandedView.setImageViewBitmap(R.id.notification_expanded_base_image, BitmapUtils.getAlbumArt(mService, album));
 			}
+			if (mService.isPlaying()) {
+				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
+				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_pause);
+			} else {
+				mSmallContent.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play);
+				mExpandedView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_play);
+			}
+			// add view to notification
+			notificationBuilder.setCustomBigContentView(mExpandedView).setCustomContentView(mSmallContent);
 		}
+
 		return notificationBuilder.build();
 	}
 

@@ -132,8 +132,7 @@ public final class MusicUtils {
 			activity = activity.getParent();
 		ContextWrapper contextWrapper = new ContextWrapper(activity.getBaseContext());
 		Intent intent = new Intent(activity, MusicPlaybackService.class);
-		intent.putExtra(MusicPlaybackService.EXTRA_FOREGROUND, true);
-		ContextCompat.startForegroundService(activity, intent);
+		activity.startService(intent);
 		ServiceBinder binder = new ServiceBinder(callback);
 		if (contextWrapper.bindService(intent, binder, 0)) {
 			mConnectionMap.put(activity, binder);

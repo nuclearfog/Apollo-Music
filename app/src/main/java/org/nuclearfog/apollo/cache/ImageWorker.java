@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
@@ -39,11 +40,9 @@ public abstract class ImageWorker {
 	protected ImageCache mImageCache;
 
 	/**
-	 * Constructor of <code>ImageWorker</code>
 	 *
-	 * @param context The {@link Context} to use
 	 */
-	protected ImageWorker(Context context) {
+	protected ImageWorker(@NonNull Context context) {
 		mContext = context.getApplicationContext();
 	}
 
@@ -110,6 +109,7 @@ public abstract class ImageWorker {
 	/**
 	 * @return application context
 	 */
+	@NonNull
 	public Context getContext() {
 		return mContext;
 	}

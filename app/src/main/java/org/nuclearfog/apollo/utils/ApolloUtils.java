@@ -83,15 +83,7 @@ public final class ApolloUtils {
 	 * settings, the mobile data and other network connections aren't
 	 * returned at all
 	 */
-	public static boolean isOnline(Context context) {
-		/*
-		 * This sort of handles a sudden configuration change, but I think it
-		 * should be dealt with in a more professional way.
-		 */
-		if (context == null) {
-			return false;
-		}
-
+	public static boolean isOnline(@NonNull Context context) {
 		boolean state = false;
 		boolean onlyOnWifi = PreferenceUtils.getInstance(context).onlyOnWifi();
 		/* Monitor network connections */

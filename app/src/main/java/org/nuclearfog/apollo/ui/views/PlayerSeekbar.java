@@ -19,6 +19,7 @@ import org.nuclearfog.apollo.utils.StringUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -50,10 +51,14 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 */
 	private boolean updateSeekbar;
 
+	private Future<?> updateTask;
+
 	/**
 	 * thread pool used to run a task to periodically update seekbar and time
 	 */
 	private ScheduledExecutorService threadPool = Executors.newSingleThreadScheduledExecutor();
+
+	private Runnable timeHandler = new TimeHandler(this);
 
 	/**
 	 * {@inheritDoc}
@@ -67,10 +72,8 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 */
 	public PlayerSeekbar(Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		Runnable timeHandler = new TimeHandler(this);
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
 		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);
-		threadPool.scheduleAtFixedRate(timeHandler, TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
 		int themeColor = mPrefs.getDefaultThemeColor();
 		float textsize = getResources().getDimension(R.dimen.text_size_micro);
 		float width = getResources().getDimension(R.dimen.audio_player_time_width);
@@ -87,12 +90,15 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 		}
 		seekbar.getProgressDrawable().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
 		seekbar.getThumb().setColorFilter(themeColor, PorterDuff.Mode.SRC_IN);
+		//
+		setCurrentTimeText(0);
 		// configure seekbar
 		seekbar.setMax(1000);
 		seekbar.setLayoutParams(param);
 		seekbar.setOnSeekBarChangeListener(this);
 		// configure root view
 		setOrientation(HORIZONTAL);
+		setGravity(Gravity.CENTER);
 		addView(times[0]);
 		addView(seekbar);
 		addView(times[1]);
@@ -178,6 +184,13 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	public void setPlayStatus(boolean isPlaying) {
 		updateSeekbar = isPlaying;
 		AnimatorUtils.pulse(times[0], !isPlaying);
+		if (isPlaying) {
+			if (updateTask == null)
+				updateTask = threadPool.scheduleWithFixedDelay(timeHandler, TimeHandler.CYCLE_MS, TimeHandler.CYCLE_MS, TimeUnit.MILLISECONDS);
+		} else if (updateTask != null) {
+			updateTask.cancel(true);
+			updateTask = null;
+		}
 	}
 
 	/**

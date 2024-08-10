@@ -11,8 +11,8 @@ android {
 		applicationId 'org.nuclearfog.apollo'
 		minSdkVersion 16
 		targetSdkVersion 35
-		versionCode 51
-		versionName '1.5.11'
+		versionCode 52
+		versionName '1.5.12'
 		// disable vector optimization
 		vectorDrawables.generatedDensities = []
 	}

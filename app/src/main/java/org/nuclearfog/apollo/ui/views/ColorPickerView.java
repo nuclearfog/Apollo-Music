@@ -29,6 +29,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.ColorRes;
+
 import org.nuclearfog.apollo.ui.drawables.AlphaPatternDrawable;
 
 /**
@@ -328,18 +330,6 @@ public class ColorPickerView extends View {
 	 * @param color The color that should be selected.
 	 */
 	public void setColor(int color) {
-		setColor(color, false);
-	}
-
-	/**
-	 * Set the color this view should show.
-	 *
-	 * @param color    The color that should be selected.
-	 * @param callback If you want to get a callback to your
-	 *                 OnColorChangedListener.
-	 */
-	public void setColor(int color, boolean callback) {
-
 		int alpha = Color.alpha(color);
 		int red = Color.red(color);
 		int blue = Color.blue(color);
@@ -354,10 +344,15 @@ public class ColorPickerView extends View {
 		mSat = hsv[1];
 		mVal = hsv[2];
 
-		if (callback && mListener != null) {
-			mListener.onColorChanged(getColor());
-		}
 		invalidate();
+	}
+
+	/**
+	 * set the color resource
+	 */
+	public void setColorResource(@ColorRes int colorRes) {
+		int color = getResources().getColor(colorRes);
+		setColor(color);
 	}
 
 

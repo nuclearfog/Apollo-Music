@@ -11,7 +11,6 @@
 
 package org.nuclearfog.apollo.ui.activities;
 
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,6 +30,9 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.ui.dialogs.CacheClearDialog;
+import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
+import org.nuclearfog.apollo.ui.dialogs.LicenseDialog;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ThemeUtils;
@@ -149,32 +151,24 @@ public class SettingsActivity extends AppCompatActivity {
 		public boolean onPreferenceClick(@NonNull Preference preference) {
 			switch (preference.getKey()) {
 				case LICENSE:
-					if (getContext() != null) {
-						Dialog licenseDialog = ApolloUtils.createOpenSourceDialog(getContext());
-						if (!licenseDialog.isShowing())
-							licenseDialog.show();
-					}
+					LicenseDialog.show(requireActivity());
 					return true;
 
 				case DEL_CACHE:
-					if (getContext() != null) {
-						Dialog cacheClearDialog = ApolloUtils.createCacheClearDialog(getContext());
-						if (!cacheClearDialog.isShowing())
-							cacheClearDialog.show();
-					}
+					CacheClearDialog.show(requireActivity());
 					return true;
 
 				case COLOR_SEL:
-					if (getActivity() != null) {
-						Dialog colorPicker = ApolloUtils.showColorPicker(getActivity());
-						if (!colorPicker.isShowing())
-							colorPicker.show();
-					}
+					ColorSchemeDialog.show(requireActivity());
 					return true;
 
 				case THEME_SEL:
 					Intent themeChooserIntent = new Intent(requireContext(), ThemesActivity.class);
 					startActivity(themeChooserIntent);
+					return true;
+
+				case BAT_OPT:
+					ApolloUtils.redirectToBatteryOptimization(requireActivity());
 					return true;
 
 				case DOWNLOAD_IMAGES:
@@ -183,10 +177,6 @@ public class SettingsActivity extends AppCompatActivity {
 						downloadWifi.setEnabled(downloadArtwork.isChecked() || downloadImages.isChecked());
 					}
 					break;
-
-				case BAT_OPT:
-					ApolloUtils.redirectToBatteryOptimization(requireActivity());
-					return true;
 
 				case SOURCECODE:
 					String url = Constants.SOURCE_URL;

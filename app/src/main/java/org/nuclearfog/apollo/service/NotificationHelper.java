@@ -203,13 +203,13 @@ class NotificationHelper {
 			// init media control (fallback if not supported by MediaStyle)
 			notificationBuilder.clearActions();
 			notificationBuilder.addAction(R.drawable.btn_playback_previous, "Previous", callbackPrevious);
-			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
-			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
 			if (mService.isPlaying()) {
 				notificationBuilder.addAction(R.drawable.btn_playback_pause, "Pause", callbackPlayPause);
 			} else {
 				notificationBuilder.addAction(R.drawable.btn_playback_play, "Play", callbackPlayPause);
 			}
+			notificationBuilder.addAction(R.drawable.btn_playback_next, "Next", callbackNext);
+			notificationBuilder.addAction(R.drawable.btn_playback_stop, "Stop", callbackStop);
 		}
 		// build legacy notification
 		else {

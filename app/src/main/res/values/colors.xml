@@ -64,6 +64,8 @@
 
 	<color name="ic_launcher_background">#2E3E49</color>
 
+	<color name="dialog_button">#595959</color>
+
 	<!-- appmsg colors -->
 	<color name="alert">#CC0000</color>
 	<color name="confirm">#FF8800</color>

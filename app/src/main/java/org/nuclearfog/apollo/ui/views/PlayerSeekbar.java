@@ -163,6 +163,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 
 	/**
 	 * seek to a new position
+	 *
 	 * @param to time in milliseconds
 	 */
 	public void seek(long to) {

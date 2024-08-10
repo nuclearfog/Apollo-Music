@@ -13,8 +13,6 @@ package org.nuclearfog.apollo.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -35,25 +33,19 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
 import org.nuclearfog.apollo.cache.ImageFetcher;
-import org.nuclearfog.apollo.ui.activities.HomeActivity;
 import org.nuclearfog.apollo.ui.activities.ShortcutActivity;
 import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
-import org.nuclearfog.apollo.ui.dialogs.ColorSchemeDialog;
-import org.nuclearfog.apollo.ui.dialogs.DeleteTracksDialog;
-import org.nuclearfog.apollo.ui.views.ColorPickerView;
 
 import java.io.File;
 
@@ -162,46 +154,6 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * creates a license dialog
-	 *
-	 * @param context The {@link Context} to use.
-	 * @return An {@link AlertDialog} used to show the open source licenses used
-	 * in Apollo.
-	 */
-	public static AlertDialog createOpenSourceDialog(Context context) {
-		WebView webView = new WebView(context);
-		webView.loadUrl("file:///android_asset/licenses.html");
-		return new AlertDialog.Builder(context)
-				.setTitle(R.string.settings_open_source_licenses)
-				.setView(webView)
-				.setPositiveButton(android.R.string.ok, null)
-				.create();
-	}
-
-	/**
-	 * creates a dialog to ask if cache should be cleared
-	 *
-	 * @param context The {@link Context} to use.
-	 * @return Dialog instance
-	 */
-	public static AlertDialog createCacheClearDialog(final Context context) {
-		return new AlertDialog.Builder(context).setMessage(R.string.delete_warning)
-				.setPositiveButton(android.R.string.ok, new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						ImageCache mImageCache = ImageCache.getInstance(context);
-						mImageCache.clearCaches();
-					}
-				})
-				.setNegativeButton(R.string.cancel, new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				}).create();
-	}
-
-	/**
 	 * Creates a new instance of the {@link ImageCache} and {@link ImageFetcher}
 	 *
 	 * @param context The {@link Context} to use.
@@ -282,29 +234,6 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * generate the {@link ColorPickerView}
-	 *
-	 * @param activity The {@link Context} to use.
-	 */
-	public static AlertDialog showColorPicker(final Activity activity) {
-		final ColorSchemeDialog colorPickerView = new ColorSchemeDialog(activity);
-		colorPickerView.setButton(AlertDialog.BUTTON_POSITIVE,
-				activity.getString(android.R.string.ok), new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// RESTART main activity
-						PreferenceUtils.getInstance(activity).setDefaultThemeColor(colorPickerView.getColor());
-						Intent newActivity = new Intent(activity, HomeActivity.class);
-						newActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						activity.startActivity(newActivity);
-						activity.finish();
-					}
-				});
-		colorPickerView.setButton(AlertDialog.BUTTON_NEGATIVE, activity.getString(R.string.cancel), (OnClickListener) null);
-		return colorPickerView;
-	}
-
-	/**
 	 * serialize ID array into a string
 	 *
 	 * @param ids IDs to serialize
@@ -356,25 +285,6 @@ public final class ApolloUtils {
 	}
 
 	/**
-	 * Method that removes the support for HardwareAcceleration from a {@link View}.<br/>
-	 * <br/>
-	 * Check AOSP notice:<br/>
-	 * <pre>
-	 * 'ComposeShader can only contain shaders of different types (a BitmapShader and a
-	 * LinearGradient for instance, but not two instances of BitmapShader)'. But, 'If your
-	 * application is affected by any of these missing features or limitations, you can turn
-	 * off hardware acceleration for just the affected portion of your application by calling
-	 * setLayerType(View.LAYER_TYPE_SOFTWARE, null).'</pre>
-	 *
-	 * @param v The view
-	 */
-	public static void removeHardwareAccelerationSupport(View v) {
-		if (v.getLayerType() != View.LAYER_TYPE_SOFTWARE) {
-			v.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		}
-	}
-
-	/**
 	 * register an ListView click listener for a sub view
 	 *
 	 * @param view      sub view of the view item
@@ -408,8 +318,7 @@ public final class ApolloUtils {
 			PreferenceUtils pref = PreferenceUtils.getInstance(activity);
 			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
-				BatteryOptDialog dialog = BatteryOptDialog.newInstance();
-				dialog.show(activity.getSupportFragmentManager(), DeleteTracksDialog.NAME);
+				BatteryOptDialog.show(activity);
 			}
 		}
 	}

@@ -97,6 +97,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	/**
 	 * LRU cache
 	 */
+	@Nullable
 	private MemoryCache mLruCache;
 	/**
 	 * Disk LRU cache
@@ -205,7 +206,9 @@ public final class ImageCache implements ComponentCallbacks2 {
 		if (level >= TRIM_MEMORY_MODERATE) {
 			evictAll();
 		} else if (level >= TRIM_MEMORY_BACKGROUND) {
-			mLruCache.trimToSize(mLruCache.size() / 2);
+			if (mLruCache != null) {
+				mLruCache.trimToSize(mLruCache.size() / 2);
+			}
 		}
 	}
 
@@ -284,7 +287,12 @@ public final class ImageCache implements ComponentCallbacks2 {
 	 */
 	public void initLruCache(Context context) {
 		ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		int lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);
+		int lruCacheSize;
+		if (activityManager != null) {
+			lruCacheSize = Math.round(MEM_CACHE_DIVIDER * activityManager.getMemoryClass() * 1024 * 1024);
+		} else {
+			lruCacheSize = 16000000;
+		}
 		mLruCache = new MemoryCache(lruCacheSize);
 		// Release some memory as needed
 		context.registerComponentCallbacks(this);
@@ -358,7 +366,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 			return;
 		}
 		// Add to memory cache
-		if (getBitmapFromMemCache(data) == null) {
+		if (mLruCache != null && getBitmapFromMemCache(data) == null) {
 			mLruCache.put(data, bitmap);
 		}
 	}
@@ -552,8 +560,7 @@ public final class ImageCache implements ComponentCallbacks2 {
 	}
 
 	/**
-	 * Evicts all of the items from the memory cache and lets the system know
-	 * now would be a good time to garbage collect
+	 * Evicts all of the items from the memory cache
 	 */
 	public void evictAll() {
 		Log.d(TAG, "cleaning image cache");
@@ -573,7 +580,6 @@ public final class ImageCache implements ComponentCallbacks2 {
 		if (mLruCache != null) {
 			mLruCache.remove(key);
 		}
-
 		try {
 			// Remove the disk entry
 			if (mDiskCache != null) {

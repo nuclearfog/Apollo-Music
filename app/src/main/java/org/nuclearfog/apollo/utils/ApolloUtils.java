@@ -325,6 +325,7 @@ public final class ApolloUtils {
 			try {
 				activity.startActivity(intent);
 			} catch (Exception exception) {
+				Log.d(TAG, "could not open battery optimization settings");
 				if (BuildConfig.DEBUG) {
 					exception.printStackTrace();
 				}

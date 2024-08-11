@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   Copyright (C) 2012 Andrew Neal
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,9 +95,6 @@
 	<!-- About -->
 	<PreferenceCategory android:title="@string/settings_about_apollo">
 		<Preference
-			android:summary="@string/settings_self_title"
-			android:title="@string/settings_author_title" />
-		<Preference
 			android:key="source_code"
 			android:title="@string/settings_source_code"
 			android:summary="@string/settings_source_code_descr" />
@@ -104,16 +102,8 @@
 			android:key="version"
 			android:title="@string/settings_version_title" />
 		<Preference
-			android:key="open_source"
+			android:key="licenses"
 			android:title="@string/settings_open_source_licenses" />
-	</PreferenceCategory>
-
-	<!-- special thanks -->
-	<PreferenceCategory android:title="@string/settings_special_thanks">
-		<Preference
-			android:summary="@string/settings_lopez_summary"
-			android:title="@string/settings_lopez_title" />
-		<Preference android:title="@string/settings_cyanogenmod_title" />
 	</PreferenceCategory>
 
 </PreferenceScreen>

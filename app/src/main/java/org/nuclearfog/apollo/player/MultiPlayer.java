@@ -423,7 +423,7 @@ public class MultiPlayer {
 		// set new cross fade task
 		if (enable) {
 			if (xfadeTask == null) {
-				xfadeTask = threadPool.scheduleAtFixedRate(new Runnable() {
+				xfadeTask = threadPool.scheduleWithFixedDelay(new Runnable() {
 					@Override
 					public void run() {
 						xfadeHandler.post(new Runnable() {

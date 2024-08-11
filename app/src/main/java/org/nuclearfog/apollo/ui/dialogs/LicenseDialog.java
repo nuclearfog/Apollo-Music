@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
@@ -21,10 +22,12 @@ public class LicenseDialog extends DialogFragment {
 
 	private static final String TAG = "LicenseDialog";
 
+
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		WebView webView = new WebView(inflater.getContext());
+		WebView webView = new WebView(requireContext());
+		webView.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		webView.loadUrl("file:///android_asset/licenses.html");
 		return webView;
 	}

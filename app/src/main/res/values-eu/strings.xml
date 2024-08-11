@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Interfazea</string>
 	<string name="settings_storage_category">Biltegiratzea</string>
 	<string name="settings_data_category">Datuak</string>
-	<string name="settings_author_title">Autorea</string>
 	<string name="settings_about_apollo">Apollo-ri buruz</string>
-	<string name="settings_special_thanks">Eskerrak</string>
-	<string name="settings_lopez_summary">Ikonoa eta Play Store banner diseinua</string>
 	<string name="settings_color_scheme_title">Hautatu Apolloren kolore eskema lehenetsia</string>
 	<string name="settings_color_scheme_summary">Aldatu nabarmentzeko kolorea Apollon</string>
 	<string name="settings_theme_chooser_title">Gaiak</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Lizentzia libreak</string>
 	<string name="settings_version_title">Bertsioa</string>
 	<string name="share_track_using">Partekatu abestia honen bitartez:</string>
-	<string name="color_picker_title">Kolore eskema</string>
 	<string name="current_color">Oraingoa</string>
 	<string name="new_color">Berria</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (txandakatu)</string>

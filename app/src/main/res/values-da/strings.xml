@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Brugerflade</string>
 	<string name="settings_storage_category">Lagring</string>
 	<string name="settings_data_category">Data</string>
-	<string name="settings_author_title">Forfatter</string>
 	<string name="settings_about_apollo">Om Apollo</string>
-	<string name="settings_special_thanks">Især tak til</string>
-	<string name="settings_lopez_summary">Bannerdesign for ikoner og Play Butik</string>
 	<string name="settings_color_scheme_title">Vælg Apollos standard-farveskema</string>
 	<string name="settings_color_scheme_summary">Ændrer accentfarven i Apollo</string>
 	<string name="settings_theme_chooser_title">Temavælger</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Open source-licenser</string>
 	<string name="settings_version_title">Versionsnummer</string>
 	<string name="share_track_using">Del sang vha.:</string>
-	<string name="color_picker_title">Farveskema</string>
 	<string name="current_color">Aktuel</string>
 	<string name="new_color">Ny</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (alternativ)</string>

@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Interface</string>
 	<string name="settings_storage_category">Späicher</string>
 	<string name="settings_data_category">Daten</string>
-	<string name="settings_author_title">Auteur</string>
 	<string name="settings_about_apollo">Iwwer Apollo</string>
-	<string name="settings_special_thanks">Speziell Mercien</string>
-	<string name="settings_lopez_summary">Design vum Symbol a vum Banner vum Play Store</string>
 	<string name="settings_color_scheme_title">Standard-Faarfschema vun Apollo auswielen</string>
 	<string name="settings_color_scheme_summary">Ännert de D\'Akzentfaarf vun Apollo</string>
 	<string name="settings_theme_chooser_title">Design-Auswiel</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
 	<string name="settings_version_title">Versiounsnummer</string>
 	<string name="share_track_using">Titel deelen iwwer:</string>
-	<string name="color_picker_title">Faarfschema</string>
 	<string name="current_color">Aktuell</string>
 	<string name="new_color">Nei</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (Alternativ)</string>

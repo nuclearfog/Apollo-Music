@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Oberfläche</string>
 	<string name="settings_storage_category">Speicher</string>
 	<string name="settings_data_category">Daten</string>
-	<string name="settings_author_title">Autor</string>
 	<string name="settings_about_apollo">Über Apollo</string>
-	<string name="settings_special_thanks">Danksagungen</string>
-	<string name="settings_lopez_summary">Design des Symbols und Play Store-Banners</string>
 	<string name="settings_color_scheme_title">Farbschema</string>
 	<string name="settings_color_scheme_summary">Farbakzent auswählen</string>
 	<string name="settings_theme_chooser_title">Designs</string>
@@ -111,7 +108,6 @@
 	<string name="settings_version_title">Version</string>
 	<string name="share_track_using">Titel teilen</string>
 	<string name="menu_clear_popular">Liste leeren</string>
-	<string name="color_picker_title">Farbschema</string>
 	<string name="current_color">Momentan</string>
 	<string name="new_color">Neu</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (Alternativ)</string>

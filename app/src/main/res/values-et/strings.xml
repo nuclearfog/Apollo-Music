@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Liides</string>
 	<string name="settings_storage_category">Salvestuskoht</string>
 	<string name="settings_data_category">Andmed</string>
-	<string name="settings_author_title">Autor</string>
 	<string name="settings_about_apollo">Teave Apollost</string>
-	<string name="settings_special_thanks">Erilised tänud</string>
-	<string name="settings_lopez_summary">Ikooni ja Play poe bänneri disain</string>
 	<string name="settings_color_scheme_title">Vali Apollo vaikimisi värviskeem</string>
 	<string name="settings_color_scheme_summary">Muudab Apollo põhivärvi</string>
 	<string name="settings_theme_chooser_title">Teema valik</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Avatud lähtekoodiga litsentsid</string>
 	<string name="settings_version_title">Versiooni number</string>
 	<string name="share_track_using">Jaga lugu, kasutades:</string>
-	<string name="color_picker_title">Värvilahendus</string>
 	<string name="current_color">Praegune</string>
 	<string name="new_color">Uus</string>
 	<string name="app_widget_large_alt">Apollo: 4 × 2 (alternatiivne)</string>

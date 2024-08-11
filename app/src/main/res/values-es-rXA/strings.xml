@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Aspeutu</string>
 	<string name="settings_storage_category">Almacenamientu</string>
 	<string name="settings_data_category">Datos</string>
-	<string name="settings_author_title">Autor</string>
 	<string name="settings_about_apollo">Tocante a Apollo</string>
-	<string name="settings_special_thanks">Gracies a</string>
-	<string name="settings_lopez_summary">Iconos y diseñu en Play Store</string>
 	<string name="settings_color_scheme_title">Esquema de color</string>
 	<string name="settings_color_scheme_summary">Esbillar un color pal diseñu d\'Apollo</string>
 	<string name="settings_theme_chooser_title">Temes</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Llicencies de software llibre</string>
 	<string name="settings_version_title">Versión</string>
 	<string name="share_track_using">Compartir canción usando:</string>
-	<string name="color_picker_title">Esquema de color</string>
 	<string name="current_color">Actual</string>
 	<string name="new_color">Nuevu</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (alt.)</string>

@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Interfície</string>
 	<string name="settings_storage_category">Emmagatzematge</string>
 	<string name="settings_data_category">Dades</string>
-	<string name="settings_author_title">Autor</string>
 	<string name="settings_about_apollo">Quant a Apollo</string>
-	<string name="settings_special_thanks">Agraïments especials</string>
-	<string name="settings_lopez_summary">Disseny de l\'icona i el banner de la Play Store</string>
 	<string name="settings_color_scheme_title">Escull l\'esquema de color predefinit de l\'Apollo</string>
 	<string name="settings_color_scheme_summary">Canvia el color de l\'accent a l\'Apollo</string>
 	<string name="settings_theme_chooser_title">Selector de tema</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Llicencies de codi obert</string>
 	<string name="settings_version_title">Número de versió</string>
 	<string name="share_track_using">Comparteix la pista utilitzant:</string>
-	<string name="color_picker_title">Esquema de color</string>
 	<string name="current_color">Actual</string>
 	<string name="new_color">Nou</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (alternatiu)</string>

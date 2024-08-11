@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Antarmuka</string>
 	<string name="settings_storage_category">Penyimpanan</string>
 	<string name="settings_data_category">Data</string>
-	<string name="settings_author_title">Pembuat</string>
 	<string name="settings_about_apollo">Tentang Apollo</string>
-	<string name="settings_special_thanks">Ucapan Terimakasih secara Khusus</string>
-	<string name="settings_lopez_summary">Desain banner ikon dan Play Store</string>
 	<string name="settings_color_scheme_title">Pilih skema warna default Apollo</string>
 	<string name="settings_color_scheme_summary">Rubah warna aksen Apollo</string>
 	<string name="settings_theme_chooser_title">Pemilih tema</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Lisensi sumber terbuka</string>
 	<string name="settings_version_title">Nomor versi</string>
 	<string name="share_track_using">Bagikan lagu menggunakan:</string>
-	<string name="color_picker_title">Skema warna</string>
 	<string name="current_color">Kini</string>
 	<string name="new_color">Baru</string>
 	<string name="app_widget_large_alt">Apollo: 4x2 (alternatif)</string>

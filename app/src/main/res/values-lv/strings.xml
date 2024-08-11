@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">Izskats</string>
 	<string name="settings_storage_category">Krātuve</string>
 	<string name="settings_data_category">Dati</string>
-	<string name="settings_author_title">Autors</string>
 	<string name="settings_about_apollo">Par Apollo</string>
-	<string name="settings_special_thanks">Īpašs paldies</string>
-	<string name="settings_lopez_summary">Ikonas un Play veikala izkārtnes dizains</string>
 	<string name="settings_color_scheme_title">Izvēlēties Apollo noklusēto krāsu shēmu</string>
 	<string name="settings_color_scheme_summary">Izmaina uzsvaru krāsu Apollo</string>
 	<string name="settings_theme_chooser_title">Apdares izvēlne</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">Atvērtā pirmkoda licences</string>
 	<string name="settings_version_title">Versijas numurs</string>
 	<string name="share_track_using">Kopīgot dziemsu ar:</string>
-	<string name="color_picker_title">Krāsu shēma</string>
 	<string name="current_color">Pašreizēja</string>
 	<string name="new_color">Jauna</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (alternatīvs)</string>

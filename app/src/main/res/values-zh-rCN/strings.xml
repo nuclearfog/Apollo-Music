@@ -123,10 +123,7 @@
 	<string name="settings_storage_category">存储</string>
 	<string name="settings_other">其他设置</string>
 	<string name="settings_data_category">数据</string>
-	<string name="settings_author_title">作者</string>
 	<string name="settings_about_apollo">关于 Apollo</string>
-	<string name="settings_special_thanks">特别鸣谢</string>
-	<string name="settings_lopez_summary">图标和 Play Store 横幅设计</string>
 	<string name="settings_color_scheme_title">选择 Apollo 的默认颜色方案</string>
 	<string name="settings_color_scheme_summary">更改 Apollo 中的强调颜色</string>
 	<string name="settings_theme_chooser_title">主题选择器</string>
@@ -144,7 +141,6 @@
 	<string name="share_track_using">使用以下方式分享曲目：</string>
 
 	<!-- 颜色选择器 -->
-	<string name="color_picker_title">颜色方案</string>
 	<string name="current_color">当前</string>
 	<string name="new_color">新的</string>
 

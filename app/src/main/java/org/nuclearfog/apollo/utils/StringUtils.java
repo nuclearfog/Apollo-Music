@@ -69,7 +69,7 @@ public final class StringUtils {
 		long hour = min / 60;
 		if (hour > 0)
 			return String.format(context.getString(R.string.durationformatlong), hour, min % 60, sec % 60);
-		return String.format(context.getString(R.string.durationformatshort), hour, min % 60, sec % 60);
+		return String.format(context.getString(R.string.durationformatshort), min % 60, sec % 60);
 	}
 
 	/**

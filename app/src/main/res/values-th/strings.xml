@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">หน้าตา</string>
 	<string name="settings_storage_category">แหล่งเก็บข้อมูล</string>
 	<string name="settings_data_category">ข้อมูล</string>
-	<string name="settings_author_title">ผู้เขียน</string>
 	<string name="settings_about_apollo">เกี่ยวกับ Apollo</string>
-	<string name="settings_special_thanks">ขอบคุณเป็นพิเศษ</string>
-	<string name="settings_lopez_summary">ออกแบบไอคอนและแบนเนอร์ Play สโตร์</string>
 	<string name="settings_color_scheme_title">เลือกสีเริ่มต้นของApollo</string>
 	<string name="settings_color_scheme_summary">เปลี่ยนสีใน Apollo</string>
 	<string name="settings_theme_chooser_title">ตัวจัดการธีม</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">ใบอนุญาต Open source</string>
 	<string name="settings_version_title">หมายเลขรุ่น</string>
 	<string name="share_track_using">แบ่งปันแท็กโดย:</string>
-	<string name="color_picker_title">เฉดสี</string>
 	<string name="current_color">ปัจจุบัน</string>
 	<string name="new_color">ใหม่</string>
 	<string name="app_widget_large_alt">Apollo: 4x2 (alternate)</string>

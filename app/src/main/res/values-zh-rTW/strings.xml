@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">介面</string>
 	<string name="settings_storage_category">儲存空間</string>
 	<string name="settings_data_category">資料</string>
-	<string name="settings_author_title">作者</string>
 	<string name="settings_about_apollo">關於 Apollo</string>
-	<string name="settings_special_thanks">特別感謝</string>
-	<string name="settings_lopez_summary">圖示與 Play 商店的橫額設計</string>
 	<string name="settings_color_scheme_title">選擇 Apollo 的預設配色方案</string>
 	<string name="settings_color_scheme_summary">變更 Apollo 中的強調色</string>
 	<string name="settings_theme_chooser_title">主題選擇器</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">開放原始碼授權</string>
 	<string name="settings_version_title">版本號碼</string>
 	<string name="share_track_using">曲目分享方式：</string>
-	<string name="color_picker_title">配色方案</string>
 	<string name="current_color">目前</string>
 	<string name="new_color">新的</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (替代)</string>

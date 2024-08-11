@@ -90,10 +90,7 @@
 	<string name="settings_ui_category">අතුරු මුහුණත</string>
 	<string name="settings_storage_category">ආචයනය</string>
 	<string name="settings_data_category">දත්ත</string>
-	<string name="settings_author_title">කතෘ</string>
 	<string name="settings_about_apollo">Apollo පිළිබඳ</string>
-	<string name="settings_special_thanks">විශේෂ ස්තුතිය</string>
-	<string name="settings_lopez_summary">අයිකනය සහ Play Store බැනරයේ මෝස්තරය</string>
 	<string name="settings_color_scheme_title">Apollo ගේ පෙරනිමි වර්ණ ක්‍රමානුරූපය තෝරන්න</string>
 	<string name="settings_color_scheme_summary">Apollo හි උද්දීපන වර්ණය වෙනස් කෙරේ</string>
 	<string name="settings_theme_chooser_title">තේමා තෝරකය</string>
@@ -106,7 +103,6 @@
 	<string name="settings_open_source_licenses">විවෘත මූලාශ්‍ර බලපත්‍ර</string>
 	<string name="settings_version_title">අනුවාදයේ අංකය</string>
 	<string name="share_track_using">ඛණ්ඩ භාවිතය බෙදාගැනීම:</string>
-	<string name="color_picker_title">වර්ණ ක්‍රමානුරූපය</string>
 	<string name="current_color">පවත්නා වර්ණය</string>
 	<string name="new_color">අලුත්</string>
 	<string name="app_widget_large_alt">Apollo: 4×2 (විකල්පය)</string>

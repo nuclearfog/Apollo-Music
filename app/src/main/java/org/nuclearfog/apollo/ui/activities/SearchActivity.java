@@ -114,8 +114,6 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		Toolbar toolbar = findViewById(R.id.grid_search_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
-		// Set the overflow style
-		mResources.setOverflowStyle(this);
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);

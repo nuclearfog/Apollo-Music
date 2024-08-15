@@ -2,7 +2,7 @@
 <resources>
 
 	<style name="Apollo.Theme.Dark" parent="Theme.AppCompat.NoActionBar">
-		<item name="android:colorPrimaryDark">#ff0a0a0a</item>
+		<item name="android:colorPrimaryDark">@color/apollo_dark</item>
 		<item name="android:windowActionBar">false</item>
 		<item name="android:windowNoTitle">true</item>
 		<item name="android:colorAccent">@android:color/white</item>

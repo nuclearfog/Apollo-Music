@@ -201,8 +201,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		songLoader = new SongLoader(this);
 		// app preferences
 		mPrefs = PreferenceUtils.getInstance(this);
-		// Set the overflow style
-		mResources.setOverflowStyle(this);
 		// Control the media volume
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Initialize the image fetcher/cache

@@ -16,11 +16,11 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
@@ -56,19 +56,8 @@ public class ThemeUtils {
 	 */
 	public ThemeUtils(Context context) {
 		resources = context.getResources();
-		// todo implement theme setup here
 		// Inflate the custom layout
 		mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
-	}
-
-	/**
-	 * Sets the corret overflow icon in the action bar depending on whether or
-	 * not the current action bar color is dark or light.
-	 *
-	 * @param app The {@link Context} used to set the theme.
-	 */
-	public void setOverflowStyle(Context app) {
-		app.setTheme(R.style.Apollo_Theme_Dark);
 	}
 
 	/**
@@ -95,32 +84,21 @@ public class ThemeUtils {
 	 * @param titleID   The title for the action bar
 	 */
 	public void themeActionBar(ActionBar actionBar, @StringRes int titleID) {
+		int backgroundColor = ResourcesCompat.getColor(resources, R.color.action_bar, null);
+		int textColor = ResourcesCompat.getColor(resources, R.color.action_bar_title, null);
 		String title = resources.getString(titleID);
 		// Set the custom layout
 		actionBar.setCustomView(mActionBarLayout);
 		actionBar.setDisplayShowCustomEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
 		// Theme the action bar background
-		int color = ResourcesCompat.getColor(resources, R.color.action_bar, null);
-		Drawable background = new ColorDrawable(color);
+		Drawable background = new ColorDrawable(backgroundColor);
 		actionBar.setBackgroundDrawable(background);
 		// Theme the title
-		setTitle(title);
-	}
-
-	/**
-	 * Themes the action bar subtitle
-	 */
-	public void setTitle(String title) {
-		if (!TextUtils.isEmpty(title)) {
-			// Get the title text view
-			TextView actionBarTitle = mActionBarLayout.findViewById(R.id.action_bar_title);
-			// Theme the title
-			int textColor = ResourcesCompat.getColor(resources, R.color.action_bar_title, null);
-			actionBarTitle.setTextColor(textColor);
-			// Set the title
-			actionBarTitle.setText(title);
-		}
+		TextView actionBarTitle = mActionBarLayout.findViewById(R.id.action_bar_title);
+		actionBarTitle.setTextColor(textColor);
+		// Set the title
+		actionBarTitle.setText(title);
 	}
 
 	/**
@@ -128,15 +106,13 @@ public class ThemeUtils {
 	 *
 	 * @param subtitle The subtitle to use
 	 */
-	public void setSubtitle(String subtitle) {
-		if (!TextUtils.isEmpty(subtitle)) {
-			TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
-			actionBarSubtitle.setVisibility(View.VISIBLE);
-			// Theme the subtitle
-			int color = ResourcesCompat.getColor(resources, R.color.action_bar_subtitle, null);
-			actionBarSubtitle.setTextColor(color);
-			// Set the subtitle
-			actionBarSubtitle.setText(subtitle);
-		}
+	public void setSubtitle(@NonNull String subtitle) {
+		TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
+		actionBarSubtitle.setVisibility(View.VISIBLE);
+		// Theme the subtitle
+		int color = ResourcesCompat.getColor(resources, R.color.action_bar_subtitle, null);
+		actionBarSubtitle.setTextColor(color);
+		// Set the subtitle
+		actionBarSubtitle.setText(subtitle);
 	}
 }

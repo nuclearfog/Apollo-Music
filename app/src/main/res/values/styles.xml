@@ -16,7 +16,7 @@
 
 	<!-- Main AppCompat -->
 	<style name="Apollo.Theme.Dark" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimaryDark">#ff0a0a0a</item>
+		<item name="colorPrimaryDark">@color/apollo_dark</item>
 		<item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 		<item name="colorAccent">@android:color/white</item>

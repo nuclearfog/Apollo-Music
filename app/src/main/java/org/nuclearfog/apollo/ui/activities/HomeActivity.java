@@ -59,8 +59,6 @@ public class HomeActivity extends ActivityBase {
 		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
-		// Set the overflow style
-		mResources.setOverflowStyle(this);
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);

@@ -43,8 +43,6 @@ public class ThemesActivity extends ActivityBase {
 		Toolbar toolbar = findViewById(R.id.activity_base_toolbar);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
-		// Set the overflow style
-		mResources.setOverflowStyle(this);
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.settings_theme_chooser_title);

@@ -11,9 +11,6 @@
 
 package org.nuclearfog.apollo.ui.fragments;
 
-import static android.content.Intent.CATEGORY_DEFAULT;
-
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter;
 import org.nuclearfog.apollo.ui.adapters.listview.ThemesAdapter.ThemeHolder;
@@ -93,16 +89,11 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Intent apolloThemeIntent = new Intent(BuildConfig.APPLICATION_ID + ".THEMES");
-		apolloThemeIntent.addCategory(CATEGORY_DEFAULT);
-
 		// Default theme
 		String defName = getString(R.string.app_name);
 		Drawable defPrev = ResourcesCompat.getDrawable(getResources(), R.drawable.theme_preview, null);
 		ThemeHolder defTheme = new ThemeHolder(defName, defPrev);
 		mAdapter.add(defTheme);
-
-		// todo add app builtin themes since Android doesn't support themes from foreign apps
 	}
 
 	/**
@@ -114,7 +105,6 @@ public class ThemeFragment extends Fragment implements OnItemClickListener {
 		if (selection != null) {
 			String name = getString(R.string.theme_set, selection.mName);
 			mPreferences.setThemeSelectionIndex(position);
-			// todo save index of the theme selection
 			AppMsg.makeText(requireActivity(), name, AppMsg.STYLE_CONFIRM).show();
 		}
 	}

@@ -4,6 +4,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationUtils;
 
 /**
@@ -29,11 +30,25 @@ public final class AnimatorUtils {
 	 * @param visible true to fade in, false to fade out
 	 */
 	public static void fade(View view, boolean visible) {
-		PropertyValuesHolder holder = visible ? FADE_IN : FADE_OUT;
-		ObjectAnimator fade = ObjectAnimator.ofPropertyValuesHolder(view, holder);
-		fade.setInterpolator(AnimationUtils.loadInterpolator(view.getContext(), android.R.anim.accelerate_decelerate_interpolator));
-		fade.setDuration(400);
-		fade.start();
+		AlphaAnimation anim;
+		Runnable post = new Runnable() {
+			@Override
+			public void run() {
+				if (visible) {
+					view.setVisibility(View.VISIBLE);
+				} else {
+					view.setVisibility(View.INVISIBLE);
+				}
+			}
+		};
+		if (visible) {
+			anim = new AlphaAnimation(0.0f, 1.0f);
+		} else {
+			anim = new AlphaAnimation(1.0f, 0.0f);
+		}
+		anim.setDuration(Constants.ANIMATION_SPEED);
+		view.startAnimation(anim);
+		view.post(post);
 	}
 
 	/**
@@ -48,7 +63,7 @@ public final class AnimatorUtils {
 				pulse = ObjectAnimator.ofPropertyValuesHolder(view, FADE_IN, FADE_OUT);
 				pulse.setRepeatCount(ObjectAnimator.INFINITE);
 				pulse.setRepeatMode(ObjectAnimator.REVERSE);
-				pulse.setDuration(500);
+				pulse.setDuration(Constants.ANIMATION_SPEED);
 				pulse.start();
 			}
 		} else if (pulse != null) {

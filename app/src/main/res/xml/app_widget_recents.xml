@@ -14,6 +14,7 @@
   limitations under the License.
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:initialLayout="@layout/app_widget_recents"
 	android:minHeight="@dimen/app_widget_scrollable_min_height"
 	android:minResizeHeight="@dimen/app_widget_scrollable_min_resize_height"
@@ -22,4 +23,5 @@
 	android:previewImage="@drawable/app_widget_recents"
 	android:resizeMode="vertical|horizontal"
 	android:updatePeriodMillis="0"
+	tools:ignore="UnusedAttribute"
 	android:widgetCategory="keyguard|home_screen" />

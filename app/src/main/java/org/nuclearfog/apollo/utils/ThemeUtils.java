@@ -115,4 +115,13 @@ public class ThemeUtils {
 		// Set the subtitle
 		actionBarSubtitle.setText(subtitle);
 	}
+
+	/**
+	 * set view background
+	 *
+	 * @param v view to set the default background
+	 */
+	public void setBackground(View v) {
+		v.setBackgroundResource(R.drawable.pager_background);
+	}
 }

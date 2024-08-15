@@ -28,8 +28,7 @@
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:background="@drawable/pager_background">
+		android:layout_weight="1">
 
 		<androidx.viewpager.widget.ViewPager
 			android:id="@+id/activity_profile_base_pager"

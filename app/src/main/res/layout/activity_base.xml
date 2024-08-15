@@ -32,7 +32,6 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:layout_weight="1"
-		android:background="@drawable/pager_background"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/activity_base_toolbar"
 		app:layout_constraintBottom_toTopOf="@id/activity_base_Actionbar"

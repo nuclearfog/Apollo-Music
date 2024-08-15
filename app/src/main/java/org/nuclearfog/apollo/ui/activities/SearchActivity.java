@@ -13,7 +13,6 @@ package org.nuclearfog.apollo.ui.activities;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -112,23 +111,23 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		GridView mGridView = findViewById(R.id.grid_search);
 		TextView emptyText = findViewById(R.id.grid_search_empty_info);
 		Toolbar toolbar = findViewById(R.id.grid_search_toolbar);
-		// Initialize the theme resources
+		View root = findViewById(R.id.grid_search_root);
+
+		mAdapter = new SearchAdapter(this);
+		albumSongLoader = new AlbumSongLoader(this);
+		artistSongLoader = new ArtistSongLoader(this);
+		mLoader = new MusicSearchLoader(this);
 		ThemeUtils mResources = new ThemeUtils(this);
+
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
 			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
 		}
-		// Control the media volume
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
 		mFilterString = !TextUtils.isEmpty(query) ? query : "";
-		// Action bar subtitle
 		mResources.setSubtitle("\"" + mFilterString + "\"");
-		// Initialize the adapter
-		mAdapter = new SearchAdapter(this);
-		albumSongLoader = new AlbumSongLoader(this);
-		artistSongLoader = new ArtistSongLoader(this);
+		mResources.setBackground(root);
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);
 		// Bind the data
@@ -146,9 +145,7 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		} else {
 			mGridView.setNumColumns(ONE);
 		}
-		// Prepare the loader. Either re-connect with an existing one,
-		// or start a new one.
-		mLoader = new MusicSearchLoader(this);
+		// Prepare the loader. Either re-connect with an existing one
 		mLoader.execute(mFilterString, this);
 	}
 

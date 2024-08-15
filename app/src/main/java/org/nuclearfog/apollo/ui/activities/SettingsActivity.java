@@ -13,11 +13,13 @@ package org.nuclearfog.apollo.ui.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.preference.PreferenceFragment;
 import org.nuclearfog.apollo.utils.ThemeUtils;
@@ -38,6 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.settings_layout);
 		Toolbar toolbar = findViewById(R.id.settings_toolbar);
+		View root = findViewById(R.id.settings_root);
 		// setup toolbar
 		setSupportActionBar(toolbar);
 		ActionBar actionbar = getSupportActionBar();
@@ -45,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
 			actionbar.setDisplayHomeAsUpEnabled(true);
 			ThemeUtils mResources = new ThemeUtils(this);
 			mResources.themeActionBar(actionbar, R.string.menu_settings);
+			mResources.setBackground(root);
 		}
 		//attach fragment
 		if (savedInstanceState == null) {

@@ -67,8 +67,14 @@ public final class Constants {
 	 * maximal scroll speed when dragging a list element
 	 */
 	public static final float DRAG_DROP_MAX_SPEED = 3.0f;
-
+	/**
+	 * opacity of list items when they are marked as hidden
+	 */
 	public static final float OPACITY_HIDDEN = 0.4f;
+	/**
+	 * animation duration in milliseconds
+	 */
+	public static final long ANIMATION_SPEED = 500;
 
 	/**
 	 * permissions used for Android 6+

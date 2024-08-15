@@ -25,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.AlphaAnimation;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,11 +49,13 @@ import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
 import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
+import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.NavUtils;
 import org.nuclearfog.apollo.utils.ServiceBinder.ServiceBinderCallback;
+import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.util.List;
 
@@ -115,7 +116,9 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	@Override
 	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		setContentView(getContentView());
+		View v = getWindow().getDecorView().getRootView();
 		// Play and pause button
 		mPlayPauseButton = findViewById(R.id.action_button_play);
 		// Shuffle button
@@ -136,15 +139,15 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		View nextButton = findViewById(R.id.action_button_next);
 		// background of bottom action bar
 		View bottomActionBar = findViewById(R.id.bottom_action_bar_background);
-		// Control the media volume
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Initialize the broadcast receiver
+
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
 		songLoader = new SongLoader(this);
+		ThemeUtils mTheme = new ThemeUtils(this);
+
 		// set bottom action bar color
 		bottomActionBar.setBackground(new HoloSelector(this));
-		// hide player controls
-		playbackControls.setVisibility(View.INVISIBLE);
+		// set background
+		mTheme.setBackground(v);
 
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);
@@ -223,10 +226,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 	public void onServiceConnected() {
 		// fade in playback controls
 		if (playbackControls.getVisibility() != View.VISIBLE) {
-			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-			anim.setDuration(250);
-			playbackControls.startAnimation(anim);
-			playbackControls.setVisibility(View.VISIBLE);
+			AnimatorUtils.fade(playbackControls, true);
 			playbackControls.scrollTo(0, 0);
 		}
 		// Set the playback drawables

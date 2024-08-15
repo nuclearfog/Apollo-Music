@@ -175,6 +175,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 			position = 0;
 			seekbar.setProgress(0);
 		}
+		setCurrentTimeText(position);
 	}
 
 	/**

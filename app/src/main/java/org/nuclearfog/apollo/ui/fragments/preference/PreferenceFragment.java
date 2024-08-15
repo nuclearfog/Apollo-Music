@@ -25,8 +25,8 @@ import org.nuclearfog.apollo.utils.Constants;
 /**
  * Preference fragment class
  *
- * @see org.nuclearfog.apollo.ui.activities.SettingsActivity
  * @author nuclearfog
+ * @see org.nuclearfog.apollo.ui.activities.SettingsActivity
  */
 public class PreferenceFragment extends PreferenceFragmentCompat implements OnPreferenceClickListener {
 

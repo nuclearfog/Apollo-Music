@@ -29,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,8 +41,8 @@ import androidx.appcompat.widget.SearchView.OnQueryTextListener;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager.widget.ViewPager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -59,7 +58,6 @@ import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver;
 import org.nuclearfog.apollo.receiver.PlaybackStatusReceiver.PlayStatusListener;
 import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.store.FavoritesStore;
-import org.nuclearfog.apollo.ui.adapters.viewpager.QueueAdapter;
 import org.nuclearfog.apollo.ui.fragments.QueueFragment;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.PlayerSeekbar;
@@ -121,10 +119,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 */
 	private ImageView mAlbumArt;
 
-	/**
-	 * album art borders
-	 */
-	private View controls, albumArtBorder1, albumArtBorder2;
+	private View controls, albumArtBorder1;
+
+	@Nullable
+	private View albumArtBorder2;
 	/**
 	 * Tiny artwork
 	 */
@@ -141,10 +139,8 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	 * Broadcast receiver
 	 */
 	private PlaybackStatusReceiver mPlaybackStatus;
-	/**
-	 * ViewPager
-	 */
-	private ViewPager mViewPager;
+
+	private FragmentContainerView queueContainer;
 	/**
 	 * Image cache
 	 */
@@ -171,13 +167,17 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Set the layout
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		// init views
 		setContentView(R.layout.activity_player_base);
 		mPlayPauseButton = findViewById(R.id.action_button_play);
 		mShuffleButton = findViewById(R.id.action_button_shuffle);
 		mRepeatButton = findViewById(R.id.action_button_repeat);
+		View root = findViewById(R.id.player_root);
+		Toolbar toolbar = findViewById(R.id.player_toolbar);
 		RepeatingImageButton mPreviousButton = findViewById(R.id.action_button_previous);
 		RepeatingImageButton mNextButton = findViewById(R.id.action_button_next);
+		queueContainer = findViewById(R.id.audio_player_pager);
 		controls = findViewById(R.id.audio_player_controls);
 		mTrackName = findViewById(R.id.audio_player_track_name);
 		mArtistName = findViewById(R.id.audio_player_artist_name);
@@ -188,39 +188,26 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		mQueueSwitch = findViewById(R.id.audio_player_switch_queue);
 		mQueueSwitch.setImageResource(R.drawable.btn_switch_queue);
 		playerSeekbar = findViewById(R.id.player_progress);
-
-		// set toolbar
-		Toolbar toolbar = findViewById(R.id.player_toolbar);
-		if (toolbar != null) // toolbar only available in portrait mode
-			setSupportActionBar(toolbar);
-		// Initialze the theme resources
+		//
 		mResources = new ThemeUtils(this);
+		mPrefs = PreferenceUtils.getInstance(this);
 		playlistSongLoader = new PlaylistSongLoader(this);
 		artistSongLoader = new ArtistSongLoader(this);
 		albumSongLoader = new AlbumSongLoader(this);
 		songLoader = new SongLoader(this);
-		// app preferences
-		mPrefs = PreferenceUtils.getInstance(this);
-		// Control the media volume
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		// Initialize the image fetcher/cache
 		mImageFetcher = ApolloUtils.getImageFetcher(this);
-		// Initialize the broadcast receiver
 		mPlaybackStatus = new PlaybackStatusReceiver(this);
+		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
 		// Theme the action bar
+		if (toolbar != null)
+			setSupportActionBar(toolbar);
 		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
 			mResources.themeActionBar(actionBar, R.string.app_name);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 		}
-		viewModel = new ViewModelProvider(this).get(FragmentViewModel.class);
-		// View pager
-		mViewPager = findViewById(R.id.audio_player_pager);
-		// Offscreen pager loading limit
-		mViewPager.setOffscreenPageLimit(1);
-		// Initialize the pager adapter and attach
-		QueueAdapter mPagerAdapter = new QueueAdapter(getSupportFragmentManager());
-		mViewPager.setAdapter(mPagerAdapter);
+		// set activity background
+		mResources.setBackground(root);
 		// set colors
 		int themeColor = mPrefs.getDefaultThemeColor();
 		mShuffleButton.setColor(themeColor);
@@ -479,13 +466,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// Show the queue, hide the artwork
 		else if (v.getId() == R.id.audio_player_switch_queue) {
-			mViewPager.setVisibility(View.VISIBLE);
+			AnimatorUtils.fade(queueContainer, true);
+			// switch buttons
 			mAlbumArtSmall.setVisibility(View.VISIBLE);
-			// hide this button
 			mQueueSwitch.setVisibility(View.INVISIBLE);
 			// Fade out the artwork
-			if (albumArtBorder1 != null)
-				AnimatorUtils.fade(albumArtBorder1, false);
+			AnimatorUtils.fade(albumArtBorder1, false);
 			if (albumArtBorder2 != null)
 				AnimatorUtils.fade(albumArtBorder2, false);
 			AnimatorUtils.fade(mAlbumArt, false);
@@ -494,13 +480,12 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// Show the artwork, hide the queue
 		else if (v.getId() == R.id.audio_player_switch_album_art) {
-			mViewPager.setVisibility(View.INVISIBLE);
+			AnimatorUtils.fade(queueContainer, false);
+			// switch buttons
 			mQueueSwitch.setVisibility(View.VISIBLE);
-			// hide this button
 			mAlbumArtSmall.setVisibility(View.INVISIBLE);
 			// Fade in the album art
-			if (albumArtBorder1 != null)
-				AnimatorUtils.fade(albumArtBorder1, true);
+			AnimatorUtils.fade(albumArtBorder1, true);
 			if (albumArtBorder2 != null)
 				AnimatorUtils.fade(albumArtBorder2, true);
 			AnimatorUtils.fade(mAlbumArt, true);
@@ -649,10 +634,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		boolean isPlaying = MusicUtils.isPlaying(this);
 		// fade in player control after initialization
 		if (controls.getVisibility() != View.VISIBLE && controls.getAnimation() == null) {
-			AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-			anim.setDuration(500);
-			controls.setVisibility(View.VISIBLE);
-			controls.startAnimation(anim);
+			AnimatorUtils.fade(controls, true);
 		}
 		// Set the play and pause image
 		mPlayPauseButton.updateState(isPlaying);

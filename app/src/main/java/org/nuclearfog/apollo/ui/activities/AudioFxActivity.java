@@ -76,35 +76,34 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 		setContentView(R.layout.activity_audiofx);
 		Toolbar toolbar = findViewById(R.id.audiofx_toolbar);
 		RecyclerView eq_bands = findViewById(R.id.audiofx_eq_scroll);
+		View root = findViewById(R.id.audiofx_root);
 		presetLabel = findViewById(R.id.audiofx_preset_label);
 		presetSelector = findViewById(R.id.audiofx_preset);
 		enableFx = findViewById(R.id.audiofx_enable);
 		bassBoost = findViewById(R.id.audiofx_bass_boost);
 		reverb = findViewById(R.id.audiofx_reverb);
-		presetAdapter = new PresetAdapter();
-		presetLoader = new PresetLoader(this);
 
 		int sessionId = getIntent().getIntExtra(KEY_SESSION_ID, 0);
+		presetAdapter = new PresetAdapter();
+		presetLoader = new PresetLoader(this);
 		audioEffects = AudioEffects.getInstance(this, sessionId);
-
-		// set theme colors
+		ThemeUtils mResources = new ThemeUtils(this);
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(this);
 		ColorFilter colorFilter = new PorterDuffColorFilter(mPrefs.getDefaultThemeColor(), PorterDuff.Mode.SRC_IN);
+
 		bassBoost.getProgressDrawable().setColorFilter(colorFilter);
 		bassBoost.getThumb().setColorFilter(colorFilter);
 		reverb.getProgressDrawable().setColorFilter(colorFilter);
 		reverb.getThumb().setColorFilter(colorFilter);
 		enableFx.getThumbDrawable().setColorFilter(colorFilter);
-
 		bassBoost.setMax(BASS_STEPS);
 		reverb.setMax(AudioEffects.MAX_REVERB);
 		eq_bands.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-
 		presetSelector.setAdapter(presetAdapter);
+		mResources.setBackground(root);
 
 		setSupportActionBar(toolbar);
 		if (getSupportActionBar() != null) {
-			ThemeUtils mResources = new ThemeUtils(this);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 			mResources.themeActionBar(getSupportActionBar(), R.string.title_audio_effects);
 		}

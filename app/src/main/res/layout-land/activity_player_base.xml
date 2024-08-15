@@ -16,9 +16,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/player_root"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/pager_background">
+	tools:context=".ui.activities.AudioPlayerActivity">
 
 	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
 		android:id="@+id/colorstrip"
@@ -82,6 +83,7 @@
 		android:id="@+id/audio_player_controls"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:visibility="invisible"
 		app:layout_constraintStart_toEndOf="@id/player_base_barrier"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"

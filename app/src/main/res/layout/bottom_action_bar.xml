@@ -84,6 +84,7 @@
 		android:layout_width="@dimen/bottom_action_bar_button_container_width"
 		android:layout_height="0dp"
 		android:scrollbars="none"
+		android:visibility="invisible"
 		app:layout_constraintTop_toTopOf="@id/colorstrip"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent">

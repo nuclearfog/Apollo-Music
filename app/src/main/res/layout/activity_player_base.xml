@@ -16,10 +16,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:orientation="vertical"
+	android:id="@+id/player_root"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/pager_background">
+	tools:context=".ui.activities.AudioPlayerActivity">
 
 	<androidx.appcompat.widget.Toolbar
 		android:id="@+id/player_toolbar"
@@ -39,11 +39,12 @@
 		app:layout_constraintTop_toBottomOf="@id/player_toolbar"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<androidx.viewpager.widget.ViewPager
+	<androidx.fragment.app.FragmentContainerView
 		android:id="@+id/audio_player_pager"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:visibility="invisible"
+		android:name="org.nuclearfog.apollo.ui.fragments.QueueFragment"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/audio_player_informations"
 		app:layout_constraintBottom_toTopOf="@id/audio_player_controls"
@@ -98,6 +99,7 @@
 		android:id="@+id/audio_player_controls"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:visibility="invisible"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"

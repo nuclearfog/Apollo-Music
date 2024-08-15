@@ -21,8 +21,8 @@ import android.view.View;
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.ThemeUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -46,7 +46,8 @@ public class RepeatingImageButton extends AppCompatImageButton {
 	public RepeatingImageButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
-		setBackground(new HoloSelector(context));
+		ThemeUtils mTheme = new ThemeUtils(context);
+		mTheme.setBackgroundColor(this);
 		setFocusable(true);
 		setLongClickable(true);
 		repeater = new Repeater(this);

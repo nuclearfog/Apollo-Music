@@ -27,9 +27,9 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.MusicUtils;
+import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
  * A custom {@link AppCompatImageButton} that represents the "repeat" button.
@@ -51,7 +51,8 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 	public RepeatButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// Set the selector
-		setBackground(new HoloSelector(context));
+		ThemeUtils mTheme = new ThemeUtils(context);
+		mTheme.setBackgroundColor(this);
 		// Show the cheat sheet
 		setOnLongClickListener(this);
 	}

@@ -48,7 +48,6 @@ import org.nuclearfog.apollo.service.MusicPlaybackService;
 import org.nuclearfog.apollo.ui.views.PlayPauseButton;
 import org.nuclearfog.apollo.ui.views.RepeatButton;
 import org.nuclearfog.apollo.ui.views.ShuffleButton;
-import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.Constants;
@@ -145,7 +144,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		ThemeUtils mTheme = new ThemeUtils(this);
 
 		// set bottom action bar color
-		bottomActionBar.setBackground(new HoloSelector(this));
+		mTheme.setBackgroundColor(bottomActionBar);
 		// set background
 		mTheme.setBackground(v);
 

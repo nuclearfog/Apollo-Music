@@ -30,6 +30,7 @@ import java.util.List;
  * Apollo.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 @SuppressLint("ApplySharedPref")
 public final class PreferenceUtils {

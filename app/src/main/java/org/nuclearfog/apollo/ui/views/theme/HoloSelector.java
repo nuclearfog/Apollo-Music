@@ -11,17 +11,15 @@
 
 package org.nuclearfog.apollo.ui.views.theme;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.StateListDrawable;
-
-import org.nuclearfog.apollo.utils.PreferenceUtils;
 
 /**
  * A themeable {@link StateListDrawable}.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class HoloSelector extends StateListDrawable {
 
@@ -35,16 +33,13 @@ public class HoloSelector extends StateListDrawable {
 	};
 
 	/**
-	 * Constructor for <code>HoloSelector</code>
-	 *
-	 * @param context The {@link Context} to use.
+	 * @param color color when the button is pressed
 	 */
-	public HoloSelector(Context context) {
-		int holoColor = PreferenceUtils.getInstance(context).getDefaultThemeColor();
+	public HoloSelector(int color) {
 		// Focused
-		addState(STATES[0], new ColorDrawable(holoColor));
+		addState(STATES[0], new ColorDrawable(color));
 		// Pressed
-		addState(STATES[1], new ColorDrawable(holoColor));
+		addState(STATES[1], new ColorDrawable(color));
 		// Default
 		addState(STATES[2], new ColorDrawable(Color.TRANSPARENT));
 		setExitFadeDuration(400);

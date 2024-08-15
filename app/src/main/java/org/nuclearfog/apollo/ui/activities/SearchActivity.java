@@ -119,14 +119,15 @@ public class SearchActivity extends ActivityBase implements AsyncCallback<List<M
 		mLoader = new MusicSearchLoader(this);
 		ThemeUtils mResources = new ThemeUtils(this);
 
-		setSupportActionBar(toolbar);
-		if (getSupportActionBar() != null) {
-			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
-		}
 		// Get the query
 		String query = getIntent().getStringExtra(SearchManager.QUERY);
 		mFilterString = !TextUtils.isEmpty(query) ? query : "";
-		mResources.setSubtitle("\"" + mFilterString + "\"");
+
+		setSupportActionBar(toolbar);
+		if (getSupportActionBar() != null) {
+			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+			mResources.setSubtitle(getSupportActionBar(), "\"" + mFilterString + "\"");
+		}
 		mResources.setBackground(root);
 		// Set the prefix
 		mAdapter.setPrefix(mFilterString);

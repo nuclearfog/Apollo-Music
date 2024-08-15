@@ -13,7 +13,11 @@ package org.nuclearfog.apollo.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.Shader.TileMode;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.MenuItem;
@@ -26,6 +30,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.R;
+import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 
 /**
  * In order to implement the theme chooser for Apollo, this class returns a
@@ -36,18 +41,15 @@ import org.nuclearfog.apollo.R;
  * used to implement the theme chooser.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class ThemeUtils {
-
-	/**
-	 * Custom action bar layout
-	 */
-	private final View mActionBarLayout;
 
 	/**
 	 * The theme resources.
 	 */
 	private Resources resources;
+	private PreferenceUtils mPref;
 
 	/**
 	 * Constructor for <code>ThemeUtils</code>
@@ -56,8 +58,7 @@ public class ThemeUtils {
 	 */
 	public ThemeUtils(Context context) {
 		resources = context.getResources();
-		// Inflate the custom layout
-		mActionBarLayout = View.inflate(context, R.layout.action_bar, null);
+		mPref = PreferenceUtils.getInstance(context);
 	}
 
 	/**
@@ -66,14 +67,13 @@ public class ThemeUtils {
 	 * @param favorite The favorites action.
 	 * @param enable   true to enable favorite icon
 	 */
+	@SuppressWarnings("ConstantConditions")
 	public void setFavoriteIcon(MenuItem favorite, boolean enable) {
 		Drawable favIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_action_favorite, null);
-		if (favIcon != null) {
-			if (enable) {
-				favIcon.mutate().setColorFilter(resources.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
-			}
-			favorite.setIcon(favIcon);
+		if (enable) {
+			favIcon.mutate().setColorFilter(resources.getColor(R.color.favorite_selected), PorterDuff.Mode.SRC_IN);
 		}
+		favorite.setIcon(favIcon);
 	}
 
 	/**
@@ -88,6 +88,7 @@ public class ThemeUtils {
 		int textColor = ResourcesCompat.getColor(resources, R.color.action_bar_title, null);
 		String title = resources.getString(titleID);
 		// Set the custom layout
+		View mActionBarLayout = View.inflate(actionBar.getThemedContext(), R.layout.action_bar, null);
 		actionBar.setCustomView(mActionBarLayout);
 		actionBar.setDisplayShowCustomEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -104,24 +105,41 @@ public class ThemeUtils {
 	/**
 	 * Themes the action bar subtitle
 	 *
-	 * @param subtitle The subtitle to use
+	 * @param actionBar the actionbar to set the subtitle
+	 * @param subtitle  subtitle text
 	 */
-	public void setSubtitle(@NonNull String subtitle) {
+	public void setSubtitle(ActionBar actionBar, @NonNull String subtitle) {
+		int textColor = ResourcesCompat.getColor(resources, R.color.action_bar_subtitle, null);
+		View mActionBarLayout = actionBar.getCustomView();
 		TextView actionBarSubtitle = mActionBarLayout.findViewById(R.id.action_bar_subtitle);
-		actionBarSubtitle.setVisibility(View.VISIBLE);
-		// Theme the subtitle
-		int color = ResourcesCompat.getColor(resources, R.color.action_bar_subtitle, null);
-		actionBarSubtitle.setTextColor(color);
-		// Set the subtitle
-		actionBarSubtitle.setText(subtitle);
+		if (actionBarSubtitle != null) {
+			actionBarSubtitle.setVisibility(View.VISIBLE);
+			actionBarSubtitle.setTextColor(textColor);
+			actionBarSubtitle.setText(subtitle);
+		}
 	}
 
 	/**
-	 * set view background
+	 * set root view background
 	 *
-	 * @param v view to set the default background
+	 * @param view view to set the default background
 	 */
-	public void setBackground(View v) {
-		v.setBackgroundResource(R.drawable.pager_background);
+	public void setBackground(View view) {
+		Bitmap bitmap = BitmapFactory.decodeResource(view.getResources(), R.drawable.texture_carbon);
+		BitmapDrawable drawable = new BitmapDrawable(view.getResources(), bitmap);
+		drawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
+		view.setBackground(drawable);
+	}
+
+	/**
+	 * sets the background color of a view. when the view is pressed,
+	 * the highlight color is used a background color, otherwise
+	 * the background is transparent
+	 *
+	 * @param view view to set the default background
+	 */
+	public void setBackgroundColor(View view) {
+		Drawable background = new HoloSelector(mPref.getDefaultThemeColor());
+		view.setBackground(background);
 	}
 }

@@ -21,8 +21,8 @@ import android.widget.ImageButton;
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
 import org.nuclearfog.apollo.utils.ApolloUtils;
+import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
  * A custom {@link ImageButton} that represents the "play and pause" button.
@@ -38,7 +38,8 @@ public class PlayPauseButton extends AppCompatImageButton implements OnLongClick
 	public PlayPauseButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
-		setBackground(new HoloSelector(context));
+		ThemeUtils mTheme = new ThemeUtils(context);
+		mTheme.setBackgroundColor(this);
 		// Show the cheat sheet
 		setOnLongClickListener(this);
 		updateState(false);

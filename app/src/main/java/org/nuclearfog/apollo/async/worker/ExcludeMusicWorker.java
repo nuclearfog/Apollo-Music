@@ -12,6 +12,7 @@ import org.nuclearfog.apollo.model.Music;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.ExcludeStore;
 import org.nuclearfog.apollo.store.ExcludeStore.Type;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 
 import java.util.LinkedList;
@@ -54,10 +55,7 @@ public class ExcludeMusicWorker extends AsyncExecutor<Music, Boolean> {
 								idList.add(cursor.getLong(0));
 							}
 						} while (cursor.moveToNext());
-						ids = new long[idList.size()];
-						for (int i = 0; i < ids.length; i++) {
-							ids[i] = idList.get(i);
-						}
+						ids = ApolloUtils.toLongArray(idList);
 					}
 					cursor.close();
 				}

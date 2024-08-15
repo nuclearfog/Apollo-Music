@@ -51,6 +51,7 @@ import org.nuclearfog.apollo.receiver.UnmountBroadcastReceiver;
 import org.nuclearfog.apollo.receiver.WidgetBroadcastReceiver;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.store.RecentStore;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.CursorFactory;
 import org.nuclearfog.apollo.utils.MusicUtils;
 import org.nuclearfog.apollo.utils.PreferenceUtils;
@@ -958,11 +959,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * @return The queue containing song IDs
 	 */
 	synchronized long[] getQueue() {
-		Long[] ids = mPlayList.toArray(new Long[0]);
-		long[] list = new long[ids.length];
-		for (int i = 0; i < ids.length; i++)
-			list[i] = ids[i];
-		return list;
+		return ApolloUtils.toLongArray(mPlayList);
 	}
 
 	/**

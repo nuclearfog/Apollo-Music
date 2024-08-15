@@ -48,6 +48,7 @@ import org.nuclearfog.apollo.ui.appmsg.AppMsg;
 import org.nuclearfog.apollo.ui.dialogs.BatteryOptDialog;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Mostly general and UI helpers.
@@ -334,13 +335,27 @@ public final class ApolloUtils {
 	}
 
 	/**
+	 * convert list long array
+	 */
+	public static long[] toLongArray(List<Long> list) {
+		long[] result = new long[list.size()];
+		for (int i = 0; i < result.length; i++) {
+			if (list.get(i) != null) {
+				result[i] = list.get(i);
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * convert long array
 	 */
 	public static long[] toLongArray(Long[] array) {
 		long[] result = new long[array.length];
 		for (int i = 0; i < result.length; i++) {
-			if (array[i] != null)
+			if (array[i] != null) {
 				result[i] = array[i];
+			}
 		}
 		return result;
 	}

@@ -75,7 +75,7 @@ public class ServiceBinder implements ServiceConnection {
 	}
 
 	/**
-	 * callback interface used to informa activity when a service is connected/disconnected
+	 * callback interface used to inform the activity when a service is connected/disconnected
 	 */
 	public interface ServiceBinderCallback {
 

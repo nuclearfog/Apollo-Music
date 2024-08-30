@@ -199,17 +199,18 @@ public class MultiPlayer {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			if (force) {
-				if (player.isPlaying()) {
-					player.pause();
-				}
 				setCrossfadeTask(false);
 				xfadeMode = NONE;
 				isPlaying = false;
 				volume = 0.0f;
+				if (player.isPlaying()) {
+					player.pause();
+					return true;
+				}
 			} else if (xfadeMode == NONE) {
 				xfadeMode = FADE_OUT;
+				return true;
 			}
-			return true;
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to pause player");
 			stop();

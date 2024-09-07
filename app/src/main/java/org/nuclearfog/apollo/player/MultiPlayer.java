@@ -193,9 +193,8 @@ public class MultiPlayer {
 	 * Pauses playback. Call start() to resume.
 	 *
 	 * @param force true to stop playback immediately
-	 * @return true if successful, false if another operation is already pending
 	 */
-	public boolean pause(boolean force) {
+	public void pause(boolean force) {
 		MediaPlayer player = mPlayers[currentPlayer];
 		try {
 			if (force) {
@@ -205,17 +204,14 @@ public class MultiPlayer {
 				volume = 0.0f;
 				if (player.isPlaying()) {
 					player.pause();
-					return true;
 				}
 			} else if (xfadeMode == NONE) {
 				xfadeMode = FADE_OUT;
-				return true;
 			}
 		} catch (IllegalStateException exception) {
 			Log.e(TAG, "failed to pause player");
 			stop();
 		}
-		return false;
 	}
 
 	/**

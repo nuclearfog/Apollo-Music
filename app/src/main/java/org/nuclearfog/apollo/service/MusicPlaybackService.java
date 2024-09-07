@@ -466,7 +466,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 				return true;
 			}
 		} else {
-			pause(true);
+			notifyChange(CHANGED_PLAYSTATE);
 		}
 		return false;
 	}
@@ -656,7 +656,8 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 	 * Temporarily pauses playback.
 	 */
 	public synchronized void pause(boolean force) {
-		if (mPlayer.pause(force) && force) {
+		mPlayer.pause(force);
+		if (force) {
 			notifyChange(CHANGED_PLAYSTATE);
 		}
 	}
@@ -747,7 +748,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 		Album album = currentAlbum;
 		// send broadcast
 		Intent intent = new Intent(what);
-		intent.putExtra("playing", isPlaying());
+		intent.putExtra("playing", mPlayer.isPlaying());
 		if (song != null) {
 			intent.putExtra("id", song.getId());
 			intent.putExtra("artist", song.getArtist());
@@ -790,7 +791,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 			case CHANGED_QUEUE:
 				saveQueue(true);
-				if (isPlaying()) {
+				if (mPlayer.isPlaying()) {
 					setNextTrack(false);
 				}
 				break;

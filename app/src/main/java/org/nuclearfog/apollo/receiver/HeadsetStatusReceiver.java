@@ -30,7 +30,9 @@ public class HeadsetStatusReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-			service.pause(true);
+			if (service.isPlaying()) {
+				service.pause(true);
+			}
 		}
 	}
 }

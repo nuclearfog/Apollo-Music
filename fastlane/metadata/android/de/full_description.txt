@@ -1,0 +1,1 @@
+<p><i>Apollo-Music</i> ist ein Fork aus dem von CyanogenMod bekannten Musikplayers <a href='https://github.com/adneal/Apollo-CM' target='_blank' rel='nofollow'>Apollo</a> mit vielen zusätzlichen Funktionen.</p>

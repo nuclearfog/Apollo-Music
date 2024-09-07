@@ -16,7 +16,7 @@ Or download the latest APK from the [Releases Section](https://github.com/nuclea
 - hide tracks from view
 
 ## Screenshots
-<img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img1.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img2.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img3.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img4.jpg" width="200"/>
+<img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img1.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img2.jpg" width="200"/> <img src="/fastlane/metadata/android/en-US/images/phoneScreenshots/img3.jpg" width="200"/>
 
 ## Contributing
 For more information please read the <a href="https://github.com/nuclearfog/Apollo-Music/blob/master/CONTRIBUTING.md">Contribution Guidelines<a/>

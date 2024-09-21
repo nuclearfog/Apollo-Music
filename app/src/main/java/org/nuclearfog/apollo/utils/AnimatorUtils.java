@@ -35,16 +35,18 @@ public final class AnimatorUtils {
 			@Override
 			public void run() {
 				if (visible) {
+					view.setAlpha(1f);
 					view.setVisibility(View.VISIBLE);
 				} else {
+					view.setAlpha(0f);
 					view.setVisibility(View.INVISIBLE);
 				}
 			}
 		};
 		if (visible) {
-			anim = new AlphaAnimation(0.0f, 1.0f);
+			anim = new AlphaAnimation(0f, 1f);
 		} else {
-			anim = new AlphaAnimation(1.0f, 0.0f);
+			anim = new AlphaAnimation(1f, 0f);
 		}
 		anim.setDuration(Constants.ANIMATION_SPEED);
 		view.startAnimation(anim);

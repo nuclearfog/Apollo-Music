@@ -363,10 +363,7 @@ public class MusicPlaybackService extends Service implements OnAudioFocusChangeL
 
 		// send session ID to external equalizer if set
 		if (settings.isExternalAudioFxPrefered() && !settings.isAudioFxEnabled()) {
-			Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
-			intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, mPlayer.getAudioSessionId());
-			intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-			sendBroadcast(intent);
+			ApolloUtils.notifyExternalEqualizer(this, getAudioSessionId());
 		}
 		// Bring the queue back
 		reloadQueue();

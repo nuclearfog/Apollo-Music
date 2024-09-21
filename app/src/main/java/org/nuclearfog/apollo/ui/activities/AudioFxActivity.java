@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * Audio effects activity
  *
- * @author nuclerfog
+ * @author nuclearfog
  */
 public class AudioFxActivity extends AppCompatActivity implements BandLevelChangeListener, OnCheckedChangeListener,
 		OnSeekBarChangeListener, AsyncCallback<List<AudioPreset>>, OnItemSelectedListener, OnPresetSaveCallback {

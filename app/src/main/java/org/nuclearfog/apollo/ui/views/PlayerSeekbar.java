@@ -206,11 +206,7 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	 * print current time value of the position
 	 */
 	private void setCurrentTimeText(long time) {
-		if (time > 0) {
-			times[0].setText(StringUtils.makeTimeString(getContext(), time));
-		} else {
-			times[0].setText("--:--");
-		}
+		times[0].setText(StringUtils.makeTimeString(getContext(), time));
 	}
 
 	/**

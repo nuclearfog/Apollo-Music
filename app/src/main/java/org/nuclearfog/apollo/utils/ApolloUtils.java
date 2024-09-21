@@ -227,6 +227,18 @@ public final class ApolloUtils {
 	}
 
 	/**
+	 * send broadcast to external eualizer app with current audio session ID
+	 *
+	 * @param sessionId current audio session ID
+	 */
+	public static void notifyExternalEqualizer(Context context, long sessionId) {
+		Intent intent = new Intent(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION);
+		intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
+		intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
+		context.sendBroadcast(intent);
+	}
+
+	/**
 	 * serialize ID array into a string
 	 *
 	 * @param ids IDs to serialize

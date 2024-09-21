@@ -548,8 +548,10 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 	public void onStateChange() {
 		// Set the play and pause image
 		boolean playing = MusicUtils.isPlaying(this);
+		long posittion = MusicUtils.getPositionMillis(this);
 		mPlayPauseButton.updateState(playing);
 		playerSeekbar.setPlayStatus(playing);
+		playerSeekbar.setCurrentTime(posittion);
 	}
 
 

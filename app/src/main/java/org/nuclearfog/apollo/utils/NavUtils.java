@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.media.audiofx.AudioEffect;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -34,6 +35,8 @@ import org.nuclearfog.apollo.ui.appmsg.AppMsg;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class NavUtils {
+
+	private static final String TAG = "NavUtils";
 
 	/**
 	 * Opens the profile of an artist.
@@ -91,6 +94,9 @@ public final class NavUtils {
 					exception.printStackTrace();
 				}
 			}
+		} else {
+			AppMsg.makeText(activity, R.string.no_effects_for_you, AppMsg.STYLE_ALERT);
+			Log.w(TAG, "invalid audio session!");
 		}
 	}
 

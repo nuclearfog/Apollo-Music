@@ -15,20 +15,25 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
+import org.nuclearfog.apollo.ui.views.FrameLayoutWithOverlay.OnOverlayClickListener;
 import org.nuclearfog.apollo.utils.AnimatorUtils;
 
 /**
@@ -36,7 +41,7 @@ import org.nuclearfog.apollo.utils.AnimatorUtils;
  * {@link ProfileActivity}. If the second tab is visible, a fraction of it will
  * overflow slightly onto the screen.
  */
-public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchListener, OnGlobalLayoutListener {
+public class ProfileTabCarousel extends HorizontalScrollView implements OnClickListener, OnTouchListener, OnOverlayClickListener, OnGlobalLayoutListener, AnimatorListener {
 
 	/**
 	 * Number of tabs
@@ -84,16 +89,6 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private final int mTabShadowHeight;
 
 	/**
-	 * First tab click listener
-	 */
-	private final TabClickListener mTabOneTouchInterceptListener = new TabClickListener(TAB_INDEX_FIRST);
-
-	/**
-	 * Second tab click listener
-	 */
-	private final TabClickListener mTabTwoTouchInterceptListener = new TabClickListener(TAB_INDEX_SECOND);
-
-	/**
 	 * The last scrolled position
 	 */
 	private int mLastScrollPosition = 0;
@@ -121,66 +116,40 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	private boolean mScrollToCurrentTab = false;
 	private boolean mTabCarouselIsAnimating;
 	private boolean mEnableSwipe;
-	private CarouselTab mFirstTab;
-	private CarouselTab mSecondTab;
+	private CarouselTab mFirstTab, mSecondTab;
 	private Listener mListener;
 
 	/**
-	 * This listener keeps track of whether the tab carousel animation is
-	 * currently going on or not, in order to prevent other simultaneous changes
-	 * to the Y position of the tab carousel which can cause flicker.
 	 */
-	private AnimatorListener mTabCarouselAnimatorListener = new AnimatorListener() {
-
-		@Override
-		public void onAnimationCancel(Animator animation) {
-			mTabCarouselIsAnimating = false;
-		}
-
-		@Override
-		public void onAnimationEnd(Animator animation) {
-			mTabCarouselIsAnimating = false;
-		}
-
-		@Override
-		public void onAnimationRepeat(Animator animation) {
-			mTabCarouselIsAnimating = true;
-		}
-
-		@Override
-		public void onAnimationStart(Animator animation) {
-			mTabCarouselIsAnimating = true;
-		}
-	};
+	public ProfileTabCarousel(@NonNull Context context) {
+		this(context, null);
+	}
 
 	/**
 	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public ProfileTabCarousel(Context context, AttributeSet attrs) {
+	public ProfileTabCarousel(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		setOnTouchListener(this);
-		Resources mResources = context.getResources();
-		mTabDisplayLabelHeight = mResources.getDimensionPixelSize(R.dimen.profile_photo_shadow_height);
-		mTabShadowHeight = mResources.getDimensionPixelSize(R.dimen.profile_carousel_label_height);
-		tabWidthScreenWidthFraction = mResources.getFraction(R.fraction.tab_width_screen_percentage, 1, 1);
-		tabHeightScreenWidthFraction = mResources.getFraction(R.fraction.tab_height_screen_percentage, 1, 1);
+		View view = LayoutInflater.from(context).inflate(R.layout.profile_tab_carousel, this, false);
+		mFirstTab = view.findViewById(R.id.profile_tab_carousel_tab_one);
+		mSecondTab = view.findViewById(R.id.profile_tab_carousel_tab_two);
+		addView(view);
+		updateAlphaLayers();
+
+		mTabDisplayLabelHeight = context.getResources().getDimensionPixelSize(R.dimen.profile_photo_shadow_height);
+		mTabShadowHeight = context.getResources().getDimensionPixelSize(R.dimen.profile_carousel_label_height);
+		tabWidthScreenWidthFraction = context.getResources().getFraction(R.fraction.tab_width_screen_percentage, 1, 1);
+		tabHeightScreenWidthFraction = context.getResources().getFraction(R.fraction.tab_height_screen_percentage, 1, 1);
 		// disable scroll effects which can cause bugs
+		setHorizontalScrollBarEnabled(false);
 		setHorizontalFadingEdgeEnabled(false);
 		setOverScrollMode(OVER_SCROLL_NEVER);
-	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onFinishInflate() {
-		super.onFinishInflate();
-		mFirstTab = findViewById(R.id.profile_tab_carousel_tab_one);
-		mFirstTab.setOverlayOnClickListener(mTabOneTouchInterceptListener);
-		mSecondTab = findViewById(R.id.profile_tab_carousel_tab_two);
-		mSecondTab.setOverlayOnClickListener(mTabTwoTouchInterceptListener);
-		updateAlphaLayers();
+		mFirstTab.getPhoto().setOnClickListener(this);
+		mFirstTab.setOverlayOnClickListener(this);
+		mSecondTab.setOverlayOnClickListener(this);
+		setOnTouchListener(this);
 	}
 
 	/**
@@ -190,33 +159,29 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int screenWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int tabWidth = Math.round(tabWidthScreenWidthFraction * screenWidth);
-
+		int tabHeight = Math.round(screenWidth * tabHeightScreenWidthFraction) + mTabShadowHeight;
 		mAllowedHorizontalScrollLength = tabWidth * TAB_COUNT - screenWidth;
 		if (mAllowedHorizontalScrollLength == 0) {
 			mScrollScaleFactor = 1.0f;
 		} else {
 			mScrollScaleFactor = (float) screenWidth / mAllowedHorizontalScrollLength;
 		}
-
-		int tabHeight = Math.round(screenWidth * tabHeightScreenWidthFraction) + mTabShadowHeight;
 		if (getChildCount() > 0) {
 			View child = getChildAt(0);
-
-			// Add 1 dip of separation between the tabs
-			int seperatorPixels = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()) + 0.5f);
-
 			if (mEnableSwipe) {
-				child.measure(
-						MeasureSpec.makeMeasureSpec(TAB_COUNT * tabWidth + seperatorPixels, MeasureSpec.EXACTLY),
-						MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY));
+				// Add 1 dip of separation between the tabs
+				int seperatorPixels = Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()) + 0.5f);
+				int width = MeasureSpec.makeMeasureSpec(TAB_COUNT * tabWidth + seperatorPixels, MeasureSpec.EXACTLY);
+				int height = MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY);
+				child.measure(width, height);
 			} else {
-				child.measure(MeasureSpec.makeMeasureSpec(screenWidth, MeasureSpec.EXACTLY),
-						MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY));
+				int width = MeasureSpec.makeMeasureSpec(screenWidth, MeasureSpec.EXACTLY);
+				int height = MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY);
+				child.measure(width, height);
 			}
 		}
 		mAllowedVerticalScrollLength = tabHeight - mTabDisplayLabelHeight - mTabShadowHeight;
-		setMeasuredDimension(resolveSize(screenWidth, widthMeasureSpec),
-				resolveSize(tabHeight, heightMeasureSpec));
+		setMeasuredDimension(resolveSize(screenWidth, widthMeasureSpec), resolveSize(tabHeight, heightMeasureSpec));
 	}
 
 	/**
@@ -226,11 +191,10 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
-		if (!mScrollToCurrentTab) {
-			return;
+		if (mScrollToCurrentTab) {
+			mScrollToCurrentTab = false;
+			getViewTreeObserver().addOnGlobalLayoutListener(this);
 		}
-		mScrollToCurrentTab = false;
-		getViewTreeObserver().addOnGlobalLayoutListener(this);
 	}
 
 	/**
@@ -239,14 +203,23 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	@Override
 	protected void onScrollChanged(int x, int y, int oldX, int oldY) {
 		super.onScrollChanged(x, y, oldX, oldY);
-		if (mLastScrollPosition == x) {
-			return;
+		if (mLastScrollPosition != x) {
+			int scaledL = (int) (x * mScrollScaleFactor);
+			int oldScaledL = (int) (oldX * mScrollScaleFactor);
+			mListener.onScrollChanged(scaledL, oldScaledL);
+			mLastScrollPosition = x;
+			updateAlphaLayers();
 		}
-		int scaledL = (int) (x * mScrollScaleFactor);
-		int oldScaledL = (int) (oldX * mScrollScaleFactor);
-		mListener.onScrollChanged(scaledL, oldScaledL);
-		mLastScrollPosition = x;
-		updateAlphaLayers();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.profile_tab_photo) {
+			mListener.onAlbumArtSelected();
+		}
 	}
 
 	/**
@@ -258,6 +231,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 			case MotionEvent.ACTION_DOWN:
 				mListener.onTouchDown();
 				return true;
+
 			case MotionEvent.ACTION_UP:
 				mListener.onTouchUp();
 				return true;
@@ -289,6 +263,50 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onOverlayClick(View view) {
+		if (view.getId() == R.id.profile_tab_carousel_tab_one) {
+			mListener.onTabSelected(TAB_INDEX_FIRST);
+		} else if (view.getId() == R.id.profile_tab_carousel_tab_two) {
+			mListener.onTabSelected(TAB_INDEX_SECOND);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onAnimationCancel(Animator animation) {
+		mTabCarouselIsAnimating = false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onAnimationEnd(Animator animation) {
+		mTabCarouselIsAnimating = false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onAnimationRepeat(Animator animation) {
+		mTabCarouselIsAnimating = true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void onAnimationStart(Animator animation) {
+		mTabCarouselIsAnimating = true;
+	}
+
+	/**
 	 * Reset the carousel to the start position (i.e. because new data will be
 	 * loaded in for a different contact).
 	 */
@@ -306,7 +324,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 */
 	public void restoreYCoordinate(int duration, int tabIndex) {
 		float storedYCoordinate = getStoredYCoordinateForTab(tabIndex);
-		AnimatorUtils.translate(this, storedYCoordinate, duration, mTabCarouselAnimatorListener);
+		AnimatorUtils.translate(this, storedYCoordinate, duration, this);
 	}
 
 	/**
@@ -360,10 +378,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	}
 
 	/**
-	 * @return The {@link ImageView} in the first index.
+	 * set image of the album art
+	 *
+	 * @param uri path to the local imagefile
 	 */
-	public ImageView getPhoto() {
-		return mFirstTab.getPhoto();
+	public void setAlbumArt(Uri uri) {
+		mFirstTab.getPhoto().setImageURI(uri);
 	}
 
 	/**
@@ -398,7 +418,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 				break;
 
 			default:
-				throw new IllegalStateException("Invalid tab position " + position);
+				return;
 		}
 		selected.setSelected(true);
 		selected.showSelectedState();
@@ -477,6 +497,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 	 * carousel.
 	 */
 	public interface Listener {
+
 		void onTouchDown();
 
 		void onTouchUp();
@@ -484,23 +505,7 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnTouchL
 		void onScrollChanged(int l, int oldl);
 
 		void onTabSelected(int position);
-	}
 
-	/**
-	 * When clicked, selects the corresponding tab.
-	 */
-	private class TabClickListener implements OnClickListener {
-
-		private int mTab;
-
-		public TabClickListener(int tab) {
-			super();
-			mTab = tab;
-		}
-
-		@Override
-		public void onClick(View v) {
-			mListener.onTabSelected(mTab);
-		}
+		void onAlbumArtSelected();
 	}
 }

@@ -23,6 +23,7 @@ import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageFetcher;
 import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.StringUtils;
 
@@ -80,7 +81,7 @@ public class ArtistAlbumAdapter extends AlphabeticalAdapter<Album> {
 		// Initialize the cache & image fetcher
 		mImageFetcher = ApolloUtils.getImageFetcher(context);
 		// create placeholder view
-		mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
+		mHeader = new ProfileTabCarousel(context);
 		mHeader.setVisibility(View.INVISIBLE);
 	}
 

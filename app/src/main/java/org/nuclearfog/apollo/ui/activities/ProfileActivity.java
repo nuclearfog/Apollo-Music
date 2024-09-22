@@ -16,16 +16,12 @@ import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore.Audio;
-import android.provider.MediaStore.MediaColumns;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -78,7 +74,7 @@ import java.util.List;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, OnPageChangeListener, Listener, OnClickListener {
+public class ProfileActivity extends ActivityBase implements ActivityResultCallback<ActivityResult>, OnPageChangeListener, Listener {
 
 	/**
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.FolderSongFragment}
@@ -96,11 +92,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * mime type of the {@link org.nuclearfog.apollo.ui.fragments.profile.LastAddedFragment}
 	 */
 	public static final String PAGE_MOST_PLAYED = "page_most";
-
-	/**
-	 *
-	 */
-	private static final String[] GET_MEDIA = {MediaColumns.DATA};
 
 	/**
 	 *
@@ -186,11 +177,15 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	@Override
 	protected void init(Bundle savedInstanceState) {
 		Toolbar toolbar = findViewById(R.id.activity_profile_base_toolbar);
+		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
+		mViewPager = findViewById(R.id.activity_profile_base_pager);
 		// Initialize the theme resources
 		ThemeUtils mResources = new ThemeUtils(this);
+		Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
 		setSupportActionBar(toolbar);
-		if (getSupportActionBar() != null) {
-			mResources.themeActionBar(getSupportActionBar(), R.string.app_name);
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			mResources.themeActionBar(actionBar, R.string.app_name);
 		}
 		String year = "";
 		// Temporary until I can work out a nice landscape layout
@@ -210,21 +205,21 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		popularSongLoader = new PopularSongLoader(this);
 		folderSongLoader = new FolderSongLoader(this);
 		// Initialize the Bundle
-		Bundle mArguments = savedInstanceState != null ? savedInstanceState : getIntent().getExtras();
+
 		// Get the MIME type
 		if (mArguments != null) {
-			// get mime type
-			mType = mArguments.getString(Constants.MIME_TYPE, "");
-			// Get the profile title
-			mProfileName = mArguments.getString(Constants.NAME, "");
-			// Get the artist name
-			mArtistName = mArguments.getString(Constants.ARTIST_NAME, "");
 			// Get the ID
 			if (mArguments.containsKey(Constants.IDS)) {
 				ids = ApolloUtils.readSerializedIDs(mArguments.getString(Constants.IDS, ""));
 			} else {
 				ids = new long[]{mArguments.getLong(Constants.ID)};
 			}
+			// get mime type
+			mType = mArguments.getString(Constants.MIME_TYPE, "");
+			// Get the profile title
+			mProfileName = mArguments.getString(Constants.NAME, "");
+			// Get the artist name
+			mArtistName = mArguments.getString(Constants.ARTIST_NAME, "");
 			// get album yeas
 			year = mArguments.getString(Constants.ALBUM_YEAR, "");
 			// get folder name if defined
@@ -233,12 +228,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		type = Type.getEnum(mType);
 		// Initialize the pager adapter
 		ProfileAdapter mPagerAdapter = new ProfileAdapter(getSupportFragmentManager(), mArguments, type);
-		// Initialze the carousel
-		mTabCarousel = findViewById(R.id.activity_profile_base_tab_carousel);
 		mTabCarousel.reset();
-		mTabCarousel.getPhoto().setOnClickListener(this);
-		// Set up the action bar
-		ActionBar actionBar = getSupportActionBar();
 
 		switch (type) {
 			case ALBUM:
@@ -286,8 +276,6 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				}
 				break;
 		}
-		// Initialize the ViewPager
-		mViewPager = findViewById(R.id.activity_profile_base_pager);
 		// Attch the adapter
 		mViewPager.setAdapter(mPagerAdapter);
 		// Offscreen limit
@@ -629,6 +617,27 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void onAlbumArtSelected() {
+		ProfileType profileType;
+		String name;
+		if (type == Type.ARTIST) {
+			profileType = ProfileType.ARTIST;
+			name = mArtistName;
+		} else if (type == Type.ALBUM) {
+			profileType = ProfileType.ALBUM;
+			name = mProfileName;
+		} else {
+			profileType = ProfileType.OTHER;
+			name = mProfileName;
+		}
+		DialogFragment dialog = PhotoSelectionDialog.newInstance(name, profileType);
+		dialog.show(getSupportFragmentManager(), PhotoSelectionDialog.NAME);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (requestCode == MusicUtils.REQUEST_DELETE_FILES && resultCode == RESULT_OK) {
@@ -644,54 +653,21 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		if (result.getResultCode() == RESULT_OK) {
 			Intent intent = result.getData();
 			if (intent != null && intent.getData() != null) {
-				Cursor cursor = getContentResolver().query(intent.getData(), GET_MEDIA, null, null, null);
-				if (cursor != null) {
-					if (cursor.moveToFirst()) {
-						int columnIndex = cursor.getColumnIndexOrThrow(GET_MEDIA[0]);
-						String picturePath = cursor.getString(columnIndex);
-						Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromFile(picturePath);
-						if (type == Type.ARTIST) {
-							mImageFetcher.addBitmapToCache(mArtistName, bitmap);
-							mTabCarousel.getPhoto().setImageBitmap(bitmap);
-						} else if (type == Type.ALBUM) {
-							String key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
-							mImageFetcher.addBitmapToCache(key, bitmap);
-							mTabCarousel.getAlbumArt().setImageBitmap(bitmap);
-						} else {
-							mImageFetcher.addBitmapToCache(mProfileName, bitmap);
-							mTabCarousel.getPhoto().setImageBitmap(bitmap);
-						}
-					}
-					cursor.close();
+				Uri imageUri = intent.getData();
+				if (type == Type.ARTIST) {
+					mImageFetcher.addImageToCache(mArtistName, imageUri);
+					mTabCarousel.setAlbumArt(imageUri);
+				} else if (type == Type.ALBUM) {
+					String key = ImageFetcher.generateAlbumCacheKey(mProfileName, mArtistName);
+					mImageFetcher.addImageToCache(key, imageUri);
+					mTabCarousel.getAlbumArt().setImageURI(imageUri);
 				} else {
-					selectOldPhoto();
+					mImageFetcher.addImageToCache(mProfileName, imageUri);
+					mTabCarousel.setAlbumArt(imageUri);
 				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == R.id.profile_tab_photo) {
-			ProfileType profileType;
-			String name;
-			if (type == Type.ARTIST) {
-				profileType = ProfileType.ARTIST;
-				name = mArtistName;
-			} else if (type == Type.ALBUM) {
-				profileType = ProfileType.ALBUM;
-				name = mProfileName;
 			} else {
-				profileType = ProfileType.OTHER;
-				name = mProfileName;
+				selectOldPhoto();
 			}
-			DialogFragment dialog = PhotoSelectionDialog.newInstance(name, profileType);
-			dialog.show(getSupportFragmentManager(), PhotoSelectionDialog.NAME);
-		} else {
-			super.onClick(v);
 		}
 	}
 

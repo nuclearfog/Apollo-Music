@@ -67,7 +67,7 @@ public class BitmapWorkerTask extends AsyncExecutor<String[], Drawable[]> {
 		}
 		// Fourth, add the new image to the cache
 		if (bitmap != null && params[0] != null && worker.getImageCache() != null) {
-			worker.addBitmapToCache(params[0], bitmap);
+			worker.addImageToCache(params[0], bitmap);
 		}
 		// Add the second layer to the translation drawable
 		if (bitmap != null) {

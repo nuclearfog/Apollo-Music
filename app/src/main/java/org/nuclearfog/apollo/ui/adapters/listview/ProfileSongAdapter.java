@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.holder.MusicHolder;
+import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.utils.StringUtils;
 
 /**
@@ -100,7 +101,7 @@ public class ProfileSongAdapter extends AlphabeticalAdapter<Song> {
 	public ProfileSongAdapter(Context context, int setting, boolean enableDrag) {
 		super(context, LAYOUT);
 		// create placeholder view
-		mHeader = View.inflate(context, R.layout.profile_tab_carousel, null);
+		mHeader = new ProfileTabCarousel(context);
 		mHeader.setVisibility(View.INVISIBLE);
 		// Know what to put in line two
 		this.mDisplaySetting = setting;

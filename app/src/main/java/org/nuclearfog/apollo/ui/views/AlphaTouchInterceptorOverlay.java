@@ -12,8 +12,12 @@
 package org.nuclearfog.apollo.ui.views;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * A View that other Views can use to create a touch-interceptor layer above
@@ -37,10 +41,16 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	private float mAlpha = 0.0f;
 
 	/**
-	 * @param context The {@link Context} to use.
 	 */
-	public AlphaTouchInterceptorOverlay(Context context) {
-		super(context);
+	public AlphaTouchInterceptorOverlay(@NonNull Context context) {
+		this(context, null);
+	}
+
+	/**
+	 *
+	 */
+	public AlphaTouchInterceptorOverlay(@NonNull Context context, @Nullable AttributeSet attrs) {
+		super(context, attrs);
 		mInterceptorLayer = new View(context);
 		mInterceptorLayer.setBackgroundColor(0);
 		addView(mInterceptorLayer);

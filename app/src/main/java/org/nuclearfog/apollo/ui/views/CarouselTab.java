@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import org.nuclearfog.apollo.utils.MusicUtils;
 
 /**
  * @author Andrew Neal (andrewdneal@gmail.com)
+ * @author nuclearfog
  */
 public class CarouselTab extends FrameLayoutWithOverlay {
 
@@ -36,7 +38,14 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	private ImageView mPhoto;
 	private ImageView mAlbumArt;
 	private TextView mLabelView;
-	private View mColorstrip;
+	private View mColorstrip, mAlphaLayer;
+
+	/**
+	 *
+	 */
+	public CarouselTab(Context context) {
+		this(context, null);
+	}
 
 	/**
 	 * @param context The {@link Context} to use
@@ -44,7 +53,15 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	 */
 	public CarouselTab(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		View view = LayoutInflater.from(context).inflate(R.layout.profile_tab, this, false);
+		mAlphaLayer = view.findViewById(R.id.profile_tab_alpha_overlay);
+		mColorstrip = view.findViewById(R.id.profile_tab_colorstrip);
+		mPhoto = view.findViewById(R.id.profile_tab_photo);
+		mAlbumArt = view.findViewById(R.id.profile_tab_album_art);
+		mLabelView = view.findViewById(R.id.profile_tab_label);
 		mFetcher = ApolloUtils.getImageFetcher(context);
+		// add child views
+		addView(view);
 	}
 
 	/**
@@ -53,11 +70,6 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
-		mPhoto = findViewById(R.id.profile_tab_photo);
-		mAlbumArt = findViewById(R.id.profile_tab_album_art);
-		mLabelView = findViewById(R.id.profile_tab_label);
-		View mAlphaLayer = findViewById(R.id.profile_tab_alpha_overlay);
-		mColorstrip = findViewById(R.id.profile_tab_colorstrip);
 		// Set the alpha layer
 		setAlphaLayer(mAlphaLayer);
 	}

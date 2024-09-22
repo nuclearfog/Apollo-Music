@@ -39,14 +39,13 @@
 			app:layout_constraintBottom_toTopOf="@id/activity_profile_base_actionbar"
 			app:layout_constraintEnd_toEndOf="parent" />
 
-		<include
+		<org.nuclearfog.apollo.ui.views.ProfileTabCarousel
 			android:id="@+id/activity_profile_base_tab_carousel"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			app:layout_constraintStart_toStartOf="parent"
 			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			layout="@layout/profile_tab_carousel" />
+			app:layout_constraintEnd_toEndOf="parent" />
 
 		<ImageView
 			android:id="@+id/activity_profile_base_shadow"

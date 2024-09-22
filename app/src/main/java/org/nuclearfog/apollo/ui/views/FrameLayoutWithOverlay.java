@@ -14,17 +14,29 @@ package org.nuclearfog.apollo.ui.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 /**
  * A FrameLayout whose contents are kept beneath an
  * {@link AlphaTouchInterceptorOverlay}. If necessary, you can specify your own
  * alpha-layer and manually manage its z-order.
  */
-public class FrameLayoutWithOverlay extends FrameLayout {
+public class FrameLayoutWithOverlay extends FrameLayout implements OnClickListener {
 
 	private AlphaTouchInterceptorOverlay mOverlay;
+
+	@Nullable
+	private OnOverlayClickListener mListener;
+
+	/**
+	 *
+	 */
+	public FrameLayoutWithOverlay(Context context) {
+		this(context, null);
+	}
 
 	/**
 	 * @param context The {@link Context} to use
@@ -32,9 +44,8 @@ public class FrameLayoutWithOverlay extends FrameLayout {
 	 */
 	public FrameLayoutWithOverlay(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		/* Programmatically create touch-interceptor View. */
 		mOverlay = new AlphaTouchInterceptorOverlay(context);
+		mOverlay.setOverlayOnClickListener(this);
 		addView(mOverlay);
 	}
 
@@ -43,9 +54,19 @@ public class FrameLayoutWithOverlay extends FrameLayout {
 	 * always on top.
 	 */
 	@Override
-	public void addView(View child, int index, ViewGroup.LayoutParams params) {
-		super.addView(child, index, params);
+	public void addView(View child) {
+		super.addView(child);
 		mOverlay.bringToFront();
+	}
+
+	/**
+	 *
+	 */
+	@Override
+	public void onClick(View v) {
+		if (mListener != null) {
+			mListener.onOverlayClick(this);
+		}
 	}
 
 	/**
@@ -67,8 +88,8 @@ public class FrameLayoutWithOverlay extends FrameLayout {
 	/**
 	 * Delegate to overlay.
 	 */
-	public void setOverlayOnClickListener(OnClickListener listener) {
-		mOverlay.setOverlayOnClickListener(listener);
+	public void setOverlayOnClickListener(OnOverlayClickListener listener) {
+		mListener = listener;
 	}
 
 	/**
@@ -76,5 +97,13 @@ public class FrameLayoutWithOverlay extends FrameLayout {
 	 */
 	public void setOverlayClickable(boolean clickable) {
 		mOverlay.setOverlayClickable(clickable);
+	}
+
+	/**
+	 *
+	 */
+	public interface OnOverlayClickListener {
+
+		void onOverlayClick(View view);
 	}
 }

@@ -13,6 +13,9 @@ package org.nuclearfog.apollo.cache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,8 @@ import androidx.annotation.Nullable;
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.BitmapUtils;
 
+import java.io.IOException;
+
 /**
  * This class wraps up completing some arbitrary long running work when loading
  * a {@link Bitmap} to an {@link ImageView}. It handles things like using a
@@ -28,6 +33,8 @@ import org.nuclearfog.apollo.utils.BitmapUtils;
  * placeholder image.
  */
 public abstract class ImageWorker {
+
+	private static final String TAG = "ImageWorker";
 
 	/**
 	 * The Context to use
@@ -90,9 +97,23 @@ public abstract class ImageWorker {
 	/**
 	 * Adds a new image to the memory and disk caches
 	 *
+	 * @param uri local link to image file
+	 */
+	public void addImageToCache(String key, Uri uri) {
+		try {
+			Bitmap bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), uri);
+			addImageToCache(key, bitmap);
+		} catch (IOException exception) {
+			Log.e(TAG, "could not load local image to cache!", exception);
+		}
+	}
+
+	/**
+	 * Adds a new image to the memory and disk caches
+	 *
 	 * @param bitmap The {@link Bitmap} to cache
 	 */
-	public void addBitmapToCache(String key, Bitmap bitmap) {
+	public void addImageToCache(String key, Bitmap bitmap) {
 		if (mImageCache != null) {
 			mImageCache.addBitmapToCache(key, bitmap);
 		}

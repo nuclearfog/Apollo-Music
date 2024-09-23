@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.nuclearfog.apollo.R;
@@ -61,16 +62,16 @@ public class PlayerSeekbar extends LinearLayout implements OnSeekBarChangeListen
 	private Runnable timeHandler = new TimeHandler(this);
 
 	/**
-	 * {@inheritDoc}
+	 *
 	 */
-	public PlayerSeekbar(Context context) {
+	public PlayerSeekbar(@NonNull Context context) {
 		this(context, null);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 *
 	 */
-	public PlayerSeekbar(Context context, @Nullable AttributeSet attrs) {
+	public PlayerSeekbar(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		PreferenceUtils mPrefs = PreferenceUtils.getInstance(context);
 		LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f);

@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
@@ -46,9 +47,16 @@ public class RepeatButton extends AppCompatImageButton implements OnLongClickLis
 
 	/**
 	 * @param context The {@link Context} to use
+	 */
+	public RepeatButton(@NonNull Context context) {
+		this(context, null);
+	}
+
+	/**
+	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public RepeatButton(Context context, AttributeSet attrs) {
+	public RepeatButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		// Set the selector
 		ThemeUtils mTheme = new ThemeUtils(context);

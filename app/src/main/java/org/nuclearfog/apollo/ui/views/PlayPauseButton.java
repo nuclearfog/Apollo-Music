@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 
 import org.nuclearfog.apollo.R;
@@ -33,9 +35,16 @@ public class PlayPauseButton extends AppCompatImageButton implements OnLongClick
 
 	/**
 	 * @param context The {@link Context} to use
+	 */
+	public PlayPauseButton(@NonNull Context context) {
+		this(context, null);
+	}
+
+	/**
+	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public PlayPauseButton(Context context, AttributeSet attrs) {
+	public PlayPauseButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);

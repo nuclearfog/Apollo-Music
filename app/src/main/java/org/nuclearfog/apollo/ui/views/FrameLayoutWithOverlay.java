@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -34,7 +35,7 @@ public class FrameLayoutWithOverlay extends FrameLayout implements OnClickListen
 	/**
 	 *
 	 */
-	public FrameLayoutWithOverlay(Context context) {
+	public FrameLayoutWithOverlay(@NonNull Context context) {
 		this(context, null);
 	}
 
@@ -42,7 +43,7 @@ public class FrameLayoutWithOverlay extends FrameLayout implements OnClickListen
 	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public FrameLayoutWithOverlay(Context context, AttributeSet attrs) {
+	public FrameLayoutWithOverlay(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		mOverlay = new AlphaTouchInterceptorOverlay(context);
 		mOverlay.setOverlayOnClickListener(this);

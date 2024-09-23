@@ -233,7 +233,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		switch (type) {
 			case ALBUM:
 				// Add the carousel images
-				mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
+				mTabCarousel.setAlbumProfileHeader(mProfileName, mArtistName);
 				// Album profile fragments
 				if (actionBar != null) {
 					// Action bar title = album name
@@ -247,7 +247,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 
 			case ARTIST:
 				// Add the carousel images
-				mTabCarousel.setArtistProfileHeader(this, mArtistName);
+				mTabCarousel.setArtistProfileHeader(mArtistName);
 				// Artist profile fragments
 				if (actionBar != null) {
 					actionBar.setDisplayHomeAsUpEnabled(true);
@@ -256,7 +256,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 				break;
 
 			case FOLDER:
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
+				mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
 				if (actionBar != null) {
 					actionBar.setTitle(this.mProfileName);
 				}
@@ -268,7 +268,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 			case LAST_ADDED:
 			case POPULAR:
 				// Add the carousel images
-				mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
+				mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
 				// most played fragment
 				// Action bar title = Last added
 				if (actionBar != null) {
@@ -708,11 +708,11 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		removeFromCache();
 		// Apply the old photo
 		if (type == Type.ARTIST) {
-			mTabCarousel.setArtistProfileHeader(this, mArtistName);
+			mTabCarousel.setArtistProfileHeader(mArtistName);
 		} else if (type == Type.ALBUM) {
-			mTabCarousel.setAlbumProfileHeader(this, mProfileName, mArtistName);
+			mTabCarousel.setAlbumProfileHeader(mProfileName, mArtistName);
 		} else {
-			mTabCarousel.setPlaylistOrGenreProfileHeader(this, mProfileName);
+			mTabCarousel.setPlaylistOrGenreProfileHeader(mProfileName);
 		}
 	}
 
@@ -725,7 +725,7 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 		// First remove the old image
 		removeFromCache();
 		// Fetch for the artwork
-		mTabCarousel.fetchAlbumPhoto(this, mProfileName, mArtistName);
+		mTabCarousel.fetchAlbumPhoto(mProfileName, mArtistName);
 	}
 
 	/**

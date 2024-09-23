@@ -29,7 +29,6 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -439,28 +438,26 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	/**
 	 * Sets the artist image header
 	 *
-	 * @param context    The {@link Context} to use
 	 * @param artistName The artist name used to find the cached artist image
 	 *                   and used to find the last album played by the artist
 	 */
-	public void setArtistProfileHeader(Context context, String artistName) {
+	public void setArtistProfileHeader(String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
 		mSecondTab.setLabel(getResources().getString(R.string.page_albums));
-		mFirstTab.setArtistPhoto(context, artistName);
-		mSecondTab.setArtistAlbumPhoto(context, artistName);
+		mFirstTab.setArtistPhoto(artistName);
+		mSecondTab.setArtistAlbumPhoto(artistName);
 		mEnableSwipe = true;
 	}
 
 	/**
 	 * Sets the album image header
 	 *
-	 * @param context    The {@link Context} to use
 	 * @param albumName  The key used to find the cached album art
 	 * @param artistName The artist name used to find the cached artist image
 	 */
-	public void setAlbumProfileHeader(Context context, String albumName, String artistName) {
+	public void setAlbumProfileHeader(String albumName, String artistName) {
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setAlbumPhoto(context, albumName, artistName);
+		mFirstTab.setAlbumPhoto(albumName, artistName);
 
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
@@ -469,14 +466,12 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	/**
 	 * Sets the playlist or genre image header
 	 *
-	 * @param context     The {@link AppCompatActivity} to use
-	 * @param profileName The key used to find the cached image for a playlist
-	 *                    or genre
+	 * @param profileName The key used to find the cached image for a playlist or genre
 	 */
-	public void setPlaylistOrGenreProfileHeader(Context context, String profileName) {
-		mFirstTab.setDefault(context);
+	public void setPlaylistOrGenreProfileHeader(String profileName) {
+		mFirstTab.setDefault();
 		mFirstTab.setLabel(getResources().getString(R.string.page_songs));
-		mFirstTab.setPlaylistOrGenrePhoto(context, profileName);
+		mFirstTab.setPlaylistOrGenrePhoto(profileName);
 		mSecondTab.setVisibility(View.GONE);
 		mEnableSwipe = false;
 	}
@@ -484,12 +479,11 @@ public class ProfileTabCarousel extends HorizontalScrollView implements OnClickL
 	/**
 	 * Used to fetch for the album art via Last.fm.
 	 *
-	 * @param context    The {@link Context} to use.
 	 * @param albumName  The name of the album in the profile the user is viewing.
 	 * @param artistName The name of the album artist in the profile the user is viewing.
 	 */
-	public void fetchAlbumPhoto(Context context, String albumName, String artistName) {
-		mFirstTab.fetchAlbumPhoto(context, albumName, artistName);
+	public void fetchAlbumPhoto(String albumName, String artistName) {
+		mFirstTab.fetchAlbumPhoto(albumName, artistName);
 	}
 
 	/**

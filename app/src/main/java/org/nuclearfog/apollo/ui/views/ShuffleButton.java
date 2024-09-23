@@ -22,6 +22,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 
@@ -43,9 +45,16 @@ public class ShuffleButton extends AppCompatImageButton implements OnLongClickLi
 
 	/**
 	 * @param context The {@link Context} to use
+	 */
+	public ShuffleButton(@NonNull Context context) {
+		this(context, null);
+	}
+
+	/**
+	 * @param context The {@link Context} to use
 	 * @param attrs   The attributes of the XML tag that is inflating the view.
 	 */
-	public ShuffleButton(Context context, AttributeSet attrs) {
+	public ShuffleButton(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		// Theme the selector
 		ThemeUtils mTheme = new ThemeUtils(context);

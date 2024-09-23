@@ -30,6 +30,7 @@ import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Audio.Media;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.SubMenu;
 import android.widget.ArrayAdapter;
@@ -64,6 +65,8 @@ import java.util.WeakHashMap;
  * @author nuclearfog
  */
 public final class MusicUtils {
+
+	private static final String TAG = "MusicUtils";
 
 	/**
 	 * repeat mode disabled
@@ -745,11 +748,17 @@ public final class MusicUtils {
 	 * @param from       location of the track
 	 * @param to         new location of the track
 	 * @param off        the offset of the positions, or '0'
-	 * @return true if success
+	 * @return true if playlist item was moved successfully
 	 */
 	public static boolean movePlaylistTrack(Context context, long playlistId, int from, int to, int off) {
 		ContentResolver resolver = context.getContentResolver();
-		return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
+		try {
+			// may throw exception on some Android versions
+			return Playlists.Members.moveItem(resolver, playlistId, from - off, to - off);
+		} catch (Exception exception) {
+			Log.w(TAG, "could not move playlist item!", exception);
+			return false;
+		}
 	}
 
 	/**
@@ -757,6 +766,7 @@ public final class MusicUtils {
 	 *
 	 * @param trackId    The id of the song to remove.
 	 * @param playlistId The id of the playlist being removed from.
+	 * @return true if playlist item was removed successfully
 	 */
 	@SuppressLint("InlinedApi")
 	public static boolean removeFromPlaylist(Activity activity, long trackId, long playlistId) {
@@ -768,8 +778,10 @@ public final class MusicUtils {
 			String message = activity.getResources().getQuantityString(R.plurals.NNNtracksfromplaylist, count, count);
 			AppMsg.makeText(activity, message, AppMsg.STYLE_CONFIRM).show();
 			return true;
+		} else {
+			Log.w(TAG, "could not remove playlist item!");
+			return false;
 		}
-		return false;
 	}
 
 	/**

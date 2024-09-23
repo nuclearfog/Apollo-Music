@@ -11,14 +11,15 @@
 
 package org.nuclearfog.apollo.ui.views.dragdrop;
 
-import android.annotation.SuppressLint;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 
-@SuppressLint("NewApi")
-public class VerticalScrollListener implements OnScrollListener {
+/**
+ *
+ */
+public class VerticalScrollController implements OnScrollListener {
 
 	/**
 	 * Used to determine the off set to scroll the header
@@ -31,7 +32,7 @@ public class VerticalScrollListener implements OnScrollListener {
 	/**
 	 *
 	 */
-	public VerticalScrollListener(ScrollableHeader header, ProfileTabCarousel carousel, int pageIndex) {
+	public VerticalScrollController(ScrollableHeader header, ProfileTabCarousel carousel, int pageIndex) {
 		mHeader = header;
 		mTabCarousel = carousel;
 		mPageIndex = pageIndex;

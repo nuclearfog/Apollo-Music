@@ -227,7 +227,7 @@ public class PopularSongFragment extends ProfileFragment implements AsyncCallbac
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
+	public void remove(int index) {
 		// not used
 	}
 }

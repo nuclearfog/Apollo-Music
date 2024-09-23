@@ -24,9 +24,8 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
-import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollController;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
 
@@ -35,7 +34,7 @@ import org.nuclearfog.apollo.utils.FragmentViewModel;
  *
  * @author nuclearfog
  */
-public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>, DropListener, RemoveListener, DragScrollProfile {
+public abstract class ProfileFragment extends Fragment implements OnItemClickListener, Observer<String>, ItemChangeListener, DragScrollProfile {
 
 	private static final String TAG = "ProfileFragment";
 
@@ -114,11 +113,10 @@ public abstract class ProfileFragment extends Fragment implements OnItemClickLis
 		mList.setOnCreateContextMenuListener(this);
 		// Play the selected song
 		mList.setOnItemClickListener(this);
-		mList.setDropListener(this);
-		mList.setRemoveListener(this);
+		mList.setItemChangeListener(this);
 		mList.setDragScrollProfile(this);
 		// To help make scrolling smooth
-		mList.setOnScrollListener(new VerticalScrollListener(null, mProfileTabCarousel, 0));
+		mList.setOnScrollListener(new VerticalScrollController(null, mProfileTabCarousel, 0));
 		return rootView;
 	}
 

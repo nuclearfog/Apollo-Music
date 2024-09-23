@@ -21,7 +21,7 @@
 	android:layout_height="match_parent"
 	tools:context=".ui.activities.AudioPlayerActivity">
 
-	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
+	<org.nuclearfog.apollo.ui.views.Colorstrip
 		android:id="@+id/colorstrip"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/colorstrip_height"

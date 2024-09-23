@@ -206,7 +206,7 @@ public class GenreSongFragment extends ProfileFragment implements AsyncCallback<
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
+	public void remove(int index) {
 		// not used
 	}
 

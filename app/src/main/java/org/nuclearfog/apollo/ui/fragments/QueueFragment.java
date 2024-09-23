@@ -41,8 +41,7 @@ import org.nuclearfog.apollo.ui.adapters.listview.holder.RecycleHolder;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView;
 import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DragScrollProfile;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListener;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.FragmentViewModel;
@@ -58,7 +57,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class QueueFragment extends Fragment implements OnItemClickListener, DropListener, RemoveListener, DragScrollProfile, AsyncCallback<List<Song>>, Observer<String> {
+public class QueueFragment extends Fragment implements OnItemClickListener, ItemChangeListener, DragScrollProfile, AsyncCallback<List<Song>>, Observer<String> {
 
 	/**
 	 *
@@ -131,8 +130,7 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 		viewModel.getSelectedItem().observe(getViewLifecycleOwner(), this);
 		mList.setOnCreateContextMenuListener(this);
 		mList.setOnItemClickListener(this);
-		mList.setDropListener(this);
-		mList.setRemoveListener(this);
+		mList.setItemChangeListener(this);
 		mList.setDragScrollProfile(this);
 		return rootView;
 	}
@@ -289,11 +287,11 @@ public class QueueFragment extends Fragment implements OnItemClickListener, Drop
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
-		Song mSong = mAdapter.getItem(which);
+	public void remove(int index) {
+		Song mSong = mAdapter.getItem(index);
 		if (mSong != null) {
 			// remove track from queue
-			MusicUtils.removeQueueItem(requireActivity(), which);
+			MusicUtils.removeQueueItem(requireActivity(), index);
 			// remove track from list
 			mAdapter.remove(mSong);
 			// check if queue is empty

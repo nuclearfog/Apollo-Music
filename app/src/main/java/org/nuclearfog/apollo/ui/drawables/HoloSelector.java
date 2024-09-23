@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package org.nuclearfog.apollo.ui.views.theme;
+package org.nuclearfog.apollo.ui.drawables;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;

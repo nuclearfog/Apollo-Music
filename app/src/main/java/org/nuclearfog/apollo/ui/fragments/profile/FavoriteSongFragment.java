@@ -233,7 +233,7 @@ public class FavoriteSongFragment extends ProfileFragment implements AsyncCallba
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
+	public void remove(int index) {
 		// not used
 	}
 }

@@ -2,7 +2,6 @@ package org.nuclearfog.apollo.ui.views.dragdrop;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -11,7 +10,7 @@ import android.widget.ListView;
  * Simple implementation of the FloatViewManager class. Uses list items as they
  * appear in the ListView to create the floating View.
  */
-public class SimpleFloatViewManager implements DragSortListView.FloatViewManager {
+public class SimpleFloatViewManager {
 
 	private ListView mListView;
 	private Bitmap mFloatBitmap;
@@ -36,7 +35,6 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
 	 * This simple implementation creates a Bitmap copy of the list item
 	 * currently shown at ListView <code>position</code>.
 	 */
-	@Override
 	public View onCreateFloatView(int position) {
 		View child = mListView.getChildAt(position + mListView.getHeaderViewsCount() - mListView.getFirstVisiblePosition());
 		if (child != null) {
@@ -58,18 +56,10 @@ public class SimpleFloatViewManager implements DragSortListView.FloatViewManager
 	 * Removes the Bitmap from the ImageView created in onCreateFloatView() and
 	 * tells the system to recycle it.
 	 */
-	@Override
-	public void onDestroyFloatView(View floatView) {
+	protected void onDestroyFloatView(View floatView) {
 		if (floatView instanceof ImageView)
 			((ImageView) floatView).setImageDrawable(null);
 		mFloatBitmap.recycle();
 		mFloatBitmap = null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void onDragFloatView(Point touch) {
 	}
 }

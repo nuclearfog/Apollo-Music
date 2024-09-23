@@ -30,7 +30,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.nuclearfog.apollo.R;
-import org.nuclearfog.apollo.ui.views.theme.HoloSelector;
+import org.nuclearfog.apollo.ui.drawables.HoloSelector;
 
 /**
  * In order to implement the theme chooser for Apollo, this class returns a

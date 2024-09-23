@@ -33,8 +33,7 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.FavoritesStore;
 import org.nuclearfog.apollo.ui.adapters.listview.ProfileSongAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.DropListener;
-import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.RemoveListener;
+import org.nuclearfog.apollo.ui.views.dragdrop.DragSortListView.ItemChangeListener;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -48,7 +47,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  * @author nuclearfog
  */
-public class PlaylistSongFragment extends ProfileFragment implements AsyncCallback<List<Song>>, DropListener, RemoveListener {
+public class PlaylistSongFragment extends ProfileFragment implements AsyncCallback<List<Song>>, ItemChangeListener {
 
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
@@ -222,8 +221,8 @@ public class PlaylistSongFragment extends ProfileFragment implements AsyncCallba
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
-		Song song = mAdapter.getItem(which);
+	public void remove(int index) {
+		Song song = mAdapter.getItem(index);
 		if (song != null && MusicUtils.removeFromPlaylist(requireActivity(), song.getId(), mPlaylistId)) {
 			mAdapter.remove(song);
 		} else {

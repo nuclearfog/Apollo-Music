@@ -100,16 +100,14 @@ public class AppMsg {
 	 */
 	public static AppMsg makeText(Activity activity, CharSequence text, Style style) {
 		AppMsg result = new AppMsg(activity);
+		View view = View.inflate(activity, R.layout.app_msg, null);
+		TextView tv = view.findViewById(android.R.id.message);
 
-		View v = View.inflate(activity, R.layout.app_msg, null);
-		v.setBackgroundResource(style.background);
-
-		TextView tv = v.findViewById(android.R.id.message);
+		view.setBackgroundResource(style.background);
 		tv.setText(text);
 
-		result.mView = v;
+		result.mView = view;
 		result.mDuration = style.duration;
-
 		return result;
 	}
 
@@ -129,26 +127,26 @@ public class AppMsg {
 	}
 
 
-	public void addContentView(View v, LayoutParams params) {
+	void addContentView(View v, LayoutParams params) {
 		activity.addContentView(v, params);
 	}
 
 
-	public Context getContext() {
+	Context getContext() {
 		return activity.getApplicationContext();
 	}
 
 	/**
 	 * Return the view.
 	 */
-	public View getView() {
+	View getView() {
 		return mView;
 	}
 
 	/**
 	 * Return the duration.
 	 */
-	public int getDuration() {
+	int getDuration() {
 		return mDuration;
 	}
 
@@ -157,7 +155,7 @@ public class AppMsg {
 	 *
 	 * @return the layout parameters
 	 */
-	public LayoutParams getLayoutParams() {
+	LayoutParams getLayoutParams() {
 		if (mLayoutParams == null) {
 			mLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		}
@@ -177,8 +175,7 @@ public class AppMsg {
 		/**
 		 * Construct an {@link AppMsg.Style} object.
 		 *
-		 * @param duration How long to display the message. Either
-		 *                 {@link #LENGTH_SHORT} or {@link #LENGTH_LONG}
+		 * @param duration How long to display the message. Either {@link #LENGTH_SHORT} or {@link #LENGTH_LONG}
 		 * @param resId    resource for AppMsg background
 		 */
 		private Style(int duration, int resId) {
@@ -195,6 +192,5 @@ public class AppMsg {
 			Style style = (Style) o;
 			return style.duration == duration && style.background == background;
 		}
-
 	}
 }

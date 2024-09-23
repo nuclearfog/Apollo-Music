@@ -54,6 +54,7 @@ class MsgManager extends Handler {
 		return INSTANCE;
 	}
 
+
 	@Override
 	public void handleMessage(Message msg) {
 		AppMsg appMsg;
@@ -136,6 +137,7 @@ class MsgManager extends Handler {
 			sendMessage(msg);
 		}
 	}
+
 
 	private void addMsgToView(AppMsg appMsg) {
 		if (appMsg.getView().getParent() == null) {

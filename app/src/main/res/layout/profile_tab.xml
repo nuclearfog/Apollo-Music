@@ -72,7 +72,7 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent" />
 
-	<org.nuclearfog.apollo.ui.views.theme.Colorstrip
+	<org.nuclearfog.apollo.ui.views.Colorstrip
 		android:id="@+id/profile_tab_colorstrip"
 		android:layout_width="0dp"
 		android:layout_height="@dimen/profile_indicator_height"

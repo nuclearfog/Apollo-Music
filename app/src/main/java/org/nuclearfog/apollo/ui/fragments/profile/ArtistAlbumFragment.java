@@ -32,7 +32,7 @@ import org.nuclearfog.apollo.model.Album;
 import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.ui.adapters.listview.ArtistAlbumAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PlaylistDialog;
-import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollListener.ScrollableHeader;
+import org.nuclearfog.apollo.ui.views.dragdrop.VerticalScrollController.ScrollableHeader;
 import org.nuclearfog.apollo.utils.Constants;
 import org.nuclearfog.apollo.utils.ContextMenuItems;
 import org.nuclearfog.apollo.utils.MusicUtils;
@@ -247,7 +247,7 @@ public class ArtistAlbumFragment extends ProfileFragment implements AsyncCallbac
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void remove(int which) {
+	public void remove(int index) {
 		// not used
 	}
 

@@ -74,6 +74,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 		args.putInt(KEY_TYPE, type);
 		args.putString(KEY_TITLE, title);
 		photoSelectionDialog.setArguments(args);
+		photoSelectionDialog.show(fm, TAG);
 	}
 
 	/**

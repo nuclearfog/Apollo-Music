@@ -1111,8 +1111,7 @@ public final class MusicUtils {
 				}
 			}
 		} else {
-			DeleteTracksDialog dialog = DeleteTracksDialog.newInstance(title, ids);
-			dialog.show(activity.getSupportFragmentManager(), DeleteTracksDialog.NAME);
+			DeleteTracksDialog.show(activity.getSupportFragmentManager(), title, ids);
 		}
 	}
 

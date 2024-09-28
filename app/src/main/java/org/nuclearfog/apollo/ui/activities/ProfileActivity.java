@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
@@ -53,7 +52,6 @@ import org.nuclearfog.apollo.model.Song;
 import org.nuclearfog.apollo.store.PopularStore;
 import org.nuclearfog.apollo.ui.adapters.viewpager.ProfileAdapter;
 import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog;
-import org.nuclearfog.apollo.ui.dialogs.PhotoSelectionDialog.ProfileType;
 import org.nuclearfog.apollo.ui.fragments.profile.ProfileFragment;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel;
 import org.nuclearfog.apollo.ui.views.ProfileTabCarousel.Listener;
@@ -618,20 +616,13 @@ public class ProfileActivity extends ActivityBase implements ActivityResultCallb
 	 */
 	@Override
 	public void onAlbumArtSelected() {
-		ProfileType profileType;
-		String name;
 		if (type == Type.ARTIST) {
-			profileType = ProfileType.ARTIST;
-			name = mArtistName;
+			PhotoSelectionDialog.show(getSupportFragmentManager(), mArtistName, PhotoSelectionDialog.ARTIST);
 		} else if (type == Type.ALBUM) {
-			profileType = ProfileType.ALBUM;
-			name = mProfileName;
+			PhotoSelectionDialog.show(getSupportFragmentManager(), mProfileName, PhotoSelectionDialog.ALBUM);
 		} else {
-			profileType = ProfileType.OTHER;
-			name = mProfileName;
+			PhotoSelectionDialog.show(getSupportFragmentManager(), mProfileName, PhotoSelectionDialog.OTHER);
 		}
-		DialogFragment dialog = PhotoSelectionDialog.newInstance(name, profileType);
-		dialog.show(getSupportFragmentManager(), PhotoSelectionDialog.NAME);
 	}
 
 	/**

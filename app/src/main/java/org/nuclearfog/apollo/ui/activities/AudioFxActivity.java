@@ -146,8 +146,7 @@ public class AudioFxActivity extends AppCompatActivity implements BandLevelChang
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.menu_save_preset) {
 			AudioPreset preset = audioEffects.getPreset();
-			PresetDialog presetDialog = PresetDialog.newInstance(preset);
-			presetDialog.show(getSupportFragmentManager(), PresetDialog.TAG + ":" + preset.getName());
+			PresetDialog.show(getSupportFragmentManager(), preset);
 		} else if (item.getItemId() == R.id.menu_delete_preset) {
 			Object selectedItem = presetSelector.getSelectedItem();
 			if (selectedItem instanceof AudioPreset) {

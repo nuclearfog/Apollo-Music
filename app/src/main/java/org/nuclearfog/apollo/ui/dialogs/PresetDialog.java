@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.AudioPreset;
@@ -36,7 +38,30 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 	private EditText text;
 	private Button mSaveButton;
 
+	/**
+	 * create an instance of this dialog
+	 *
+	 * @param preset preset configuration to show
+	 */
+	public static void show(FragmentManager fm, AudioPreset preset) {
+		PresetDialog presetDialog;
+		Bundle args = new Bundle();
+		String tag = PresetDialog.TAG + ":" + preset.getName();
+		Fragment dialog = fm.findFragmentByTag(tag);
 
+		if (dialog instanceof PresetDialog) {
+			presetDialog = (PresetDialog) dialog;
+		} else {
+			presetDialog = new PresetDialog();
+		}
+		args.putSerializable(KEY_PRESET, preset);
+		presetDialog.setArguments(args);
+		presetDialog.show(fm, tag);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -66,13 +91,17 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		return dialog;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onSaveInstanceState(@NonNull Bundle outState) {
 		outState.putSerializable(KEY_PRESET, preset);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -91,35 +120,27 @@ public class PresetDialog extends DialogFragment implements OnClickListener, Tex
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void afterTextChanged(Editable s) {
 		mSaveButton.setEnabled(!s.toString().trim().isEmpty());
 		preset.setName(s.toString());
-	}
-
-	/**
-	 * create an instance of this dialog
-	 *
-	 * @param preset preset configuration to show
-	 * @return instance of this dialog
-	 */
-	public static PresetDialog newInstance(AudioPreset preset) {
-		PresetDialog dialog = new PresetDialog();
-		Bundle args = new Bundle();
-		args.putSerializable(KEY_PRESET, preset);
-		dialog.setArguments(args);
-		return dialog;
 	}
 
 	/**

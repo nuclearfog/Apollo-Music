@@ -66,8 +66,6 @@ import java.util.List;
  */
 public class PlaylistFragment extends Fragment implements AsyncCallback<List<Playlist>>, OnItemClickListener, Observer<String> {
 
-	private static final String TAG = "PlaylistFragment";
-
 	/**
 	 * Used to keep context menu items from bleeding into other fragments
 	 */
@@ -229,7 +227,7 @@ public class PlaylistFragment extends Fragment implements AsyncCallback<List<Pla
 					break;
 
 				case ContextMenuItems.DELETE:
-					DeletePlaylistDialog.newInstance(selectedPlaylist).show(getParentFragmentManager(), TAG);
+					DeletePlaylistDialog.show(getParentFragmentManager(), selectedPlaylist);
 					return true;
 			}
 		}

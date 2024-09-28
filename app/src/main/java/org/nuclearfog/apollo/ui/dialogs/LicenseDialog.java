@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Dialog used to show a list of licenses of all used libraries
@@ -22,7 +22,9 @@ public class LicenseDialog extends DialogFragment {
 
 	private static final String TAG = "LicenseDialog";
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,11 +37,14 @@ public class LicenseDialog extends DialogFragment {
 	/**
 	 * show this dialog
 	 */
-	public static void show(FragmentActivity activity) {
-		Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(TAG);
-		if (fragment == null) {
-			LicenseDialog dialog = new LicenseDialog();
-			dialog.show(activity.getSupportFragmentManager(), TAG);
+	public static void show(FragmentManager fm) {
+		LicenseDialog licenseDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
+		if (dialog instanceof LicenseDialog) {
+			licenseDialog = (LicenseDialog) dialog;
+		} else {
+			licenseDialog = new LicenseDialog();
 		}
+		licenseDialog.show(fm, TAG);
 	}
 }

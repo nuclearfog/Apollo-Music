@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.utils.ApolloUtils;
@@ -29,15 +29,21 @@ public class BatteryOptDialog extends DialogFragment implements OnClickListener 
 	/**
 	 *
 	 */
-	public static void show(FragmentActivity activity) {
-		Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(TAG);
-		if (fragment == null) {
-			BatteryOptDialog dialog = new BatteryOptDialog();
-			dialog.show(activity.getSupportFragmentManager(), TAG);
+	public static void show(FragmentManager fm) {
+		BatteryOptDialog batteryDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
+
+		if (dialog instanceof BatteryOptDialog) {
+			batteryDialog = (BatteryOptDialog) dialog;
+		} else {
+			batteryDialog = new BatteryOptDialog();
 		}
+		batteryDialog.show(fm, TAG);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -49,7 +55,9 @@ public class BatteryOptDialog extends DialogFragment implements OnClickListener 
 				.create();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == DialogInterface.BUTTON_POSITIVE) {

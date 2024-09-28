@@ -97,15 +97,15 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements OnPr
 	public boolean onPreferenceClick(@NonNull Preference preference) {
 		switch (preference.getKey()) {
 			case LICENSE:
-				LicenseDialog.show(requireActivity());
+				LicenseDialog.show(getParentFragmentManager());
 				return true;
 
 			case DEL_CACHE:
-				CacheClearDialog.show(requireActivity());
+				CacheClearDialog.show(getParentFragmentManager());
 				return true;
 
 			case COLOR_SEL:
-				ColorSchemeDialog.show(requireActivity());
+				ColorSchemeDialog.show(getParentFragmentManager());
 				return true;
 
 			case THEME_SEL:

@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.BuildConfig;
 import org.nuclearfog.apollo.R;
@@ -52,7 +52,24 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 
 	private PreferenceUtils mPreferences;
 
+	/**
+	 * show this dialog
+	 */
+	public static void show(FragmentManager fm) {
+		ColorSchemeDialog colorDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
 
+		if (dialog instanceof ColorSchemeDialog) {
+			colorDialog = (ColorSchemeDialog) dialog;
+		} else {
+			colorDialog = new ColorSchemeDialog();
+		}
+		colorDialog.show(fm, TAG);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,16 +111,20 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		return mRootView;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onColorChanged(int color) {
 		if (mHexValue != null) {
-			mHexValue.setText(padLeft(Integer.toHexString(color).toUpperCase(Locale.getDefault())));
+			mHexValue.setText(Integer.toHexString(color).toUpperCase(Locale.getDefault()));
 		}
 		mNewColor.setBackgroundColor(color);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(View v) {
 		if (v.getId() == R.id.color_scheme_dialog_preset_1) {
@@ -136,7 +157,9 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		onColorChanged(mColorPicker.getColor());
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		try {
@@ -150,39 +173,17 @@ public class ColorSchemeDialog extends DialogFragment implements ColorPickerView
 		}
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void afterTextChanged(Editable s) {
-	}
-
-	/**
-	 *
-	 */
-	private String padLeft(String string) {
-		if (string.length() >= 8) {
-			return string;
-		}
-		StringBuilder result = new StringBuilder();
-		for (int i = string.length(); i < 8; i++) {
-			result.append((char) 0);
-		}
-		result.append(string);
-		return result.toString();
-	}
-
-	/**
-	 * show this dialog
-	 */
-	public static void show(FragmentActivity activity) {
-		Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag(TAG);
-		if (fragment == null) {
-			ColorSchemeDialog dialog = new ColorSchemeDialog();
-			dialog.show(activity.getSupportFragmentManager(), TAG);
-		}
 	}
 }

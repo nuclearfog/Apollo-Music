@@ -41,6 +41,7 @@ public class AlphaTouchInterceptorOverlay extends FrameLayout {
 	private float mAlpha = 0.0f;
 
 	/**
+	 *
 	 */
 	public AlphaTouchInterceptorOverlay(@NonNull Context context) {
 		this(context, null);

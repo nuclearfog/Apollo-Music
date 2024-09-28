@@ -81,10 +81,12 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 * value type is long[]
 	 */
 	private static final String PLAYLIST_SONGS = "playlist_songs";
+
 	/**
 	 * Used to make new playlist names
 	 */
 	private EditText playlistName;
+
 	/**
 	 * The dialog save button
 	 */
@@ -95,6 +97,32 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	private int mode;
 
 	private long[] songIds = {};
+
+	/**
+	 * shows a dialog window
+	 *
+	 * @param mode    what action should be performed {@link #COPY,#MOVE,#CREATE}
+	 * @param id      ID of an existing playlist to modify used to copy or move
+	 * @param songIds list of song IDs to add to the playlist
+	 * @param name    new name of the playlist
+	 */
+	public static void show(FragmentManager fm, int mode, long id, long[] songIds, String name) {
+		PlaylistDialog playlistDialog;
+		Bundle param = new Bundle();
+		Fragment dialog = fm.findFragmentByTag(NAME);
+		param.putInt(PLAYLIST_MODE, mode);
+		param.putLong(PLAYLIST_ID, id);
+		param.putLongArray(PLAYLIST_SONGS, songIds);
+		param.putString(PLAYLIST_NAME, name);
+
+		if (dialog instanceof PlaylistDialog) {
+			playlistDialog = (PlaylistDialog) dialog;
+		} else {
+			playlistDialog = new PlaylistDialog();
+		}
+		playlistDialog.setArguments(param);
+		playlistDialog.show(fm, NAME);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -209,27 +237,5 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 	 */
 	@Override
 	public final void beforeTextChanged(CharSequence s, int start, int count, int after) {
-	}
-
-	/**
-	 * shows a dialog window
-	 *
-	 * @param mode    what action should be performed {@link #COPY,#MOVE,#CREATE}
-	 * @param id      ID of an existing playlist to modify used to copy or move
-	 * @param songIds list of song IDs to add to the playlist
-	 * @param name    new name of the playlist
-	 */
-	public static void show(FragmentManager fm, int mode, long id, long[] songIds, String name) {
-		Fragment dialogFragment = fm.findFragmentByTag(NAME);
-		if (dialogFragment == null) {
-			PlaylistDialog dialog = new PlaylistDialog();
-			Bundle param = new Bundle();
-			param.putInt(PLAYLIST_MODE, mode);
-			param.putLong(PLAYLIST_ID, id);
-			param.putLongArray(PLAYLIST_SONGS, songIds);
-			param.putString(PLAYLIST_NAME, name);
-			dialog.setArguments(param);
-			dialog.show(fm, NAME);
-		}
 	}
 }

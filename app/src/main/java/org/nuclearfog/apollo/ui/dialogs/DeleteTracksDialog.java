@@ -21,6 +21,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.async.AsyncExecutor.AsyncCallback;
@@ -38,43 +40,42 @@ import org.nuclearfog.apollo.utils.MusicUtils;
  */
 public class DeleteTracksDialog extends DialogFragment implements OnClickListener, AsyncCallback<Integer> {
 
-	public static final String NAME = "DeleteDialog";
+	private static final String TAG = "DeleteTracksDialog";
 
 	/**
 	 * key to set the dialog title message
 	 * value type is String
 	 */
-	private static final String KEY_TITLE = NAME + "_title";
+	private static final String KEY_TITLE = "delete_title";
 
 	/**
 	 * key to add a long array of track IDs
 	 * value type is long[]
 	 */
-	private static final String KEY_ITEMS = NAME + "_items";
+	private static final String KEY_ITEMS = "delete_items";
 
 	private TrackDeleteWorker trackDeleteWorker;
 
 	private long[] mItemList = {};
-	private String title = "";
-
-	/**
-	 *
-	 */
-	public DeleteTracksDialog() {
-	}
 
 	/**
 	 * @param title The title of the artist, album, or song to delete
 	 * @param items The item(s) to delete
-	 * @return A new instance of the dialog
 	 */
-	public static DeleteTracksDialog newInstance(String title, long[] items) {
-		DeleteTracksDialog dialog = new DeleteTracksDialog();
+	public static void show(FragmentManager fm, String title, long[] items) {
+		DeleteTracksDialog deleteDialog;
 		Bundle args = new Bundle();
+		Fragment dialog = fm.findFragmentByTag(TAG);
+
+		if (dialog instanceof DeleteTracksDialog) {
+			deleteDialog = (DeleteTracksDialog) dialog;
+		} else {
+			deleteDialog = new DeleteTracksDialog();
+		}
 		args.putString(KEY_TITLE, title);
 		args.putLongArray(KEY_ITEMS, items);
-		dialog.setArguments(args);
-		return dialog;
+		deleteDialog.setArguments(args);
+		deleteDialog.show(fm, TAG);
 	}
 
 	/**
@@ -83,6 +84,7 @@ public class DeleteTracksDialog extends DialogFragment implements OnClickListene
 	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		String title = "";
 		if (getArguments() != null) {
 			title = getArguments().getString(KEY_TITLE, "");
 			long[] mItemList = getArguments().getLongArray(KEY_ITEMS);

@@ -19,8 +19,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.activities.ProfileActivity;
@@ -38,36 +41,39 @@ import java.util.List;
  */
 public class PhotoSelectionDialog extends DialogFragment implements OnClickListener {
 
-	public static final String NAME = "PhotoSelectionDialog";
+	public static final String TAG = "PhotoSelectionDialog";
 
-	private static final String KEY_TITLE = NAME + "_title";
+	public static final int ARTIST = 10;
+	public static final int ALBUM = 11;
+	public static final int OTHER = 12;
+
+	private static final String KEY_TITLE = "photo_title";
+	private static final String KEY_TYPE = "photo_type";
 
 	private static final int IDX_NEW = 0;
 	private static final int IDX_OLD = 1;
 	private static final int IDX_SEARCH = 2;
 	private static final int IDX_FETCH = 3;
 
-	private static ProfileType mProfileType;
-
 	private List<String> mChoices = new ArrayList<>(5);
 
-	/**
-	 *
-	 */
-	public PhotoSelectionDialog() {
-	}
 
 	/**
 	 * @param title The dialog title.
-	 * @return A new instance of the dialog.
 	 */
-	public static PhotoSelectionDialog newInstance(String title, ProfileType type) {
-		PhotoSelectionDialog dialog = new PhotoSelectionDialog();
+	public static void show(FragmentManager fm, String title, int type) {
 		Bundle args = new Bundle();
+		PhotoSelectionDialog photoSelectionDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
+
+		if (dialog instanceof PhotoSelectionDialog) {
+			photoSelectionDialog = (PhotoSelectionDialog) dialog;
+		} else {
+			photoSelectionDialog = new PhotoSelectionDialog();
+		}
+		args.putInt(KEY_TYPE, type);
 		args.putString(KEY_TITLE, title);
-		dialog.setArguments(args);
-		mProfileType = type;
-		return dialog;
+		photoSelectionDialog.setArguments(args);
 	}
 
 	/**
@@ -75,8 +81,17 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 	 */
 	@NonNull
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		switch (mProfileType) {
+	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+		int type = OTHER;
+		String title = "";
+		if (savedInstanceState == null) {
+			savedInstanceState = getArguments();
+		}
+		if (savedInstanceState != null) {
+			type = savedInstanceState.getInt(KEY_TYPE, OTHER);
+			title = savedInstanceState.getString(KEY_TITLE, "");
+		}
+		switch (type) {
 			case ARTIST:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
@@ -101,6 +116,7 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				}
 				break;
 
+			default:
 			case OTHER:
 				// Select a photo from the gallery
 				mChoices.add(IDX_NEW, getString(R.string.new_photo));
@@ -108,16 +124,13 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				mChoices.add(IDX_OLD, getString(R.string.use_default));
 				break;
 		}
-		// Dialog item Adapter
-		String title = "";
-		if (getArguments() != null) {
-			title = getArguments().getString(KEY_TITLE, "");
-		}
 		ListAdapter adapter = new ArrayAdapter<>(requireContext(), android.R.layout.select_dialog_item, mChoices);
 		return new AlertDialog.Builder(requireContext()).setTitle(title).setAdapter(adapter, this).create();
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		ProfileActivity activity = (ProfileActivity) requireActivity();
@@ -135,12 +148,5 @@ public class PhotoSelectionDialog extends DialogFragment implements OnClickListe
 				activity.searchWeb();
 				break;
 		}
-	}
-
-	/**
-	 * Easily detect the MIME type
-	 */
-	public enum ProfileType {
-		ARTIST, ALBUM, OTHER
 	}
 }

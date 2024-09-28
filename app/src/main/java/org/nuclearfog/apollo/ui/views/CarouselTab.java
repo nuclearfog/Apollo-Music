@@ -85,7 +85,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	/**
 	 * Used to set the artist image in the artist profile.
 	 *
-	 * @param artist  The name of the artist in the profile the user is viewing.
+	 * @param artist The name of the artist in the profile the user is viewing.
 	 */
 	public void setArtistPhoto(String artist) {
 		if (!TextUtils.isEmpty(artist)) {
@@ -98,7 +98,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	/**
 	 * Used to set the album art in the album profile.
 	 *
-	 * @param album   The name of the album in the profile the user is viewing.
+	 * @param album The name of the album in the profile the user is viewing.
 	 */
 	public void setAlbumPhoto(String album, String artist) {
 		if (!TextUtils.isEmpty(album)) {
@@ -112,7 +112,7 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	/**
 	 * Used to set the album art in the artist profile.
 	 *
-	 * @param artist  The name of the artist in the profile the user is viewing.
+	 * @param artist The name of the artist in the profile the user is viewing.
 	 */
 	public void setArtistAlbumPhoto(String artist) {
 		final String lastAlbum = RecentStore.getInstance(getContext()).getAlbumName(artist);
@@ -145,8 +145,8 @@ public class CarouselTab extends FrameLayoutWithOverlay {
 	/**
 	 * Used to fetch for the album art via Last.fm.
 	 *
-	 * @param album   The name of the album in the profile the user is viewing.
-	 * @param artist  The name of the album artist in the profile the user is viewing
+	 * @param album  The name of the album in the profile the user is viewing.
+	 * @param artist The name of the album artist in the profile the user is viewing
 	 */
 	public void fetchAlbumPhoto(String album, String artist) {
 		if (!TextUtils.isEmpty(album)) {

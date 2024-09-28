@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.cache.ImageCache;
@@ -24,6 +24,21 @@ public class CacheClearDialog extends DialogFragment {
 	private static final String TAG = "CacheClearDialog";
 
 	/**
+	 * show this dialog
+	 */
+	public static void show(FragmentManager fm) {
+		CacheClearDialog cacheClearDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
+
+		if (dialog instanceof CacheClearDialog) {
+			cacheClearDialog = (CacheClearDialog) dialog;
+		} else {
+			cacheClearDialog = new CacheClearDialog();
+		}
+		cacheClearDialog.show(fm, TAG);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@NonNull
@@ -31,24 +46,13 @@ public class CacheClearDialog extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		return new AlertDialog.Builder(requireContext())
 				.setMessage(R.string.delete_warning)
+				.setNegativeButton(R.string.cancel, null)
 				.setPositiveButton(android.R.string.ok, new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						ImageCache mImageCache = ImageCache.getInstance(requireContext());
 						mImageCache.clearCaches();
 					}
-				})
-				.setNegativeButton(R.string.cancel, null).create();
-	}
-
-	/**
-	 * show this dialog
-	 */
-	public static void show(FragmentActivity fragmentActivity) {
-		Fragment fragment = fragmentActivity.getSupportFragmentManager().findFragmentByTag(TAG);
-		if (fragment == null) {
-			CacheClearDialog dialog = new CacheClearDialog();
-			dialog.show(fragmentActivity.getSupportFragmentManager(), TAG);
-		}
+				}).create();
 	}
 }

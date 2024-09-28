@@ -323,7 +323,7 @@ public final class ApolloUtils {
 			PreferenceUtils pref = PreferenceUtils.getInstance(activity);
 			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
 			if (!pref.isBatteryOptimizationIgnored() && pm != null && !pm.isIgnoringBatteryOptimizations(activity.getPackageName())) {
-				BatteryOptDialog.show(activity);
+				BatteryOptDialog.show(activity.getSupportFragmentManager());
 			}
 		}
 	}

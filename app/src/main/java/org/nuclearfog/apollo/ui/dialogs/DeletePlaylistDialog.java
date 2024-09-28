@@ -11,6 +11,8 @@ import android.provider.MediaStore.Audio.Playlists;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.model.Playlist;
@@ -22,27 +24,29 @@ import org.nuclearfog.apollo.utils.MusicUtils;
  */
 public class DeletePlaylistDialog extends DialogFragment implements OnClickListener {
 
+	private static final String TAG = "DeletePlaylistDialog";
+
 	private static final String KEY_PLAYLIST = "playlist";
 
 	private Playlist playlist;
 
 	/**
-	 *
+	 * @param playlist playlist to delete
 	 */
-	public DeletePlaylistDialog() {
-	}
-
-	/**
-	 * @return A new instance of the dialog
-	 */
-	public static DeletePlaylistDialog newInstance(Playlist playlist) {
-		DeletePlaylistDialog dialog = new DeletePlaylistDialog();
+	public static void show(FragmentManager fm, Playlist playlist) {
 		Bundle args = new Bundle();
+		DeletePlaylistDialog deleteDialog;
+		Fragment dialog = fm.findFragmentByTag(TAG);
 		args.putSerializable(KEY_PLAYLIST, playlist);
-		dialog.setArguments(args);
-		return dialog;
-	}
 
+		if (dialog instanceof DeletePlaylistDialog) {
+			deleteDialog = (DeletePlaylistDialog) dialog;
+		} else {
+			deleteDialog = new DeletePlaylistDialog();
+		}
+		deleteDialog.setArguments(args);
+		deleteDialog.show(fm, TAG);
+	}
 
 	/**
 	 * {@inheritDoc}

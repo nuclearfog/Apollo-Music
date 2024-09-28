@@ -105,14 +105,13 @@ public class PlaylistDialog extends DialogFragment implements TextWatcher, OnCli
 		// Initialize the alert dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 		// Initialize the edit text
+		int padding = getResources().getDimensionPixelSize(R.dimen.list_preferred_item_padding);
 		playlistName = new EditText(requireContext());
 		playlistName.setLines(1);
 		playlistName.setBackgroundColor(0);
-		playlistName.setInputType(InputType.TYPE_CLASS_TEXT);
 		playlistName.setHint(R.string.create_playlist_prompt);
-		int padding = getResources().getDimensionPixelSize(R.dimen.list_preferred_item_padding);
 		playlistName.setPadding(padding, padding, padding, padding);
-		playlistName.setInputType(playlistName.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+		playlistName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		// set dialog view
 		builder.setView(playlistName);
 		// Set the save button action

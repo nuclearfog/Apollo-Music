@@ -205,7 +205,7 @@ public class MultiPlayer {
 				if (player.isPlaying()) {
 					player.pause();
 				}
-			} else if (xfadeMode == NONE) {
+			} else {
 				xfadeMode = FADE_OUT;
 			}
 		} catch (IllegalStateException exception) {

@@ -222,6 +222,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements ServiceBin
 		}
 		// Bind Apollo's service
 		MusicUtils.bindToService(this, this);
+		ApolloUtils.setWakelock(this);
 
 		mPreviousButton.setRepeatListener(this);
 		mNextButton.setRepeatListener(this);

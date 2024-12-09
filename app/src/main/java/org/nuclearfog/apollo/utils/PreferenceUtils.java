@@ -95,6 +95,7 @@ public final class PreferenceUtils {
 	private static final String NOTIFICATION_LAYOUT = "old_notification_layout";
 	private static final String LASTFM_API_KEY = "api_key";
 	private static final String SHOW_HIDDEN = "view_hidden_items";
+	private static final String KEEP_SCREEN_ON = "keep_screen_on";
 
 	private static PreferenceUtils sInstance;
 
@@ -678,6 +679,15 @@ public final class PreferenceUtils {
 		SharedPreferences.Editor editor = defaultPref.edit();
 		editor.putBoolean(SHOW_HIDDEN, showHidden);
 		editor.commit();
+	}
+
+	/**
+	 * check if wakelock is enabled
+	 *
+	 * @return true if wakelock is enabled by user
+	 */
+	public boolean getWakelockStatus() {
+		return defaultPref.getBoolean(KEEP_SCREEN_ON, false);
 	}
 
 	/**

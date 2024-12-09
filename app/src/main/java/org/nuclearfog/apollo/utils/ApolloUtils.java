@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.Toast;
 
@@ -313,6 +314,18 @@ public final class ApolloUtils {
 				}
 			}
 		});
+	}
+
+	/**
+	 * set wakelock status depending on app settings
+	 */
+	public static void setWakelock(Activity activity) {
+		PreferenceUtils prefs = PreferenceUtils.getInstance(activity);
+		if (prefs.getWakelockStatus()) {
+			activity.getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+		} else {
+			activity.getWindow().clearFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
 	}
 
 	/**

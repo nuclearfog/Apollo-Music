@@ -165,5 +165,6 @@
 	<string name="menu_delete_preset">Voreinstellung löschen</string>
 	<string name="settings_source_code">Quellcode</string>
 	<string name="settings_source_code_descr">Im Browser öffnen</string>
+	<string name="settings_keep_screen_on">Bildschirm eingeschaltet lassen</string>
 	<string name="item_hidden">Eintrag erfolgreich versteckt</string>
 </resources>

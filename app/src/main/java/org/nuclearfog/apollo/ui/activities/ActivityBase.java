@@ -147,6 +147,7 @@ public abstract class ActivityBase extends AppCompatActivity implements ServiceB
 		mTheme.setBackgroundColor(bottomActionBar);
 		// set background
 		mTheme.setBackground(v);
+		ApolloUtils.setWakelock(this);
 
 		previousButton.setOnClickListener(this);
 		nextButton.setOnClickListener(this);

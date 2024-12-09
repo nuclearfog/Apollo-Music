@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.nuclearfog.apollo.R;
 import org.nuclearfog.apollo.ui.fragments.preference.PreferenceFragment;
+import org.nuclearfog.apollo.utils.ApolloUtils;
 import org.nuclearfog.apollo.utils.ThemeUtils;
 
 /**
@@ -54,6 +55,7 @@ public class SettingsActivity extends AppCompatActivity {
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction().replace(R.id.settings_frame, PreferenceFragment.class, null).commit();
 		}
+		ApolloUtils.setWakelock(this);
 	}
 
 	/**
